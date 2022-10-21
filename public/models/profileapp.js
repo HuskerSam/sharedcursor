@@ -3,14 +3,7 @@ import BaseApp from '/models/baseapp.js';
 export class ProfileApp extends BaseApp {
   constructor() {
     super();
-
-    this.review_count = document.querySelector('.review_count');
-    this.review_overall = document.querySelector('.overall_count');
-    this.feed_list_wrapper = document.querySelector('.feed_list_wrapper');
     this.logged_in_status = document.querySelector('.logged_in_status');
-    this.location_list_display = document.querySelector('.location_list_display');
-    this.brewery_list_display = document.querySelector('.brewery_list_display');
-    this.beer_list_display = document.querySelector('.beer_list_display');
 
     this.login_google = document.getElementById('login_google');
     this.login_google.addEventListener('click', e => this.authGoogleSignIn(e));
@@ -47,9 +40,6 @@ export class ProfileApp extends BaseApp {
       return true;
     });
 
-    this.filter_radios = document.querySelectorAll('.filter_panel input');
-    this.filter_radios.forEach(ctl => ctl.addEventListener('input', e => this.initReportsFeed(true)));
-
     this.profile_display_name = document.querySelector('.profile_display_name');
     this.profile_display_image = document.querySelector('.profile_display_image');
     this.profile_display_name.addEventListener('input', e => this.displayNameChange());
@@ -69,7 +59,6 @@ export class ProfileApp extends BaseApp {
     this.initPresetLogos();
   }
   async load() {
-    await this.readJSONFile(`https://firebasestorage.googleapis.com/v0/b/${this.projectId}.appspot.com/o/beerJSON%2FstoreMap.json?alt=media`, 'storesJSON');
     await super.load();
   }
   async initPresetLogos() {
@@ -105,44 +94,6 @@ export class ProfileApp extends BaseApp {
 
       location = '/profile';
     }
-  }
-  async initReportsFeed(reload) {
-    if (this.reportsInited && !reload)
-      return;
-    this.reportsInited = true;
-    if (this.reportsSubscription)
-      this.reportsSubscription();
-
-    let index = 0;
-    this.filter_radios.forEach((ctl, i) => {
-      if (ctl.checked)
-        index = i;
-    });
-
-    if (index === 0) {
-      this.reportsSubscription = firebase.firestore().collection(`Reports`)
-        .orderBy('activityDate', 'desc')
-        .limit(this.feedLimit)
-        .where('creator', '==', this.uid)
-        .onSnapshot(snapshot => this.updateReportsDom(snapshot));
-    } else if (index === 1) {
-      this.reportsSubscription = firebase.firestore().collection(`Reports`)
-        .orderBy('activityDate', 'desc')
-        .limit(this.feedLimit)
-        .where('creator', '==', this.uid)
-        .where('sent', '==', false)
-        .onSnapshot(snapshot => this.updateReportsDom(snapshot));
-    } else if (index === 2) {
-      this.reportsSubscription = firebase.firestore().collection(`Reports`)
-        .orderBy('activityDate', 'desc')
-        .limit(this.feedLimit)
-        .where('creator', '==', this.uid)
-        .where('responded', '==', true)
-        .onSnapshot(snapshot => this.updateReportsDom(snapshot));
-    }
-  }
-  _renderReportListLine(doc) {
-    return this._render2BeerReportLine(doc);
   }
   authUpdateStatusUI() {
     if (this.profile) {
@@ -181,59 +132,6 @@ export class ProfileApp extends BaseApp {
       });
     this.lastNameChange = new Date();
   }
-  updateFavorites() {
-    if (!this.profile)
-      return;
-    if (!window.storesJSON || !window.breweryJSON || !this.allBeers)
-      return;
-
-    let loc_html = '';
-    if (this.profile.favoriteStores) {
-      let storeSlugs = Object.keys(this.profile.favoriteStores).sort();
-      storeSlugs.forEach(slug => {
-        let store = window.storesJSON[slug];
-        loc_html += `<div class="store_anchor_wrapper"><a class="location_link_anchor" style="flex:1" href="/map/?store=${slug}">
-          <div style="background-image:url(${store.mapImage})"></div>
-          <span>${store.name}</span></a>
-          <a href="/map?store=${slug}"><i class="material-icons">map</i></a></div>`;
-      });
-    }
-    this.location_list_display.innerHTML = loc_html;
-
-    loc_html = '';
-    if (this.profile.favoriteBreweries) {
-      let brewerySlugs = Object.keys(this.profile.favoriteBreweries).sort();
-      brewerySlugs.forEach(slug => {
-        let b = window.breweryJSON[slug];
-        let name = b.name;
-        let img = b.mapImage;
-        if (!name) {
-          name = 'Baseline Beers';
-          img = '/images/logo64.png';
-        }
-        if (slug === 'baseline')
-          name = "Baseline Beers";
-        loc_html += `<a href="/${slug}" class="location_link_anchor">
-        <div style="background-image:url(${img})"></div>
-        <span>${name}</span></a>`;
-      });
-    }
-    this.brewery_list_display.innerHTML = loc_html;
-
-    loc_html = '';
-    if (this.profile.favoriteBeers) {
-      let brewerySlugs = Object.keys(this.profile.favoriteBeers).sort();
-      brewerySlugs.forEach(slug => {
-        let beer = this.allBeers[slug];
-        let path = slug.split(':').join('/');
-        loc_html += `
-        <a href="/${path}" class="location_link_anchor">
-        <div style="background-image:url(${beer.mapImage})"></div>
-        <span>${this.gameNameForBeer(slug)}</span></a>`;
-      });
-    }
-    this.beer_list_display.innerHTML = loc_html;
-  }
   updateInfoProfile() {
     if (!this.profile || !this.tagList) {
       return;
@@ -264,109 +162,6 @@ export class ProfileApp extends BaseApp {
       else
         this.mute_audio_radios[1].checked = true;
     }
-
-    let html = '';
-    if (!this.userProfileSums)
-      this.userProfileSums = {};
-
-    if (this.userProfileSums.overall) {
-      let totals = window.beerTotals.beers;
-      let count = Object.keys(totals).length;
-
-      let ratio = (this.userProfileSums.count / count) * 100;
-
-      this.review_count.innerHTML = this.userProfileSums.count + ' / ' + count;
-      this.review_overall.innerHTML = (this.userProfileSums.overall * 10).toFixed(0);
-    }
-
-    let basicTags = [];
-    let bitterTags = [];
-    let distinctTags = [];
-    for (let tag in window.beerTagsMap) {
-      if (window.beerTagsMap[tag] === 'basic')
-        basicTags.push(tag);
-      if (window.beerTagsMap[tag] === 'bitter')
-        bitterTags.push(tag);
-      if (window.beerTagsMap[tag] === 'distinct')
-        distinctTags.push(tag);
-    }
-
-    basicTags = basicTags.sort();
-    bitterTags = bitterTags.sort();
-    distinctTags = distinctTags.sort();
-
-    let htmlForTag = (tag) => {
-      let index = this.tagList.indexOf(tag);
-      let backgroundColor = this.tagColors[index];
-      let color = this.tagPens[index];
-      let result = '';
-
-      let value = 0;
-      let count = 0;
-      if (this.userProfileSums[tag]) {
-        value = this.userProfileSums[tag];
-        count = this.userProfileSums[tag + 'Count'];
-      }
-      let tag_display = tag + '<span>' + count + '</span>';
-
-      result += `<div style="display:inline-block;position:relative;margin-right:6px;"><a class="floating_tag_display" href="/?tag=${tag}">
-                <div>
-                  ${tag_display}
-                </div>
-              </a>
-              <a class="floating_tag_display second" href="/?tag=${tag}"  style="background-color:${backgroundColor};color:${color};width:${value * 100}%">
-                <div>
-                  ${tag_display}
-                </div>
-              </a></div>`;
-      return result;
-    };
-
-    html = '';
-    basicTags.forEach(tag => {
-      html += htmlForTag(tag);
-    });
-    document.querySelector('.review_basic_levels').innerHTML = html;
-
-    html = "";
-    bitterTags.forEach(tag => {
-      html += htmlForTag(tag);
-    });
-    document.querySelector('.review_bitter_levels').innerHTML = html;
-
-    html = "";
-    distinctTags.forEach(tag => {
-      html += htmlForTag(tag);
-    });
-    document.querySelector('.review_distinct_levels').innerHTML = html;
-
-    html = 'Please review beers for likability predictions!';
-    if (this.profile.beerReviews && window.beerTotals) {
-      let reviewSlugs = Object.keys(this.profile.beerReviews);
-      if (reviewSlugs.length > 0) {
-        html = '';
-        reviewSlugs = reviewSlugs.sort();
-        reviewSlugs.forEach(slug => {
-          let slugs = slug.split(':');
-          let review = this.profile.beerReviews[slug];
-          let overall = review.overall * 10.0;
-
-          html += `<div style="display:block;position:relative;"><a class="floating_tag_display beers"
-           href="/${slugs[0]}/${slugs[1]}">
-                    <div>
-                      ${this.gameNameForBeer(slug)}
-                    </div>
-                  </a>
-                  <a class="floating_tag_display second beers" href="/${slugs[0]}/${slugs[1]}"
-                  style="background-color:rgb(250,190,50);color:rgb(0,0,0);width:${overall}%">
-                    <div>
-                      ${this.gameNameForBeer(slug)}
-                    </div>
-                  </a></div>`;
-        })
-      }
-    }
-    document.querySelector('.beer_review_list').innerHTML = html;
   }
   uploadProfileImage() {
     this.file_upload_input.click();

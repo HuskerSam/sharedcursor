@@ -1,0 +1,10 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "OnlinePresence": {
+      ".read": "auth !== null",
+      ".write": "auth !== null"
+    }
+  }
+}

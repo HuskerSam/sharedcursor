@@ -591,7 +591,7 @@ export class BaseApp {
       gameNumber
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/join', {
+    let f_result = await fetch(this.basePath + 'api/games/join', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -623,7 +623,7 @@ export class BaseApp {
       seatIndex
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/sit', {
+    let f_result = await fetch(this.basePath + 'api/games/sit', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -645,7 +645,7 @@ export class BaseApp {
       seatIndex
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/stand', {
+    let f_result = await fetch(this.basePath + 'api/games/stand', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -682,7 +682,7 @@ export class BaseApp {
     }
 
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/options', {
+    let f_result = await fetch(this.basePath + 'api/games/options', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -766,7 +766,7 @@ export class BaseApp {
       messageId
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/message/delete', {
+    let f_result = await fetch(this.basePath + 'api/games/message/delete', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -838,7 +838,7 @@ export class BaseApp {
       message
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/message', {
+    let f_result = await fetch(this.basePath + 'api/games/message', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -1020,7 +1020,7 @@ export class BaseApp {
       action
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + `webPage/${this.apiType}/action`, {
+    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -1050,7 +1050,7 @@ export class BaseApp {
       action
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + `webPage/${this.apiType}/action`, {
+    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -1080,7 +1080,7 @@ export class BaseApp {
       action
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + `webPage/${this.apiType}/action`, {
+    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',

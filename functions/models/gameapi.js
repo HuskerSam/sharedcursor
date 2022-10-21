@@ -50,15 +50,6 @@ module.exports = class GameAPI {
       solutionText: ''
     };
   }
-  static async _getRandomBeerSlug(localInstance) {
-    let beerDataQ = await firebaseAdmin.firestore().doc(`Summary/beersData`).get();
-    let beerSlugs = [];
-    beerSlugs = Object.keys(beerDataQ.data().beers);
-    let randomBeer = Math.floor(Math.random() * beerSlugs.length);
-    let beerSlug = beerSlugs[randomBeer];
-
-    return beerSlug;
-  }
   static async _getUniqueGameSlug(collection) {
     function getDigit() {
       let char = 'a';
@@ -157,8 +148,6 @@ module.exports = class GameAPI {
 
     let game = GameAPI._defaultGame(uid);
 
-    let beerSlug = await GameAPI._getRandomBeerSlug(localInstance);
-    game.beerSlug = beerSlug;
     game.letters = '';
     game.numberOfSeats = 2;
     if (req.body.numberOfSeats)

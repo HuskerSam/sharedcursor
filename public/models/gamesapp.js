@@ -459,7 +459,7 @@ export class GamesApp extends BaseApp {
     };
 
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/create', {
+    let f_result = await fetch(this.basePath + 'api/games/create', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -491,7 +491,7 @@ export class GamesApp extends BaseApp {
       gameNumber
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/delete', {
+    let f_result = await fetch(this.basePath + 'api/games/delete', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -518,7 +518,7 @@ export class GamesApp extends BaseApp {
       gameNumber
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'webPage/games/leave', {
+    let f_result = await fetch(this.basePath + 'api/games/leave', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
