@@ -1,0 +1,50 @@
+[
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:burning-skye-scottish"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:chaco-canyon-gold"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:dark-side"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:long-route"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:luna-sea"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:mind-over-mango"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:pitched-blue"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:sun-slinger"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:super-nova"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:third-stone-brown"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:watch-man-ipa"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "empyrean:zookeeper-pink-guava"
+  }
+]

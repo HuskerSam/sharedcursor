@@ -1,0 +1,343 @@
+.show_game_table .game_table_view {
+  display: block;
+}
+
+.upper_row, .lower_row {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.upper_row {}
+
+.upper_left, .lower_left {}
+
+.score_pos_1, .score_pos_2, .score_pos_3 {
+  display: none;
+}
+
+.game_owner .card_deck_display {
+  display: none;
+}
+
+.card_deck_select {
+  display: none;
+}
+
+.game_owner .card_deck_select {
+  display: inline-block;
+}
+
+.game_owner .scoring_system_display {
+  display: none;
+}
+
+.scoring_system_select {
+  display: none;
+}
+
+.game_owner .scoring_system_select {
+  display: inline-block;
+}
+
+.match_card_wrapper {
+  width: calc(46% - 4px);
+  height: 100px;
+  background: rgba(100, 100, 100);
+  border-radius: 5%;
+  margin: 1.75%;
+  position: relative;
+  float: left;
+  border: solid 2px transparent;
+}
+
+.previously_shown {
+  background: rgba(200, 200, 200);
+}
+
+.card_inner {
+  display: none;
+  height: inherit;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.matched_hidden {
+  visibility: hidden;
+}
+
+.score_pos_0, .score_pos_1, .score_pos_2, .score_pos_3 {
+  flex: 1;
+  min-height: 50px;
+}
+
+.score_dock_row>div {
+  flex: 1;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.score_dock_row>span {
+  font-size: 18px;
+  flex: 1;
+}
+
+.score_dock_row {
+  display: flex;
+  flex-direction: row;
+}
+
+.zoom_out_beer_card {
+  display: none;
+  width: 80%;
+  height: 80%;
+  background: rgb(127, 127, 127);
+  z-index: 10;
+  position: absolute;
+  border: solid 2px silver;
+  border-radius: 5px;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.show_face .card_inner {
+  display: block;
+}
+
+.members_display_wrapper {
+  padding-top: 15px;
+  display: none;
+}
+
+.game_loaded .members_display_wrapper {
+  display: block;
+}
+
+.game_loaded .game_loading_display {
+  display: none;
+}
+
+.match_finish {
+  visibility: hidden;
+  margin-top: 18px;
+  font-size: 25px;
+}
+
+.mode_running .match_finish {
+  visibility: visible;
+}
+
+.selection_missed {
+  border: solid 2px red;
+}
+
+.selection_matched {
+  border: solid 2px rgb(0, 255, 0);
+}
+
+.seats_full_display {
+  font-size: 24px;
+  display: inline-block;
+  padding: 20px 10px;
+}
+
+.match_board_wrapper .match_quandrant {
+  min-height: 100px;
+  flex: 1;
+  position: relative;
+}
+
+.match_board_wrapper {
+  padding-bottom: 8px;
+  position: relative;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.tracer_line_0, .tracer_line_1 {
+  position: absolute;
+  height: 10px;
+  width: 100px;
+  z-index: 1000;
+  border-radius: 10px;
+  background: rgba(127, 127, 127, .5);
+  top: 10px;
+  left: 20px;
+  display: none;
+  transform-origin: 0 0;
+  pointer-events: none;
+  animation-name: tracer_fades;
+  animation-duration: 6s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes tracer_fades {
+  0% {
+    background-color: rgba(255, 0, 0, .5);
+  }
+
+  16.67% {
+    background-color: rgba(255, 255, 0, .5);
+  }
+
+  33.33% {
+    background-color: rgba(0, 255, 0, .5);
+  }
+
+  50% {
+    background-color: rgba(0, 255, 255, .5);
+  }
+
+  66.67% {
+    background-color: rgba(0, 0, 255, .5);
+  }
+
+  83.33% {
+    background-color: rgba(255, 0, 255, .5);
+  }
+
+  100% {
+    background-color: rgba(255, 0, 0, .5);
+  }
+}
+
+.player_dock {
+  display: flex;
+  flex-direction: row
+}
+
+.seat0_results, .seat1_results, .seat2_results, .seat3_results {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
+
+.seat0_results .dock_container div, .seat1_results .dock_container div,
+.seat2_results .dock_container div, .seat3_results .dock_container div {
+  border-radius: 10px;
+}
+
+.score_total {
+  flex: 3;
+  line-height: 70px;
+  font-size: 22px;
+  text-align: left;
+  border-radius: 10px;
+  margin-left: 5px;
+  padding: 0 5px;
+  margin-bottom: -4px;
+}
+
+.winner {
+  border: ridge 5px rgb(0, 255, 0);
+  border-radius: 10px;
+  background: rgba(0, 255, 0, .5);
+}
+
+.score_name {
+  max-width: 100px;
+  display: inline-block;
+  white-space: nowrap;
+  font-size: .8em;
+}
+
+.score_points {
+  text-align: right;
+  font-weight: bold;
+  float: right;
+}
+
+.mode_end .player_dock {
+  display: none;
+}
+
+.match_end_result .dock_container {
+  border: none;
+}
+
+.match_end_display_promo {}
+
+.beer_image {
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+  width: 130px;
+}
+
+.beer_description {
+  display: flex;
+  flex-direction: row;
+}
+
+.beer_tags {
+  flex: 1;
+}
+
+.beer_name {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.tag_description,
+.tag_inner {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 36px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tag_description {
+  transition: background 1s ease-out, border 1s ease-out;
+}
+
+.tag_inner {
+  transition: background 1s ease-out, border 1s ease-out, width 1s ease-out;
+}
+
+.tag_inner {
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+}
+
+.tag_filter_item {
+  display: block;
+  position: relative;
+  text-align: left;
+  margin-right: 35px;
+}
+
+.beer_name_anchor {
+  text-decoration: none;
+}
+
+button.members_header_toggle_button, button.game_header_toggle_button {
+  min-width: 50px;
+}
+
+.members_expanded button.members_header_toggle_button span {
+  transform: rotate(0);
+}
+
+button.members_header_toggle_button span {
+  transform: rotate(90deg);
+  transition: transform .5s;
+  display: inline-block;
+}
+
+.members_list {
+  height: 0;
+  overflow: hidden;
+  padding-left: 10px;
+  transition: height .5s;
+}
+
+.members_expanded .members_list {
+  height: 100px;
+  overflow: auto;
+}

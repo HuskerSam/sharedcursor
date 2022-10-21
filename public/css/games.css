@@ -1,0 +1,464 @@
+.signed_in_game_options {
+  display: none;
+}
+
+.signed_out_game_options {
+  display: none;
+}
+
+.app_signed_in .signed_in_game_options {
+  display: block;
+}
+
+.app_signed_out .signed_out_game_options {
+  display: block;
+}
+
+.join_game_view {
+  display: flex;
+  flex-direction: row;
+  margin: 0 4px;
+}
+
+.join_game_view {
+  display: none;
+}
+
+.public_games_wrapper {
+  display: none;
+}
+
+.show_public_games_view .public_games_wrapper {
+  display: block;
+}
+
+.show_join_games_view .join_game_view {
+  display: block;
+}
+
+.game_history_view {
+  display: none;
+}
+
+.games_view_wrapper {
+  display: none;
+}
+
+.show_games_view .games_view_wrapper {
+  display: block;
+}
+
+.show_profile_games .game_history_view {
+  display: block;
+}
+
+.new_game_view {
+  display: none;
+}
+
+.show_new_game .new_game_view {
+  display: block;
+}
+
+button.delete_game {
+  display: none;
+  background: none;
+  border-color: rgba(255, 0, 0, .5);
+}
+
+button.delete_game i {
+  color: rgba(255, 0, 0, .5);
+}
+
+.feed_game_owner .delete_game {
+  display: inline-block;
+}
+
+button.logout_game {
+  display: inline-block;
+  background: none;
+  border-color: rba(255, 0, 0, .5);
+}
+
+.public_game_view button.logout_game, .public_game_view button.delete_game {
+  display: none;
+}
+
+.feed_game_owner button.logout_game {
+  display: none;
+}
+
+.gamelist_item {
+  text-align: left;
+  text-decoration: none;
+  border-radius: 3px;
+  margin: 5px;
+  border: ridge 4px transparent;
+  overflow: hidden;
+  clear: both;
+}
+
+.gamelist_item, .gametype_guess {
+  background: rgba(255, 255, 0, .2);
+}
+
+.gametype_match {
+  background: rgba(0, 255, 255, .2);
+}
+
+.feed_game_owner.gamelist_item {}
+
+.gamelist_item .game_date {}
+
+.gamelist_item .game_status {
+  clear: both;
+}
+
+button.create_new_game_btn {
+  font-size: 32px;
+}
+
+.gamefeed_item_header {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+  margin-bottom: -4px;
+  padding-top: 4px;
+}
+
+.visibility_select {
+  display: inline-block;
+}
+
+.message_level_select, .seats_per_user_select {
+  display: inline-block;
+}
+
+.seat_count_select {
+  display: inline-block;
+}
+
+.game_list_user {}
+
+.match_additional_options {
+  display: none;
+}
+
+.newgametype_match .match_additional_options {
+  display: block;
+}
+
+.game_type_image {
+  background-repeat: no-repeat;
+  background-position: center 40%;
+  background-size: contain;
+  width: 32px;
+  margin-left: 6px;
+}
+
+.game_name {
+  flex: 1;
+  padding-left: 10px;
+  padding-top: 7px;
+}
+
+.game_name .title {
+  font-size: 36px;
+}
+
+.gamefeed_timesince {
+  line-height: 45px;
+  font-size: 20px;
+  text-align: center;
+}
+
+a.game_number_open {
+  text-decoration: none;
+}
+
+.gamelist_item button.game {
+  color: inherit;
+  background: transparent;
+}
+
+.next_player {
+  text-align: left;
+  line-height: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+}
+
+.gamefeed_owners_panel {
+  text-align: center;
+}
+
+.gamefeed_members_list, .gamefeed_owners_panel {
+  overflow: hidden;
+  max-height: 0px;
+  opacity: .5;
+  transition: max-height .5s, opacity .5s;
+  position: relative;
+  top: 10px;
+}
+
+.gamefeed_owners_panel {
+  line-height: 90px;
+  white-space: nowrap;
+}
+
+.gamefeed_members_list {
+  margin: 0 10px;
+  border-radius: 6px;
+}
+
+.show_seats .gamefeed_members_list, .show_seats .gamefeed_owners_panel {
+  max-height: 180px;
+  opacity: 1;
+}
+
+.gameitem_running.gamelist_item.gameplayer_turn_next {
+  border-color: rgba(255, 50, 50, .75);
+}
+
+.gameitem_running.gamelist_item.gameplayer_turn_next {
+  border-color: rgba(50, 100, 200, .75);
+}
+
+.night_mode .gameitem_running.gamelist_item.gameplayer_turn_next {
+  border-color: rgba(40, 240, 240, .75);
+}
+
+.next_player_wrapper {
+  font-size: 24px;
+  flex: 1;
+  line-height: 32px;
+  padding-left: 4px;
+}
+
+.next_player_wrapper span.member_online_status {
+  width: 32px;
+  height: 32px;
+}
+
+span.next_label {
+  display: inline-block;
+  width: 90px;
+  opacity: .75;
+}
+
+.next_player_wrapper span.name {
+  width: 125px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.member_feed_wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.member_feed_wrapper>div {
+  flex: 1;
+  height: 60px;
+  line-height: 65px;
+  text-align: center;
+  border: ridge 4px rgba(255, 255, 255, 1);
+  overflow: hidden;
+  padding-bottom: 4px;
+}
+
+.night_mode .member_feed_wrapper>div {
+  border-color: rgba(255, 255, 255, .6);
+}
+
+.member_feed_wrapper>div:nth-child(2) {
+  border-left: none;
+}
+
+.gamefeed_members_list div.member_feed_wrapper:nth-child(2)>div {
+  border-top: none;
+}
+
+.member_feed_wrapper div:nth-child(4) {
+  border-top: none;
+}
+
+.feed_filter_header {
+  text-align: center;
+}
+
+.member_feed_wrapper button.open_sit {
+  background: none;
+  cursor: default;
+  border-color: transparent;
+}
+
+.game_user_wrapper {
+  position: relative;
+  top: 2px;
+}
+
+.next_player_wrapper.game_user_wrapper .member_online_status {
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 20px;
+  height: 20px;
+}
+
+.gamefeed_members_list .member_online_status {
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  width: 10px;
+  height: 10px;
+}
+
+button.game.sit_button {
+  background: none;
+}
+
+.public_game_view button.game.sit_button {}
+
+a.game_number_open {}
+
+.public_game_view .next_player_wrapper {
+  visibility: hidden;
+}
+
+.public_game_view .gamelist_item.gameplayer_turn_next {
+  border-color: transparent;
+}
+
+.public_game_view .gamelist_item.feed_game_owner {
+  border-color: rgba(0, 255, 0, .5);
+}
+
+.owner_wrapper {
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.owner_wrapper .member_online_status {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.game_history_view .owner_wrapper {
+  display: none;
+}
+
+.header_copyright {
+  font-size: 16px;
+  padding-right: 8px;
+  line-height: 60px;
+  display: inline-block;
+}
+
+.header_copyright .title {
+  display: inline-block;
+}
+
+button.game_feed_toggle_button {
+  float: left;
+  width: 4em;
+}
+
+button.toggle_expanded_game {
+  background-color: transparent;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  border: transparent;
+}
+
+.toggle_expanded_game span.label {
+  font-size: 12px;
+  opacity: .75;
+  padding-top: 18px;
+  float: left;
+}
+
+.toggle_expanded_game span.icon {
+  transform: rotate(90deg);
+  transition: transform 0.5s;
+  display: inline-block;
+  position: relative;
+  top: -5px;
+}
+
+.toggle_expanded_game span.round {
+  font-size: 40px;
+}
+
+.show_seats .toggle_expanded_game span.icon {
+  transform: rotate(0deg);
+}
+
+button.feed_expand_all {
+  float: right;
+  border-color: transparent;
+  background: none;
+  color: inherit;
+}
+
+button.feed_expand_all span.icon {
+  transform: rotate(90deg);
+  transition: transform 0.5s;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: 14px;
+}
+
+.expanded_all.feed_expand_all span.icon {
+  transform: rotate(0deg);
+}
+
+.game_owner_label {
+  opacity: .75;
+  display: inline-block;
+  line-height: 20px;
+  position: relative;
+  top: 6px;
+}
+
+.table_seat_fill {
+  background: rgba(127, 127, 127, .5);
+}
+
+button.new_game_type_wrapper {
+  flex: 1;
+}
+
+.new_game_type_image {
+  height: 50px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  width: 100%;
+}
+
+.new_game_type_name {
+  width: 100%;
+  text-align: center;
+}
+
+button.new_game_type_wrapper.selected {
+  border-color: rgb(0, 255, 0);
+  background: rgba(0, 255, 0, .5);
+}
+
+.new_game_view .basic_options {
+  min-height: 85vh;
+}
+
+.open_button_wrapper {
+  line-height: 55px;
+}
+
+button.code_link {
+  border-color: transparent;
+}

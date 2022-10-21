@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Match!</title>
+  <meta property="og:site_name" content="Locate.Beer" />
+
+  <meta name="description" content="Locate Nebraska beer at a store near you." />
+  <meta name="keywords" content="local,beer,craft,brewery,Lincoln,Nebraska" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="shortcut icon" href="/images/logo64.png">
+  <meta name='mobile-web-app-capable' content='yes'>
+  <meta name='apple-mobile-web-app-capable' content='yes'>
+  <meta name='apple-mobile-web-app-status-bar-style' content='black'>
+
+  <link rel='icon' sizes='192x192' href='https://locate.beer/images/logo192.png'>
+  <link rel='apple-touch-icon' href='https://locate.beer/images/logo152.png'>
+  <meta name='msapplication-square310x310logo' content='https://locate.beer/images/logo310.png'>
+  <link rel='apple-touch-icon' href='https://locate.beer/images/logo192.png'>
+  <link rel="icon" sizes="192x192" href="https://locate.beer/images/logo192.png">
+
+  <meta property="og:url" content="https://locate.beer/match" />
+  <meta property="og:title" content="Match Beer Cards" />
+  <meta property="og:type" content="website" />
+
+  <meta property="og:image" content="https://locate.beer/images/hops.gif" />
+  <meta property="og:description" content="Match cards solo or with friends!" />
+  <meta property="pagedate" content="01/01/2030" />
+
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/gamebase.css?abc=123" />
+  <link rel="stylesheet" href="/css/match.css?abc=123" />
+
+  <!-- Firebase links -->
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <script>
+    window.addEventListener('load', async (event) => {
+      let module = await import('/models/matchapp.js');
+
+      window.MatchApp = new module.MatchApp();
+    });
+  </script>
+</head>
+
+<body class="basic_beer_body matchgame_page">
+  <div class="basic_page_wrapper app_panel">
+    <div class="base_menu_panel_wrapper">
+      <div class="base_menu_panel">
+        <a class="night_mode_toggle" href="/">
+          <i class="material-icons mode_day">light_mode</i>
+          <i class="material-icons mode_night">mode_night</i>
+        </a>
+        <a class="mute_button" href="mute">
+          <i class="material-icons">volume_up</i>
+        </a>
+        <a class="games_menu_anchor" href="/games/">
+          <i class="material-icons">games</i>
+        </a>
+      </div>
+    </div>
+
+    <div class="game_header_v2">
+      <button class="game_header_toggle_button game"><i class="material-icons">menu</i></button>
+      <button class="members_header_toggle_button game"><span>▼</span></button>
+    </div>
+
+    <div class="members_list"></div>
+    <div class="game_table_view">
+      <div class="player_dock">
+        <div class="dock_container dock_pos_0">
+          <div class="dock_seat0 game_user_wrapper seat_color_0">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+        </div>
+        <div class="dock_container dock_pos_1">
+          <div class="dock_seat1 game_user_wrapper seat_color_1">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+        </div>
+        <div class="dock_container dock_pos_2">
+          <div class="dock_seat2 game_user_wrapper seat_color_2">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+        </div>
+        <div class="dock_container dock_pos_3">
+          <div class="dock_seat3 game_user_wrapper seat_color_3">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mode_ready_view">
+        <span class="seats_full_display"></span>
+        <button class="match_start admin_only game primary">Start</button>
+        <div class="match_instructions" style="font-size: 20px;">
+          <div class="collapsed">
+            <h1 class="collapse_header">
+              <span class="impact-font">Rules and Play</span>
+              <span class="header_down_arrow">▼</span>
+            </h1>
+            <div style="padding: 0 10px;text-align:left" class="collapse_panel">
+              Select 2 cards<br>
+              Match: remove them and go again<br>
+              No match: next players turn<br>
+              <h3>Regular Scoring</h3>
+              <table>
+                <tr>
+                  <td>Card first show: </td>
+                  <td>1pt</td>
+                </tr>
+                <tr>
+                  <td>First match: </td>
+                  <td>5pts</td>
+                </tr>
+                <tr>
+                  <td>Streak: </td>
+                  <td>Matches this turn</td>
+                </tr>
+                <tr>
+                  <td>Matches: </td>
+                  <td>2pts + 2pts * Streak</td>
+                </tr>
+              </table>
+              <h3>Stable Scoring</h3>
+              <table>
+                <tr>
+                  <td>Card first show: </td>
+                  <td>1pt</td>
+                </tr>
+                <tr>
+                  <td>Matches: </td>
+                  <td>2pts</td>
+                </tr>
+              </table>
+              <h3>Simple Scoring</h3>
+              <table>
+                <tr>
+                  <td>Matches: </td>
+                  <td>1pt</td>
+                </tr>
+              </table>
+              <h3>Winner</h3>
+              Most points, in case of a tied player last in the turn order wins.
+              <br>
+              <br>
+              <div class="copyright_panel">
+                © 2022 Locate.Beer. All Rights Reserved.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mode_running_view">
+        <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
+          <div style="display:flex;flex-direction:column;flex:3">
+            <div class="score_dock_row">
+              <span class="">round</span>
+              <span>points</span>
+              <span class="">streak</span>
+            </div>
+            <div class="score_dock_row">
+              <div class="turn_number_div"></div>
+              <div class="player_total_points"></div>
+              <div class="player_total_for_turn"></div>
+            </div>
+          </div>
+          <div style="flex:2" class="">
+            <button class="player_dock_prompt game"></button>
+          </div>
+        </div>
+        <div class="match_board_wrapper">
+          <div class="tracer_line_0"></div>
+          <div class="tracer_line_1"></div>
+          <div class="upper_row">
+            <div class="upper_left match_quandrant"></div>
+            <div class="upper_right match_quandrant"></div>
+          </div>
+          <div class="lower_row">
+            <div class="lower_left match_quandrant"></div>
+            <div class="lower_right match_quandrant"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mode_end_view">
+        <div class="admin_only">
+          <button class="match_reset admin_only game primary" style="margin:15px">Next Match!</button>
+        </div>
+        <div class="match_result_message"></div>
+        <div class="match_end_display_promo">
+          <div style="margin-bottom: 6px;">
+            <a class="beer_name_anchor" target="_blank"><span class="beer_name impact-font"></span> <i class="material-icons impact-font" style="top:4px;font-size:28px;position:relative;">open_in_new</i></a>
+          </div>
+          <div class="beer_description">
+            <div class="beer_image"></div>
+            <div class="tag_wrapper beer_tags">
+              <div class="tag_filter_item">
+                <div class="tag_description"></div>
+                <div class="tag_inner"></div>
+              </div>
+              <div class="tag_filter_item">
+                <div class="tag_description"></div>
+                <div class="tag_inner"></div>
+              </div>
+              <div class="tag_filter_item">
+                <div class="tag_description"></div>
+                <div class="tag_inner"></div>
+              </div>
+              <div class="tag_filter_item">
+                <div class="tag_description"></div>
+                <div class="tag_inner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="match_end_result">
+          <div class="seat0_results">
+            <div class="dock_container dock_pos_0">
+              <div class="dock_seat0 game_user_wrapper seat_color_0">
+                <span></span>
+                <span></span>
+                <span class="online_status"></span>
+              </div>
+            </div>
+            <div class="score_total">
+            </div>
+          </div>
+          <div class="seat1_results">
+            <div class="dock_container dock_pos_1">
+              <div class="dock_seat1 game_user_wrapper seat_color_1">
+                <span></span>
+                <span></span>
+                <span class="online_status"></span>
+              </div>
+            </div>
+            <div class="score_total">
+            </div>
+          </div>
+          <div class="seat2_results">
+            <div class="dock_container dock_pos_2">
+              <div class="dock_seat2 game_user_wrapper seat_color_2">
+                <span></span>
+                <span></span>
+                <span class="online_status"></span>
+              </div>
+            </div>
+            <div class="score_total">
+            </div>
+          </div>
+          <div class="seat3_results">
+            <div class="dock_container dock_pos_3">
+              <div class="dock_seat3 game_user_wrapper seat_color_3">
+                <span></span>
+                <span></span>
+                <span class="online_status"></span>
+              </div>
+            </div>
+            <div class="score_total">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="game_options_view">
+      <div class="seating_options">
+        <div class="seat_wrapper seat_0_wrapper">
+          <span class="span_label">1</span>
+          <div class="seat_button_wrapper">
+            <button class="seat0_sitdown_btn game"></button>
+          </div>
+          <div class="game_user_wrapper">
+            <span class="seat0_img"></span>
+            <span class="seat0_name"></span>
+          </div>
+        </div>
+        <div class="seat_wrapper seat_1_wrapper">
+          <span class="span_label">2</span>
+          <div class="seat_button_wrapper">
+            <button class="seat1_sitdown_btn game"></button>
+          </div>
+          <div class="game_user_wrapper">
+            <span class="seat1_img"></span>
+            <span class="seat1_name"></span>
+          </div>
+        </div>
+        <div class="seat_wrapper seat_2_wrapper">
+          <span class="span_label">3</span>
+          <div class="seat_button_wrapper">
+            <button class="seat2_sitdown_btn game"></button>
+          </div>
+          <div class="game_user_wrapper">
+            <span class="seat2_img"></span>
+            <span class="seat2_name"></span>
+          </div>
+        </div>
+        <div class="seat_wrapper seat_3_wrapper">
+          <span class="span_label">4</span>
+          <div class="seat_button_wrapper">
+            <button class="seat3_sitdown_btn game"></button>
+          </div>
+          <div class="game_user_wrapper">
+            <span class="seat3_img"></span>
+            <span class="seat3_name"></span>
+          </div>
+        </div>
+      </div>
+      <div class="basic_options">
+        <span class="span_label">Game Code</span>
+        <span class="gameid_span"></span>
+        <a href="#" style="display:none;" class="code_link_href">URL</a>
+        <button class="code_link_copy"><i class="material-icons">content_copy</i> <span>URL</span></button>
+        <br style="clear:both;">
+        <span class="span_label">Visibility</span>
+        <span class="visibility_display"></span>
+        <select class="visibility_select">
+          <option>public</option>
+          <option>private</option>
+        </select>
+        <br>
+        <span class="span_label">Seats</span>
+        <span class="seat_count_display"></span>
+        <select class="seat_count_select">
+          <option value="1">1 seat</option>
+          <option value="2">2 seats</option>
+          <option value="3">3 seats</option>
+          <option value="4">4 seats</option>
+        </select>
+        <br>
+        <span class="span_label">Messaging</span>
+        <span class="message_level_display"></span>
+        <select class="message_level_select">
+          <option value="seated">Seated</option>
+          <option value="all">All</option>
+        </select>
+        <br>
+        <span class="span_label">Seat Limit</span>
+        <span class="seats_per_user_display"></span>
+        <select class="seats_per_user_select">
+          <option value="one">One</option>
+          <option value="none">None</option>
+        </select>
+        <br>
+        <span class="span_label">Card Deck</span>
+        <span class="card_deck_display"></span>
+        <select class="card_deck_select">
+          <option value="empyrean">Empyrean</option>
+          <option value="zipline">Zipline</option>
+        </select>
+        <br>
+        <span class="span_label">Scoring</span>
+        <span class="scoring_system_display"></span>
+        <select class="scoring_system_select">
+          <option value="simple">Simple</option>
+          <option value="stable">Stable</option>
+          <option value="regular">Regular</option>
+        </select>
+
+        <div style="text-align:center">
+          <button class="match_finish admin_only game">End Match Now!</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="messages_list"></div>
+
+    <div class="game_loading_display">
+      <h1>Loading...</h1>
+    </div>
+
+    <div style="flex:1;min-height:4em;"></div>
+    <div class="message_list_send_wrapper">
+      <input class="message_list_input" type="text">
+      <button class="send_message_list_button game" style="margin:0;background:none;border:none;min-width: auto">
+        <i class="material-icons impact-font" style="font-size: 30px;margin-bottom: -10px;position: relative;top: 4px;">send</i></button>
+    </div>
+    <div id="chat_snackbar"></div>
+  </div>
+</body>
+
+</html>

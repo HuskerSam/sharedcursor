@@ -1,0 +1,166 @@
+.profile_page label {
+  padding: .5em;
+  display: inline-block;
+}
+
+.signed_in_status_panel a {
+  padding: .75em;
+}
+
+.tag_header_label {
+  display: block;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.tag_body {
+  text-align: left;
+}
+
+.logged_in_status {
+  text-align: center;
+  white-space: nowrap;
+  margin-bottom: .5em;
+  overflow: hidden;
+}
+
+.list_center_row {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.list_result_footer a {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.profile_page .basic_page_wrapper.app_panel {
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.front_div {
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  height: inherit;
+  top: 0;
+}
+
+.floating_tag_display {
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  margin: 2px;
+  text-align: left;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  font-size: 22px;
+}
+
+.floating_tag_display.second {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.floating_tag_display div {
+  padding: 3px;
+  white-space: nowrap;
+  width: 168px;
+}
+
+.floating_tag_display span {
+  float: right;
+}
+
+.beer_review_list {
+  position: relative;
+  clear: both;
+  padding-top: 8px;
+}
+
+.beer_review_list a {
+  display: block;
+}
+
+.floating_tag_display.beers {
+  display: block;
+  font-size: 21px;
+  margin: 6px 0;
+}
+
+.floating_tag_display.beers.second {
+  top: -6px;
+  left: 0px;
+}
+
+.floating_tag_display.beers div {
+  display: block;
+  overflow: hidden;
+  padding: 6px 4px;
+  white-space: nowrap;
+  width: auto;
+}
+
+h3.impact-font {
+  text-align: left;
+  font-size: 28px;
+}
+
+.settings_panel {
+  display: block;
+  text-align: left;
+}
+
+.settings_panel label {
+  font-size: 20px;
+}
+
+.settings_panel label input[type="radio"] {
+  width: 20px;
+  height: 20px;
+}
+
+h2.collapse_header {
+  font-size: 32px;
+  margin: -3px;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.review_count, .overall_count {
+  float: right;
+  padding: 6px;
+}
+
+.reviewed_header {
+  float: left;
+  clear: both;
+  margin: 0;
+  padding: 0;
+}
+
+.profile_review_details {
+  margin-top: 25px;
+  font-size: 26px;
+}
+
+.profile_review_details h3 {
+  font-weight: normal;
+}
+
+.profile_display_image {
+  width: 64px;
+  height: 64px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}

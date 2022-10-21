@@ -1,0 +1,50 @@
+[
+  {
+    "type": "beer",
+    "beerSlug": "zipline:dope-ipa"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:copper-alt"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:hazy-ipa"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:ipa"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:oatmeal-porter"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:daaang-ipa"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:festbier"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:german-style-kolsch"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:cloudlifter-tropical-hazy-ipa"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:dear-old"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:gold-lager"
+  },
+  {
+    "type": "beer",
+    "beerSlug": "zipline:easy-lift"
+  }
+]
