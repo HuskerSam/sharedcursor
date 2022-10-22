@@ -1,5 +1,5 @@
-.show_game_table .game_table_view {
-  display: block;
+.mode_running_view {
+  max-width: 400px;
 }
 
 .upper_row, .lower_row {

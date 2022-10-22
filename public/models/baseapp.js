@@ -1,3 +1,5 @@
+import Utility from '/models/utility.js';
+
 export class BaseApp {
   constructor() {
     window.addEventListener('beforeinstallprompt', e => {
@@ -114,11 +116,14 @@ export class BaseApp {
         this.profileInited = true;
         this.profile = snapshot.data();
         if (!this.profile) {
-          let result = await firebase.auth().fetchSignInMethodsForEmail(this.fireUser.email);
 
-          //user was deleted dont create new profile
-          if (result.length < 1)
-            return;
+          if (!this.fireUser.isAnonymous) {
+            let result = await firebase.auth().fetchSignInMethodsForEmail(this.fireUser.email);
+
+            //user was deleted dont create new profile
+            if (result.length < 1)
+              return;
+          }
 
           await this._authCreateDefaultProfile();
         }
@@ -130,13 +135,7 @@ export class BaseApp {
     this.profile = {
       points: 0,
       locationTrack: false,
-      favoriteBeer: null,
-      favoriteStore: null,
-      favoriteBrewery: null,
-      excludeBeer: {},
-      excludeStore: {},
-      excludeBrewery: {},
-      displayName: '',
+      displayName: Utility.generateName(),
       displayImage: ''
     };
 
@@ -637,7 +636,7 @@ export class BaseApp {
     if (!json.success)
       alert(json.errorMessage);
 
-      return json.success;
+    return json.success;
   }
   async _gameAPIStand(seatIndex) {
     let body = {

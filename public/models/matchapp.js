@@ -1,5 +1,4 @@
 import BaseApp from '/models/baseapp.js';
-import GameBaseApp from '/models/baseapp.js';
 
 export class MatchApp extends BaseApp {
   constructor() {

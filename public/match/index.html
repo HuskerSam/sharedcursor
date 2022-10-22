@@ -15,6 +15,9 @@
   <meta name='apple-mobile-web-app-capable' content='yes'>
   <meta name='apple-mobile-web-app-status-bar-style' content='black'>
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
   <link rel='icon' sizes='192x192' href='https://locate.beer/images/logo192.png'>
   <link rel='apple-touch-icon' href='https://locate.beer/images/logo152.png'>
   <meta name='msapplication-square310x310logo' content='https://locate.beer/images/logo310.png'>
@@ -30,8 +33,7 @@
   <meta property="pagedate" content="01/01/2030" />
 
   <link rel="stylesheet" href="/css/base.css" />
-  <link rel="stylesheet" href="/css/gamebase.css?abc=123" />
-  <link rel="stylesheet" href="/css/match.css?abc=123" />
+  <link rel="stylesheet" href="/css/match.css" />
 
   <!-- Firebase links -->
   <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
@@ -43,6 +45,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
 
   <script>
     window.addEventListener('load', async (event) => {
@@ -55,20 +58,41 @@
 
 <body class="basic_beer_body matchgame_page">
   <div class="basic_page_wrapper app_panel">
-    <div class="base_menu_panel_wrapper">
-      <div class="base_menu_panel">
-        <a class="night_mode_toggle" href="/">
-          <i class="material-icons mode_day">light_mode</i>
-          <i class="material-icons mode_night">mode_night</i>
-        </a>
-        <a class="mute_button" href="mute">
-          <i class="material-icons">volume_up</i>
-        </a>
-        <a class="games_menu_anchor" href="/">
-          <i class="material-icons">games</i>
-        </a>
+    <nav class="navbar navbar-expand-lg  nav-scroll">
+      <div class="container">
+        <div style="text-align:left;">
+          <a class="navbar-brand navbar-logo" href="/">
+            <img src="/images/logo310.png" alt="logo" class="logo-1">
+          </a>
+          <a class="night_mode_toggle" href="/">
+            <i class="material-icons mode_day">light_mode</i>
+            <i class="material-icons mode_night">mode_night</i>
+          </a>
+          <a class="mute_button" href="mute">
+            <i class="material-icons">volume_up</i>
+          </a>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Games</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/profile/">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">About</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </nav>
+
+
 
     <div class="game_header_v2">
       <button class="game_header_toggle_button game"><i class="material-icons">menu</i></button>
