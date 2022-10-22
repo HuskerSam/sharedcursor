@@ -1,4 +1,19 @@
-{
-  "indexes": [],
+﻿{
+  "indexes": [
+    {
+      "collectionGroup": "Games",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "publicStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastActivity",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
