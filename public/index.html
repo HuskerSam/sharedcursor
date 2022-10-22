@@ -4,10 +4,9 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Games</title>
-  <meta property="og:site_name" content="Locate.Beer" />
+  <meta property="og:site_name" content="Shared Cursor Games" />
 
-  <meta name="description" content="Locate Nebraska beer at a store near you." />
-  <meta name="keywords" content="local,beer,craft,brewery,Lincoln,Nebraska" />
+  <meta name="description" content="Shared cursor multiplayer games demo." />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <link rel="shortcut icon" href="/images/logo64.png">
@@ -15,19 +14,22 @@
   <meta name='apple-mobile-web-app-capable' content='yes'>
   <meta name='apple-mobile-web-app-status-bar-style' content='black'>
 
-  <link rel='icon' sizes='192x192' href='https://locate.beer/images/logo192.png'>
-  <link rel='apple-touch-icon' href='https://locate.beer/images/logo152.png'>
-  <meta name='msapplication-square310x310logo' content='https://locate.beer/images/logo310.png'>
-  <link rel='apple-touch-icon' href='https://locate.beer/images/logo192.png'>
-  <link rel="icon" sizes="192x192" href="https://locate.beer/images/logo192.png">
+  <link rel='icon' sizes='192x192' href='https://sharedcursor.com/images/logo192.png'>
+  <link rel='apple-touch-icon' href='https://sharedcursor.com/images/logo152.png'>
+  <meta name='msapplication-square310x310logo' content='https://sharedcursor.com/images/logo310.png'>
+  <link rel='apple-touch-icon' href='https://sharedcursor.com/images/logo192.png'>
+  <link rel="icon" sizes="192x192" href="https://sharedcursor.com/images/logo192.png">
 
-  <meta property="og:url" content="https://locate.beer/hangbeer" />
+  <meta property="og:url" content="" />
   <meta property="og:title" content="Hang Beer" />
   <meta property="og:type" content="website" />
 
-  <meta property="og:image" content="https://locate.beer/images/hops.gif" />
-  <meta property="og:description" content="Play hang man with your friends using beer names!" />
+  <meta property="og:image" content="" />
+  <meta property="og:description" content="" />
   <meta property="pagedate" content="01/01/2030" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/games.css" />
@@ -41,6 +43,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
 
   <script>
     window.addEventListener('load', async (event) => {
@@ -52,120 +55,132 @@
 </head>
 
 
-<body class="basic_beer_body hangbeer_page show_games_view show_profile_games">
+<body class="">
   <div class="basic_page_wrapper app_panel">
-    <div class="base_menu_panel_wrapper">
-      <div class="base_menu_panel">
-        <a class="night_mode_toggle" href="/">
-          <i class="material-icons mode_day">light_mode</i>
-          <i class="material-icons mode_night">mode_night</i>
-        </a>
-        <a class="profile_menu_anchor" href="/profile">
-          <i class="material-icons">person</i>
-        </a>
-      </div>
-    </div>
-
-    <div class="game_header_v2">
-      <button class="game_header_toggle_button game">New</button>
-    </div>
-    <div class="game_lobby">
-      <div class="game_signin_create_panel">
-        <div class="new_game_view">
-          <div class="basic_options">
-            <div style="display:flex;flex-direction:row">
-              <button class="new_game_type_wrapper game selected" value="match">
-                <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
-                <div class="new_game_type_name">Match!</div>
-              </button>
-
-            </div>
-
-            <div style="display:none">
-              <span class="span_label">Type</span>
-              <select class="gametype_select">
-                <option value="guess">Guess?</option>
-                <option selected value="match">Match!</option>
-              </select>
-              <br>
-            </div>
-            <span class="span_label">Visibility</span>
-            <select class="visibility_select">
-              <option selected>public</option>
-              <option>private</option>
-            </select>
-            <br>
-            <span class="span_label">Seats</span>
-            <select class="seat_count_select">
-              <option value="1">1 seat</option>
-              <option selected value="2">2 seats</option>
-              <option value="3">3 seats</option>
-              <option value="4">4 seats</option>
-            </select>
-            <br>
-            <span class="span_label">Messaging</span>
-            <select class="message_level_select">
-              <option value="seated">Seated</option>
-              <option value="all">All</option>
-            </select>
-            <br>
-            <span class="span_label">Seat Limit</span>
-            <select class="seats_per_user_select">
-              <option value="one">One</option>
-              <option value="none">None</option>
-            </select>
-            <br>
-            <div class="match_additional_options">
-              <span class="span_label">Card Deck</span>
-              <select class="card_deck_select">
-                <option value="empyrean">Empyrean</option>
-                <option value="zipline">Zipline</option>
-              </select>
-              <br>
-              <span class="span_label">Scoring</span>
-              <select class="scoring_system_select">
-                <option value="simple">Simple</option>
-                <option value="stable">Stable</option>
-                <option value="regular" selected>Regular</option>
-              </select>
-              <br>
-            </div>
-            <div style="text-align:center;padding: 1em">
-              <button class="create_new_game_btn game primary">Create Game</button>
-            </div>
-          </div>
+    <nav class="navbar navbar-expand-lg  nav-scroll">
+      <div class="container">
+        <div style="text-align:left;">
+          <a class="navbar-brand navbar-logo" href="/">
+            <img src="/images/logo310.png" alt="logo" class="logo-1">
+          </a>
+          <a class="night_mode_toggle" href="/">
+            <i class="material-icons mode_day">light_mode</i>
+            <i class="material-icons mode_night">mode_night</i>
+          </a>
+          <a class="mute_button" href="mute">
+            <i class="material-icons">volume_up</i>
+          </a>
         </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-        <div class="games_view_wrapper">
-          <div class="feed_filter_header">
-            <button class="game_feed_toggle_button game">Find</button>
-            <button class="game feed_expand_all">
-              <span class="icon">&#9660;</span>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Games</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/profile/">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">About</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-recent-tab" data-bs-toggle="tab" data-bs-target="#nav-recent" type="button" role="tab" aria-controls="nav-recent" aria-selected="false" tabindex="-1">Recent</button>
+        <button class="nav-link" id="nav-find-tab" data-bs-toggle="tab" data-bs-target="#nav-find" type="button" role="tab" aria-controls="nav-find" aria-selected="false" tabindex="-1">Find</button>
+        <button class="nav-link" id="nav-new-tab" data-bs-toggle="tab" data-bs-target="#nav-new" type="button" role="tab" aria-controls="nav-new" aria-selected="true">New</button>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div class="tab-pane fade active show game_history_view" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
+      </div>
+      <div class="tab-pane fade" id="nav-find" style="overflow:hidden" role="tabpanel" aria-labelledby="nav-find-tab">
+        <div style="text-align:right">
+          <button class="game feed_expand_all">
+            <span class="icon">&#9660;</span>
+          </button>
+        </div>
+        <div class="public_game_view"></div>
+      </div>
+      <div class="tab-pane fade" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
+        <div class="basic_options">
+          <div style="display:flex;flex-direction:row">
+            <button class="new_game_type_wrapper game selected" value="match">
+              <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
+              <div class="new_game_type_name">Match!</div>
             </button>
           </div>
-          <div class="game_history_view"></div>
-          <div class="join_game_view">
-            <div style="line-height: 40px;font-size: 25px;padding: 5px;">
-              <span>Code</span>
-              <input class="game_code_start" style="font-size:25px;width:150px;flex:1">
-              <button class="join_game_btn" style="font-size:25px">Join</button>
-            </div>
-            <div style="font-size: 28px;margin-top: 50px;">
-              <a href="/privacy.html">Privacy</a>
-              &nbsp;
-            </div>
+          <div style="display:none">
+            <span class="span_label">Type</span>
+            <select class="gametype_select">
+              <option value="guess">Guess?</option>
+              <option selected value="match">Match!</option>
+            </select>
+            <br>
           </div>
-          <div class="public_games_wrapper">
-            <div class="public_game_view"></div>
+          <span class="span_label">Visibility</span>
+          <select class="visibility_select">
+            <option selected>public</option>
+            <option>private</option>
+          </select>
+          <br>
+          <span class="span_label">Seats</span>
+          <select class="seat_count_select">
+            <option value="1">1 seat</option>
+            <option selected value="2">2 seats</option>
+            <option value="3">3 seats</option>
+            <option value="4">4 seats</option>
+          </select>
+          <br>
+          <span class="span_label">Messaging</span>
+          <select class="message_level_select">
+            <option value="seated">Seated</option>
+            <option value="all">All</option>
+          </select>
+          <br>
+          <span class="span_label">Seat Limit</span>
+          <select class="seats_per_user_select">
+            <option value="one">One</option>
+            <option value="none">None</option>
+          </select>
+          <br>
+          <div class="match_additional_options">
+            <span class="span_label">Card Deck</span>
+            <select class="card_deck_select">
+              <option value="empyrean">Empyrean</option>
+              <option value="zipline">Zipline</option>
+            </select>
+            <br>
+            <span class="span_label">Scoring</span>
+            <select class="scoring_system_select">
+              <option value="simple">Simple</option>
+              <option value="stable">Stable</option>
+              <option value="regular" selected>Regular</option>
+            </select>
+            <br>
+          </div>
+          <div style="text-align:center;padding: 1em">
+            <button class="create_new_game_btn game primary">Create Game</button>
           </div>
         </div>
       </div>
-      <div class="signed_out_game_options">
-        <h3>Please <a href="/profile">Sign In</a> to play</h3>
-      </div>
     </div>
-    <div style="flex:1"></div>
-
+  </div>
+  <div class="join_game_view" style="display:none;">
+    <div style="line-height: 40px;font-size: 25px;padding: 5px;">
+      <span>Code</span>
+      <input class="game_code_start" style="font-size:25px;width:150px;flex:1">
+      <button class="join_game_btn" style="font-size:25px">Join</button>
+    </div>
+  </div>
+  <div class="signed_out_game_options">
+    <h3>Please <a href="/profile">Sign In</a> to play</h3>
   </div>
   <style id="laststyleblock"></style>
 </body>

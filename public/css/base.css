@@ -77,6 +77,7 @@ a {
     height: 32px;
   }
 }
+
 .loaded .app_panel {
   background: rgb(250, 250, 250);
   color: rgb(50, 50, 50);
@@ -87,7 +88,6 @@ a {
   background: rgb(0, 100, 120);
   color: rgb(240, 240, 240);
 }
-
 
 .card_shadow {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -105,9 +105,11 @@ a {
 .basic_page_wrapper {
   text-align: center;
   margin: auto;
-  min-height: 100vh;
   min-width: inherit;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .main_page_link_list {
@@ -233,6 +235,7 @@ a.mute_button i {
 .app_signed_in .signed_in_options {
   display: block;
 }
+
 .mode_ready_view, .mode_running_view, .mode_end_view {
   display: none;
 }

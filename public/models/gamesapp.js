@@ -24,12 +24,6 @@ export class GamesApp extends BaseApp {
         return;
     }
 
-    this.game_header_toggle_button = document.querySelector('.game_header_toggle_button');
-    this.game_header_toggle_button.addEventListener('click', e => this.toggleTabView());
-
-    this.game_feed_toggle_button = document.querySelector('.game_feed_toggle_button');
-    this.game_feed_toggle_button.addEventListener('click', e => this.toggleFeedView());
-
     this.feed_expand_all = document.querySelector('.feed_expand_all');
     this.feed_expand_all.addEventListener('click', e => this.toggleFeedMembers());
 

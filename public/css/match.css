@@ -281,30 +281,6 @@
   font-weight: bold;
 }
 
-.tag_description,
-.tag_inner {
-  flex: 1;
-  padding: 6px 8px;
-  font-size: 36px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.tag_description {
-  transition: background 1s ease-out, border 1s ease-out;
-}
-
-.tag_inner {
-  transition: background 1s ease-out, border 1s ease-out, width 1s ease-out;
-}
-
-.tag_inner {
-  position: absolute;
-  display: block;
-  top: 0;
-  left: 0;
-}
-
 .tag_filter_item {
   display: block;
   position: relative;

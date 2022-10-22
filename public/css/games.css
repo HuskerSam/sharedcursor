@@ -1,3 +1,16 @@
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  width: 100%;
+  background: rgb(127, 127, 127);
+  height: 100vh;
+  overflow: hidden;
+}
+
+
 .signed_in_game_options {
   display: none;
 }
@@ -20,46 +33,6 @@
   margin: 0 4px;
 }
 
-.join_game_view {
-  display: none;
-}
-
-.public_games_wrapper {
-  display: none;
-}
-
-.show_public_games_view .public_games_wrapper {
-  display: block;
-}
-
-.show_join_games_view .join_game_view {
-  display: block;
-}
-
-.game_history_view {
-  display: none;
-}
-
-.games_view_wrapper {
-  display: none;
-}
-
-.show_games_view .games_view_wrapper {
-  display: block;
-}
-
-.show_profile_games .game_history_view {
-  display: block;
-}
-
-.new_game_view {
-  display: none;
-}
-
-.show_new_game .new_game_view {
-  display: block;
-}
-
 button.delete_game {
   display: none;
   background: none;
@@ -78,6 +51,11 @@ button.logout_game {
   display: inline-block;
   background: none;
   border-color: rba(255, 0, 0, .5);
+}
+
+.public_game_view {
+  flex: 1;
+  overflow: auto;
 }
 
 .public_game_view button.logout_game, .public_game_view button.delete_game {
@@ -346,19 +324,13 @@ a.game_number_open {}
   margin-right: 10px;
 }
 
+.game_history_view {
+  flex: 1;
+  overflow: auto;
+}
+
 .game_history_view .owner_wrapper {
   display: none;
-}
-
-.header_copyright {
-  font-size: 16px;
-  padding-right: 8px;
-  line-height: 60px;
-  display: inline-block;
-}
-
-.header_copyright .title {
-  display: inline-block;
 }
 
 button.game_feed_toggle_button {
@@ -398,7 +370,6 @@ button.toggle_expanded_game {
 }
 
 button.feed_expand_all {
-  float: right;
   border-color: transparent;
   background: none;
   color: inherit;
@@ -451,14 +422,25 @@ button.new_game_type_wrapper.selected {
   background: rgba(0, 255, 0, .5);
 }
 
-.new_game_view .basic_options {
-  min-height: 85vh;
-}
-
 .open_button_wrapper {
   line-height: 55px;
 }
 
 button.code_link {
   border-color: transparent;
+}
+
+.tab-pane {
+  flex: 1;
+}
+
+#nav-find.tab-pane.active, #nav-new.tab-pane.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.basic_options {
+  flex: 1;
+  overflow: auto;
 }
