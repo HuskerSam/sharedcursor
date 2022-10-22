@@ -70,6 +70,9 @@ export class MatchApp extends BaseApp {
   }
   async authUpdateStatusUI() {
     super.authUpdateStatusUI();
+    if (!this.profile)
+      return;
+
     this.currentGame = null;
     this.gameid_span.innerHTML = '';
     this.initRTDBPresence();
@@ -89,6 +92,7 @@ export class MatchApp extends BaseApp {
   async load() {
     await this.readJSONFile(`/match/ziplinedeck.json`, 'ziplineCardDeck');
     await this.readJSONFile(`/match/empyreandeck.json`, 'empyreanCardDeck');
+
     await super.load();
   }
   getCardDeck() {
@@ -102,41 +106,13 @@ export class MatchApp extends BaseApp {
       cards = 12;
     cardIndex = cardIndex % cards;
 
-    let cardData = this.getCardDeck()[cardIndex];
-    if (!cardData)
-      cardData = {};
-
-    let beerSlug = cardData.beerSlug;
-
-    let cardInfo = {
-      beerSlug,
-      deckIndex: cardIndex,
-      fullName: this.gameNameForBeer(beerSlug)
-    };
-    if (beerSlug) {
-      cardInfo.beerTotals = window.beerTotals.beers[beerSlug];
-      cardInfo.beerData = this.allBeers[beerSlug];
-
-      if (cardInfo.beerData) {
-        cardInfo.img = cardInfo.beerData.mapImage;
-      }
-    }
-
-    if (!cardInfo.img) {
-
-    }
-
-    return cardInfo;
+    return this.getCardDeck()[cardIndex];
   }
   paintGameData(gameDoc = null) {
     if (gameDoc)
       this.gameData = gameDoc.data();
 
     if (!this.gameData)
-      return;
-    if (!this.allBeers)
-      return;
-    if (!window.beerTotals)
       return;
 
     document.body.classList.add('game_loaded');
@@ -275,28 +251,10 @@ export class MatchApp extends BaseApp {
     if (this.gameData.lastMatchIndex)
       deckIndex = this.gameData.lastMatchIndex;
     let cardMeta = this.getCardMeta(deckIndex);
-    this.match_end_display_promo.querySelector('.beer_image').style.backgroundImage = `url(${cardMeta.img})`;
-    this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.fullName;
-    this.match_end_display_promo.querySelector('.beer_name_anchor').setAttribute('href', '/' + cardMeta.beerSlug.replace(':', '/'));
+    this.match_end_display_promo.querySelector('.beer_image').style.backgroundImage = `url(${cardMeta.image})`;
+    this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.brand + ' ' + cardMeta.name;
+    this.match_end_display_promo.querySelector('.beer_name_anchor').setAttribute('href', cardMeta.url);
 
-    let tagData = this.calcBeerTags(cardMeta.beerSlug);
-
-    if (tagData.tags) {
-      for (let c = 0; c < 4; c++) {
-        let inner = this.tag_inner[c];
-        let outer = this.tag_description[c];
-
-        let desc = tagData.tags[c];
-        if (!desc)
-          desc = '';
-
-        outer.innerHTML = '&nbsp;<span>' + desc + '</span>';
-        inner.innerHTML = '&nbsp;<span>' + desc + '</span>';
-        inner.style.backgroundColor = tagData.backgroundColors[c];
-        inner.style.color = tagData.colors[c];
-        inner.style.width = (100.0 * tagData.levels[c]).toFixed(2) + '%';
-      }
-    }
   }
   _updateCardStatus() {
     for (let c = 0, l = this.gameData.cardCount; c < l; c++) {
@@ -436,7 +394,7 @@ export class MatchApp extends BaseApp {
         boardPositionIndex: cardIndex,
         orderIndex,
         meta,
-        image: meta.img
+        image: meta.image
       };
       div.innerHTML = this._cardTemplate(cardInfo);
       if (cardIndex < this.cardsPerColumn * 2)
@@ -581,7 +539,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 0) {
         this.bigDiv0 = this.upperLeftDisplayCard;
         this.upperLeftDisplayCard.style.display = 'block';
-        this.upperLeftDisplayCard.style.backgroundImage = `url(${card0Meta.img})`;
+        this.upperLeftDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
         if (q0 === 1) {
           this.upperLeftDisplayCard.style.top = '10%';
           this.upperLeftDisplayCard.style.right = '-5%';
@@ -593,7 +551,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 1) {
         this.bigDiv0 = this.upperRightDisplayCard;
         this.upperRightDisplayCard.style.display = 'block';
-        this.upperRightDisplayCard.style.backgroundImage = `url(${card0Meta.img})`;
+        this.upperRightDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
         if (q0 === 0) {
           this.upperRightDisplayCard.style.top = '10%';
           this.upperRightDisplayCard.style.left = '-5%';
@@ -605,7 +563,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 2) {
         this.bigDiv0 = this.lowerLeftDisplayCard;
         this.lowerLeftDisplayCard.style.display = 'block';
-        this.lowerLeftDisplayCard.style.backgroundImage = `url(${card0Meta.img})`;
+        this.lowerLeftDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
         if (q0 === 0) {
           this.lowerLeftDisplayCard.style.top = '-5%';
           this.lowerLeftDisplayCard.style.left = '10%';
@@ -617,7 +575,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 3) {
         this.bigDiv0 = this.lowerRightDisplayCard;
         this.lowerRightDisplayCard.style.display = 'block';
-        this.lowerRightDisplayCard.style.backgroundImage = `url(${card0Meta.img})`;
+        this.lowerRightDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
         if (q0 === 1) {
           this.lowerRightDisplayCard.style.top = '-5%';
           this.lowerRightDisplayCard.style.left = '10%';
@@ -631,7 +589,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 0) {
         this.bigDiv1 = this.upperLeftDisplayCard;
         this.upperLeftDisplayCard.style.display = 'block';
-        this.upperLeftDisplayCard.style.backgroundImage = `url(${card1Meta.img})`;
+        this.upperLeftDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
         if (q1 === 1) {
           this.upperLeftDisplayCard.style.top = '10%';
           this.upperLeftDisplayCard.style.right = '-5%';
@@ -643,7 +601,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 1) {
         this.bigDiv1 = this.upperRightDisplayCard;
         this.upperRightDisplayCard.style.display = 'block';
-        this.upperRightDisplayCard.style.backgroundImage = `url(${card1Meta.img})`;
+        this.upperRightDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
         if (q1 === 0) {
           this.upperRightDisplayCard.style.top = '10%';
           this.upperRightDisplayCard.style.left = '-5%';
@@ -655,7 +613,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 2) {
         this.bigDiv1 = this.lowerLeftDisplayCard;
         this.lowerLeftDisplayCard.style.display = 'block';
-        this.lowerLeftDisplayCard.style.backgroundImage = `url(${card1Meta.img})`;
+        this.lowerLeftDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
         if (q1 === 0) {
           this.lowerLeftDisplayCard.style.top = '-5%';
           this.lowerLeftDisplayCard.style.left = '10%';
@@ -667,7 +625,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 3) {
         this.bigDiv1 = this.lowerRightDisplayCard;
         this.lowerRightDisplayCard.style.display = 'block';
-        this.lowerRightDisplayCard.style.backgroundImage = `url(${card1Meta.img})`;
+        this.lowerRightDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
         if (q1 === 1) {
           this.lowerRightDisplayCard.style.top = '-5%';
           this.lowerRightDisplayCard.style.left = '10%';

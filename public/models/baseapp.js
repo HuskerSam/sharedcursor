@@ -584,7 +584,7 @@ export class BaseApp {
   }
 
   async gameAPIJoin(gameNumber) {
-    if (!this.profile)
+    if (!this.fireToken)
       return;
 
     let body = {

@@ -4,6 +4,7 @@ const cors = require('cors');
 const functions = require('firebase-functions');
 const firebaseAdmin = require('firebase-admin');
 const gameAPI = require('./models/gameapi.js');
+const matchAPI = require('./models/matchapi.js');
 
 firebaseAdmin.initializeApp();
 

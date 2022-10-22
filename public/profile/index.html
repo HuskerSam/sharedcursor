@@ -63,44 +63,12 @@
           <i class="material-icons mode_day">light_mode</i>
           <i class="material-icons mode_night">mode_night</i>
         </a>
-        <a class="brews_button" href="/find" style="flex:0">
-          <img src="/images/fullbeericon.png" class="beer_icon_img">
-        </a>
         <a class="home_menu_anchor" href="/" style="flex:0">
           <i class="material-icons">home</i>
         </a>
       </div>
     </div>
-    <div class="collapsed">
-      <h1 class="collapse_header">
-        <span class="impact-font">Profile</span> <span class="header_down_arrow">&#9660;</span></h1>
-      <div class="collapse_panel">
-        <div style="text-align:left;padding:.5em;">
-            profile details
-        </div>
-      </div>
-      <div class="app_signed_in_panel collapse_panel">
-        <div class="main_page_link_list">
-          <a href="/privacy.html">
-            <h2>Privacy</h2>
-          </a>
-          <a href="/terms.html" style="display:none">
-            <h2>Terms</h2>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="app_signed_out_panel collapse_panel">
-      <div class="main_page_link_list">
-        <a href="/privacy.html">
-          <h2>Privacy</h2>
-        </a>
-        <a href="/terms.html" style="display:none">
-          <h2>Terms</h2>
-        </a>
-      </div>
-    </div>
-
+    <h2 style="float:left;width:auto;">Profile</h2>
     <div class="signed_out_options">
       <button id="login_google" style="line-height: 40px;font-size:25px;">
         <img src="/images/google_signin.png" style="height:30px;position:relative;top:6px;">
@@ -124,101 +92,42 @@
     </div>
 
     <div class="signed_in_options">
-      <div class="card_shadow collapsed">
-        <h2 class="collapse_header">Account</h2>
-        <div class="collapse_panel">
-          <div class="main_page_link_list">
-            <a href="sign_out" class="sign_out_button">
-              <h2>Sign Out</h2>
-            </a>
-            <a href="reset" class="reset_profile" style="white-space:nowrap;">
-              <h2>Reset Profile</h2>
-            </a>
-          </div>
+      <div class="main_page_link_list">
+        <a href="sign_out" class="sign_out_button">
+          <h2>Sign Out</h2>
+        </a>
+        <a href="reset" class="reset_profile" style="white-space:nowrap;">
+          <h2>Reset Profile</h2>
+        </a>
+      </div>
+      <div class="logged_in_status">&nbsp;</div>
 
-          <div class="logged_in_status">&nbsp;</div>
-        </div>
+      <h3 class="impact-font tag_header_label">Night Mode</h3>
+      <label><input type="radio" name="night_mode_radio" checked>Auto</label>
+      <label><input type="radio" name="night_mode_radio">Day</label>
+      <label><input type="radio" name="night_mode_radio">Night</label>
+      <h3 class="impact-font tag_header_label">Mute Audio</h3>
+      <label><input type="radio" name="mute_audio_radio">Yes</label>
+      <label><input type="radio" name="mute_audio_radio" checked>No</label>
+      <h3 class="impact-font tag_header_label">Display</h3>
+      <label><span>Name </span><input type="text" class="profile_display_name"></label>
+      <div style="text-align: center;">
+        <select class="profile_display_image_preset">
+          <option>Pick preset</option>
+        </select>
       </div>
-      <div class="card_shadow settings_card collapsed">
-        <h2 class="collapse_header">Settings</h2>
-        <div class="collapse_panel settings_panel">
-          <h3 class="impact-font tag_header_label">Night Mode</h3>
-          <label><input type="radio" name="night_mode_radio" checked>Auto</label>
-          <label><input type="radio" name="night_mode_radio">🌞Day</label>
-          <label><input type="radio" name="night_mode_radio">🌛Night</label>
-          <h3 class="impact-font tag_header_label">🔈Mute Audio</h3>
-          <label><input type="radio" name="mute_audio_radio">Yes</label>
-          <label><input type="radio" name="mute_audio_radio" checked>No</label>
-          <h3 class="impact-font tag_header_label">Display</h3>
-          <label><span>Name </span><input type="text" class="profile_display_name"></label>
-          <div style="text-align: center;">
-            <select class="profile_display_image_preset">
-              <option>Pick preset</option>
-            </select>
-          </div>
-          <div class="profile_display_image" style="background-image:url(/images/defaultprofile.png)"></div>
-          <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
-          <div style="display:inline-block;">
-            <button class="profile_display_image_clear"> Clear </button>
-            <br>
-            <br>
-            <button class="profile_display_image_upload">Upload</button>
-          </div>
-        </div>
-      </div>
-      <div class='card_shadow collapsed' id="tags">
-        <h2 class="collapse_header right_arrow">Tags</h2>
-        <div class="collapse_panel">
-          <div class="tag_body_wrapper">
-            <h3 class="tag_header_label impact-font" style="color:rgb(240,190,50)">Basic</h3>
-            <div class="review_basic_levels tag_body"></div>
-          </div>
-          <div class="tag_body_wrapper">
-            <h3 class="tag_header_label impact-font" style="color:rgb(40,240,40)">Bitter</h3>
-            <div class="review_bitter_levels tag_body"></div>
-          </div>
-          <div class="tag_body_wrapper">
-            <h3 class="tag_header_label impact-font" style="color:rgb(240,40,240)">Distinct</h3>
-            <div class="review_distinct_levels tag_body"></div>
-          </div>
-        </div>
-      </div>
-      <div class='card_shadow collapsed' id="favorites">
-        <h2 class="collapse_header">Favorites</h2>
-        <div class="collapse_panel">
-          <h3 class="impact-font" style="margin:0">Beers</h3>
-          <div class="beer_list_display"></div>
-          <h3 class="impact-font" style="margin:0">Locations</h3>
-          <div class="location_list_display"></div>
-          <h3 class="impact-font" style="margin:0">Breweries</h3>
-          <div class="brewery_list_display"></div>
-        </div>
-      </div>
-      <div class="card_shadow collapsed" id="reviews">
-        <h2 class="collapse_header">Reviews</h2>
-        <div class="collapse_panel profile_review_details">
-          <h3 class="reviewed_header">Reviewed</h3>
-          <div class="impact-font review_count"></div>
-          <h3 class="reviewed_header">Average</h3>
-          <div class="impact-font overall_count"></div>
-          <div class="beer_review_list"></div>
-        </div>
-      </div>
-      <div class="filter_panel_container filter_panel">
-        <label style="flex:1"><input type="radio" name="feed_filter" checked> All</label>
-        <label style="flex:1"><input type="radio" name="feed_filter"> New</label>
-        <label style="flex:2"><input type="radio" name="feed_filter"> Responses</label>
-      </div>
-      <div class="feed_list_wrapper"></div>
-      <div>
-        <button class="load_more_button">Load More</button>
+      <div class="profile_display_image" style="background-image:url(/images/defaultprofile.png)"></div>
+      <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
+      <div style="display:inline-block;">
+        <button class="profile_display_image_clear"> Clear </button>
+        <br>
+        <br>
+        <button class="profile_display_image_upload">Upload</button>
       </div>
     </div>
 
     <div style="flex:1"></div>
-    <div class="copyright_panel">
-      © 2022 Locate.Beer. All Rights Reserved.
-    </div>
+
   </div>
 </body>
 

@@ -116,9 +116,6 @@ export class ProfileApp extends BaseApp {
     }
 
     super.authUpdateStatusUI();
-    this.initReportsFeed();
-    this.updateInfoProfile();
-    this.updateFavorites();
   }
   async displayNameChange() {
     this.profile.displayName = this.profile_display_name.value.trim().substring(0, 15);
@@ -131,37 +128,6 @@ export class ProfileApp extends BaseApp {
         merge: true
       });
     this.lastNameChange = new Date();
-  }
-  updateInfoProfile() {
-    if (!this.profile || !this.tagList) {
-      return;
-    }
-    let email = firebase.auth().currentUser.email;
-    if (!email)
-      email = 'Anonymous Login';
-    else
-      email = email;
-    this.logged_in_status.innerHTML = email;
-
-    if (!this.profile.nightModeState)
-      this.profile.nightModeState = 0;
-    if (this.night_mode_radios.length > 0) {
-      this.night_mode_radios[this.profile.nightModeState].checked = true;
-    }
-
-    if (!this.profile.muteState) {
-      this.muted = false
-      this.profile.muteState = false;
-    } else {
-      this.muted = true;
-      this.profile.muteState = true;
-    }
-    if (this.mute_audio_radios.length > 0) {
-      if (this.muted)
-        this.mute_audio_radios[0].checked = true;
-      else
-        this.mute_audio_radios[1].checked = true;
-    }
   }
   uploadProfileImage() {
     this.file_upload_input.click();

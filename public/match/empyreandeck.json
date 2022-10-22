@@ -1,50 +1,121 @@
-[
-  {
+[{
     "type": "beer",
-    "beerSlug": "empyrean:burning-skye-scottish"
+    "id": "empyrean:burning-skye-scottish",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fburning-skye-scottish%2Fburning-skye-scottish.png?alt=media",
+    "name": "Burning Skye Scottish",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/burning-skye-scottish"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:chaco-canyon-gold"
+    "id": "empyrean:chaco-canyon-gold",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fchaco-canyon-gold%2Fchaco-canyon-gold.png?alt=media",
+    "name": "Chaco Canyon Gold",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/chaco-canyon-gold"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:dark-side"
+    "id": "empyrean:dark-side",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fdark-side%2Fdark-side.png?alt=media",
+    "name": "Dark Side Vanilla Porter",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/dark-side"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:long-route"
+    "beerSlug": "empyrean:long-route",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Flong-route%2Flong-route.png?alt=media",
+    "name": "Long Route Peanut Butter Porter",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/long-route"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:luna-sea"
+    "beerSlug": "empyrean:luna-sea",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fluna-sea%2Fluna-sea.png?alt=media",
+    "name": "Luna Sea",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/luna-sea"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:mind-over-mango"
+    "beerSlug": "empyrean:mind-over-mango",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fmind-over-mango%2Fmind-over-mango.png?alt=media",
+    "name": "Mind Over Mango",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/mind-over-mango"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:pitched-blue"
+    "beerSlug": "empyrean:pitched-blue",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fpitched-blue%2Fpitched-blue.png?alt=media",
+    "name": "Pitched Blue Black & Blueberry Ale",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/pitched-blue"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:sun-slinger"
+    "beerSlug": "empyrean:sun-slinger",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fsun-slinger%2Fsun-slinger.png?alt=media",
+    "name": "SunSlinger XPA",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/sun-slinger"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:super-nova"
+    "beerSlug": "empyrean:super-nova",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fsuper-nova%2Fsuper-nova.png?alt=media",
+    "name": "Super Nova California Common",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/super-nova"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:third-stone-brown"
+    "beerSlug": "empyrean:third-stone-brown",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fthird-stone-brown%2Fthird-stone-brown.png?alt=media",
+    "name": "Third Stone Brown",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": true,
+    "url": "https://husker.beer/empyrean/third-stone-brown"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:watch-man-ipa"
+    "beerSlug": "empyrean:watch-man-ipa",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fwatch-man-ipa%2Fwatch-man-ipa.png?alt=media",
+    "name": "Watch Man IPA",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": true,
+    "url": "https://husker.beer/empyrean/watch-man-ipa"
   },
   {
     "type": "beer",
-    "beerSlug": "empyrean:zookeeper-pink-guava"
+    "beerSlug": "empyrean:zookeeper-pink-guava",
+    "image": "https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/media%2Fbreweries%2Fempyrean%2Fbeers%2Fzookeeper-pink-guava%2Fzookeeper-pink-guava.png?alt=media",
+    "name": "Zookeeper Pink Guava",
+    "brand": "Empyrean",
+    "brandid": "empyrean",
+    "primary": false,
+    "url": "https://husker.beer/empyrean/zookeeper-pink-guava"
   }
 ]
