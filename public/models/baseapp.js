@@ -99,6 +99,16 @@ export class BaseApp {
         document.body.classList.add('signed_in_anonymous');
 
       await this._authInitProfile();
+
+      try {
+        let loginResult = await firebase.auth().getRedirectResult();
+        if (loginResult.operationType === 'signIn') {
+          window.location = '/'
+        }
+      } catch (error) {
+        alert(error.message);
+        console.log('loginerror', error)
+      }
     } else {
       this.fireToken = null;
       this.fireUser = null;
@@ -217,19 +227,11 @@ export class BaseApp {
     this.provider.setCustomParameters({
       'display': 'popup'
     });
-    await firebase.auth().signInWithPopup(this.provider);
-    setTimeout(() => {
-      location.href = '/';
-    }, 1);
-
+    await firebase.auth().signInWithRedirect(this.provider);
   }
   async signInAnon(e) {
     e.preventDefault();
     await firebase.auth().signInAnonymously();
-    setTimeout(() => {
-      location.href = '/';
-    }, 1);
-    return true;
   }
   async signInByEmail(e) {
     e.preventDefault();
@@ -237,11 +239,6 @@ export class BaseApp {
     let email = '';
     if (this.login_email)
       email = this.login_email.value;
-
-    /*
-    if (!email) {
-      email = window.prompt('Please provide your email to send link');
-    }*/
 
     if (!email) {
       alert("A valid email is required for sending a link");

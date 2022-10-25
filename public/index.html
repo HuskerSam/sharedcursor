@@ -59,15 +59,15 @@
   <div class="basic_page_wrapper app_panel">
     <nav class="navbar navbar-expand-lg  nav-scroll">
       <div class="container">
-        <div style="text-align:left;">
+        <div class="header_static_bar">
           <a class="navbar-brand navbar-logo" href="/">
             <img src="/images/logo310.png" alt="logo" class="logo-1">
           </a>
-          <a class="night_mode_toggle" href="/">
+          <a class="night_mode_toggle nav-link" href="/">
             <i class="material-icons mode_day">light_mode</i>
             <i class="material-icons mode_night">mode_night</i>
           </a>
-          <a class="mute_button" href="mute">
+          <a class="mute_button nav-link" href="mute">
             <i class="material-icons">volume_up</i>
           </a>
         </div>
@@ -75,11 +75,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Games</a>
-            </li>
             <li class="nav-item">
               <a class="nav-link" href="/profile/">Profile</a>
             </li>
@@ -90,22 +86,20 @@
         </div>
       </div>
     </nav>
-    <nav>
+    <nav class="signed_in_options">
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <button class="nav-link active" id="nav-recent-tab" data-bs-toggle="tab" data-bs-target="#nav-recent" type="button" role="tab" aria-controls="nav-recent" aria-selected="false" tabindex="-1">Recent</button>
         <button class="nav-link" id="nav-find-tab" data-bs-toggle="tab" data-bs-target="#nav-find" type="button" role="tab" aria-controls="nav-find" aria-selected="false" tabindex="-1">Find</button>
         <button class="nav-link" id="nav-new-tab" data-bs-toggle="tab" data-bs-target="#nav-new" type="button" role="tab" aria-controls="nav-new" aria-selected="true">New</button>
+        <button class="game feed_expand_all">
+          <span class="icon">&#9660;</span>
+        </button>
       </div>
     </nav>
-    <div class="tab-content" id="nav-tabContent" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+    <div class="tab-content signed_in_flex" id="nav-tabContent" style="flex:1;overflow:hidden;flex-direction:column">
       <div class="tab-pane fade active show game_history_view" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
       </div>
       <div class="tab-pane fade" id="nav-find" style="overflow:hidden" role="tabpanel" aria-labelledby="nav-find-tab">
-        <div style="text-align:right">
-          <button class="game feed_expand_all">
-            <span class="icon">&#9660;</span>
-          </button>
-        </div>
         <div class="public_game_view"></div>
       </div>
       <div class="tab-pane fade" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">

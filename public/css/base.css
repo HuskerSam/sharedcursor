@@ -168,10 +168,6 @@ a.mute_button {
   padding: 12px 12px;
 }
 
-a.mute_button i {
-  font-size: 40px;
-}
-
 .night_mode_toggle .mode_day {
   display: none;
 }
@@ -220,7 +216,7 @@ a.mute_button i {
   text-align: left;
 }
 
-.signed_out_options {
+.signed_out_options, .signed_out_flex {
   display: none;
 }
 
@@ -228,12 +224,20 @@ a.mute_button i {
   display: block;
 }
 
-.signed_in_options {
+.app_signed_out .signed_out_flex {
+  display: flex;
+}
+
+.signed_in_options, .signed_in_flex {
   display: none;
 }
 
 .app_signed_in .signed_in_options {
   display: block;
+}
+
+.app_signed_in .signed_in_flex {
+  display: flex;
 }
 
 .mode_ready_view, .mode_running_view, .mode_end_view {
@@ -856,4 +860,18 @@ button.game[disabled="true"] {
 
 .game_loaded .messages_list {
   display: block;
+}
+
+.header_static_bar {
+  text-align:left;
+}
+
+.header_static_bar .nav-link i {
+  position: relative;
+  top: 6px;
+}
+
+.header_static_bar .mute_button.nav-link i {
+  font-size: 30px;
+  top: 8px;
 }
