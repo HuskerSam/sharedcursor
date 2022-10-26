@@ -86,21 +86,20 @@
         </div>
       </div>
     </nav>
-    <nav class="signed_in_options">
+    <nav class="signed_in_options" style="line-height:1em;margin-top:.5em;">
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <button class="nav-link active" id="nav-recent-tab" data-bs-toggle="tab" data-bs-target="#nav-recent" type="button" role="tab" aria-controls="nav-recent" aria-selected="false" tabindex="-1">Recent</button>
         <button class="nav-link" id="nav-find-tab" data-bs-toggle="tab" data-bs-target="#nav-find" type="button" role="tab" aria-controls="nav-find" aria-selected="false" tabindex="-1">Find</button>
         <button class="nav-link" id="nav-new-tab" data-bs-toggle="tab" data-bs-target="#nav-new" type="button" role="tab" aria-controls="nav-new" aria-selected="true">New</button>
-        <button class="game feed_expand_all">
+        <button class="game feed_expand_all" style="display:none">
           <span class="icon">&#9660;</span>
         </button>
       </div>
     </nav>
-    <div class="tab-content signed_in_flex" id="nav-tabContent" style="flex:1;overflow:hidden;flex-direction:column">
-      <div class="tab-pane fade active show game_history_view" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
+    <div class="tab-content signed_in_flex body_wrapper" id="nav-tabContent">
+      <div class="tab-pane fade active show game_history_view row" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
       </div>
-      <div class="tab-pane fade" id="nav-find" style="overflow:hidden" role="tabpanel" aria-labelledby="nav-find-tab">
-        <div class="public_game_view"></div>
+      <div class="tab-pane fade public_game_view row" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab">
       </div>
       <div class="tab-pane fade" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
         <div class="basic_options">
@@ -165,6 +164,9 @@
         </div>
       </div>
     </div>
+    <div class="app_signed_out_panel">
+      <h3>Please <a href="/profile">Sign In</a> to play</h3>
+    </div>
   </div>
   <div class="join_game_view" style="display:none;">
     <div style="line-height: 40px;font-size: 25px;padding: 5px;">
@@ -172,9 +174,6 @@
       <input class="game_code_start" style="font-size:25px;width:150px;flex:1">
       <button class="join_game_btn" style="font-size:25px">Join</button>
     </div>
-  </div>
-  <div class="signed_out_game_options">
-    <h3>Please <a href="/profile">Sign In</a> to play</h3>
   </div>
   <style id="laststyleblock"></style>
 </body>

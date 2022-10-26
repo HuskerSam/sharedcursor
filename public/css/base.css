@@ -78,13 +78,13 @@ a {
   }
 }
 
-.loaded .app_panel {
+.app_signed_in.loaded .app_panel, .app_signed_out.loaded .app_panel {
   background: rgb(250, 250, 250);
   color: rgb(50, 50, 50);
   opacity: 1;
 }
 
-.night_mode .app_panel {
+.night_mode.app_signed_in.loaded .app_panel, .night_mode.app_signed_out.loaded .app_panel {
   background: rgb(0, 100, 120);
   color: rgb(240, 240, 240);
 }
@@ -344,6 +344,8 @@ a.mute_button {
   font-size: 24px;
   text-align: left;
   line-height: 2.5em;
+  overflow: auto;
+  flex: 1;
 }
 
 .basic_options .span_label {

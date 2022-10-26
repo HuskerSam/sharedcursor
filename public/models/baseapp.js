@@ -66,6 +66,7 @@ export class BaseApp {
   }
   authUpdateStatusUI() {
     let html = '';
+    console.log(this.profile);
     document.body.classList.add('loaded');
     if (this.fireToken) {
       html = 'Profile';
@@ -93,10 +94,6 @@ export class BaseApp {
       this.fireUser = user;
       this.uid = this.fireUser.uid;
       this.fireToken = await user.getIdToken();
-      document.body.classList.add('app_signed_in');
-      document.body.classList.remove('app_signed_out');
-      if (this.fireUser.isAnonymous)
-        document.body.classList.add('signed_in_anonymous');
 
       await this._authInitProfile();
 
@@ -137,6 +134,12 @@ export class BaseApp {
 
           await this._authCreateDefaultProfile();
         }
+
+        if (this.fireUser.isAnonymous)
+          document.body.classList.add('signed_in_anonymous');
+
+        document.body.classList.add('app_signed_in');
+        document.body.classList.remove('app_signed_out');
 
         this.authUpdateStatusUI();
       });

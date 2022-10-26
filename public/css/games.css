@@ -1,4 +1,3 @@
-
 html,
 body {
   margin: 0;
@@ -8,23 +7,6 @@ body {
   background: rgb(127, 127, 127);
   height: 100vh;
   overflow: hidden;
-}
-
-
-.signed_in_game_options {
-  display: none;
-}
-
-.signed_out_game_options {
-  display: none;
-}
-
-.app_signed_in .signed_in_game_options {
-  display: block;
-}
-
-.app_signed_out .signed_out_game_options {
-  display: block;
 }
 
 .join_game_view {
@@ -53,15 +35,6 @@ button.logout_game {
   border-color: rba(255, 0, 0, .5);
 }
 
-.public_game_view {
-  flex: 1;
-  overflow: auto;
-}
-
-.public_game_view button.logout_game, .public_game_view button.delete_game {
-  display: none;
-}
-
 .feed_game_owner button.logout_game {
   display: none;
 }
@@ -70,7 +43,6 @@ button.logout_game {
   text-align: left;
   text-decoration: none;
   border-radius: 3px;
-  margin: 5px;
   border: ridge 4px transparent;
   overflow: hidden;
   clear: both;
@@ -142,7 +114,7 @@ button.create_new_game_btn {
 }
 
 .game_name .title {
-  font-size: 36px;
+  font-size: 28px;
 }
 
 .gamefeed_timesince {
@@ -298,6 +270,10 @@ button.game.sit_button {
   background: none;
 }
 
+.public_game_view button.logout_game, .public_game_view button.delete_game {
+  display: none;
+}
+
 .public_game_view button.game.sit_button {}
 
 a.game_number_open {}
@@ -324,9 +300,9 @@ a.game_number_open {}
   margin-right: 10px;
 }
 
-.game_history_view {
+.game_history_view, .public_game_view {
+  margin: 0;
   flex: 1;
-  overflow: auto;
 }
 
 .game_history_view .owner_wrapper {
@@ -434,13 +410,31 @@ button.code_link {
   flex: 1;
 }
 
-#nav-find.tab-pane.active, #nav-new.tab-pane.active {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
 .basic_options {
   flex: 1;
+  overflow: auto;
+}
+
+.body_wrapper {
+  flex: 1;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.item_card_shadow {
+  border-radius: 7px;
+  padding: 1% .5%;
+  position: relative;
+  display: inline-block;
+}
+
+.item_card_shadow > div {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  padding: 2%;
+  border-radius: 5px;
+}
+
+.tab-content>.active {
+  display: flex;
   overflow: auto;
 }

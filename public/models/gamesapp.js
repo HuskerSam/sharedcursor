@@ -327,7 +327,8 @@ export class GamesApp extends BaseApp {
     shortDate += ' ' + timeStr;
     let round = (Math.floor(data.turnNumber / data.runningNumberOfSeats) + 1).toString();
 
-    return `<div class="gamelist_item${owner_class}${memberIsUp} gametype_${data.gameType} ${displayClass}${modeClass}${seatsFullClass}"
+    return `<div class="item_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+      <div class="gamelist_item${owner_class}${memberIsUp} gametype_${data.gameType} ${displayClass}${modeClass}${seatsFullClass}"
           data-gamenumber="${gnPrefix}${doc.id}">
       <div class="gamefeed_item_header">
         <div style="background-image:${img}" class="game_type_image"></div>
@@ -376,6 +377,7 @@ export class GamesApp extends BaseApp {
         </button>
       </div>
       <div style="clear:both"></div>
+    </div>
     </div>`;
   }
 
