@@ -423,7 +423,7 @@ button.code_link {
 
 .item_card_shadow {
   border-radius: 7px;
-  padding: 1% .5%;
+  padding: .25% .25%;
   position: relative;
   display: inline-block;
 }

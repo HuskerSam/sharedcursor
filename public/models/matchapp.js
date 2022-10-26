@@ -38,6 +38,12 @@ export class MatchApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
+    this.splitGameChatView = Split(['.upper_panel', '.lower_panel'], {
+      sizes: [50, 50],
+      gutterSize: 14,
+      direction: 'vertical'
+    });
+
     this.toggleTabView();
   }
   toggleMembersHeader() {
@@ -105,7 +111,11 @@ export class MatchApp extends BaseApp {
       cards = 12;
     cardIndex = cardIndex % cards;
 
-    return this.getCardDeck()[cardIndex];
+    let meta = this.getCardDeck()[cardIndex];
+    if (!meta)
+      meta = {};
+
+    return meta;
   }
   paintGameData(gameDoc = null) {
     if (gameDoc)
