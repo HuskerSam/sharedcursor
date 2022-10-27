@@ -1,5 +1,4 @@
-.mode_running_view {
-}
+.mode_running_view {}
 
 .upper_row, .lower_row {
   flex: 1;
@@ -315,4 +314,35 @@ button.members_header_toggle_button span {
 .members_expanded .members_list {
   height: 100px;
   overflow: auto;
+}
+
+.second_panel_wrapper {
+  display: block;
+  text-align: center;
+  flex: 1;
+}
+
+.second_inner_panel {
+  display: block;
+  margin: auto;
+  max-width: 450px;
+}
+
+.first_panel_wrapper {
+  flex: 1;
+  display: block;
+  text-align: right;
+}
+
+@media screen and (min-width:900px) {
+  .panel_responsive_wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+  .first_panel_wrapper {
+    min-width: 450px;
+  }
+  .second_panel_wrapper {
+    min-width: 450px;
+  }
 }
