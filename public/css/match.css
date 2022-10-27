@@ -1,5 +1,4 @@
 .mode_running_view {
-  max-width: 400px;
 }
 
 .upper_row, .lower_row {
@@ -41,14 +40,14 @@
 }
 
 .match_card_wrapper {
-  width: calc(46% - 4px);
+  width: 47%;
   height: 100px;
   background: rgba(100, 100, 100);
   border-radius: 5%;
-  margin: 1.75%;
+  margin: .2% 1.5%;
   position: relative;
-  float: left;
   border: solid 2px transparent;
+  display: inline-block;
 }
 
 .previously_shown {

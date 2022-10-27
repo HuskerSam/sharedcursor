@@ -267,10 +267,13 @@ a.mute_button {
 
 .game_table_view {
   display: none;
+  text-align: center;
+  margin: auto;
+  max-width: 450px;
 }
 
 .show_game_table .game_table_view {
-  display: inline-block;
+  display: block;
 }
 
 .game_members_view {
@@ -839,11 +842,6 @@ button.game[disabled="true"] {
 
 .message_list_input:focus {
   background: white;
-}
-
-.game_header_v2 {
-  height: 60px;
-  text-align: left;
 }
 
 .seat_button_wrapper .admin_only {

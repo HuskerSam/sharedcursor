@@ -71,6 +71,8 @@
           <a class="mute_button" href="mute">
             <i class="material-icons">volume_up</i>
           </a>
+          <button class="game_header_toggle_button game"><i class="material-icons">menu</i></button>
+          <button class="members_header_toggle_button game"><span>▼</span></button>
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -78,9 +80,6 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Games</a>
-            </li>
             <li class="nav-item">
               <a class="nav-link" href="/profile/">Profile</a>
             </li>
@@ -92,217 +91,211 @@
       </div>
     </nav>
 
-
-
-    <div class="game_header_v2">
-      <button class="game_header_toggle_button game"><i class="material-icons">menu</i></button>
-      <button class="members_header_toggle_button game"><span>▼</span></button>
-    </div>
- 
     <div class="members_list"></div>
-    <div class="game_table_view">
-      <div class="player_dock">
-        <div class="dock_container dock_pos_0">
-          <div class="dock_seat0 game_user_wrapper seat_color_0">
-            <span></span>
-            <span></span>
-            <span class="online_status"></span>
+    <div style="flex:1;display:block;text-align:center">
+      <div class="game_table_view">
+        <div class="player_dock">
+          <div class="dock_container dock_pos_0">
+            <div class="dock_seat0 game_user_wrapper seat_color_0">
+              <span></span>
+              <span></span>
+              <span class="online_status"></span>
+            </div>
+          </div>
+          <div class="dock_container dock_pos_1">
+            <div class="dock_seat1 game_user_wrapper seat_color_1">
+              <span></span>
+              <span></span>
+              <span class="online_status"></span>
+            </div>
+          </div>
+          <div class="dock_container dock_pos_2">
+            <div class="dock_seat2 game_user_wrapper seat_color_2">
+              <span></span>
+              <span></span>
+              <span class="online_status"></span>
+            </div>
+          </div>
+          <div class="dock_container dock_pos_3">
+            <div class="dock_seat3 game_user_wrapper seat_color_3">
+              <span></span>
+              <span></span>
+              <span class="online_status"></span>
+            </div>
           </div>
         </div>
-        <div class="dock_container dock_pos_1">
-          <div class="dock_seat1 game_user_wrapper seat_color_1">
-            <span></span>
-            <span></span>
-            <span class="online_status"></span>
-          </div>
-        </div>
-        <div class="dock_container dock_pos_2">
-          <div class="dock_seat2 game_user_wrapper seat_color_2">
-            <span></span>
-            <span></span>
-            <span class="online_status"></span>
-          </div>
-        </div>
-        <div class="dock_container dock_pos_3">
-          <div class="dock_seat3 game_user_wrapper seat_color_3">
-            <span></span>
-            <span></span>
-            <span class="online_status"></span>
-          </div>
-        </div>
-      </div>
-      <div class="mode_ready_view">
-        <span class="seats_full_display"></span>
-        <button class="match_start admin_only game primary">Start</button>
-        <div class="match_instructions" style="font-size: 20px;">
-          <div class="collapsed">
-            <h1 class="collapse_header">
-              <span class="impact-font">Rules and Play</span>
-              <span class="header_down_arrow">▼</span>
-            </h1>
-            <div style="padding: 0 10px;text-align:left" class="collapse_panel">
-              Select 2 cards<br>
-              Match: remove them and go again<br>
-              No match: next players turn<br>
-              <h3>Regular Scoring</h3>
-              <table>
-                <tr>
-                  <td>Card first show: </td>
-                  <td>1pt</td>
-                </tr>
-                <tr>
-                  <td>First match: </td>
-                  <td>5pts</td>
-                </tr>
-                <tr>
-                  <td>Streak: </td>
-                  <td>Matches this turn</td>
-                </tr>
-                <tr>
-                  <td>Matches: </td>
-                  <td>2pts + 2pts * Streak</td>
-                </tr>
-              </table>
-              <h3>Stable Scoring</h3>
-              <table>
-                <tr>
-                  <td>Card first show: </td>
-                  <td>1pt</td>
-                </tr>
-                <tr>
-                  <td>Matches: </td>
-                  <td>2pts</td>
-                </tr>
-              </table>
-              <h3>Simple Scoring</h3>
-              <table>
-                <tr>
-                  <td>Matches: </td>
-                  <td>1pt</td>
-                </tr>
-              </table>
-              <h3>Winner</h3>
-              Most points, in case of a tied player last in the turn order wins.
-              <br>
-              <br>
-              <div class="copyright_panel">
-                © 2022 Locate.Beer. All Rights Reserved.
+        <div class="mode_ready_view">
+          <span class="seats_full_display"></span>
+          <button class="match_start admin_only game primary">Start</button>
+          <div class="match_instructions" style="font-size: 20px;">
+            <div class="collapsed">
+              <h1 class="collapse_header">
+                <span class="impact-font">Rules and Play</span>
+                <span class="header_down_arrow">▼</span>
+              </h1>
+              <div style="padding: 0 10px;text-align:left" class="collapse_panel">
+                Select 2 cards<br>
+                Match: remove them and go again<br>
+                No match: next players turn<br>
+                <h3>Regular Scoring</h3>
+                <table>
+                  <tr>
+                    <td>Card first show: </td>
+                    <td>1pt</td>
+                  </tr>
+                  <tr>
+                    <td>First match: </td>
+                    <td>5pts</td>
+                  </tr>
+                  <tr>
+                    <td>Streak: </td>
+                    <td>Matches this turn</td>
+                  </tr>
+                  <tr>
+                    <td>Matches: </td>
+                    <td>2pts + 2pts * Streak</td>
+                  </tr>
+                </table>
+                <h3>Stable Scoring</h3>
+                <table>
+                  <tr>
+                    <td>Card first show: </td>
+                    <td>1pt</td>
+                  </tr>
+                  <tr>
+                    <td>Matches: </td>
+                    <td>2pts</td>
+                  </tr>
+                </table>
+                <h3>Simple Scoring</h3>
+                <table>
+                  <tr>
+                    <td>Matches: </td>
+                    <td>1pt</td>
+                  </tr>
+                </table>
+                <h3>Winner</h3>
+                Most points, in case of a tied player last in the turn order wins.
+                <br>
+                <br>
+                <div class="copyright_panel">
+                  © 2022 Locate.Beer. All Rights Reserved.
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="mode_running_view">
-        <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
-          <div style="display:flex;flex-direction:column;flex:3">
-            <div class="score_dock_row">
-              <span class="">round</span>
-              <span>points</span>
-              <span class="">streak</span>
+        <div class="mode_running_view">
+          <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
+            <div style="display:flex;flex-direction:column;flex:3">
+              <div class="score_dock_row">
+                <span class="">round</span>
+                <span>points</span>
+                <span class="">streak</span>
+              </div>
+              <div class="score_dock_row">
+                <div class="turn_number_div"></div>
+                <div class="player_total_points"></div>
+                <div class="player_total_for_turn"></div>
+              </div>
             </div>
-            <div class="score_dock_row">
-              <div class="turn_number_div"></div>
-              <div class="player_total_points"></div>
-              <div class="player_total_for_turn"></div>
+            <div style="flex:2" class="">
+              <button class="player_dock_prompt game"></button>
             </div>
           </div>
-          <div style="flex:2" class="">
-            <button class="player_dock_prompt game"></button>
-          </div>
-        </div>
-        <div class="match_board_wrapper">
-          <div class="tracer_line_0"></div>
-          <div class="tracer_line_1"></div>
-          <div class="upper_row">
-            <div class="upper_left match_quandrant"></div>
-            <div class="upper_right match_quandrant"></div>
-          </div>
-          <div class="lower_row">
-            <div class="lower_left match_quandrant"></div>
-            <div class="lower_right match_quandrant"></div>
-          </div>
-        </div>
-      </div>
-      <div class="mode_end_view">
-        <div class="admin_only">
-          <button class="match_reset admin_only game primary" style="margin:15px">Next Match!</button>
-        </div>
-        <div class="match_result_message"></div>
-        <div class="match_end_display_promo">
-          <div style="margin-bottom: 6px;">
-            <a class="beer_name_anchor" target="_blank"><span class="beer_name impact-font"></span> <i class="material-icons impact-font" style="top:4px;font-size:28px;position:relative;">open_in_new</i></a>
-          </div>
-          <div class="beer_description">
-            <div class="beer_image"></div>
-            <div class="tag_wrapper beer_tags">
-              <div class="tag_filter_item">
-                <div class="tag_description"></div>
-                <div class="tag_inner"></div>
-              </div>
-              <div class="tag_filter_item">
-                <div class="tag_description"></div>
-                <div class="tag_inner"></div>
-              </div>
-              <div class="tag_filter_item">
-                <div class="tag_description"></div>
-                <div class="tag_inner"></div>
-              </div>
-              <div class="tag_filter_item">
-                <div class="tag_description"></div>
-                <div class="tag_inner"></div>
-              </div>
+          <div class="match_board_wrapper">
+            <div class="tracer_line_0"></div>
+            <div class="tracer_line_1"></div>
+            <div class="upper_row">
+              <div class="upper_left match_quandrant"></div>
+              <div class="upper_right match_quandrant"></div>
+            </div>
+            <div class="lower_row">
+              <div class="lower_left match_quandrant"></div>
+              <div class="lower_right match_quandrant"></div>
             </div>
           </div>
         </div>
-        <div class="match_end_result">
-          <div class="seat0_results">
-            <div class="dock_container dock_pos_0">
-              <div class="dock_seat0 game_user_wrapper seat_color_0">
-                <span></span>
-                <span></span>
-                <span class="online_status"></span>
-              </div>
+        <div class="mode_end_view">
+          <div class="admin_only">
+            <button class="match_reset admin_only game primary" style="margin:15px">Next Match!</button>
+          </div>
+          <div class="match_result_message"></div>
+          <div class="match_end_display_promo">
+            <div style="margin-bottom: 6px;">
+              <a class="beer_name_anchor" target="_blank"><span class="beer_name impact-font"></span> <i class="material-icons impact-font" style="top:4px;font-size:28px;position:relative;">open_in_new</i></a>
             </div>
-            <div class="score_total">
+            <div class="beer_description">
+              <div class="beer_image"></div>
+              <div class="tag_wrapper beer_tags">
+                <div class="tag_filter_item">
+                  <div class="tag_description"></div>
+                  <div class="tag_inner"></div>
+                </div>
+                <div class="tag_filter_item">
+                  <div class="tag_description"></div>
+                  <div class="tag_inner"></div>
+                </div>
+                <div class="tag_filter_item">
+                  <div class="tag_description"></div>
+                  <div class="tag_inner"></div>
+                </div>
+                <div class="tag_filter_item">
+                  <div class="tag_description"></div>
+                  <div class="tag_inner"></div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="seat1_results">
-            <div class="dock_container dock_pos_1">
-              <div class="dock_seat1 game_user_wrapper seat_color_1">
-                <span></span>
-                <span></span>
-                <span class="online_status"></span>
+          <div class="match_end_result">
+            <div class="seat0_results">
+              <div class="dock_container dock_pos_0">
+                <div class="dock_seat0 game_user_wrapper seat_color_0">
+                  <span></span>
+                  <span></span>
+                  <span class="online_status"></span>
+                </div>
+              </div>
+              <div class="score_total">
               </div>
             </div>
-            <div class="score_total">
-            </div>
-          </div>
-          <div class="seat2_results">
-            <div class="dock_container dock_pos_2">
-              <div class="dock_seat2 game_user_wrapper seat_color_2">
-                <span></span>
-                <span></span>
-                <span class="online_status"></span>
+            <div class="seat1_results">
+              <div class="dock_container dock_pos_1">
+                <div class="dock_seat1 game_user_wrapper seat_color_1">
+                  <span></span>
+                  <span></span>
+                  <span class="online_status"></span>
+                </div>
+              </div>
+              <div class="score_total">
               </div>
             </div>
-            <div class="score_total">
-            </div>
-          </div>
-          <div class="seat3_results">
-            <div class="dock_container dock_pos_3">
-              <div class="dock_seat3 game_user_wrapper seat_color_3">
-                <span></span>
-                <span></span>
-                <span class="online_status"></span>
+            <div class="seat2_results">
+              <div class="dock_container dock_pos_2">
+                <div class="dock_seat2 game_user_wrapper seat_color_2">
+                  <span></span>
+                  <span></span>
+                  <span class="online_status"></span>
+                </div>
+              </div>
+              <div class="score_total">
               </div>
             </div>
-            <div class="score_total">
+            <div class="seat3_results">
+              <div class="dock_container dock_pos_3">
+                <div class="dock_seat3 game_user_wrapper seat_color_3">
+                  <span></span>
+                  <span></span>
+                  <span class="online_status"></span>
+                </div>
+              </div>
+              <div class="score_total">
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <div class="game_options_view">
       <div class="seating_options">
         <div class="seat_wrapper seat_0_wrapper">
@@ -414,7 +407,8 @@
     <div class="message_list_send_wrapper">
       <input class="message_list_input" type="text">
       <button class="send_message_list_button game" style="margin:0;background:none;border:none;min-width: auto">
-        <i class="material-icons impact-font" style="font-size: 30px;margin-bottom: -10px;position: relative;top: 4px;">send</i></button>
+        <i class="material-icons impact-font" style="font-size: 30px;margin-bottom: -10px;position: relative;top: 4px;">send</i>
+      </button>
     </div>
     <div id="chat_snackbar"></div>
   </div>

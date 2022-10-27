@@ -105,7 +105,12 @@ export class MatchApp extends BaseApp {
       cards = 12;
     cardIndex = cardIndex % cards;
 
-    return this.getCardDeck()[cardIndex];
+    let meta = this.getCardDeck()[cardIndex];
+
+    if (!meta)
+      meta = {};
+
+    return meta;
   }
   paintGameData(gameDoc = null) {
     if (gameDoc)
