@@ -709,22 +709,6 @@ a.mute_button {
   display: block;
 }
 
-.message_list_send_wrapper {
-  position: fixed;
-  bottom: 0px;
-  text-align: center;
-  line-height: 35px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: inline-block;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  border: 4px double #cccccc;
-  border-bottom: none;
-  background: rgba(50, 100, 240, .25);
-  z-index: 10000;
-  min-width: 300px;
-}
 
 .message_list_input {
   font-size: 28px;
@@ -841,11 +825,6 @@ button.game[disabled="true"] {
   background: white;
 }
 
-.game_header_v2 {
-  height: 60px;
-  text-align: left;
-}
-
 .seat_button_wrapper .admin_only {
   display: inline-block;
   visibility: hidden;
@@ -876,4 +855,23 @@ button.game[disabled="true"] {
 .header_static_bar .mute_button.nav-link i {
   font-size: 30px;
   top: 8px;
+}
+
+
+.gutter.gutter-vertical {
+  background-image: url(/images/horizontal.png);
+  background-repeat: no-repeat;
+  background-position: 50% center;
+  height: 10px;
+  cursor: row-resize;
+}
+
+.gutter {
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+  cursor: col-resize;
 }
