@@ -370,6 +370,8 @@ export class BaseApp {
     return true;
   }
 
+
+
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)
       this.userStatusDatabaseRef.set({

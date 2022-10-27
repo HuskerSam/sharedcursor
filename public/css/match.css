@@ -1,9 +1,4 @@
-body, html {
-  height: 100vh;
-  overflow: hidden;
-}
-
-.mode_running_view, .player_dock {
+.mode_running_view {
   max-width: 400px;
 }
 
@@ -321,10 +316,4 @@ button.members_header_toggle_button span {
 .members_expanded .members_list {
   height: 100px;
   overflow: auto;
-}
-
-.game_board_view {
-  display: block;
-  margin: auto;
-  max-width: 400px;
 }
