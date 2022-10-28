@@ -303,6 +303,7 @@ a.game_number_open {}
 .game_history_view, .public_game_view {
   margin: 0;
   flex: 1;
+  align-content: flex-start;
 }
 
 .game_history_view .owner_wrapper {

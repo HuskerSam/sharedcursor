@@ -32,8 +32,8 @@ a {
   color: inherit;
 }
 
-.night_mode a {
-  color: white;
+.night_mode a:hover {
+  color: rgb(40, 240, 240);
 }
 
 .app_panel {
@@ -141,11 +141,15 @@ a {
   padding: 0px;
 }
 
-.static_menu img {
+.static_menu img, .static_menu svg {
   height: 64px;
   padding-left: 5px;
   transition: height .5s;
   padding: 2px;
+}
+
+.logo {
+  color: white;
 }
 
 .static_menu a i {
@@ -154,7 +158,7 @@ a {
 }
 
 @media all and (max-width:768px) {
-  .static_menu img {
+  .static_menu img, .static_menu svg {
     height: 48px;
   }
 
