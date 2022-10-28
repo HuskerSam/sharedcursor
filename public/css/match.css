@@ -345,4 +345,14 @@ button.members_header_toggle_button span {
   .second_panel_wrapper {
     min-width: 450px;
   }
+
+  .message_list_send_wrapper {
+    position: static;
+    text-align: center;
+    line-height: 35px;
+    transform: none;
+    display: inline-block;
+    border-radius: 10px;
+    border: 4px double #cccccc;
+  }
 }

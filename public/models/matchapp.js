@@ -9,6 +9,7 @@ export class MatchApp extends BaseApp {
 
     this.currentplayer_score_dock = document.querySelector('.currentplayer_score_dock');
     this.match_board_wrapper = document.querySelector('.match_board_wrapper');
+    this.game_table_view = document.querySelector('.game_table_view');
 
     this.card_deck_display = document.querySelector('.card_deck_display');
     this.card_deck_select = document.querySelector('.card_deck_select');
@@ -25,7 +26,7 @@ export class MatchApp extends BaseApp {
     this.player_dock_prompt.addEventListener('click', e => this.turnPhaseAdvance());
 
     this.game_header_toggle_button = document.querySelector('.game_header_toggle_button');
-    this.game_header_toggle_button.addEventListener('click', e => this.toggleTabView());
+    this.game_header_toggle_button.addEventListener('click', e => this.toggleOptionsPanel(e));
 
     this.tracer_line_0 = document.querySelector('.tracer_line_0');
     this.tracer_line_1 = document.querySelector('.tracer_line_1');
@@ -38,7 +39,7 @@ export class MatchApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.toggleTabView();
+    this.toggleOptionsPanel();
   }
   toggleMembersHeader() {
     document.body.classList.toggle('members_expanded');
@@ -53,16 +54,19 @@ export class MatchApp extends BaseApp {
     setTimeout(() => this.debounceBusy = false, 500);
     return false;
   }
-  toggleTabView() {
+  toggleOptionsPanel(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     if (document.body.classList.contains('show_game_table')) {
       document.body.classList.remove('show_game_table');
       document.body.classList.add('show_game_options');
-      this.game_header_toggle_button.innerHTML = '<i class="material-icons">close</i>';
     } else {
       document.body.classList.add('show_game_table');
       document.body.classList.remove('show_game_options');
-      this.game_header_toggle_button.innerHTML = '<i class="material-icons">menu</i>';
+
     }
 
     return false;
@@ -174,6 +178,7 @@ export class MatchApp extends BaseApp {
     this.player_total_for_turn.innerHTML = this.gameData.pairsInARowMatched;
     this.player_dock_prompt.innerHTML = phaseDesc;
 
+
     this.currentplayer_score_dock.classList.remove('seat_color_0');
     this.currentplayer_score_dock.classList.remove('seat_color_1');
     this.currentplayer_score_dock.classList.remove('seat_color_2');
@@ -186,6 +191,14 @@ export class MatchApp extends BaseApp {
 
     this.currentplayer_score_dock.classList.add('seat_color_' + seatIndex);
     this.match_board_wrapper.classList.add('seat_color_' + seatIndex);
+
+/*
+    this.game_table_view.classList.remove('seat_color_0');
+    this.game_table_view.classList.remove('seat_color_1');
+    this.game_table_view.classList.remove('seat_color_2');
+    this.game_table_view.classList.remove('seat_color_3');
+    this.game_table_view.classList.add('seat_color_' + seatIndex);
+*/
 
     this._updateCardStatus();
     this._updateFinishStatus();

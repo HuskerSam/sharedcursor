@@ -29,7 +29,7 @@ body.night_mode {}
 }
 
 a {
-  color: black;
+  color: inherit;
 }
 
 .night_mode a {
@@ -67,17 +67,6 @@ a {
   border-bottom-right-radius: 5px;
 }
 
-.nav-scroll .navbar-brand img, .navbar-brand img {
-  height: 64px;
-  margin-left: 5px;
-}
-
-@media all and (max-width:768px) {
-  .nav-scroll .navbar-brand img, .navbar-brand img {
-    height: 32px;
-  }
-}
-
 .app_signed_in.loaded .app_panel, .app_signed_out.loaded .app_panel {
   background: rgb(250, 250, 250);
   color: rgb(50, 50, 50);
@@ -90,16 +79,13 @@ a {
 }
 
 .card_shadow {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-  box-sizing: border-box;
-  margin: 3% 1%;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  margin: 8px;
   border-radius: 7px;
-  padding: 4px;
-  position: relative;
 }
 
 .night_mode .card_shadow {
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
 }
 
 .basic_page_wrapper {
@@ -110,21 +96,6 @@ a {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.main_page_link_list {
-  display: flex;
-  margin: 8px 0;
-}
-
-.main_page_link_list a {
-  flex: 1;
-}
-
-.main_page_link_list a h2 {
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: normal;
 }
 
 .app_signed_in_panel {
@@ -151,21 +122,49 @@ a {
   text-decoration: underline;
 }
 
-a.night_mode_toggle {
-  border: none;
-  background: none;
-  display: inline-block;
-  text-decoration: none;
-  flex: 0;
-  padding: 12px 12px;
+.static_menu {
+  text-align: left;
+  display: inline-flex;
 }
 
-a.mute_button {
+.static_menu a {
   border: none;
   background: none;
   display: inline-block;
   text-decoration: none;
-  padding: 12px 12px;
+  padding: 10px 16px;
+  flex: 0;
+  cursor: pointer;
+}
+
+.static_menu a.logo {
+  padding: 0px;
+}
+
+.static_menu img {
+  height: 64px;
+  padding-left: 5px;
+  transition: height .5s;
+  padding: 2px;
+}
+
+.static_menu a i {
+  font-size: 44px;
+  transition: font-size .5s;
+}
+
+@media all and (max-width:768px) {
+  .static_menu img {
+    height: 48px;
+  }
+
+  .static_menu a {
+    padding: 8px 12px;
+  }
+
+  .static_menu a i {
+    font-size: 30px;
+  }
 }
 
 .night_mode_toggle .mode_day {
@@ -559,8 +558,8 @@ a.mute_button {
 .dock_container>div {
   border: solid 4px transparent;
   border-bottom: none;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   display: none;
 }
 
@@ -587,11 +586,6 @@ a.mute_button {
 
 .dock_container {
   flex: 1;
-  border-right: solid 4px transparent;
-  border-left: solid 4px transparent;
-  border-top: solid 4px transparent;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
   position: relative;
 }
 
@@ -771,10 +765,7 @@ button.game[disabled="true"] {
   color: inherit;
 }
 
-.currentplayer_score_dock {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+.currentplayer_score_dock {}
 
 /* The snackbar - position it at the top and in the middle of the screen */
 #chat_snackbar {
@@ -863,7 +854,7 @@ button.game[disabled="true"] {
 }
 
 .header_static_bar {
-  text-align:left;
+  text-align: left;
 }
 
 .header_static_bar .nav-link i {
@@ -874,4 +865,16 @@ button.game[disabled="true"] {
 .header_static_bar .mute_button.nav-link i {
   font-size: 30px;
   top: 8px;
+}
+
+.mode_show_options {
+  display: none;
+}
+
+.show_game_options .mode_show_options {
+  display: inline-block;
+}
+
+.show_game_options .mode_hide_options {
+  display: none;
 }

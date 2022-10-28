@@ -32,6 +32,10 @@
   <meta property="og:description" content="Match cards solo or with friends!" />
   <meta property="pagedate" content="01/01/2030" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/match.css" />
 
@@ -42,10 +46,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-storage.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
 
   <script>
     window.addEventListener('load', async (event) => {
@@ -60,33 +60,24 @@
   <div class="basic_page_wrapper app_panel">
     <nav class="navbar navbar-expand-lg  nav-scroll">
       <div class="container">
-        <div style="text-align:left;">
-          <a class="navbar-brand navbar-logo" href="/">
-            <img src="/images/logo310.png" alt="logo" class="logo-1">
+        <div class="static_menu">
+          <a class="logo" href="/">
+            <img src="/images/logo310.png" alt="logo">
           </a>
-          <a class="night_mode_toggle" href="/">
+          <a class="night_mode_toggle">
             <i class="material-icons mode_day">light_mode</i>
             <i class="material-icons mode_night">mode_night</i>
           </a>
-          <a class="mute_button" href="mute">
+          <a class="mute_button">
             <i class="material-icons">volume_up</i>
           </a>
-          <button class="game_header_toggle_button game"><i class="material-icons">menu</i></button>
-          <button class="members_header_toggle_button game"><span>▼</span></button>
-        </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/profile/">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">About</a>
-            </li>
-          </ul>
+          <a class="game_header_toggle_button">
+            <i class="material-icons mode_show_options">close</i>
+            <i class="material-icons mode_hide_options">settings</i>
+          </a>
+          <a href="/profile">
+            <i class="material-icons">person</i>
+          </a>
         </div>
       </div>
     </nav>
@@ -94,7 +85,7 @@
     <div class="panel_responsive_wrapper">
       <div style="flex:1"></div>
       <div class="first_panel_wrapper">
-        <div class="game_table_view">
+        <div class="game_table_view card_shadow">
           <div class="player_dock">
             <div class="dock_container dock_pos_0">
               <div class="dock_seat0 game_user_wrapper seat_color_0">
@@ -224,7 +215,7 @@
             <div class="match_result_message"></div>
             <div class="match_end_display_promo">
               <div style="margin-bottom: 6px;">
-                <a class="beer_name_anchor" target="_blank"><span class="beer_name impact-font"></span> <i class="material-icons impact-font" style="top:4px;font-size:28px;position:relative;">open_in_new</i></a>
+                <a class="beer_name_anchor impact-font" target="_blank"><span class="beer_name"></span> <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i></a>
               </div>
               <div class="beer_description">
                 <div class="beer_image"></div>
@@ -399,6 +390,13 @@
 
             </div>
           </div>
+          <div class="message_list_send_wrapper">
+            <input class="message_list_input" type="text">
+            <button class="send_message_list_button game" style="margin:0;background:none;border:none;min-width: auto">
+              <i class="material-icons" style="font-size: 30px;margin-bottom: -10px;position: relative;top: 4px;">send</i>
+            </button>
+            <button class="members_header_toggle_button game"><span>▼</span></button>
+          </div>
           <div class="members_list"></div>
           <div class="messages_list"></div>
         </div>
@@ -408,14 +406,6 @@
 
     <div class="game_loading_display">
       <h1>Loading...</h1>
-    </div>
-
-    <div style="flex:1;min-height:4em;"></div>
-    <div class="message_list_send_wrapper">
-      <input class="message_list_input" type="text">
-      <button class="send_message_list_button game" style="margin:0;background:none;border:none;min-width: auto">
-        <i class="material-icons impact-font" style="font-size: 30px;margin-bottom: -10px;position: relative;top: 4px;">send</i>
-      </button>
     </div>
     <div id="chat_snackbar"></div>
   </div>

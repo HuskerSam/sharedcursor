@@ -22,13 +22,11 @@ export class BaseApp {
     if (this.night_mode_toggle)
       this.night_mode_toggle.addEventListener('click', e => this.nightModeToggle(e));
 
-
     firebase.auth().onAuthStateChanged(u => this.authHandleEvent(u));
     this.signInWithURL();
 
     this.collapse_headers = document.querySelectorAll('.collapse_header');
     this.collapse_headers.forEach(ctl => ctl.addEventListener('click', e => this.toggleCollapsePanel(ctl, e)));
-
 
     this.apiType = 'invalid';
     this.userPresenceStatus = {};
@@ -37,7 +35,7 @@ export class BaseApp {
     this.lastMessageId = null;
 
     //redraw message feed to update time since values
-    this.baseRedrawFeedTimer = 90000;
+    this.baseRedrawFeedTimer = 10000;
     setInterval(() => this.updateGameMessagesFeed(), this.baseRedrawFeedTimer);
 
     this.chat_snackbar = document.querySelector('#chat_snackbar');
@@ -324,25 +322,6 @@ export class BaseApp {
     }
     //return Math.floor(seconds) + " seconds ago";
     return ' just now';
-  }
-  applyAutoSizeToParagraph(query = '.paragraphfit_auto', startFontSize = 40) {
-    let elements = document.querySelectorAll(query);
-
-    let results = [];
-
-    elements.forEach(el => {
-      let fontSize = startFontSize;
-      el.style.fontSize = fontSize + 'px';
-      let overflow = el.style.overflow;
-      el.style.overflow = 'auto';
-      while (el.scrollHeight > el.offsetHeight) {
-        fontSize -= .5;
-        if (fontSize < 6)
-          break;
-        el.style.fontSize = fontSize + 'px';
-      }
-      el.style.overflow = overflow;
-    });
   }
   isoToLocal(startTimeISOString) {
     let startTime = new Date(startTimeISOString);
@@ -736,6 +715,10 @@ export class BaseApp {
     let msgCount = snapshot.size;
     snapshot.forEach((doc) => html += this._renderMessageFeedLine(doc));
 
+    if (html === this.lastMessagesHTML)
+      return;
+
+    this.lastMessagesHTML = html;
     this.messages_list.innerHTML = html;
 
     if (snapshot.docs.length > 0) {
@@ -810,7 +793,7 @@ export class BaseApp {
         message = message.substr(0, 11) + '...';
     }
     let timeSince = this.timeSince(new Date(data.created)).replaceAll(' ago', '');
-    return `<div class="game_message_list_item${game_owner_class}${owner_class}">
+    return `<div class="game_message_list_item card_shadow ${game_owner_class}${owner_class}">
       <div style="display:flex;flex-direction:row">
         <div class="game_user_wrapper member_desc">
           <span style="background-image:url(${img})"></span>
