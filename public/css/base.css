@@ -152,14 +152,30 @@ a {
   color: white;
 }
 
+.static_menu a img {
+  height: 48px;
+  transition: height .5s;
+  padding: 2px;
+}
+
 .static_menu a i {
   font-size: 44px;
   transition: font-size .5s;
 }
 
+.static_menu a i.smallerby4 {
+  font-size: 34px;
+  top: 6px;
+  position: relative;
+}
+
 @media all and (max-width:768px) {
-  .static_menu img, .static_menu svg {
+  .static_menu svg {
     height: 48px;
+  }
+
+  .static_menu a img  {
+    height: 32px;
   }
 
   .static_menu a {
@@ -168,6 +184,11 @@ a {
 
   .static_menu a i {
     font-size: 30px;
+  }
+
+  .static_menu a i.smallerby4 {
+    font-size: 26px;
+    top: 2px;
   }
 }
 
