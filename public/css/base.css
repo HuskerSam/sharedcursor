@@ -32,7 +32,17 @@ a {
   color: inherit;
 }
 
-.night_mode a:hover {
+a.nav-link:hover {
+  color: rgb(50, 100, 200);
+}
+
+a.nav-link {
+  font-weight: bold;
+  color: inherit;
+}
+
+
+.night_mode a:hover, .night_mode a.nav-link:hover {
   color: rgb(40, 240, 240);
 }
 
@@ -95,7 +105,7 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
 }
 
 .app_signed_in_panel {
@@ -167,6 +177,8 @@ a {
   font-size: 34px;
   top: 6px;
   position: relative;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 @media all and (max-width:768px) {
@@ -189,6 +201,8 @@ a {
   .static_menu a i.smallerby4 {
     font-size: 26px;
     top: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
 }
 
@@ -902,4 +916,30 @@ button.game[disabled="true"] {
 
 .show_game_options .mode_hide_options {
   display: none;
+}
+
+.collapse a {
+  cursor: pointer;
+}
+
+.edit_card_shadow {
+  border-radius: 7px;
+  padding: 1% .5%;
+  position: relative;
+  display: inline-block;
+}
+
+.edit_card_shadow > div {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  padding: 2%;
+  background: rgba(250, 250, 250, .25);
+  border-radius: 5px;
+}
+
+.form-control {
+  background: none;
+}
+
+.form-control:focus {
+  background: none;
 }

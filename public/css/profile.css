@@ -1,3 +1,14 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  width: 100%;
+  background: rgb(127, 127, 127);
+  height: 100vh;
+  overflow: hidden;
+}
+
 .profile_page label {
   padding: .5em;
   display: inline-block;
@@ -16,13 +27,6 @@
 
 .tag_body {
   text-align: left;
-}
-
-.logged_in_status {
-  text-align: center;
-  white-space: nowrap;
-  margin-bottom: .5em;
-  overflow: hidden;
 }
 
 .list_center_row {
@@ -163,4 +167,36 @@ h2.collapse_header {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+}
+
+.card_title {
+  cursor: pointer;
+}
+
+.card_title i {
+  font-size: 26px;
+  position: relative;
+  top: 4px;
+  color: rgba(255, 127, 0, .75);
+  transition: color .5s;
+  float: right;
+}
+
+.expanded .card_title i {
+  color: silver;
+}
+
+.section-title .help_info_panel {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height .5s;
+}
+
+.expanded .section-title .help_info_panel {
+  max-height: 100px;
+  opacity: 1;
+}
+
+.section-title {
+  text-align: left;
 }

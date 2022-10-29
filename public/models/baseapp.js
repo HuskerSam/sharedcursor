@@ -64,7 +64,6 @@ export class BaseApp {
   }
   authUpdateStatusUI() {
     let html = '';
-    console.log(this.profile);
     document.body.classList.add('loaded');
     if (this.fireToken) {
       html = 'Profile';

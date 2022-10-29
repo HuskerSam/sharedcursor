@@ -47,28 +47,60 @@
     });
   </script>
 
-  <link rel="stylesheet" href="/css/base.css" />
-  <link rel="stylesheet" href="/css/profile.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/profile.css" />
 
 </head>
 
 
-<body class="basic_beer_body profile_page">
+<body class="">
   <div class="basic_page_wrapper app_panel">
-    <div class="base_menu_panel_wrapper">
-      <div class="base_menu_panel">
-        <a class="night_mode_toggle" href="/">
-          <i class="material-icons mode_day">light_mode</i>
-          <i class="material-icons mode_night">mode_night</i>
-        </a>
-        <a class="home_menu_anchor" href="/" style="flex:0">
-          <i class="material-icons">home</i>
-        </a>
+    <nav class="navbar navbar-expand-lg  nav-scroll">
+      <div class="container">
+        <div class="static_menu">
+          <a class="logo" href="/">
+            <svg version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+              <clipPath id="p.0">
+                <path d="m0 0l686.2231 0l0 689.7769l-686.2231 0l0 -689.7769z" clip-rule="nonzero" />
+              </clipPath>
+              <g clip-path="url(#p.0)">
+                <path fill="#000000" fill-opacity="0.0" d="m0 0l686.2231 0l0 689.7769l-686.2231 0z" fill-rule="evenodd" />
+                <path fill="#000000" d="m8.0 344.0l0 0c0 -185.56767 150.43233 -336.0 336.0 -336.0l0 0c89.11273 0 174.57568 35.3999 237.58789 98.412125c63.012207 63.012222 98.41211 148.47513 98.41211 237.58788l0 0c0 185.56769 -150.43231 336.0 -336.0 336.0l0 0c-185.56767 0 -336.0 -150.43231 -336.0 -336.0z"
+                  fill-rule="evenodd" />
+                <path fill="currentColor" d="m65.60555 344.0l0 0c0 -153.7526 124.641106 -278.3937 278.3937 -278.3937l0 0c73.834595 0 144.64511 29.33068 196.85406 81.53962c52.208923 52.208954 81.53961 123.019485 81.53961 196.85408l0 0c0 153.7526 -124.64108 278.39368 -278.39368 278.39368l0 0c-153.75261 0 -278.3937 -124.64108 -278.3937 -278.39368z"
+                  fill-rule="evenodd" />
+                <path fill="#0000ff" d="m147.52493 238.4042l0 0c0 -53.01935 42.980667 -96.0 96.0 -96.0l0 0c25.460785 0 49.878754 10.114258 67.88226 28.117737c18.003479 18.003494 28.117737 42.42148 28.117737 67.88226l0 0c0 53.019318 -42.98065 96.0 -96.0 96.0l0 0c-53.019333 0 -96.0 -42.980682 -96.0 -96.0z"
+                  fill-rule="evenodd" />
+                <path fill="#ff0000" d="m392.0 314.87402l0 0c0 -53.01935 42.98065 -96.000015 96.0 -96.000015l0 0c25.460754 0 49.878784 10.114258 67.88226 28.117752c18.003479 18.00351 28.117737 42.42148 28.117737 67.88226l0 0c0 53.019318 -42.98065 96.0 -96.0 96.0l0 0c-53.01935 0 -96.0 -42.980682 -96.0 -96.0z"
+                  fill-rule="evenodd" />
+                <path fill="#00ff00" d="m176.0 478.8924l0 0c0 -53.01935 42.980667 -96.0 96.0 -96.0l0 0c25.460785 0 49.878754 10.114258 67.88226 28.117737c18.003479 18.00351 28.117737 42.42148 28.117737 67.88226l0 0c0 53.01935 -42.98065 96.0 -96.0 96.0l0 0c-53.019333 0 -96.0 -42.98065 -96.0 -96.0z"
+                  fill-rule="evenodd" />
+              </g>
+            </svg>
+          </a>
+          <a class="night_mode_toggle">
+            <i class="material-icons mode_day">light_mode</i>
+            <i class="material-icons mode_night smallerby4">mode_night</i>
+          </a>
+          <a class="mute_button">
+            <i class="material-icons">volume_up</i>
+          </a>
+          <a class="impact-font">
+            <i class="material-icons">person</i>
+          </a>
+          <a href="/about/">
+            <i class="material-icons smallerby4">info</i>
+          </a>
+        </div>
       </div>
-    </div>
-    <h2 style="float:left;width:auto;">Profile</h2>
+    </nav>
     <div class="signed_out_options">
       <button id="login_google" style="line-height: 40px;font-size:25px;">
         <img src="/images/google_signin.png" style="height:30px;position:relative;top:6px;">
@@ -89,43 +121,87 @@
 
     </div>
 
-    <div class="signed_in_options">
-      <div class="main_page_link_list">
-        <a href="sign_out" class="sign_out_button">
-          <h2>Sign Out</h2>
-        </a>
-        <a href="reset" class="reset_profile" style="white-space:nowrap;">
-          <h2>Reset Profile</h2>
-        </a>
-      </div>
-      <div class="logged_in_status">&nbsp;</div>
+    <div class="signed_in_flex row" style="margin:0">
+      <div class="edit_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div>
+          <div class="section-title">
+            <h3 class="card_title help_panel_button">Visual <i class="material-icons">help</i></h3>
+            <div class="help_info_panel">
+              <b>Not looking</b> will stop the system from updating your personal listings.
+              <br>
+              <b>Looking</b> updates your personal listings at least daily and notify via your notification option.
+            </div>
+          </div>
 
-      <h3 class="impact-font tag_header_label">Night Mode</h3>
-      <label><input type="radio" name="night_mode_radio" checked>Auto</label>
-      <label><input type="radio" name="night_mode_radio">Day</label>
-      <label><input type="radio" name="night_mode_radio">Night</label>
-      <h3 class="impact-font tag_header_label">Mute Audio</h3>
-      <label><input type="radio" name="mute_audio_radio">Yes</label>
-      <label><input type="radio" name="mute_audio_radio" checked>No</label>
-      <h3 class="impact-font tag_header_label">Display</h3>
-      <label><span>Name </span><input type="text" class="profile_display_name"></label>
-      <div style="text-align: center;">
-        <select class="profile_display_image_preset">
-          <option>Pick preset</option>
-        </select>
+          <label><input type="radio" name="night_mode_radio" checked>Auto</label>
+          <label><input type="radio" name="night_mode_radio">Day</label>
+          <label><input type="radio" name="night_mode_radio">Night</label>
+          <br><br>
+          <span class="impact-font tag_header_label">Mute Audio</span>
+          <label><input type="radio" name="mute_audio_radio">Yes</label>
+          <label><input type="radio" name="mute_audio_radio" checked>No</label>
+        </div>
       </div>
-      <div class="profile_display_image" style="background-image:url(/images/defaultprofile.png)"></div>
-      <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
-      <div style="display:inline-block;">
-        <button class="profile_display_image_clear"> Clear </button>
-        <br>
-        <br>
-        <button class="profile_display_image_upload">Upload</button>
+      <div class="edit_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div>
+          <div>
+            <div class="section-title">
+              <h3 class="card_title help_panel_button">Likeness <i class="material-icons">help</i></h3>
+              <div class="help_info_panel">
+                Information is intentionally anonymized and your personal information will never be shared.
+              </div>
+            </div>
+          </div>
+          <div class="profile_display_name"></div>
+          <div style="text-align: center;">
+            <select class="profile_display_image_preset">
+              <option>Pick preset</option>
+            </select>
+          </div>
+          <div class="profile_display_image" style="background-image:url(/images/defaultprofile.png)"></div>
+          <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
+          <div style="display:inline-block;">
+            <button class="profile_display_image_clear"> Clear </button>
+            <br>
+            <br>
+            <button class="profile_display_image_upload" style="display:none">Upload</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div>
+          <div>
+            <div class="section-title">
+              <h3 class="card_title help_panel_button">Account <i class="material-icons">help</i></h3>
+              <div class="help_info_panel">
+                All user information is deleted with the account is deleted or profile reset.
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="text-align:center;font-weight: bold;">
+              <span class="user_email"></span>
+            </div>
+            <div style="line-height:3em;">
+              <button class="delete_profile_button btn btn-secondary">Delete Profile</button>
+              &nbsp;
+              <button class="reset_profile_btn reset_profile btn btn-secondary">Reset Profile</button>
+              &nbsp;
+              <button class="sign_out_button btn btn-secondary">Sign Out</button>
+            </div>
+            <br>
+            <div class="form-floating">
+              <input type="text" class="form-control profile_new_email" placeholder="New Email">
+              <label for="floatingPassword">New Email</label>
+            </div>
+            <div style="text-align:right;line-height:3em;">
+              <button class="change_email_button btn btn-secondary">Change Email</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <div style="flex:1"></div>
-
   </div>
 </body>
 

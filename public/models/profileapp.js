@@ -3,7 +3,6 @@ import BaseApp from '/models/baseapp.js';
 export class ProfileApp extends BaseApp {
   constructor() {
     super();
-    this.logged_in_status = document.querySelector('.logged_in_status');
 
     this.login_google = document.getElementById('login_google');
     this.login_google.addEventListener('click', e => this.authGoogleSignIn(e));
@@ -42,7 +41,6 @@ export class ProfileApp extends BaseApp {
 
     this.profile_display_name = document.querySelector('.profile_display_name');
     this.profile_display_image = document.querySelector('.profile_display_image');
-    this.profile_display_name.addEventListener('input', e => this.displayNameChange());
 
     this.profile_display_image_upload = document.querySelector('.profile_display_image_upload');
     this.profile_display_image_upload.addEventListener('click', e => this.uploadProfileImage());
@@ -56,7 +54,23 @@ export class ProfileApp extends BaseApp {
     this.profile_display_image_preset = document.querySelector('.profile_display_image_preset');
     this.profile_display_image_preset.addEventListener('input', e => this.selectedProfilePreset());
 
+    this.user_email = document.querySelector('.user_email');
+
+    this.change_email_button = document.querySelector('.change_email_button');
+    this.change_email_button.addEventListener('click', e => this.changeEmail());
+
+    this.delete_profile_button = document.querySelector('.delete_profile_button');
+    this.delete_profile_button.addEventListener('click', e => this.deleteAccount());
+
     this.initPresetLogos();
+
+    this.help_panel_buttons = document.querySelectorAll('.help_panel_button');
+    this.help_panel_buttons.forEach(ctl => ctl.addEventListener('click', e => {
+      if (ctl.dataset.levels === '3')
+        ctl.parentElement.parentElement.parentElement.classList.toggle('expanded');
+      else
+        ctl.parentElement.parentElement.classList.toggle('expanded');
+    }));
   }
   async load() {
     await super.load();
@@ -93,6 +107,32 @@ export class ProfileApp extends BaseApp {
       this.uid = null;
 
       location = '/profile';
+      location.reload();
+    }
+  }
+  async changeEmail() {
+    let newEmail = document.querySelector('.profile_new_email').value.trim();
+
+    let oldEmail = this.fireUser.email;
+    if (newEmail === oldEmail) {
+      alert('Email is already ' + oldEmail);
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to change your email to ${newEmail} from ${oldEmail}?`)) {
+      return;
+    }
+
+    let success = true;
+    try {
+      await this.fireUser.updateEmail(newEmail)
+    } catch (error) {
+      success = false;
+      alert('email change FAILED: \n' + error.message);
+    }
+
+    if (success) {
+      this.authSignInClick();
     }
   }
   authUpdateStatusUI() {
@@ -101,8 +141,7 @@ export class ProfileApp extends BaseApp {
       if (!displayName)
         displayName = '';
 
-      if (!this.lastNameChange || this.lastNameChange + 2000 < new Date())
-        this.profile_display_name.value = displayName;
+      this.profile_display_name.innerHTML = displayName;
 
       if (this.profile.displayImage)
         this.profile_display_image.style.backgroundImage = `url(${this.profile.displayImage})`;
@@ -113,21 +152,14 @@ export class ProfileApp extends BaseApp {
         this.profile_display_image_preset.value = this.profile.displayImage;
       else
         this.profile_display_image_preset.selectedIndex = 0;
+
+      if (this.fireUser.isAnonymous)
+        this.user_email.innerHTML = 'Anonymous';
+      else
+        this.user_email.innerHTML = this.fireUser.email;
     }
 
     super.authUpdateStatusUI();
-  }
-  async displayNameChange() {
-    this.profile.displayName = this.profile_display_name.value.trim().substring(0, 15);
-
-    let updatePacket = {
-      displayName: this.profile.displayName
-    };
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
-        merge: true
-      });
-    this.lastNameChange = new Date();
   }
   uploadProfileImage() {
     this.file_upload_input.click();
