@@ -33,10 +33,14 @@ export class ProfileApp extends BaseApp {
       this.updateProfileNightMode(null, index);
     });
 
-    this.mute_audio_radios = document.querySelectorAll('[name="mute_audio_radio"]');
-    this.mute_audio_radios.forEach((ctl, index) => ctl.addEventListener('input', e => {
-      this.updateProfileAudioMode(ctl, index, e);
-    }));
+    this.audio_mode_select = document.querySelector('.audio_mode_select');
+    this.audio_mode_select.addEventListener('input', e => {
+      let index = 1;
+      if (this.audio_mode_select.value === 'muted')
+        index = 0;
+      this.updateProfileAudioMode(null, index, e);
+    });
+
 
     this.reset_profile = document.querySelector('.reset_profile');
     this.reset_profile.addEventListener('click', e => {
@@ -177,16 +181,13 @@ export class ProfileApp extends BaseApp {
       if (!this.profile.muteState) {
         this.muted = false
         this.profile.muteState = false;
+        this.audio_mode_select.selectedIndex = 0;
       } else {
         this.muted = true;
         this.profile.muteState = true;
+        this.audio_mode_select.selectedIndex = 1;
       }
-      if (this.mute_audio_radios.length > 0) {
-        if (this.muted)
-          this.mute_audio_radios[0].checked = true;
-        else
-          this.mute_audio_radios[1].checked = true;
-      }
+
     }
 
     super.authUpdateStatusUI();
