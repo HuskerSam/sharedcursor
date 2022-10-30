@@ -934,6 +934,7 @@ button.game[disabled="true"] {
   padding: 2%;
   background: rgba(250, 250, 250, .25);
   border-radius: 5px;
+  text-align: left;
 }
 
 .form-control {

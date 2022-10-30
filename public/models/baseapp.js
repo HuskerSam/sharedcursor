@@ -22,6 +22,10 @@ export class BaseApp {
     if (this.night_mode_toggle)
       this.night_mode_toggle.addEventListener('click', e => this.nightModeToggle(e));
 
+    this.mute_button = document.querySelector('.mute_button');
+    if (this.mute_button)
+      this.mute_button.addEventListener('click', e => this.muteClick(e));
+
     firebase.auth().onAuthStateChanged(u => this.authHandleEvent(u));
     this.signInWithURL();
 
@@ -194,7 +198,11 @@ export class BaseApp {
     return true;
   }
   async updateMute(muted) {
-    this.muted = muted;
+    let update = false;
+    if (this.muted !== muted) {
+      update = true;
+      this.muted = muted;
+    }
     if (!this.mute_button)
       return;
 
@@ -214,7 +222,7 @@ export class BaseApp {
       this.mute_button.children[0].innerHTML = 'volume_up';
       muted = false;
     }
-    if (this.profile) {
+    if (this.profile && update) {
       let updatePacket = {
         muteState: muted
       };
@@ -338,12 +346,7 @@ export class BaseApp {
     return `${mo}/${da}/${ye}`;
   }
   muteClick(e) {
-    if (!this.muted)
-      this.muted = true;
-    else {
-      this.muted = false;
-    }
-    this.updateMute(this.muted);
+    this.updateMute(!this.muted);
     e.preventDefault();
     return true;
   }
@@ -479,9 +482,6 @@ export class BaseApp {
     this.games_tab_radios = document.querySelectorAll('input[name="game_view_type"]');
     this.games_tab_radios.forEach(ctl => ctl.addEventListener('input', e => this.updateTabView(e)));
     this.updateTabView();
-
-    this.mute_button = document.querySelector('.mute_button');
-    this.mute_button.addEventListener('click', e => this.muteClick(e));
 
     this.send_message_list_button = document.querySelector('.send_message_list_button');
     this.send_message_list_button.addEventListener('click', e => this.sendGameMessage());

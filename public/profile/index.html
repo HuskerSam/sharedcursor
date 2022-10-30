@@ -132,10 +132,15 @@
               <b>Looking</b> updates your personal listings at least daily and notify via your notification option.
             </div>
           </div>
+          <div style="display:inline-block;">
+            <label class="form-label">Brightness Mode</label>
+            <select class="night_mode_select form-select form-select-lg">
+              <option value="">Auto Detect</option>
+              <option value="day">Day Mode</option>
+              <option value="night">Night Mode</option>
+            </select>
+          </div>
 
-          <label><input type="radio" name="night_mode_radio" checked>Auto</label>
-          <label><input type="radio" name="night_mode_radio">Day</label>
-          <label><input type="radio" name="night_mode_radio">Night</label>
           <br><br>
           <span class="impact-font tag_header_label">Mute Audio</span>
           <label><input type="radio" name="mute_audio_radio">Yes</label>
@@ -189,6 +194,8 @@
               <button class="reset_profile_btn reset_profile btn btn-secondary">Reset Profile</button>
               &nbsp;
               <button class="sign_out_button btn btn-secondary">Sign Out</button>
+              &nbsp;
+              <button class="sign_out_all_button btn btn-secondary">Sign All Out</button>
             </div>
             <br>
             <div class="form-floating">

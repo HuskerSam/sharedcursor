@@ -20,10 +20,18 @@ export class ProfileApp extends BaseApp {
       return false;
     });
 
-    this.night_mode_radios = document.querySelectorAll('[name="night_mode_radio"]');
-    this.night_mode_radios.forEach((ctl, index) => ctl.addEventListener('input', e => {
-      this.updateProfileNightMode(ctl, index, e);
-    }));
+    this.night_mode_select = document.querySelector('.night_mode_select');
+    this.night_mode_select.addEventListener('input', e => {
+      let index = 0;
+      let niteMode = 2;
+      if (this.nightModeCurrent)
+        niteMode = 1;
+      if (this.night_mode_select.value === 'day')
+        index = 1;
+      if (this.night_mode_select.value === 'night')
+        index = 2;
+      this.updateProfileNightMode(null, index);
+    });
 
     this.mute_audio_radios = document.querySelectorAll('[name="mute_audio_radio"]');
     this.mute_audio_radios.forEach((ctl, index) => ctl.addEventListener('input', e => {
@@ -157,6 +165,28 @@ export class ProfileApp extends BaseApp {
         this.user_email.innerHTML = 'Anonymous';
       else
         this.user_email.innerHTML = this.fireUser.email;
+
+      if (!this.profile.nightModeState)
+        this.profile.nightModeState = 0;
+      this.night_mode_select.value = '';
+      if (this.profile.nightModeState === 1)
+        this.night_mode_select.value = 'day';
+      if (this.profile.nightModeState === 2)
+        this.night_mode_select.value = 'night';
+
+      if (!this.profile.muteState) {
+        this.muted = false
+        this.profile.muteState = false;
+      } else {
+        this.muted = true;
+        this.profile.muteState = true;
+      }
+      if (this.mute_audio_radios.length > 0) {
+        if (this.muted)
+          this.mute_audio_radios[0].checked = true;
+        else
+          this.mute_audio_radios[1].checked = true;
+      }
     }
 
     super.authUpdateStatusUI();
