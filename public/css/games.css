@@ -17,12 +17,6 @@ body {
 
 button.delete_game {
   display: none;
-  background: none;
-  border-color: rgba(255, 0, 0, .5);
-}
-
-button.delete_game i {
-  color: rgba(255, 0, 0, .5);
 }
 
 .feed_game_owner .delete_game {
@@ -31,8 +25,6 @@ button.delete_game i {
 
 button.logout_game {
   display: inline-block;
-  background: none;
-  border-color: rba(255, 0, 0, .5);
 }
 
 .feed_game_owner button.logout_game {
@@ -164,7 +156,7 @@ a.game_number_open {
 }
 
 .show_seats .gamefeed_members_list, .show_seats .gamefeed_owners_panel {
-  max-height: 180px;
+  max-height: 400px;
   opacity: 1;
 }
 
@@ -185,6 +177,8 @@ a.game_number_open {
   flex: 1;
   line-height: 32px;
   padding-left: 4px;
+  display: flex;
+  flex-direction: row;
 }
 
 .next_player_wrapper span.member_online_status {
@@ -199,9 +193,11 @@ span.next_label {
 }
 
 .next_player_wrapper span.name {
-  width: 125px;
   display: inline-block;
   white-space: nowrap;
+  flex: 1;
+  padding-right: 25px;
+  padding-top: 6px;
 }
 
 .member_feed_wrapper {
@@ -212,7 +208,7 @@ span.next_label {
 .member_feed_wrapper>div {
   flex: 1;
   height: 60px;
-  line-height: 65px;
+  line-height: 50px;
   text-align: center;
   border: ridge 4px rgba(255, 255, 255, 1);
   overflow: hidden;
@@ -339,7 +335,7 @@ button.toggle_expanded_game {
 }
 
 .toggle_expanded_game span.round {
-  font-size: 40px;
+  font-size: 38px;
 }
 
 .show_seats .toggle_expanded_game span.icon {
@@ -438,4 +434,29 @@ button.code_link {
 .tab-content>.active {
   display: flex;
   overflow: auto;
+}
+
+.game_number_open {
+  font-size: 26px;
+}
+
+.member_feed_wrapper .game_user_wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.member_feed_wrapper .game_user_wrapper span {
+  display: block;
+  line-height: inherit;
+  height: inherit;
+}
+
+.member_feed_wrapper .game_user_wrapper span.name {
+  display: block;
+  flex: 1;
+  overflow: hidden;
+}
+
+.member_feed_wrapper .game_user_wrapper span:nth-child(1) {
+  margin-top: -12px;
 }

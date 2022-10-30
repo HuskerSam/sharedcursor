@@ -347,6 +347,28 @@ export class BaseApp {
     e.preventDefault();
     return true;
   }
+  applyAutoSizeToParagraph(query = '.paragraphfit_auto', startFontSize = 40) {
+    let elements = document.querySelectorAll(query);
+
+    let results = [];
+
+    elements.forEach(el => {
+      let fontSize = startFontSize;
+      el.style.fontSize = fontSize + 'px';
+      let overflow = el.style.overflow;
+      let whitespace = el.style.whiteSpace;
+      el.style.overflow = 'auto';
+      el.style.whiteSpace = 'normal';
+      while (el.scrollHeight > el.offsetHeight) {
+        fontSize -= .5;
+        if (fontSize < 6)
+          break;
+        el.style.fontSize = fontSize + 'px';
+      }
+      el.style.overflow = overflow;
+      el.style.whiteSpace = whitespace;
+    });
+  }
 
 
 

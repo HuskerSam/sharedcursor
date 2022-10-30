@@ -38,8 +38,10 @@ export class GamesApp extends BaseApp {
 
     this.initRTDBPresence();
     //redraw feeds to update time since values
+    /*
     setInterval(() => this.updateGamesFeed(), this.baseRedrawFeedTimer);
     setInterval(() => this.updatePublicGamesFeed(), this.baseRedrawFeedTimer);
+    */
   }
   handleGameTypeClick(btn) {
     this.new_game_type_wrappers.forEach(b => b.classList.remove('selected'));
@@ -228,9 +230,9 @@ export class GamesApp extends BaseApp {
 
     this._updateFeedToggleButtonStatus();
   }
-  __getUserTemplate(member, name, img, onlineStatus = false, impact = false) {
+  __getUserTemplate(member, name, img, onlineStatus = false, impact = false, nameClass = '') {
     let impactFont = impact ? ' impact-font' : '';
-    let innerHTML = `<span style="background-image:url(${img});width: 30px;display: inline-block;"></span> <span class="name${impactFont}">${name}</span>`;
+    let innerHTML = `<span style="background-image:url(${img});width: 30px;display: inline-block;"></span> <span class="name${impactFont} ${nameClass}">${name}</span>`;
     if (onlineStatus) {
       this.addUserPresenceWatch(member);
       innerHTML += `<div class="member_online_status" data-uid="${member}"></div>`;
@@ -281,10 +283,10 @@ export class GamesApp extends BaseApp {
           name = 'Anonymous';
         if (!img)
           img = '/images/defaultprofile.png';
-        innerHTML = this.__getUserTemplate(member, name, img, !publicFeed);
+        innerHTML = this.__getUserTemplate(member, name, img, !publicFeed, false, 'paragraphfit_auto');
 
         if (c === data.currentSeat) {
-          memberUpHtml = this.__getUserTemplate(member, name, img, true, true);
+          memberUpHtml = this.__getUserTemplate(member, name, img, true, true, 'paragraphfit_auto');
 
           if (member === this.uid) {
             memberIsUp = ' gameplayer_turn_next';
@@ -294,11 +296,12 @@ export class GamesApp extends BaseApp {
       } else {
         seatsFull = false;
         if (!isUserSeated)
-          innerHTML = `<button class="sit_anchor game sit_button" data-gamenumber="${data.gameNumber}" data-seatindex="${c}">
-            <custom class="impact-font">Sit</custom>
+          innerHTML = `<button class="sit_anchor sit_button btn btn-primary" data-gamenumber="${data.gameNumber}" data-seatindex="${c}">
+            Sit
           </button>`;
         else
-          innerHTML = '<button class="sit_anchor game open_sit">Empty</button>';
+          innerHTML = '<button class="sit_anchor open_sit">Empty</button>';
+        innerHTML = `<div style="flex:1;text-align:center;">${innerHTML}</div>`;
       }
 
       membersHtml += `<div class="game_user_wrapper game_list_user">${innerHTML}</div>`;
@@ -338,9 +341,7 @@ export class GamesApp extends BaseApp {
           </span>
         </div>
         <div class="open_button_wrapper">
-          <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open game">
-            <span class="${openImpactFont}">&nbsp; Open &nbsp;</span>
-          </a>
+          <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-primary">Open</a>
         </div>
       </div>
       <div class="gamefeed_timesince"><span class="mode impact-font">${data.mode}</span> - <span class="timesince">${timeSince}</span></div>
@@ -369,12 +370,14 @@ export class GamesApp extends BaseApp {
            ${ownerHTML}
         </div>
 
-        <button class="delete_game game" data-gamenumber="${data.gameNumber}">
-          <i class="material-icons">delete</i> Delete
-        </button>
-        <button class="logout_game game" data-gamenumber="${data.gameNumber}">
-          <i class="material-icons">logout</i> Leave
-        </button>
+        <div style="line-height: 4em">
+          <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}">
+            <i class="material-icons">delete</i> Delete
+          </button>
+          <button class="logout_game btn btn-secondary" data-gamenumber="${data.gameNumber}">
+            <i class="material-icons">logout</i> Leave
+          </button>
+        </div>
       </div>
       <div style="clear:both"></div>
     </div>
@@ -404,6 +407,8 @@ export class GamesApp extends BaseApp {
     sit_buttons.forEach(btn => btn.addEventListener('click', e => this.gameSitClick(btn)));
     let link_buttons = this.public_game_view.querySelectorAll('.code_link');
     link_buttons.forEach(btn => btn.addEventListener('click', e => this.copyGameLink(btn)));
+
+    //this.applyAutoSizeToParagraph();
 
     this.refreshOnlinePresence();
   }
