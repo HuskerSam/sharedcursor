@@ -14,14 +14,14 @@
   <meta name='apple-mobile-web-app-capable' content='yes'>
   <meta name='apple-mobile-web-app-status-bar-style' content='black'>
 
-  <link rel='icon' sizes='192x192' href='https://locate.beer/images/logo192.png'>
-  <link rel='apple-touch-icon' href='https://locate.beer/images/logo152.png'>
-  <meta name='msapplication-square310x310logo' content='https://locate.beer/images/logo310.png'>
-  <link rel='apple-touch-icon' href='https://locate.beer/images/logo192.png'>
+  <link rel='icon' sizes='192x192' href='https://sharedcursor.com/images/logo192.png'>
+  <link rel='apple-touch-icon' href='https://sharedcursor.com/images/logo152.png'>
+  <meta name='msapplication-square310x310logo' content='https://sharedcursor.com/images/logo310.png'>
+  <link rel='apple-touch-icon' href='https://sharedcursor.com/images/logo192.png'>
 
   <meta property="og:site_name" content="SharedCursor.com" />
-  <meta property="og:url" content="https://locate.beer/profile" />
-  <meta property="og:title" content="Sign up to send requests on Locate.Beer" />
+  <meta property="og:url" content="https://sharedcursor.com/profile/" />
+  <meta property="og:title" content="Sign up to send requests on sharedcursor.com" />
   <meta property="og:type" content="website" />
 
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/static%2Fogtaghomepagev2-test.gif?alt=media&token=f93d433b-04fa-4cd2-88d6-9b7ba7338dac" />
@@ -109,7 +109,7 @@
       <h2>or</h2>
       <h3 style="margin-bottom:4px">Sign in with email (password free)</h3>
       <div style="display:flex;flex-direction:row;width:100%;">
-        <input class="login_email" type="text" name="email" style="flex:1;margin-left:8px;font-size:21px;">
+        <input class="login_email" type="text" name="email" style="width:10px;flex:1;margin-left:8px;font-size:21px;">
         <button id="login_email_anchor" style="margin:0 8px;font-size:21px;white-space:nowrap">Send Link</button>
       </div>
       <br>
@@ -159,16 +159,23 @@
               </div>
             </div>
           </div>
-          <div class="profile_display_name"></div>
-          <div style="text-align: center;">
-            <select class="profile_display_image_preset">
-              <option>Pick preset</option>
-            </select>
+          <div style="display:flex;flex-direction:row">
+            <div class="profile_display_name" style="flex:1;line-height:2.5em;"></div>
+            <div>
+              <button class="profile_randomize_name btn btn-secondary">Randomize</button>
+            </div>
           </div>
-          <div class="profile_display_image" style="background-image:url(/images/defaultprofile.png)"></div>
-          <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
-          <div style="display:inline-block;">
-            <button class="profile_display_image_clear"> Clear </button>
+          <div style="display:flex;flex-direction:row">
+            <div class="profile_display_image" style="background-image:url(/images/defaultprofile.png)"></div>
+            <div style="flex:1;padding-top: 8px;padding-left:4px;">
+              <select class="profile_display_image_preset form-select form-select-lg">
+                <option>Pick preset</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:none;">
+            <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
+            <button class="profile_display_image_clear btn btn-secondary"> Clear </button>
             <br>
             <br>
             <button class="profile_display_image_upload" style="display:none">Upload</button>
@@ -187,25 +194,27 @@
             </div>
           </div>
           <div>
-            <div style="text-align:center;font-weight: bold;">
+            <div style="text-align:center;font-weight: bold;line-height:2.5em;font-size:.75em;">
               <span class="user_email"></span>
             </div>
-            <div style="line-height:3em;">
-              <button class="delete_profile_button btn btn-secondary">Delete Profile</button>
-              &nbsp;
-              <button class="reset_profile_btn reset_profile btn btn-secondary">Reset Profile</button>
-              &nbsp;
-              <button class="sign_out_button btn btn-secondary">Sign Out</button>
-              &nbsp;
-              <button class="sign_out_all_button btn btn-secondary">Sign All Out</button>
-            </div>
-            <br>
             <div class="form-floating">
               <input type="text" class="form-control profile_new_email" placeholder="New Email">
               <label for="floatingPassword">New Email</label>
             </div>
             <div style="text-align:right;line-height:3em;">
               <button class="change_email_button btn btn-secondary">Change Email</button>
+            </div>
+            <hr>
+            <div style="line-height:3em;text-align: center">
+              <button class="delete_profile_button btn btn-secondary">Delete Profile</button>
+              &nbsp;
+              <button class="reset_profile_btn reset_profile btn btn-secondary">Reset Profile</button>
+            </div>
+            <hr>
+            <div style="line-height: 3em;text-align:center">
+              <button class="sign_out_button btn btn-secondary">Sign Out</button>
+              &nbsp;
+              <button class="sign_out_all_button btn btn-secondary">Sign All Out</button>
             </div>
           </div>
         </div>

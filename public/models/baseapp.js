@@ -230,7 +230,6 @@ export class BaseApp {
     }
   }
   async authGoogleSignIn(e) {
-    e.preventDefault();
     this.provider = new firebase.auth.GoogleAuthProvider();
     this.provider.setCustomParameters({
       'display': 'popup'
@@ -242,8 +241,6 @@ export class BaseApp {
     await firebase.auth().signInAnonymously();
   }
   async signInByEmail(e) {
-    e.preventDefault();
-
     let email = '';
     if (this.login_email)
       email = this.login_email.value;

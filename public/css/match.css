@@ -356,3 +356,11 @@ button.members_header_toggle_button span {
     border: 4px double #cccccc;
   }
 }
+
+.matchgame_page .basic_page_wrapper.app_panel {
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}

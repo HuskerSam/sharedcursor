@@ -276,6 +276,7 @@ a.nav-link {
 
 .app_signed_in .signed_in_flex {
   display: flex;
+  overflow: auto;
 }
 
 .mode_ready_view, .mode_running_view, .mode_end_view {
@@ -284,13 +285,6 @@ a.nav-link {
 
 .mode_ready .mode_ready_view, .mode_running .mode_running_view, .mode_end .mode_end_view {
   display: block;
-}
-
-.matchgame_page .basic_page_wrapper.app_panel {
-  box-sizing: border-box;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 .members_list {

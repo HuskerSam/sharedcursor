@@ -1,4 +1,5 @@
 import BaseApp from '/models/baseapp.js';
+import Utility from '/models/utility.js';
 
 export class ProfileApp extends BaseApp {
   constructor() {
@@ -66,6 +67,9 @@ export class ProfileApp extends BaseApp {
     this.profile_display_image_preset = document.querySelector('.profile_display_image_preset');
     this.profile_display_image_preset.addEventListener('input', e => this.selectedProfilePreset());
 
+    this.profile_randomize_name = document.querySelector('.profile_randomize_name');
+    this.profile_randomize_name.addEventListener('click', e => this.randomizeProfileName());
+
     this.user_email = document.querySelector('.user_email');
 
     this.change_email_button = document.querySelector('.change_email_button');
@@ -83,31 +87,33 @@ export class ProfileApp extends BaseApp {
       else
         ctl.parentElement.parentElement.classList.toggle('expanded');
     }));
+
+    this.sign_out_all_button = document.querySelector('.sign_out_all_button');
+    this.sign_out_all_button.addEventListener('click', e => this.signOutAll());
   }
   async load() {
     await super.load();
   }
   async initPresetLogos() {
     await this.readJSONFile(`/profile/logos.json`, 'profileLogos');
-    let html = '<option>Select a preset image</option>';
+    let html = '<option value="">Select a preset image</option>';
 
     for (let logo in window.profileLogos) {
-      html += `<option value="${window.profileLogos[logo]}">${logo}</option>`
+      let desc = logo.replaceAll('-', ' ').replaceAll('_', '&');
+      html += `<option value="${window.profileLogos[logo]}">${desc}</option>`
     }
 
     this.profile_display_image_preset.innerHTML = html;
   }
   async selectedProfilePreset() {
-    if (this.profile_display_image_preset.selectedIndex > 0) {
-      let updatePacket = {
-        rawImage: this.profile_display_image_preset.value,
-        displayImage: this.profile_display_image_preset.value
-      };
-      if (this.fireToken)
-        await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
-          merge: true
-        });
-    }
+    let updatePacket = {
+      rawImage: this.profile_display_image_preset.value,
+      displayImage: this.profile_display_image_preset.value
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
+        merge: true
+      });
   }
   async authSignInClick(e) {
     e.preventDefault();
@@ -230,5 +236,34 @@ export class ProfileApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
         merge: true
       });
+  }
+  async randomizeProfileName() {
+    let updates = {
+      displayName: Utility.generateName()
+    };
+
+    await firebase.firestore().doc(`Users/${this.uid}`).set(updates, {
+      merge: true
+    });
+  }
+  async signOutAll() {
+    let body = {};
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + `api/user/signallout`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+
+    if (!json.success) {
+      alert('Failed to logout all');
+    }
+    location.reload();
   }
 }

@@ -361,13 +361,6 @@ export class MatchApp extends BaseApp {
           delta_x0 = big_x0;
           delta_y0 = big_y0
         }
-        /*
-                else if (small_x0 < big_x0 && small_y0 > big_y0) {
-                  delta_y0 = small_y0;
-                } else if (small_x0 < big_x0 && small_y0 < big_y0) {
-                  delta_y0 = small_y0;
-                }
-                */
 
         line.style.left = delta_x0 - leftOffset + 'px';
         line.style.top = delta_y0 - topOffset + 'px';

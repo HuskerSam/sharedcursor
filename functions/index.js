@@ -5,6 +5,7 @@ const functions = require('firebase-functions');
 const firebaseAdmin = require('firebase-admin');
 const gameAPI = require('./models/gameapi.js');
 const matchAPI = require('./models/matchapi.js');
+const baseClass = require('./models/baseclass.js');
 
 firebaseAdmin.initializeApp();
 
@@ -18,6 +19,24 @@ exports.api = functions.runWith({
 
 exports.updateDisplayNames = functions.firestore
   .document('Users/{uid}').onWrite(async (change, context) => gameAPI.updateUserMetaData(change, context));
+
+apiApp.post('/user/signallout', async (req, res) => {
+  let authResults = await baseClass.validateCredentials(req.headers.token);
+  if (!authResults.success)
+    return baseClass.respondError(res, authResults.errorMessage);
+
+  let uid = authResults.uid;
+  let result = await firebaseAdmin.auth().revokeRefreshTokens(uid);
+  console.log('result', result);
+
+  let userRecord = await firebaseAdmin.auth().getUser(uid);
+  let tokensRevoked = new Date(userRecord.tokensValidAfterTime).getTime() / 1000;
+
+  return res.send({
+    success: true,
+    tokensRevoked
+  });
+});
 
 apiApp.post('/games/create', async (req, res) => gameAPI.create(req, res));
 apiApp.post('/games/join', async (req, res) => gameAPI.join(req, res));
