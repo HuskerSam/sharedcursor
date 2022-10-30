@@ -101,24 +101,57 @@
         </div>
       </div>
     </nav>
-    <div class="signed_out_options">
-      <button id="login_google" style="line-height: 40px;font-size:25px;">
-        <img src="/images/google_signin.png" style="height:30px;position:relative;top:6px;">
-        Sign in with Google</button>
-      <br>
-      <h2>or</h2>
-      <h3 style="margin-bottom:4px">Sign in with email (password free)</h3>
-      <div style="display:flex;flex-direction:row;width:100%;">
-        <input class="login_email" type="text" name="email" style="width:10px;flex:1;margin-left:8px;font-size:21px;">
-        <button id="login_email_anchor" style="margin:0 8px;font-size:21px;white-space:nowrap">Send Link</button>
+    <div class="signed_out_flex row" style="margin:0">
+      <div class="edit_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div>
+          <div class="section-title">
+            <h3 class="card_title help_panel_button">Google Authorization<i class="material-icons">help</i></h3>
+            <div class="help_info_panel">
+              Only your email is used from the retrieved profile, a user image and name information is usually returned also
+              - this is discarded.
+            </div>
+          </div>
+          <div style="text-align:center;line-height:3em">
+            <button id="login_google" class="btn btn-primary">
+              <img src="/images/google_signin.png" style="height:24px;position:relative;">
+              Sign in with Google</button>
+          </div>
+        </div>
       </div>
-      <br>
-      <br>
-      <div>
-        Anonymous Login
-        <br> <a href="anonsignin" class="anon_login_anchor">Anon Login</a>
-      </div>
+      <div class="edit_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div>
+          <div class="section-title">
+            <h3 class="card_title help_panel_button">Email Authorization <i class="material-icons">help</i></h3>
+            <div class="help_info_panel">
+              No password is required, a custom token is sent to your email address contained in a link you use
+              to visit the site - the credentials are stored in the browser.
+            </div>
+          </div>
 
+          <div style="text-align:center">
+            <div class="form-floating">
+              <input type="text" class="form-control login_email" name="email" placeholder="Login Email">
+              <label>Login Email</label>
+            </div>
+            <br>
+            <button id="login_email_anchor" class="btn btn-primary">Send Link</button>
+          </div>
+        </div>
+      </div>
+      <div class="edit_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div>
+          <div class="section-title">
+            <h3 class="card_title help_panel_button">Anonymous <i class="material-icons">help</i></h3>
+            <div class="help_info_panel">
+              Credentials stored in browser - if you clear history or move to another machine your profile is lost.
+            </div>
+          </div>
+          <div style="text-align:center;line-height:3em">
+            Add email later<br>
+            <button class="anon_login_anchor btn btn-primary">Anonymous Login</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="signed_in_flex row" style="margin:0">
