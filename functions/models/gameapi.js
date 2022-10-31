@@ -168,6 +168,38 @@ module.exports = class GameAPI {
     if (req.body.cardDeck)
       game.cardDeck = req.body.cardDeck;
 
+    let randomAve = Math.floor(Math.random() * 52);
+    let randomSt = Math.floor(Math.random() * 52);
+    let avePrefix = 'N ';
+    let stPrefix = 'W ';
+    if (randomAve > 25)
+      avePrefix = 'S ';
+    randomAve = randomAve % 26;
+    randomSt = randomSt % 26;
+
+    function ordinal_suffix_of(i) {
+      var j = i % 10,
+        k = i % 100;
+      if (j == 1 && k != 11) {
+        return i + "st";
+      }
+      if (j == 2 && k != 12) {
+        return i + "nd";
+      }
+      if (j == 3 && k != 13) {
+        return i + "rd";
+      }
+      return i + "th";
+    }
+
+    randomAve++;
+
+    randomAve = ordinal_suffix_of(randomAve) + ' Avenue'
+    randomSt = String.fromCharCode("A".charCodeAt(0) + randomSt) + ' Street';
+
+    let gameName = randomAve + ' and ' + randomSt;
+    game.name = gameName;
+
     game.publicStatus = GameAPI._publicStatus(game);
 
     let gameNumber = await GameAPI._getUniqueGameSlug('Games');

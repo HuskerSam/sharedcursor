@@ -333,6 +333,7 @@ export class GamesApp extends BaseApp {
     return `<div class="item_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
       <div class="gamelist_item${owner_class}${memberIsUp} gametype_${data.gameType} ${displayClass}${modeClass}${seatsFullClass}"
           data-gamenumber="${gnPrefix}${doc.id}">
+      <div>${data.name}</div>
       <div class="gamefeed_item_header">
         <div style="background-image:${img}" class="game_type_image"></div>
         <div class="game_name">
@@ -372,10 +373,10 @@ export class GamesApp extends BaseApp {
 
         <div style="line-height: 4em">
           <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}">
-            <i class="material-icons">delete</i> Delete
+            Delete
           </button>
           <button class="logout_game btn btn-secondary" data-gamenumber="${data.gameNumber}">
-            <i class="material-icons">logout</i> Leave
+            Leave
           </button>
         </div>
       </div>
