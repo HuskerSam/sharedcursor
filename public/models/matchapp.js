@@ -31,18 +31,12 @@ export class MatchApp extends BaseApp {
     this.tracer_line_0 = document.querySelector('.tracer_line_0');
     this.tracer_line_1 = document.querySelector('.tracer_line_1');
 
-    this.members_header_toggle_button = document.querySelector('.members_header_toggle_button');
-    this.members_header_toggle_button.addEventListener('click', e => this.toggleMembersHeader());
-
     this.tag_inner = document.querySelectorAll('.tag_inner');
     this.tag_description = document.querySelectorAll('.tag_description');
     this.alertErrors = false;
     this.debounceBusy = false;
 
     this.toggleOptionsPanel();
-  }
-  toggleMembersHeader() {
-    document.body.classList.toggle('members_expanded');
   }
   debounce() {
     return false;

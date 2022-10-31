@@ -290,29 +290,13 @@
   text-decoration: none;
 }
 
-button.members_header_toggle_button, button.game_header_toggle_button {
+button.game_header_toggle_button {
   min-width: 50px;
 }
 
-.members_expanded button.members_header_toggle_button span {
-  transform: rotate(0);
-}
-
-button.members_header_toggle_button span {
-  transform: rotate(90deg);
-  transition: transform .5s;
-  display: inline-block;
-}
-
 .members_list {
-  height: 0;
-  overflow: hidden;
   padding-left: 10px;
-  transition: height .5s;
-}
-
-.members_expanded .members_list {
-  height: 100px;
+  height: 25vh;
   overflow: auto;
 }
 
@@ -351,7 +335,6 @@ button.members_header_toggle_button span {
     text-align: center;
     line-height: 35px;
     transform: none;
-    display: inline-block;
     border-radius: 10px;
     border: 4px double #cccccc;
   }

@@ -30,6 +30,7 @@ body.night_mode {}
 
 a {
   color: inherit;
+  cursor: pointer;
 }
 
 a.nav-link:hover {
@@ -731,11 +732,13 @@ a.nav-link {
 }
 
 .game_options_view {
-  display: none;
+  max-height: 0px;
+  transition: max-height 1s;
+  overflow: hidden;
 }
 
 .show_game_options .game_options_view {
-  display: block;
+  max-height: 1000px;
 }
 
 .message_list_send_wrapper {
@@ -745,7 +748,7 @@ a.nav-link {
   line-height: 35px;
   left: 50%;
   transform: translateX(-50%);
-  display: inline-block;
+  display: inline-flex;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border: 4px double #cccccc;
@@ -757,8 +760,15 @@ a.nav-link {
 
 .message_list_input {
   font-size: 28px;
-  width: 180px;
+  width: 100px;
   padding: 4px;
+  flex: 1;
+}
+
+.message_list_send_wrapper a {
+  line-height: inherit;
+  padding: 14px;
+  padding-bottom: 0px;
 }
 
 .mode_running .player_dock .dock_pos_0, .mode_running .player_dock .dock_pos_1,
