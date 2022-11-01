@@ -88,7 +88,7 @@ button.create_new_game_btn {
 }
 
 .newgametype_match .match_additional_options {
-  display: block;
+  display: inline;
 }
 
 .game_type_image {
@@ -342,25 +342,6 @@ button.toggle_expanded_game {
   transform: rotate(0deg);
 }
 
-button.feed_expand_all {
-  border-color: transparent;
-  background: none;
-  color: inherit;
-}
-
-button.feed_expand_all span.icon {
-  transform: rotate(90deg);
-  transition: transform 0.5s;
-  display: inline-block;
-  position: relative;
-  top: 0px;
-  left: 14px;
-}
-
-.expanded_all.feed_expand_all span.icon {
-  transform: rotate(0deg);
-}
-
 .game_owner_label {
   opacity: .75;
   display: inline-block;
@@ -373,9 +354,7 @@ button.feed_expand_all span.icon {
   background: rgba(127, 127, 127, .5);
 }
 
-button.new_game_type_wrapper {
-  flex: 1;
-}
+button.new_game_type_wrapper {}
 
 .new_game_type_image {
   height: 50px;
@@ -405,11 +384,6 @@ button.code_link {
 
 .tab-pane {
   flex: 1;
-}
-
-.basic_options {
-  flex: 1;
-  overflow: auto;
 }
 
 .body_wrapper {
@@ -459,4 +433,22 @@ button.code_link {
 
 .member_feed_wrapper .game_user_wrapper span:nth-child(1) {
   margin-top: -12px;
+}
+
+.basic_options {
+  flex-direction: column;
+}
+
+.static_menu a.logo {
+  color: white;
+  cursor: default;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: inherit;
+    background-color: rgba(127, 127, 127, .5);
+}
+
+.tab_buttons .btn {
+  font-size: 26px;
 }

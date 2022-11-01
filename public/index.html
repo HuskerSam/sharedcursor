@@ -88,38 +88,42 @@
           <a class="mute_button">
             <i class="material-icons">volume_up</i>
           </a>
-          <a href="/profile/">
-            <i class="material-icons">person</i>
-          </a>
-          <a href="/about/">
-            <i class="material-icons smallerby4">info</i>
-          </a>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/profile/">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">About</a>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
-    <nav class="signed_in_options" style="line-height:1em;margin-top:.5em;">
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-recent-tab" data-bs-toggle="tab" data-bs-target="#nav-recent" type="button" role="tab" aria-controls="nav-recent" aria-selected="false" tabindex="-1">Recent</button>
-        <button class="nav-link" id="nav-find-tab" data-bs-toggle="tab" data-bs-target="#nav-find" type="button" role="tab" aria-controls="nav-find" aria-selected="false" tabindex="-1">Find</button>
-        <button class="nav-link" id="nav-new-tab" data-bs-toggle="tab" data-bs-target="#nav-new" type="button" role="tab" aria-controls="nav-new" aria-selected="true">New</button>
-        <button class="game feed_expand_all" style="display:none">
-          <span class="icon">&#9660;</span>
-        </button>
+
+    <div class="signed_in_options" style="text-align:left;padding-left:16px;">
+      <div class="btn-group tab_buttons" role="group">
+        <button class="btn btn-primary active" value="recent">Recent</button>
+        <button class="btn btn-primary" value="find">Find</button>
+        <button class="btn btn-primary" value="new">New</button>
       </div>
-    </nav>
+    </div>
+
     <div class="tab-content signed_in_flex body_wrapper" id="nav-tabContent">
       <div class="tab-pane fade active show game_history_view row" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
       </div>
       <div class="tab-pane fade public_game_view row" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab">
       </div>
-      <div class="tab-pane fade" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-        <div class="basic_options">
-          <div style="display:flex;flex-direction:row">
-            <button class="new_game_type_wrapper game selected" value="match">
-              <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
-              <div class="new_game_type_name">Match!</div>
-            </button>
-          </div>
+      <div class="tab-pane fade basic_options" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
+        <div style="display:flex;flex-direction:row">
+          <button class="new_game_type_wrapper selected btn btn-primary" value="match">
+            <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
+            <div class="new_game_type_name">Match!</div>
+          </button>
           <div style="display:none">
             <span class="span_label">Type</span>
             <select class="gametype_select">
@@ -128,50 +132,63 @@
             </select>
             <br>
           </div>
-          <span class="span_label">Visibility</span>
-          <select class="visibility_select">
-            <option selected>public</option>
-            <option>private</option>
-          </select>
-          <br>
-          <span class="span_label">Seats</span>
-          <select class="seat_count_select">
-            <option value="1">1 seat</option>
-            <option selected value="2">2 seats</option>
-            <option value="3">3 seats</option>
-            <option value="4">4 seats</option>
-          </select>
-          <br>
-          <span class="span_label">Messaging</span>
-          <select class="message_level_select">
-            <option value="seated">Seated</option>
-            <option value="all">All</option>
-          </select>
-          <br>
-          <span class="span_label">Seat Limit</span>
-          <select class="seats_per_user_select">
-            <option value="one">One</option>
-            <option value="none">None</option>
-          </select>
-          <br>
+        </div>
+        <div style="text-align:left">
+          <div style="display:inline-block;">
+            <label class="form-label">Visibility</label>
+            <select class="visibility_select form-select form-select-lg">
+              <option selected>public</option>
+              <option>private</option>
+            </select>
+          </div>
+          <div style="display:inline-block;">
+            <label class="form-label">Seats</label>
+            <select class="seat_count_select form-select form-select-lg">
+              <option value="1">1 seat</option>
+              <option selected value="2">2 seats</option>
+              <option value="3">3 seats</option>
+              <option value="4">4 seats</option>
+            </select>
+          </div>
+
+          <div style="display:inline-block;">
+            <label class="form-label">Messaging</label>
+            <select class="message_level_select form-select form-select-lg">
+              <option value="seated">Seated</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+
+          <div style="display:inline-block;">
+            <label class="form-label">Seat Limit</label>
+            <select class="seats_per_user_select form-select form-select-lg">
+              <option value="one">One</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+
           <div class="match_additional_options">
-            <span class="span_label">Card Deck</span>
-            <select class="card_deck_select">
-              <option value="empyrean">Empyrean</option>
-              <option value="zipline">Zipline</option>
-            </select>
-            <br>
-            <span class="span_label">Scoring</span>
-            <select class="scoring_system_select">
-              <option value="simple">Simple</option>
-              <option value="stable">Stable</option>
-              <option value="regular" selected>Regular</option>
-            </select>
-            <br>
+            <div style="display:inline-block;">
+              <label class="form-label">Card Deck</label>
+              <select class="card_deck_select form-select form-select-lg">
+                <option value="empyrean">Empyrean</option>
+                <option value="zipline">Zipline</option>
+              </select>
+            </div>
+
+            <div style="display:inline-block;">
+              <label class="form-label">Scoring</label>
+              <select class="scoring_system_select form-select form-select-lg">
+                <option value="simple">Simple</option>
+                <option value="stable">Stable</option>
+                <option value="regular" selected>Regular</option>
+              </select>
+            </div>
+
           </div>
-          <div style="text-align:center;padding: 1em">
-            <button class="create_new_game_btn game primary">Create Game</button>
-          </div>
+        </div>
+        <div style="text-align:center;padding: 1em">
+          <button class="create_new_game_btn btn btn-primary">Create Game</button>
         </div>
       </div>
     </div>

@@ -24,9 +24,6 @@ export class GamesApp extends BaseApp {
         return;
     }
 
-    this.feed_expand_all = document.querySelector('.feed_expand_all');
-    this.feed_expand_all.addEventListener('click', e => this.toggleFeedMembers());
-
     this.new_game_type_wrappers = document.querySelectorAll('.new_game_type_wrapper');
     this.new_game_type_wrappers.forEach(btn => btn.addEventListener('click', e => this.handleGameTypeClick(btn)));
 
@@ -42,60 +39,30 @@ export class GamesApp extends BaseApp {
     setInterval(() => this.updateGamesFeed(), this.baseRedrawFeedTimer);
     setInterval(() => this.updatePublicGamesFeed(), this.baseRedrawFeedTimer);
     */
+
+    this.tab_buttons = document.querySelectorAll('.tab_buttons button');
+    this.tab_buttons.forEach((btn, i) => btn.addEventListener('click', e => this.updateTabButtons(btn, i)));
+
+    this.tab_panes = document.querySelectorAll(".body_wrapper .tab-pane");
   }
+  updateTabButtons(btn, i) {
+  if (btn) {
+    this.tabSelected = btn.value;
+    this.tab_buttons.forEach(btn => btn.classList.remove('active'));
+    this.tab_panes.forEach(tab => {
+      tab.classList.remove('active');
+      tab.classList.remove('show');
+    });
+    this.tab_panes[i].classList.add('active');
+    this.tab_panes[i].classList.add('show');
+    btn.classList.add('active');
+  }
+}
   handleGameTypeClick(btn) {
     this.new_game_type_wrappers.forEach(b => b.classList.remove('selected'));
     this.gametype_select.value = btn.value;
     this.updateNewGameType();
     btn.classList.add('selected');
-  }
-  toggleFeedMembers() {
-    if (this.feed_expand_all.classList.contains('expanded_all')) {
-      this.feed_expand_all.classList.remove('expanded_all');
-
-      let items = document.querySelectorAll('.gamelist_item');
-      items.forEach(div => {
-        let gameNumber = div.dataset.gamenumber;
-        div.classList.remove('show_seats')
-        this.recentExpanded[gameNumber] = false;
-      });
-    } else {
-      this.feed_expand_all.classList.add('expanded_all');
-
-      let items = document.querySelectorAll('.gamelist_item');
-      items.forEach(div => {
-        let gameNumber = div.dataset.gamenumber;
-        div.classList.add('show_seats')
-        this.recentExpanded[gameNumber] = true;
-      });
-    }
-  }
-  _updateFeedToggleButtonStatus() {
-    let p = document.body.classList.contains('show_public_games_view');
-
-    let prefix = '.public_game_view ';
-    if (!p)
-      prefix = '.game_history_view ';
-
-    let items = document.querySelectorAll(prefix + '.gamelist_item');
-
-    let all_open = true;
-    let all_closed = true;
-
-    items.forEach(i => {
-      if (i.classList.contains('show_seats')) {
-        all_closed = false;
-      } else {
-        all_open = false;
-      }
-    });
-
-    if (all_closed && !all_open) {
-      this.feed_expand_all.classList.remove('expanded_all');
-    }
-    if (all_open && !all_closed) {
-      this.feed_expand_all.classList.add('expanded_all');
-    }
   }
   toggleTabView() {
     if (document.body.classList.contains('show_games_view')) {
@@ -120,8 +87,6 @@ export class GamesApp extends BaseApp {
       document.body.classList.remove('show_profile_games');
       this.game_feed_toggle_button.innerHTML = 'Recent';
     }
-
-    this._updateFeedToggleButtonStatus();
 
     return false;
   }
@@ -227,8 +192,6 @@ export class GamesApp extends BaseApp {
       this.recentExpanded[gameNumber] = true;
       p.classList.add('show_seats');
     }
-
-    this._updateFeedToggleButtonStatus();
   }
   __getUserTemplate(member, name, img, onlineStatus = false, impact = false, nameClass = '') {
     let impactFont = impact ? ' impact-font' : '';

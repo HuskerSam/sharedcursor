@@ -33,19 +33,6 @@ a {
   cursor: pointer;
 }
 
-a.nav-link:hover {
-  color: rgb(50, 100, 200);
-}
-
-a.nav-link {
-  font-weight: bold;
-  color: inherit;
-}
-
-.night_mode a:hover, .night_mode a.nav-link:hover {
-  color: rgb(40, 240, 240);
-}
-
 .app_panel {
   background: rgb(127, 127, 127);
   color: rgb(127, 127, 127);
@@ -181,30 +168,7 @@ a.nav-link {
   padding-right: 5px;
 }
 
-@media all and (max-width:768px) {
-  .static_menu svg {
-    height: 48px;
-  }
-
-  .static_menu a img {
-    height: 32px;
-  }
-
-  .static_menu a {
-    padding: 8px 12px;
-  }
-
-  .static_menu a i {
-    font-size: 30px;
-  }
-
-  .static_menu a i.smallerby4 {
-    font-size: 26px;
-    top: 2px;
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-}
+@media all and (max-width:768px) {}
 
 .night_mode_toggle .mode_day {
   display: none;
@@ -375,21 +339,6 @@ a.nav-link {
   font-size: 25px;
 }
 
-.basic_options {
-  font-size: 24px;
-  text-align: left;
-  line-height: 2.5em;
-  overflow: auto;
-  flex: 1;
-}
-
-.basic_options .span_label {
-  display: inline-block;
-  width: 100px;
-  margin-left: 10px;
-  font-size: 20px;
-}
-
 .seat_0_wrapper {
   display: none;
   white-space: nowrap;
@@ -429,11 +378,6 @@ a.nav-link {
 
 .seat_wrapper {
   padding-left: 10px;
-}
-
-.basic_options select {
-  font-size: 26px;
-  padding: 5px 10px;
 }
 
 .messages_list .delete_game {
@@ -781,37 +725,6 @@ a.nav-link {
   opacity: 1;
 }
 
-button.game, a.game {
-  border-radius: 10px;
-  border: 4px double #cccccc;
-  text-align: center;
-  font-size: 30px;
-  padding: 5px;
-  cursor: pointer;
-  margin: 5px;
-  min-width: 85px;
-}
-
-a.game {
-  color: inherit;
-}
-
-button.primary {
-  background-color: rgb(50, 100, 240);
-  color: #eeeeee;
-}
-
-button.game[disabled="true"] {
-  border-color: transparent;
-  background: transparent;
-  color: inherit;
-}
-
-.btn {
-  border-radius: 10px;
-  border: 4px double #cccccc;
-}
-
 .btn i.material-icons {
   position: relative;
   top: 6px;
@@ -905,6 +818,19 @@ button.game[disabled="true"] {
   display: block;
 }
 
+a.nav-link:hover {
+  color: rgb(50, 100, 200);
+}
+
+a.nav-link, .nav-link {
+  color: inherit;
+  font-size: 26px;
+}
+
+.night_mode a:hover, .night_mode a.nav-link:hover, .night_mode .nav-link:hover {
+  color: rgb(40, 240, 240);
+}
+
 .header_static_bar {
   text-align: left;
 }
@@ -948,4 +874,16 @@ button.game[disabled="true"] {
 
 .form-control:focus {
   background: none;
+}
+
+.game_header_panel {
+  height: 30px;
+}
+
+.night_mode .navbar-toggler {
+  border-color: white;
+}
+
+.night_mode .navbar-toggler .navbar-toggler-icon {
+  filter: invert(1);
 }

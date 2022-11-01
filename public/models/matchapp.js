@@ -31,8 +31,8 @@ export class MatchApp extends BaseApp {
     this.tracer_line_0 = document.querySelector('.tracer_line_0');
     this.tracer_line_1 = document.querySelector('.tracer_line_1');
 
-    this.tag_inner = document.querySelectorAll('.tag_inner');
-    this.tag_description = document.querySelectorAll('.tag_description');
+    this.game_header_panel = document.querySelector('.game_header_panel');
+
     this.alertErrors = false;
     this.debounceBusy = false;
 
@@ -186,13 +186,7 @@ export class MatchApp extends BaseApp {
     this.currentplayer_score_dock.classList.add('seat_color_' + seatIndex);
     this.match_board_wrapper.classList.add('seat_color_' + seatIndex);
 
-/*
-    this.game_table_view.classList.remove('seat_color_0');
-    this.game_table_view.classList.remove('seat_color_1');
-    this.game_table_view.classList.remove('seat_color_2');
-    this.game_table_view.classList.remove('seat_color_3');
-    this.game_table_view.classList.add('seat_color_' + seatIndex);
-*/
+    this.game_header_panel.innerHTML = `${this.gameData.name}`;
 
     this._updateCardStatus();
     this._updateFinishStatus();
