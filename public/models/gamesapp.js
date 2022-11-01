@@ -19,7 +19,6 @@ export class GamesApp extends BaseApp {
         this.joinGame();
     });
 
-
     this.gametype_select = document.querySelector('.gametype_select');
     this.gametype_select.addEventListener('input', e => this.updateNewGameType());
 
@@ -37,8 +36,6 @@ export class GamesApp extends BaseApp {
     this.basic_options = document.querySelector('.basic_options');
 
     this.updateNewGameType();
-
-    this.recentExpanded = {};
 
     this.initRTDBPresence();
     //redraw feeds to update time since values
@@ -179,26 +176,12 @@ export class GamesApp extends BaseApp {
       e.preventDefault();
       this.logoutGame(btn, btn.dataset.gamenumber);
     }));
-    let toggle_buttons = this.game_history_view.querySelectorAll('button.toggle_expanded_game');
-    toggle_buttons.forEach(btn => btn.addEventListener('click', e => this.toggleFeedSeats(btn)));
     let sit_buttons = this.game_history_view.querySelectorAll('.sit_button');
     sit_buttons.forEach(btn => btn.addEventListener('click', e => this.gameSitClick(btn)));
     let link_buttons = this.game_history_view.querySelectorAll('.code_link');
     link_buttons.forEach(btn => btn.addEventListener('click', e => this.copyGameLink(btn)));
 
     this.refreshOnlinePresence();
-  }
-  toggleFeedSeats(btn) {
-    let p = btn.parentElement.parentElement.parentElement;
-    let gameNumber = btn.dataset.gamenumber;
-
-    if (p.classList.contains('show_seats')) {
-      this.recentExpanded[gameNumber] = false;
-      p.classList.remove('show_seats');
-    } else {
-      this.recentExpanded[gameNumber] = true;
-      p.classList.add('show_seats');
-    }
   }
   __getUserTemplate(member, name, img, onlineStatus = false, impact = false, nameClass = '') {
     let impactFont = impact ? ' impact-font' : '';
@@ -233,14 +216,7 @@ export class GamesApp extends BaseApp {
     let openImpactFont = '';
     let displayClass = '';
     let seatsFull = true;
-    if (publicFeed) {
-      displayClass = ' show_seats';
-      if (this.recentExpanded['public_' + doc.id] === false)
-        displayClass = '';
-    } else {
-      if (this.recentExpanded[doc.id])
-        displayClass = ' show_seats';
-    }
+
     for (let c = 0; c < data.numberOfSeats; c++) {
       if (c === 2)
         membersHtml += '</div><div class="member_feed_wrapper">';
@@ -253,11 +229,9 @@ export class GamesApp extends BaseApp {
           name = 'Anonymous';
         if (!img)
           img = '/images/defaultprofile.png';
-        innerHTML = this.__getUserTemplate(member, name, img, !publicFeed, false, 'paragraphfit_auto');
+        innerHTML = this.__getUserTemplate(member, name, img, !publicFeed, false);
 
         if (c === data.currentSeat) {
-          memberUpHtml = this.__getUserTemplate(member, name, img, true, true, 'paragraphfit_auto');
-
           if (member === this.uid) {
             memberIsUp = ' gameplayer_turn_next';
             openImpactFont = ' impact-font';
@@ -303,34 +277,28 @@ export class GamesApp extends BaseApp {
     return `<div class="item_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
       <div class="gamelist_item${owner_class}${memberIsUp} gametype_${data.gameType} ${displayClass}${modeClass}${seatsFullClass}"
           data-gamenumber="${gnPrefix}${doc.id}">
-      <div>${data.name}</div>
-      <div class="gamefeed_item_header">
+      <div class="header">
         <div style="background-image:${img}" class="game_type_image"></div>
+        <span class="name">${data.name}</span>
+        <span class="timesince">${timeSince}</span>
+      </div>
+      <div class="open_button_wrapper">
+        <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}"><i class="material-icons">delete</i></button>
+        <button class="logout_game btn btn-secondary" data-gamenumber="${data.gameNumber}"><i class="material-icons">logout</i></button>
+        <button class="code_link btn btn-secondary" data-url="/${data.gameType}/?game=${data.gameNumber}"><i class="material-icons">content_copy</i></button>
+        <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-primary">Open</a>
+        <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-secondary" target="_blank"><i class="material-icons">open_in_new</i></a>
+      </div>
+      <div class="gamefeed_item_header">
         <div class="game_name">
           <span class="title">
           ${title}
           </span>
         </div>
-        <div class="open_button_wrapper">
-          <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-primary">Open</a>
+        <div class="round_wrapper">
+          <span class="label">${data.gameNumber} &nbsp; </span>
+          <span class="round">${round}</span>
         </div>
-      </div>
-      <div class="gamefeed_timesince"><span class="mode impact-font">${data.mode}</span> - <span class="timesince">${timeSince}</span></div>
-      <div style="display:flex;flex-direction:row">
-        <button class="code_link game" data-url="/${data.gameType}/?game=${data.gameNumber}"><i class="material-icons">content_copy</i> <span>${data.gameNumber}</span></button>
-        <div style="flex:1"></div>
-        <div>
-          <button class="game toggle_expanded_game" data-gamenumber="${gnPrefix}${data.gameNumber}">
-            <span class="label">Round &nbsp; &nbsp; &nbsp;</span>
-            <span class="round">${round}</span>
-            <span class="icon">&#9660;</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="next_player">
-        <span class="next_label">&nbsp;Player:</span>
-        <span class="next_player_wrapper game_user_wrapper">${memberUpHtml}</span>
       </div>
       <div class="gamefeed_members_list">
         ${membersHtml}
@@ -339,15 +307,6 @@ export class GamesApp extends BaseApp {
         <span class="game_owner_label owner_wrapper">Game<br>Owner</span>
         <div class="owner_wrapper game_user_wrapper">
            ${ownerHTML}
-        </div>
-
-        <div style="line-height: 4em">
-          <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}">
-            Delete
-          </button>
-          <button class="logout_game btn btn-secondary" data-gamenumber="${data.gameNumber}">
-            Leave
-          </button>
         </div>
       </div>
       <div style="clear:both"></div>
@@ -372,8 +331,6 @@ export class GamesApp extends BaseApp {
       e.preventDefault();
       this.deleteGame(btn, btn.dataset.gamenumber);
     }));
-    let toggle_buttons = this.public_game_view.querySelectorAll('button.toggle_expanded_game');
-    toggle_buttons.forEach(btn => btn.addEventListener('click', e => this.toggleFeedSeats(btn)));
     let sit_buttons = this.public_game_view.querySelectorAll('.sit_button');
     sit_buttons.forEach(btn => btn.addEventListener('click', e => this.gameSitClick(btn)));
     let link_buttons = this.public_game_view.querySelectorAll('.code_link');
@@ -392,7 +349,7 @@ export class GamesApp extends BaseApp {
     let result = await this._gameAPISit(btn.dataset.seatindex, btn.dataset.gamenumber);
 
     if (result) {
-      btn.parentElement.parentElement.parentElement.parentElement.querySelector('.game_number_open').click();
+      btn.closest('.gamelist_item').querySelector('.game_number_open').click();
     }
   }
   async joinGame(gameNumber, gameType = '') {

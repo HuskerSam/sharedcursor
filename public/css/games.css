@@ -39,6 +39,29 @@ button.logout_game {
   border: ridge 4px transparent;
   overflow: hidden;
   clear: both;
+  position: relative;
+}
+
+.gamelist_item .header {
+  line-height: 34px;
+}
+
+.gamelist_item .header .name {
+  font-weight: bold;
+  position: relative;
+  top: -4px;
+  left: 6px;
+}
+
+.gamelist_item .id {
+  float: left;
+  padding-top: 16px;
+}
+
+.gamelist_item .timesince {
+  position: absolute;
+  right: 10px;
+  top: -2px;
 }
 
 .gamelist_item, .gametype_guess {
@@ -98,6 +121,9 @@ button.create_new_game_btn {
   background-size: contain;
   width: 32px;
   margin-left: 6px;
+  display: inline-block;
+  height: 32px;
+  margin-top: 12px;
 }
 
 .game_name {
@@ -110,12 +136,6 @@ button.create_new_game_btn {
   font-size: 28px;
 }
 
-.gamefeed_timesince {
-  line-height: 45px;
-  font-size: 20px;
-  text-align: center;
-}
-
 a.game_number_open {
   text-decoration: none;
 }
@@ -125,25 +145,12 @@ a.game_number_open {
   background: transparent;
 }
 
-.next_player {
-  text-align: left;
-  line-height: 40px;
-  height: 40px;
-  display: flex;
-  flex-direction: row;
-}
-
 .gamefeed_owners_panel {
   text-align: center;
 }
 
 .gamefeed_members_list, .gamefeed_owners_panel {
-  overflow: hidden;
-  max-height: 0px;
-  opacity: .5;
-  transition: max-height .5s, opacity .5s;
-  position: relative;
-  top: 10px;
+
 }
 
 .gamefeed_owners_panel {
@@ -156,11 +163,6 @@ a.game_number_open {
   border-radius: 6px;
 }
 
-.show_seats .gamefeed_members_list, .show_seats .gamefeed_owners_panel {
-  max-height: 400px;
-  opacity: 1;
-}
-
 .gameitem_running.gamelist_item.gameplayer_turn_next {
   border-color: rgba(255, 50, 50, .75);
 }
@@ -171,34 +173,6 @@ a.game_number_open {
 
 .night_mode .gameitem_running.gamelist_item.gameplayer_turn_next {
   border-color: rgba(40, 240, 240, .75);
-}
-
-.next_player_wrapper {
-  font-size: 24px;
-  flex: 1;
-  line-height: 32px;
-  padding-left: 4px;
-  display: flex;
-  flex-direction: row;
-}
-
-.next_player_wrapper span.member_online_status {
-  width: 32px;
-  height: 32px;
-}
-
-span.next_label {
-  display: inline-block;
-  width: 90px;
-  opacity: .75;
-}
-
-.next_player_wrapper span.name {
-  display: inline-block;
-  white-space: nowrap;
-  flex: 1;
-  padding-right: 25px;
-  padding-top: 6px;
 }
 
 .member_feed_wrapper {
@@ -247,14 +221,6 @@ span.next_label {
   top: 2px;
 }
 
-.next_player_wrapper.game_user_wrapper .member_online_status {
-  position: absolute;
-  left: -22px;
-  top: 6px;
-  width: 20px;
-  height: 20px;
-}
-
 .gamefeed_members_list .member_online_status {
   position: absolute;
   left: 24px;
@@ -274,14 +240,6 @@ button.game.sit_button {
 .public_game_view button.game.sit_button {}
 
 a.game_number_open {}
-
-.public_game_view .next_player_wrapper {
-  visibility: hidden;
-}
-
-.public_game_view .gamelist_item.gameplayer_turn_next {
-  border-color: transparent;
-}
 
 .public_game_view .gamelist_item.feed_game_owner {
   border-color: rgba(0, 255, 0, .5);
@@ -312,7 +270,7 @@ button.game_feed_toggle_button {
   width: 4em;
 }
 
-button.toggle_expanded_game {
+button.round_wrapper {
   background-color: transparent;
   text-align: right;
   white-space: nowrap;
@@ -320,26 +278,17 @@ button.toggle_expanded_game {
   border: transparent;
 }
 
-.toggle_expanded_game span.label {
-  font-size: 12px;
-  opacity: .75;
-  padding-top: 18px;
+.round_wrapper span.label {
   float: left;
-}
-
-.toggle_expanded_game span.icon {
-  transform: rotate(90deg);
-  transition: transform 0.5s;
-  display: inline-block;
   position: relative;
-  top: -5px;
+  top: 15px;
 }
 
-.toggle_expanded_game span.round {
+.round_wrapper span.round {
   font-size: 38px;
 }
 
-.show_seats .toggle_expanded_game span.icon {
+.show_seats .round_wrapper span.icon {
   transform: rotate(0deg);
 }
 
@@ -373,10 +322,6 @@ button.new_game_type_wrapper {}
 button.new_game_type_wrapper.selected {
   border-color: rgb(0, 255, 0);
   background: rgba(0, 255, 0, .5);
-}
-
-.open_button_wrapper {
-  line-height: 55px;
 }
 
 button.code_link {
@@ -452,4 +397,8 @@ button.code_link {
 
 .tab_buttons .btn {
   font-size: 26px;
+}
+
+.open_button_wrapper {
+  text-align: right;
 }

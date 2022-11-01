@@ -398,43 +398,6 @@ a {
   visibility: visible;
 }
 
-.code_link_copy {
-  border: none;
-  background: none;
-  float: right;
-  color: inherit;
-}
-
-.games_tab_header label {
-  display: inline-block;
-  text-align: center;
-  line-height: 30px;
-  padding: 0px 4px;
-}
-
-.games_tab_header input {
-  pointer-events: none;
-}
-
-.games_tab_header span {
-  font-size: 24px;
-  line-height: 26px;
-}
-
-.games_tab_header input {
-  width: 20px;
-  height: 20px;
-  margin: 0;
-}
-
-.games_tab_header {
-  display: block;
-  text-align: left;
-  font-weight: bold;
-  padding-left: 10px;
-  padding-top: 10px;
-}
-
 .seat_button_wrapper {
   width: 85px;
   display: inline-block;
@@ -731,7 +694,7 @@ a {
 
 .btn i.material-icons {
   position: relative;
-  top: 6px;
+  top: 4px;
 }
 
 .currentplayer_score_dock {}
@@ -830,7 +793,16 @@ a.nav-link, .nav-link {
   font-size: 26px;
 }
 
-.night_mode a:hover, .night_mode a.nav-link:hover, .night_mode .nav-link:hover {
+button.btn {
+  font-size: 26px;
+}
+
+a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.btn:hover {
+  color: rgb(50, 100, 200);
+  background: transparent;
+}
+
+.night_mode a:hover, .night_mode a.nav-link:hover, .night_mode .nav-link:hover, .night_mode button:hover {
   color: rgb(40, 240, 240);
 }
 
