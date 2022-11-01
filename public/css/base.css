@@ -17,6 +17,10 @@ body {
 
 body.night_mode {}
 
+.nav-link {
+  color: inherit;
+}
+
 .impact-font {
   font-family: 'Arial';
   color: rgb(50, 100, 200);
@@ -823,7 +827,6 @@ a.nav-link:hover {
 }
 
 a.nav-link, .nav-link {
-  color: inherit;
   font-size: 26px;
 }
 

@@ -118,91 +118,96 @@
       </div>
       <div class="tab-pane fade public_game_view row" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab">
       </div>
-      <div class="tab-pane fade basic_options" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-        <div style="display:flex;flex-direction:row">
-          <button class="new_game_type_wrapper selected btn btn-primary" value="match">
-            <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
-            <div class="new_game_type_name">Match!</div>
-          </button>
-          <div style="display:none">
-            <span class="span_label">Type</span>
-            <select class="gametype_select">
-              <option value="guess">Guess?</option>
-              <option selected value="match">Match!</option>
-            </select>
-            <br>
-          </div>
-        </div>
-        <div style="text-align:left">
-          <div style="display:inline-block;">
-            <label class="form-label">Visibility</label>
-            <select class="visibility_select form-select form-select-lg">
-              <option selected>public</option>
-              <option>private</option>
-            </select>
-          </div>
-          <div style="display:inline-block;">
-            <label class="form-label">Seats</label>
-            <select class="seat_count_select form-select form-select-lg">
-              <option value="1">1 seat</option>
-              <option selected value="2">2 seats</option>
-              <option value="3">3 seats</option>
-              <option value="4">4 seats</option>
-            </select>
-          </div>
-
-          <div style="display:inline-block;">
-            <label class="form-label">Messaging</label>
-            <select class="message_level_select form-select form-select-lg">
-              <option value="seated">Seated</option>
-              <option value="all">All</option>
-            </select>
-          </div>
-
-          <div style="display:inline-block;">
-            <label class="form-label">Seat Limit</label>
-            <select class="seats_per_user_select form-select form-select-lg">
-              <option value="one">One</option>
-              <option value="none">None</option>
-            </select>
-          </div>
-
-          <div class="match_additional_options">
-            <div style="display:inline-block;">
-              <label class="form-label">Card Deck</label>
-              <select class="card_deck_select form-select form-select-lg">
-                <option value="empyrean">Empyrean</option>
-                <option value="zipline">Zipline</option>
-              </select>
+      <div class="tab-pane fade row new_game_view" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
+        <div class="item_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+          <div class="join_game_view">
+            <div style="line-height: 40px;font-size: 25px;padding: 5px;">
+              <span>Code</span>
+              <input class="game_code_start" style="font-size:25px;width:150px;flex:1">
+              <button class="join_game_btn" style="font-size:25px">Join</button>
             </div>
-
-            <div style="display:inline-block;">
-              <label class="form-label">Scoring</label>
-              <select class="scoring_system_select form-select form-select-lg">
-                <option value="simple">Simple</option>
-                <option value="stable">Stable</option>
-                <option value="regular" selected>Regular</option>
-              </select>
-            </div>
-
           </div>
-        </div>
-        <div style="text-align:center;padding: 1em">
-          <button class="create_new_game_btn btn btn-primary">Create Game</button>
+          <div style="display:flex;flex-direction:row">
+            <button class="new_game_type_wrapper selected btn btn-primary" value="match">
+              <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
+              <div class="new_game_type_name">Match!</div>
+            </button>
+            <div style="display:none">
+              <span class="span_label">Type</span>
+              <select class="gametype_select">
+                <option value="guess">Guess?</option>
+                <option selected value="match">Match!</option>
+              </select>
+              <br>
+            </div>
+          </div>
+          <div class="basic_options">
+            <div style="text-align:left">
+              <div style="display:inline-block;">
+                <label class="form-label">Visibility</label>
+                <select class="visibility_select form-select form-select-lg">
+                  <option selected>public</option>
+                  <option>private</option>
+                </select>
+              </div>
+              <div style="display:inline-block;">
+                <label class="form-label">Seats</label>
+                <select class="seat_count_select form-select form-select-lg">
+                  <option value="1">1 seat</option>
+                  <option selected value="2">2 seats</option>
+                  <option value="3">3 seats</option>
+                  <option value="4">4 seats</option>
+                </select>
+              </div>
+              <br>
+              <div style="display:inline-block;">
+                <label class="form-label">Messaging</label>
+                <select class="message_level_select form-select form-select-lg">
+                  <option value="seated">Seated</option>
+                  <option value="all">All</option>
+                </select>
+              </div>
+              <div style="display:inline-block;">
+                <label class="form-label">Seat Limit</label>
+                <select class="seats_per_user_select form-select form-select-lg">
+                  <option value="one">One</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+
+              <div class="match_additional_options">
+                <div style="display:inline-block;">
+                  <label class="form-label">Card Deck</label>
+                  <select class="card_deck_select form-select form-select-lg">
+                    <option value="empyrean">Empyrean</option>
+                    <option value="zipline">Zipline</option>
+                  </select>
+                </div>
+
+                <div style="display:inline-block;">
+                  <label class="form-label">Scoring</label>
+                  <select class="scoring_system_select form-select form-select-lg">
+                    <option value="simple">Simple</option>
+                    <option value="stable">Stable</option>
+                    <option value="regular" selected>Regular</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+            <div style="text-align:center;padding: 1em">
+              <button class="create_new_game_btn btn btn-primary">Create Game</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
     <div class="app_signed_out_panel">
       <h3>Please <a href="/profile">Sign In</a> to play</h3>
     </div>
   </div>
-  <div class="join_game_view" style="display:none;">
-    <div style="line-height: 40px;font-size: 25px;padding: 5px;">
-      <span>Code</span>
-      <input class="game_code_start" style="font-size:25px;width:150px;flex:1">
-      <button class="join_game_btn" style="font-size:25px">Join</button>
-    </div>
-  </div>
+
   <style id="laststyleblock"></style>
 </body>
 

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="Sign up to play games" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="shortcut icon" href="/images/logo64.png">
+  <meta name='mobile-web-app-capable' content='yes'>
+  <meta name='apple-mobile-web-app-capable' content='yes'>
+  <meta name='apple-mobile-web-app-status-bar-style' content='black'>
+
+  <link rel='icon' sizes='192x192' href='https://sharedcursor.com/images/logo192.png'>
+  <link rel='apple-touch-icon' href='https://sharedcursor.com/images/logo152.png'>
+  <meta name='msapplication-square310x310logo' content='https://sharedcursor.com/images/logo310.png'>
+  <link rel='apple-touch-icon' href='https://sharedcursor.com/images/logo192.png'>
+
+  <meta property="og:site_name" content="SharedCursor.com" />
+  <meta property="og:url" content="https://sharedcursor.com/profile/" />
+  <meta property="og:title" content="Sign up to send requests on sharedcursor.com" />
+  <meta property="og:type" content="website" />
+
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/promotion-3abec.appspot.com/o/static%2Fogtaghomepagev2-test.gif?alt=media&token=f93d433b-04fa-4cd2-88d6-9b7ba7338dac" />
+  <meta property="og:description" content="" />
+  <meta property="pagedate" content="01/01/2030" />
+
+  <link rel="shortcut icon" href="/images/logo64.png">
+
+  <!-- Firebase links -->
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
+
+  <script src="/__/firebase/init.js"></script>
+
+  <script>
+    window.addEventListener('load', async (event) => {
+      let module = await import('/models/baseapp.js');
+
+      window.BaseApp = new module.BaseApp();
+    });
+  </script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/about.css" />
+
+</head>
+
+
+<body class="">
+  <div class="basic_page_wrapper app_panel">
+    <nav class="navbar navbar-expand-lg  nav-scroll">
+      <div class="container">
+        <div class="static_menu">
+          <a class="logo" href="/">
+            <svg version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+              <clipPath id="p.0">
+                <path d="m0 0l686.2231 0l0 689.7769l-686.2231 0l0 -689.7769z" clip-rule="nonzero" />
+              </clipPath>
+              <g clip-path="url(#p.0)">
+                <path fill="#000000" fill-opacity="0.0" d="m0 0l686.2231 0l0 689.7769l-686.2231 0z" fill-rule="evenodd" />
+                <path fill="#000000" d="m8.0 344.0l0 0c0 -185.56767 150.43233 -336.0 336.0 -336.0l0 0c89.11273 0 174.57568 35.3999 237.58789 98.412125c63.012207 63.012222 98.41211 148.47513 98.41211 237.58788l0 0c0 185.56769 -150.43231 336.0 -336.0 336.0l0 0c-185.56767 0 -336.0 -150.43231 -336.0 -336.0z"
+                  fill-rule="evenodd" />
+                <path fill="currentColor" d="m65.60555 344.0l0 0c0 -153.7526 124.641106 -278.3937 278.3937 -278.3937l0 0c73.834595 0 144.64511 29.33068 196.85406 81.53962c52.208923 52.208954 81.53961 123.019485 81.53961 196.85408l0 0c0 153.7526 -124.64108 278.39368 -278.39368 278.39368l0 0c-153.75261 0 -278.3937 -124.64108 -278.3937 -278.39368z"
+                  fill-rule="evenodd" />
+                <path fill="#0000ff" d="m147.52493 238.4042l0 0c0 -53.01935 42.980667 -96.0 96.0 -96.0l0 0c25.460785 0 49.878754 10.114258 67.88226 28.117737c18.003479 18.003494 28.117737 42.42148 28.117737 67.88226l0 0c0 53.019318 -42.98065 96.0 -96.0 96.0l0 0c-53.019333 0 -96.0 -42.980682 -96.0 -96.0z"
+                  fill-rule="evenodd" />
+                <path fill="#ff0000" d="m392.0 314.87402l0 0c0 -53.01935 42.98065 -96.000015 96.0 -96.000015l0 0c25.460754 0 49.878784 10.114258 67.88226 28.117752c18.003479 18.00351 28.117737 42.42148 28.117737 67.88226l0 0c0 53.019318 -42.98065 96.0 -96.0 96.0l0 0c-53.01935 0 -96.0 -42.980682 -96.0 -96.0z"
+                  fill-rule="evenodd" />
+                <path fill="#00ff00" d="m176.0 478.8924l0 0c0 -53.01935 42.980667 -96.0 96.0 -96.0l0 0c25.460785 0 49.878754 10.114258 67.88226 28.117737c18.003479 18.00351 28.117737 42.42148 28.117737 67.88226l0 0c0 53.01935 -42.98065 96.0 -96.0 96.0l0 0c-53.019333 0 -96.0 -42.98065 -96.0 -96.0z"
+                  fill-rule="evenodd" />
+              </g>
+            </svg>
+          </a>
+          <a class="night_mode_toggle">
+            <i class="material-icons mode_day">light_mode</i>
+            <i class="material-icons mode_night smallerby4">mode_night</i>
+          </a>
+          <a class="mute_button">
+            <i class="material-icons">volume_up</i>
+          </a>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/profile/">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link impact-font" style="cursor:default">About</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="signed_out_options" style="margin:0">
+        <h3>Please <a href="/profile">Sign In</a> to play</h3>
+    </div>
+    <div>
+      <h1>Credits</h1>
+      <h2>Small Code</h2>
+      Random Name Generator: <a href="https://gist.github.com/tkon99/4c98af713acc73bed74c" target="_blank">Github</a>
+      <br>
+      <br>
+      <h2>Big Code</h2>
+      Used Firebase/Firestore and Bootstrap 5 as the major libraries and platform.
+  </div>
+</body>
+
+</html>
