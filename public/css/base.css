@@ -208,11 +208,6 @@ a {
   cursor: pointer;
 }
 
-.paragraphfit_auto {
-  overflow: auto;
-  text-align: justify;
-}
-
 .signup_alert {
   display: none;
 }
@@ -343,43 +338,6 @@ a {
   font-size: 25px;
 }
 
-.seat_0_wrapper {
-  display: none;
-  white-space: nowrap;
-}
-
-.seat_1_wrapper {
-  display: none;
-  white-space: nowrap;
-}
-
-.seat_2_wrapper {
-  display: none;
-  white-space: nowrap;
-}
-
-.seat_3_wrapper {
-  display: none;
-  white-space: nowrap;
-}
-
-.seatcount_1 .seat_0_wrapper {
-  display: block;
-}
-
-.seatcount_2 .seat_0_wrapper, .seatcount_2 .seat_1_wrapper {
-  display: block;
-}
-
-.seatcount_3 .seat_0_wrapper, .seatcount_3 .seat_1_wrapper, .seatcount_3 .seat_2_wrapper {
-  display: block;
-}
-
-.seatcount_4 .seat_0_wrapper, .seatcount_4 .seat_1_wrapper,
-.seatcount_4 .seat_2_wrapper, .seatcount_4 .seat_3_wrapper {
-  display: block;
-}
-
 .seat_wrapper {
   padding-left: 10px;
 }
@@ -396,14 +354,6 @@ a {
 
 .game_owner .messages_list .delete_game {
   visibility: visible;
-}
-
-.seat_button_wrapper {
-  width: 85px;
-  display: inline-block;
-  line-height: 35px;
-  text-align: center;
-  padding-right: 25px;
 }
 
 .game_user_wrapper span:nth-child(1) {
@@ -533,6 +483,44 @@ a {
   position: relative;
 }
 
+.dock_container .stand_button {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background: none;
+  border: none;
+  padding-left: 8px;
+  padding-bottom: 6px;
+  color: inherit;
+  z-index: 100;
+  display: none;
+}
+
+.dock_container.dock_seat_stand .stand_button {
+  display: inline-block;
+}
+
+.dock_container .sit_button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: none;
+  border: none;
+  color: inherit;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 100;
+  padding: 12px 28px;
+  display: none;
+}
+
+.dock_container.dock_seat_open .sit_button {
+  display: inline-block;
+}
+
+.dock_container .sit_button i {
+  font-size: 36px;
+}
+
 .dock_container .game_user_wrapper span:nth-child(1) {
   height: 60px;
   width: 60px;
@@ -610,10 +598,6 @@ a {
 
 .game_owner .match_finish {
   display: inline-block;
-}
-
-.seat0_sitdown_btn, .seat1_sitdown_btn, .seat2_sitdown_btn, .seat3_sitdown_btn {
-  font-size: 24px;
 }
 
 .match_board_outer {
@@ -765,16 +749,6 @@ a {
 
 .message_list_input:focus {
   background: white;
-}
-
-.seat_button_wrapper .admin_only {
-  display: inline-block;
-  visibility: hidden;
-}
-
-.game_owner .seat_button_wrapper .admin_only {
-  display: inline-block;
-  visibility: visible;
 }
 
 .messages_list {

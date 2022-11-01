@@ -347,30 +347,6 @@ export class BaseApp {
     e.preventDefault();
     return true;
   }
-  applyAutoSizeToParagraph(query = '.paragraphfit_auto', startFontSize = 40) {
-    let elements = document.querySelectorAll(query);
-
-    let results = [];
-
-    elements.forEach(el => {
-      let fontSize = startFontSize;
-      el.style.fontSize = fontSize + 'px';
-      let overflow = el.style.overflow;
-      let whitespace = el.style.whiteSpace;
-      el.style.overflow = 'auto';
-      el.style.whiteSpace = 'normal';
-      while (el.scrollHeight > el.offsetHeight) {
-        fontSize -= .5;
-        if (fontSize < 6)
-          break;
-        el.style.fontSize = fontSize + 'px';
-      }
-      el.style.overflow = overflow;
-      el.style.whiteSpace = whitespace;
-    });
-  }
-
-
 
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)
@@ -450,14 +426,23 @@ export class BaseApp {
     }
   }
   _initGameCommon() {
-    document.querySelector('.player_dock .dock_seat0')
+    document.querySelector('.player_dock .dock_pos_0 .sit_button')
       .addEventListener('click', e => this.dockSit(0, e));
-    document.querySelector('.player_dock .dock_seat1')
+    document.querySelector('.player_dock .dock_pos_1 .sit_button')
       .addEventListener('click', e => this.dockSit(1, e));
-    document.querySelector('.player_dock .dock_seat2')
+    document.querySelector('.player_dock .dock_pos_2 .sit_button')
       .addEventListener('click', e => this.dockSit(2, e));
-    document.querySelector('.player_dock .dock_seat3')
+    document.querySelector('.player_dock .dock_pos_3 .sit_button')
       .addEventListener('click', e => this.dockSit(3, e));
+
+    document.querySelector('.player_dock .dock_pos_0 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(0, e));
+    document.querySelector('.player_dock .dock_pos_1 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(1, e));
+    document.querySelector('.player_dock .dock_pos_2 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(2, e));
+    document.querySelector('.player_dock .dock_pos_3 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(3, e));
 
     this.seat0_name = document.querySelector('.seat0_name');
     this.seat1_name = document.querySelector('.seat1_name');
@@ -467,14 +452,6 @@ export class BaseApp {
     this.seat1_img = document.querySelector('.seat1_img');
     this.seat2_img = document.querySelector('.seat2_img');
     this.seat3_img = document.querySelector('.seat3_img');
-    this.seat0_sitdown_btn = document.querySelector('.seat0_sitdown_btn');
-    this.seat0_sitdown_btn.addEventListener('click', e => this.gameAPIToggle(0));
-    this.seat1_sitdown_btn = document.querySelector('.seat1_sitdown_btn');
-    this.seat1_sitdown_btn.addEventListener('click', e => this.gameAPIToggle(1));
-    this.seat2_sitdown_btn = document.querySelector('.seat2_sitdown_btn');
-    this.seat2_sitdown_btn.addEventListener('click', e => this.gameAPIToggle(2));
-    this.seat3_sitdown_btn = document.querySelector('.seat3_sitdown_btn');
-    this.seat3_sitdown_btn.addEventListener('click', e => this.gameAPIToggle(3));
 
     this.gameid_span = document.querySelector('.gameid_span');
     this.turnindex_span = document.querySelector('.turnindex_span');
@@ -858,7 +835,8 @@ export class BaseApp {
     if (this.gameData['seat' + seatIndex.toString()] !== null)
       return;
 
-    if (this.userSeated)
+    let limit1 = this.gameData.seatsPerUser === 'one';
+    if (this.userSeated && limit1)
       return;
 
     return this._gameAPISit(seatIndex);
@@ -886,20 +864,51 @@ export class BaseApp {
   }
 
   _paintDockSeats(queryPrefix = '.player_dock ') {
+    let gameOwner = (this.gameData.createUser === this.uid);
+    let limit1 = this.gameData.seatsPerUser === 'one';
+
     for (let c = 0; c < this.gameData.numberOfSeats; c++) {
       let key = 'seat' + c.toString();
       let seat = document.querySelector(queryPrefix + `.dock_seat${c.toString()}`);
       let spans = seat.querySelectorAll('span');
+
       if (this.gameData[key]) {
         spans[0].style.backgroundImage = 'url(' + this._gameMemberData(this.gameData[key]).img + ")";
-        seat.classList.remove('dock_seat_open');
+        seat.parentElement.classList.remove('dock_seat_open');
+
+        if (this.gameData[key] === this.uid || gameOwner)
+          seat.parentElement.classList.add('dock_seat_stand');
+        else
+          seat.parentElement.classList.remove('dock_seat_stand');
       } else {
+        seat.parentElement.classList.remove('dock_seat_stand');
         spans[0].style.backgroundImage = '';
-        seat.classList.add('dock_seat_open');
+
+        if (this.userSeated && limit1)
+          seat.parentElement.classList.remove('dock_seat_open');
+        else
+          seat.parentElement.classList.add('dock_seat_open');
       }
     }
   }
   paintDock() {
+    document.body.classList.remove('seatcount_1');
+    document.body.classList.remove('seatcount_2');
+    document.body.classList.remove('seatcount_3');
+    document.body.classList.remove('seatcount_4');
+    document.body.classList.remove('runningseatcount_1');
+    document.body.classList.remove('runningseatcount_2');
+    document.body.classList.remove('runningseatcount_3');
+    document.body.classList.remove('runningseatcount_4');
+
+    document.body.classList.add('seatcount_' + this.gameData.numberOfSeats.toString());
+    if (!this.gameData.runningNumberOfSeats)
+      this.gameData.runningNumberOfSeats = 1;
+    let numSeats = this.gameData.runningNumberOfSeats;
+    if (this.gameData.mode === 'ready')
+      numSeats = this.gameData.numberOfSeats;
+    document.body.classList.add('runningseatcount_' + numSeats.toString());
+
     this.seatsFull = 0;
     this.userSeated = false;
     for (let c = 0; c < this.gameData.numberOfSeats; c++) {
@@ -960,48 +969,6 @@ export class BaseApp {
     if (this.code_link_href) {
       let path = window.location.href;
       this.code_link_href.setAttribute('href', path);
-    }
-  }
-  //should be named gameOptionsPaintSeats() - paints the seats on the options tab
-  gamePaintSeats() {
-    document.body.classList.remove('seatcount_1');
-    document.body.classList.remove('seatcount_2');
-    document.body.classList.remove('seatcount_3');
-    document.body.classList.remove('seatcount_4');
-    document.body.classList.remove('runningseatcount_1');
-    document.body.classList.remove('runningseatcount_2');
-    document.body.classList.remove('runningseatcount_3');
-    document.body.classList.remove('runningseatcount_4');
-
-    document.body.classList.add('seatcount_' + this.gameData.numberOfSeats.toString());
-    if (!this.gameData.runningNumberOfSeats)
-      this.gameData.runningNumberOfSeats = 1;
-    let numSeats = this.gameData.runningNumberOfSeats;
-    if (this.gameData.mode === 'ready')
-      numSeats = this.gameData.numberOfSeats;
-    document.body.classList.add('runningseatcount_' + numSeats.toString());
-
-    for (let c = 0; c < 4; c++) {
-      let key = 'seat' + c.toString();
-      if (this.gameData[key]) {
-        this[key + '_name'].innerHTML = this._gameMemberData(this.gameData[key]).name;
-        this[key + '_img'].style.backgroundImage = 'url(' + this._gameMemberData(this.gameData[key]).img + ")";
-      } else {
-        this[key + '_name'].innerHTML = '';
-        this[key + '_img'].style.backgroundImage = '';
-      }
-
-      this[key + '_sitdown_btn'].classList.remove('admin_only');
-      if (this.gameData[key] === this.uid) {
-        this[key + '_sitdown_btn'].innerHTML = 'Stand';
-      } else {
-        if (this.gameData[key]) {
-          this[key + '_sitdown_btn'].innerHTML = 'Boot';
-          this[key + '_sitdown_btn'].classList.add('admin_only');
-        } else
-          this[key + '_sitdown_btn'].innerHTML = 'Sit';
-      }
-
     }
   }
 

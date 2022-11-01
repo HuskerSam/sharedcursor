@@ -14,6 +14,12 @@ body {
   padding-top: 8px;
   text-align: left;
   padding-left: 16px;
+  height: 70px;
+}
+
+.join_game_btn {
+  position: relative;
+  top: 3px;
 }
 
 button.delete_game {
@@ -182,8 +188,7 @@ a.game_number_open {
 
 .member_feed_wrapper>div {
   flex: 1;
-  height: 60px;
-  line-height: 50px;
+  line-height: 60px;
   text-align: center;
   border: ridge 4px rgba(255, 255, 255, 1);
   overflow: hidden;
@@ -216,11 +221,6 @@ a.game_number_open {
   border-color: transparent;
 }
 
-.game_user_wrapper {
-  position: relative;
-  top: 2px;
-}
-
 .gamefeed_members_list .member_online_status {
   position: absolute;
   left: 24px;
@@ -243,16 +243,6 @@ a.game_number_open {}
 
 .public_game_view .gamelist_item.feed_game_owner {
   border-color: rgba(0, 255, 0, .5);
-}
-
-.owner_wrapper {
-  display: inline-block;
-  padding-bottom: 10px;
-}
-
-.owner_wrapper .member_online_status {
-  margin-left: 10px;
-  margin-right: 10px;
 }
 
 .game_history_view, .public_game_view, .new_game_view {
@@ -340,7 +330,7 @@ button.code_link {
 
 .item_card_shadow {
   border-radius: 7px;
-  padding: 1% .5%;
+  padding: 2px;
   position: relative;
   display: inline-block;
 }
@@ -401,4 +391,12 @@ button.code_link {
 
 .open_button_wrapper {
   text-align: right;
+}
+
+.game_user_wrapper {
+  position: relative;
+}
+
+.gameplayer_cell_next {
+  background: rgba(0, 255, 0, .25);
 }

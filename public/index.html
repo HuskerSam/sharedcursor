@@ -110,7 +110,6 @@
         <button class="btn btn-primary active" value="recent">Current</button>
         <button class="btn btn-primary" value="find">Join</button>
         <button class="btn btn-primary" value="new">New</button>
-        <button class="btn btn-primary" value="history">History</button>
       </div>
     </div>
 
@@ -119,12 +118,13 @@
       </div>
       <div class="tab-pane fade" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab" style="flex-direction:column;overflow:hidden;">
         <div class="join_game_view">
-          <div style="display:inline-block;">
+          <div style="float:left;">
             <div class="form-floating">
               <input type="text" class="form-control game_code_start" name="gamecode" placeholder="Code">
               <label>Code</label>
             </div>
           </div>
+          &nbsp;
           <button class="join_game_btn btn btn-secondary">Join</button>
         </div>
         <div class=" public_game_view row" style="flex:1;overflow:auto;"></div>

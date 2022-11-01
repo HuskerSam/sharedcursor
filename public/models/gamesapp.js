@@ -50,18 +50,18 @@ export class GamesApp extends BaseApp {
     this.tab_panes = document.querySelectorAll(".body_wrapper .tab-pane");
   }
   updateTabButtons(btn, i) {
-  if (btn) {
-    this.tabSelected = btn.value;
-    this.tab_buttons.forEach(btn => btn.classList.remove('active'));
-    this.tab_panes.forEach(tab => {
-      tab.classList.remove('active');
-      tab.classList.remove('show');
-    });
-    this.tab_panes[i].classList.add('active');
-    this.tab_panes[i].classList.add('show');
-    btn.classList.add('active');
+    if (btn) {
+      this.tabSelected = btn.value;
+      this.tab_buttons.forEach(btn => btn.classList.remove('active'));
+      this.tab_panes.forEach(tab => {
+        tab.classList.remove('active');
+        tab.classList.remove('show');
+      });
+      this.tab_panes[i].classList.add('active');
+      this.tab_panes[i].classList.add('show');
+      btn.classList.add('active');
+    }
   }
-}
   handleGameTypeClick(btn) {
     this.new_game_type_wrappers.forEach(b => b.classList.remove('selected'));
     this.gametype_select.value = btn.value;
@@ -211,17 +211,24 @@ export class GamesApp extends BaseApp {
 
     let membersHtml = '<div class="member_feed_wrapper">';
     let memberUpHtml = '';
-    let ownerHTML = this.__getUserTemplate(data.createUser, data.memberNames[data.createUser], data.memberImages[data.createUser], true);
+    //let ownerHTML = this.__getUserTemplate(data.createUser, data.memberNames[data.createUser], data.memberImages[data.createUser], true);
     let memberIsUp = '';
-    let openImpactFont = '';
     let displayClass = '';
     let seatsFull = true;
+    let limit1 = data.seatsPerUser === 'one';
 
-    for (let c = 0; c < data.numberOfSeats; c++) {
+    for (let c = 0; c < 4; c++) {
       if (c === 2)
         membersHtml += '</div><div class="member_feed_wrapper">';
+
+      if (c >= data.numberOfSeats) {
+        membersHtml += '<div class="table_seat_fill">&nbsp;</div>';
+        continue;
+      }
+
       let member = data['seat' + c];
       let innerHTML = '';
+      let memberCellClass = '';
       if (member) {
         let name = data.memberNames[member];
         let img = data.memberImages[member];
@@ -234,7 +241,7 @@ export class GamesApp extends BaseApp {
         if (c === data.currentSeat) {
           if (member === this.uid) {
             memberIsUp = ' gameplayer_turn_next';
-            openImpactFont = ' impact-font';
+            memberCellClass = ' gameplayer_cell_next';
           }
         }
       } else {
@@ -243,16 +250,17 @@ export class GamesApp extends BaseApp {
           innerHTML = `<button class="sit_anchor sit_button btn btn-primary" data-gamenumber="${data.gameNumber}" data-seatindex="${c}">
             Sit
           </button>`;
+        else if (!limit1)
+          innerHTML = `<button class="sit_anchor sit_button btn btn-secondary" data-gamenumber="${data.gameNumber}" data-seatindex="${c}">
+          Sit
+        </button>`;
         else
-          innerHTML = '<button class="sit_anchor open_sit">Empty</button>';
+          innerHTML = 'Empty';
         innerHTML = `<div style="flex:1;text-align:center;">${innerHTML}</div>`;
       }
 
-      membersHtml += `<div class="game_user_wrapper game_list_user">${innerHTML}</div>`;
+      membersHtml += `<div class="game_user_wrapper game_list_user ${memberCellClass}">${innerHTML}</div>`;
     }
-
-    if (data.numberOfSeats % 2 === 1)
-      membersHtml += '<div class="table_seat_fill"></div>';
 
     membersHtml += '</div>';
 
@@ -287,7 +295,7 @@ export class GamesApp extends BaseApp {
         <button class="logout_game btn btn-secondary" data-gamenumber="${data.gameNumber}"><i class="material-icons">logout</i></button>
         <button class="code_link btn btn-secondary" data-url="/${data.gameType}/?game=${data.gameNumber}"><i class="material-icons">content_copy</i></button>
         <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-primary">Open</a>
-        <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-secondary" target="_blank"><i class="material-icons">open_in_new</i></a>
+        <a href="/${data.gameType}/?game=${data.gameNumber}" class="game_number_open btn btn-primary" target="_blank"><i class="material-icons">open_in_new</i></a>
       </div>
       <div class="gamefeed_item_header">
         <div class="game_name">
@@ -302,12 +310,6 @@ export class GamesApp extends BaseApp {
       </div>
       <div class="gamefeed_members_list">
         ${membersHtml}
-      </div>
-      <div class="gamefeed_owners_panel">
-        <span class="game_owner_label owner_wrapper">Game<br>Owner</span>
-        <div class="owner_wrapper game_user_wrapper">
-           ${ownerHTML}
-        </div>
       </div>
       <div style="clear:both"></div>
     </div>
@@ -335,8 +337,6 @@ export class GamesApp extends BaseApp {
     sit_buttons.forEach(btn => btn.addEventListener('click', e => this.gameSitClick(btn)));
     let link_buttons = this.public_game_view.querySelectorAll('.code_link');
     link_buttons.forEach(btn => btn.addEventListener('click', e => this.copyGameLink(btn)));
-
-    //this.applyAutoSizeToParagraph();
 
     this.refreshOnlinePresence();
   }

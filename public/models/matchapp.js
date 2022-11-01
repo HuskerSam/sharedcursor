@@ -127,7 +127,6 @@ export class MatchApp extends BaseApp {
     this.scoring_system_select.value = this.gameData.scoringSystem;
 
     this._updateGameMembersList();
-    this.gamePaintSeats();
     this.paintDock();
     this._paintDockSeats('.match_end_result ');
 
