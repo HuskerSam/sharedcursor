@@ -10,9 +10,10 @@ body {
 }
 
 .join_game_view {
-  display: flex;
-  flex-direction: row;
-  margin: 0 4px;
+  display: block;
+  padding-top: 8px;
+  text-align: left;
+  padding-left: 16px;
 }
 
 button.delete_game {
@@ -399,7 +400,7 @@ button.code_link {
   display: inline-block;
 }
 
-.item_card_shadow > div {
+.item_card_shadow>div {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   padding: 2%;
   border-radius: 5px;
@@ -445,8 +446,8 @@ button.code_link {
 }
 
 .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    color: inherit;
-    background-color: rgba(127, 127, 127, .5);
+  color: inherit;
+  background-color: rgba(127, 127, 127, .5);
 }
 
 .tab_buttons .btn {

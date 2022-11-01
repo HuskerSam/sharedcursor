@@ -13,6 +13,13 @@ export class GamesApp extends BaseApp {
     this.join_game_btn = document.querySelector('.join_game_btn');
     this.join_game_btn.addEventListener('click', e => this.joinGame());
 
+    this.game_code_start = document.querySelector('.game_code_start');
+    this.game_code_start.addEventListener("keyup", e => {
+      if (event.key === "Enter")
+        this.joinGame();
+    });
+
+
     this.gametype_select = document.querySelector('.gametype_select');
     this.gametype_select.addEventListener('input', e => this.updateNewGameType());
 
@@ -388,11 +395,13 @@ export class GamesApp extends BaseApp {
       btn.parentElement.parentElement.parentElement.parentElement.querySelector('.game_number_open').click();
     }
   }
-  async joinGame(gameNumber, gameType = 'games') {
+  async joinGame(gameNumber, gameType = '') {
     if (!gameNumber)
-      gameNumber = document.querySelector('.game_code_start').value;
+      gameNumber = this.game_code_start.value;
     let a = document.createElement('a');
-    a.setAttribute('href', `/${gameType}/?game=${gameNumber}`);
+    if (gameType !== '')
+      gameType += '/';
+    a.setAttribute('href', `/${gameType}?game=${gameNumber}`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
