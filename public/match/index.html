@@ -101,15 +101,23 @@
         <div class="game_table_view card_shadow">
           <div class="">
             <div class="address_bar">
-              &nbsp;
-              <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
-              &nbsp;
-              <div class="game_header_panel"></div>
-              <a href="#" style="display:none;" class="code_link_href">URL</a>
-              <span class="gameid_span"></span>
+              <div>
+                <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
+              </div>
+              <div style="flex:1;">
+                <div class="game_header_panel"></div>
+                <a href="#" style="display:none;" class="code_link_href">URL</a>
+              </div>
+              <div>
+                <button class="match_start btn btn-primary admin_only">Start</button>
+                <button class="match_finish btn btn-secondary admin_only">End</button>
+                <button class="match_reset btn btn-primary admin_only">Next</button>
+                <span class="normal_only game_mode_status impact-font"></span>
+              </div>
             </div>
             <div class="game_options_view">
               <div class="basic_options">
+                <div class="gameid_span"></div>
                 <div class="options_edit_block">
                   <label class="form-label">Visibility</label>
                   <select class="visibility_select form-select form-select-lg">
@@ -161,7 +169,6 @@
                   </select>
                   <div class="scoring_system_display"></div>
                 </div>
-                <button class="match_finish btn btn-primary admin_only">End Match Now!</button>
               </div>
             </div>
           </div>
@@ -205,12 +212,7 @@
             </div>
           </div>
           <div class="mode_ready_view">
-            <span class="seats_full_display"></span>
-            <button class="match_start admin_only btn btn-primary">Start</button>
             <div class="match_instructions">
-              <h1 class="collapse_header">
-                Rules and Play
-              </h1>
               Select 2 cards<br>
               Match: remove them and go again<br>
               No match: next players turn<br>
@@ -289,9 +291,6 @@
             </div>
           </div>
           <div class="mode_end_view">
-            <div class="admin_only">
-              <button class="match_reset admin_only game primary" style="margin:15px">Next Match!</button>
-            </div>
             <div class="match_result_message"></div>
             <div class="match_end_display_promo">
               <div style="margin-bottom: 6px;">

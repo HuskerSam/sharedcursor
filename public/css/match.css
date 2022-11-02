@@ -125,12 +125,6 @@
   border: solid 2px rgb(0, 255, 0);
 }
 
-.seats_full_display {
-  font-size: 24px;
-  display: inline-block;
-  padding: 20px 10px;
-}
-
 .match_board_wrapper .match_quandrant {
   min-height: 100px;
   flex: 1;

@@ -78,7 +78,7 @@ export class MatchApp extends BaseApp {
     if (gameId) {
       await this.gameAPIJoin(gameId);
       this.currentGame = gameId;
-      this.gameid_span.innerHTML = '(' + this.currentGame + ')';
+      this.gameid_span.innerHTML = this.currentGame;
 
       if (this.gameSubscription)
         this.gameSubscription();

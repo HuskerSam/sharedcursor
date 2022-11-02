@@ -348,6 +348,87 @@ export class BaseApp {
     return true;
   }
 
+  _initGameCommon() {
+    document.querySelector('.player_dock .dock_pos_0 .sit_button')
+      .addEventListener('click', e => this.dockSit(0, e));
+    document.querySelector('.player_dock .dock_pos_1 .sit_button')
+      .addEventListener('click', e => this.dockSit(1, e));
+    document.querySelector('.player_dock .dock_pos_2 .sit_button')
+      .addEventListener('click', e => this.dockSit(2, e));
+    document.querySelector('.player_dock .dock_pos_3 .sit_button')
+      .addEventListener('click', e => this.dockSit(3, e));
+
+    document.querySelector('.player_dock .dock_pos_0 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(0, e));
+    document.querySelector('.player_dock .dock_pos_1 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(1, e));
+    document.querySelector('.player_dock .dock_pos_2 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(2, e));
+    document.querySelector('.player_dock .dock_pos_3 .stand_button')
+      .addEventListener('click', e => this.gameAPIToggle(3, e));
+
+    this.seat0_name = document.querySelector('.seat0_name');
+    this.seat1_name = document.querySelector('.seat1_name');
+    this.seat2_name = document.querySelector('.seat2_name');
+    this.seat3_name = document.querySelector('.seat3_name');
+    this.seat0_img = document.querySelector('.seat0_img');
+    this.seat1_img = document.querySelector('.seat1_img');
+    this.seat2_img = document.querySelector('.seat2_img');
+    this.seat3_img = document.querySelector('.seat3_img');
+
+    this.gameid_span = document.querySelector('.gameid_span');
+    this.turnindex_span = document.querySelector('.turnindex_span');
+    this.turnphase_span = document.querySelector('.turnphase_span');
+
+    this.members_list = document.querySelector('.members_list');
+    this.visibility_display = document.querySelector('.visibility_display');
+    this.seat_count_display = document.querySelector('.seat_count_display');
+    this.message_level_display = document.querySelector('.message_level_display');
+    this.seats_per_user_display = document.querySelector('.seats_per_user_display');
+
+    this.message_level_select = document.querySelector('.message_level_select');
+    this.message_level_select.addEventListener('input', e => this.gameAPIOptions());
+
+    this.seats_per_user_select = document.querySelector('.seats_per_user_select');
+    this.seats_per_user_select.addEventListener('input', e => this.gameAPIOptions());
+
+    this.visibility_select = document.querySelector('.visibility_select');
+    this.visibility_select.addEventListener('input', e => this.gameAPIOptions());
+
+    this.seat_count_select = document.querySelector('.seat_count_select');
+    this.seat_count_select.addEventListener('input', e => this.gameAPIOptions());
+
+    this.games_tab_radios = document.querySelectorAll('input[name="game_view_type"]');
+    this.games_tab_radios.forEach(ctl => ctl.addEventListener('input', e => this.updateTabView(e)));
+    this.updateTabView();
+
+    this.send_message_list_button = document.querySelector('.send_message_list_button');
+    this.send_message_list_button.addEventListener('click', e => this.sendGameMessage());
+    this.message_list_input = document.querySelector('.message_list_input');
+    this.message_list_input.addEventListener("keyup", e => {
+      if (event.key === "Enter")
+        this.sendGameMessage();
+    });
+    this.messages_list = document.querySelector('.messages_list');
+
+    this.match_start = document.querySelector('.match_start');
+    this.match_start.addEventListener('click', e => this.startGame());
+    this.match_finish = document.querySelector('.match_finish');
+    this.match_finish.addEventListener('click', e => this.finishGame());
+    this.match_reset = document.querySelector('.match_reset');
+    this.match_reset.addEventListener('click', e => this.resetGame());
+
+    this.game_mode_status = document.querySelector('.game_mode_status');
+
+    this.code_link_href = document.querySelector('.code_link_href');
+    this.code_link_copy = document.querySelector('.code_link_copy');
+    if (this.code_link_copy)
+      this.code_link_copy.addEventListener('click', e => this.copyGameLinkToClipboard());
+
+    this.initGameMessageFeed();
+  }
+
+
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)
       this.userStatusDatabaseRef.set({
@@ -424,86 +505,6 @@ export class BaseApp {
       if (this.userPresenceStatus[this.gameData['seat3']])
         document.body.classList.add('seat_user_online3');
     }
-  }
-  _initGameCommon() {
-    document.querySelector('.player_dock .dock_pos_0 .sit_button')
-      .addEventListener('click', e => this.dockSit(0, e));
-    document.querySelector('.player_dock .dock_pos_1 .sit_button')
-      .addEventListener('click', e => this.dockSit(1, e));
-    document.querySelector('.player_dock .dock_pos_2 .sit_button')
-      .addEventListener('click', e => this.dockSit(2, e));
-    document.querySelector('.player_dock .dock_pos_3 .sit_button')
-      .addEventListener('click', e => this.dockSit(3, e));
-
-    document.querySelector('.player_dock .dock_pos_0 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(0, e));
-    document.querySelector('.player_dock .dock_pos_1 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(1, e));
-    document.querySelector('.player_dock .dock_pos_2 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(2, e));
-    document.querySelector('.player_dock .dock_pos_3 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(3, e));
-
-    this.seat0_name = document.querySelector('.seat0_name');
-    this.seat1_name = document.querySelector('.seat1_name');
-    this.seat2_name = document.querySelector('.seat2_name');
-    this.seat3_name = document.querySelector('.seat3_name');
-    this.seat0_img = document.querySelector('.seat0_img');
-    this.seat1_img = document.querySelector('.seat1_img');
-    this.seat2_img = document.querySelector('.seat2_img');
-    this.seat3_img = document.querySelector('.seat3_img');
-
-    this.gameid_span = document.querySelector('.gameid_span');
-    this.turnindex_span = document.querySelector('.turnindex_span');
-    this.turnphase_span = document.querySelector('.turnphase_span');
-
-    this.members_list = document.querySelector('.members_list');
-    this.visibility_display = document.querySelector('.visibility_display');
-    this.seat_count_display = document.querySelector('.seat_count_display');
-    this.message_level_display = document.querySelector('.message_level_display');
-    this.seats_per_user_display = document.querySelector('.seats_per_user_display');
-
-    this.message_level_select = document.querySelector('.message_level_select');
-    this.message_level_select.addEventListener('input', e => this.gameAPIOptions());
-
-    this.seats_per_user_select = document.querySelector('.seats_per_user_select');
-    this.seats_per_user_select.addEventListener('input', e => this.gameAPIOptions());
-
-    this.visibility_select = document.querySelector('.visibility_select');
-    this.visibility_select.addEventListener('input', e => this.gameAPIOptions());
-
-    this.seat_count_select = document.querySelector('.seat_count_select');
-    this.seat_count_select.addEventListener('input', e => this.gameAPIOptions());
-
-    this.games_tab_radios = document.querySelectorAll('input[name="game_view_type"]');
-    this.games_tab_radios.forEach(ctl => ctl.addEventListener('input', e => this.updateTabView(e)));
-    this.updateTabView();
-
-    this.send_message_list_button = document.querySelector('.send_message_list_button');
-    this.send_message_list_button.addEventListener('click', e => this.sendGameMessage());
-    this.message_list_input = document.querySelector('.message_list_input');
-    this.message_list_input.addEventListener("keyup", e => {
-      if (event.key === "Enter")
-        this.sendGameMessage();
-    });
-    this.messages_list = document.querySelector('.messages_list');
-
-    this.seats_full_display = document.querySelector('.seats_full_display');
-
-    this.match_start = document.querySelector('.match_start');
-    this.match_start.addEventListener('click', e => this.startGame());
-    this.match_finish = document.querySelector('.match_finish');
-    this.match_finish.addEventListener('click', e => this.finishGame());
-    this.match_reset = document.querySelector('.match_reset');
-    this.match_reset.addEventListener('click', e => this.resetGame());
-
-
-    this.code_link_href = document.querySelector('.code_link_href');
-    this.code_link_copy = document.querySelector('.code_link_copy');
-    if (this.code_link_copy)
-      this.code_link_copy.addEventListener('click', e => this.copyGameLinkToClipboard());
-
-    this.initGameMessageFeed();
   }
   updateTabView() {}
   gameTypeMetaData() {
@@ -925,16 +926,22 @@ export class BaseApp {
 
     this._paintDockSeats();
 
+    let userRunState = (this.seatsFull === this.gameData.numberOfSeats) ? 'Ready' : 'Not Ready';
+    let mode = this.gameData.mode;
+    if (mode === 'running')
+      userRunState = 'In Progress';
+    if (mode === 'end')
+      userRunState = 'Final';
+    this.game_mode_status.innerHTML = userRunState;
+
     if (this.userSeated)
       document.body.classList.add('current_user_seated');
     else
       document.body.classList.remove('current_user_seated');
 
     if (this.seatsFull === this.gameData.numberOfSeats) {
-      this.seats_full_display.innerHTML = `${this.seatsFull} / ${this.gameData.numberOfSeats} Ready!`;
       this.match_start.removeAttribute('disabled');
     } else {
-      this.seats_full_display.innerHTML = `${this.seatsFull} / ${this.gameData.numberOfSeats} full`;
       this.match_start.setAttribute('disabled', true);
     }
 
@@ -949,8 +956,7 @@ export class BaseApp {
     if (this.gameData.createUser === this.uid) {
       document.body.classList.add('game_owner');
       document.body.classList.remove('not_game_owner');
-    }
-    else {
+    } else {
       document.body.classList.remove('game_owner');
       document.body.classList.add('not_game_owner');
     }
@@ -971,7 +977,6 @@ export class BaseApp {
     this.message_level_select.value = this.gameData.messageLevel;
     this.seats_per_user_display.innerHTML = this.gameData.seatsPerUser;
     this.seats_per_user_select.value = this.gameData.seatsPerUser;
-
 
     if (this.code_link_href) {
       let path = window.location.href;

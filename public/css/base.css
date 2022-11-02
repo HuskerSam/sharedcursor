@@ -411,6 +411,14 @@ a {
   display: initial;
 }
 
+.normal_only {
+  display: none;
+}
+
+.not_game_owner .normal_only {
+  display: initial;
+}
+
 .game_message_list_item {
   border-radius: 10px;
   clear: both;
@@ -593,14 +601,19 @@ a {
   opacity: 1;
 }
 
-button.match_finish.admin_only {
+button.match_finish.admin_only, button.match_start.admin_only, button.match_reset.admin_only {
   display: none;
-  margin-top: 18px;
-  font-size: 25px;
-  margin-bottom: 18px;
 }
 
 .game_owner.mode_running button.match_finish.admin_only {
+  display: inline-block;
+}
+
+.game_owner.mode_end button.match_reset.admin_only {
+  display: inline-block;
+}
+
+.game_owner.mode_ready button.match_start.admin_only {
   display: inline-block;
 }
 
@@ -830,14 +843,6 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   background: none;
 }
 
-.game_header_panel {
-  display: inline-block;
-  font-size: 26px;
-  line-height: .5em;
-  position: relative;
-  top: 6px;
-}
-
 .night_mode .navbar-toggler {
   border-color: white;
 }
@@ -860,6 +865,18 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 .address_bar {
   line-height: 4em;
   text-align: left;
+  display: flex;
+  flex-direction: row;
+}
+
+.address_bar button {
+  margin: 6px;
+}
+
+.address_bar .game_header_panel {
+  font-size: 26px;
+  display: inline-block;
+  padding-top: 2px;
 }
 
 .options_edit_block {
@@ -869,17 +886,15 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   margin-bottom: 6px;
 }
 
-.gameid_span {
-  opacity: .75;
-  position: relative;
-  top: 3px;
-  left: 10px;
-}
-
 .options_edit_block>div {
   font-weight: bold;
 }
 
+.gameid_span {
+  font-size: 1.5em;
+  text-align: left;
+  padding-left: 16px;
+}
 .not_game_owner .options_edit_block label {
   opacity: .75;
   font-size: .75em;
@@ -891,4 +906,10 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   border-radius: 5px;
   width: 150px;
   text-align: center;
+}
+
+.game_mode_status {
+  padding-right: 8px;
+  font-size: 1.25em;
+  opacity: .5;
 }
