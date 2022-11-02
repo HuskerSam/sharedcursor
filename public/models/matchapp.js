@@ -78,7 +78,7 @@ export class MatchApp extends BaseApp {
     if (gameId) {
       await this.gameAPIJoin(gameId);
       this.currentGame = gameId;
-      this.gameid_span.innerHTML = this.currentGame;
+      this.gameid_span.innerHTML = '(' + this.currentGame + ')';
 
       if (this.gameSubscription)
         this.gameSubscription();
@@ -147,12 +147,17 @@ export class MatchApp extends BaseApp {
 
     let phaseDesc = 'Select';
     let disabled = true;
+
     if (this.gameData.turnPhase === 'clearprevious') {
       phaseDesc = 'Clear';
       disabled = false;
     } else if (this.gameData.turnPhase === 'result') {
       phaseDesc = 'Next';
       disabled = false;
+    }
+
+    if (this.uid !== this.gameData['seat' + this.gameData.currentSeat]) {
+      disabled = true;
     }
 
     if (disabled)
@@ -185,7 +190,8 @@ export class MatchApp extends BaseApp {
     this.currentplayer_score_dock.classList.add('seat_color_' + seatIndex);
     this.match_board_wrapper.classList.add('seat_color_' + seatIndex);
 
-    this.game_header_panel.innerHTML = `${this.gameData.name}`;
+    let name = this.gameData.name.replace(' Avenue', '').replace(' Street', '');
+    this.game_header_panel.innerHTML = `${name}`;
 
     this._updateCardStatus();
     this._updateFinishStatus();
@@ -647,7 +653,6 @@ export class MatchApp extends BaseApp {
   async _sendSelection() {
     if (this.debounce())
       return;
-    //  this.match_start.setAttribute('disabled', true);
     let action = 'sendSelection';
     let selectedCards = [];
     let body = {
@@ -669,7 +674,6 @@ export class MatchApp extends BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
-    this.match_start.removeAttribute('disabled');
 
     if (!json.success) {
       console.log('selection send fail', json);
@@ -681,7 +685,6 @@ export class MatchApp extends BaseApp {
   async _sendUpdateSelection() {
     if (this.debounce())
       return;
-    //  this.match_start.setAttribute('disabled', true);
     let action = 'updateSelection';
 
     let body = {
@@ -701,7 +704,6 @@ export class MatchApp extends BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
-    this.match_start.removeAttribute('disabled');
 
     if (!json.success) {
       console.log('selection send fail', json);
@@ -714,7 +716,6 @@ export class MatchApp extends BaseApp {
     if (this.debounce())
       return;
 
-    this.match_start.setAttribute('disabled', true);
     let action = 'endTurn';
     let body = {
       gameId: this.currentGame,
@@ -732,7 +733,6 @@ export class MatchApp extends BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
-    this.match_start.removeAttribute('disabled');
 
     if (!json.success) {
       console.log('selection send resolve', json);
@@ -744,7 +744,6 @@ export class MatchApp extends BaseApp {
   async _clearSelection() {
     if (this.debounce())
       return;
-    this.match_start.setAttribute('disabled', true);
     let action = 'clearSelection';
     let body = {
       gameId: this.currentGame,
@@ -762,7 +761,6 @@ export class MatchApp extends BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
-    this.match_start.removeAttribute('disabled');
 
     if (!json.success) {
       console.log('selection send resolve', json);

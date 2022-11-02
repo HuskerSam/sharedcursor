@@ -582,9 +582,12 @@ export class BaseApp {
     if (this.gameData['seat' + seatIndex.toString()] === this.uid)
       return this._gameAPIStand(seatIndex);
 
-    if (this.gameData['seat' + seatIndex.toString()] !== null &&
-      this.gameData.createUser === this.uid)
-      return this._gameAPIStand(seatIndex);
+    if (this.gameData['seat' + seatIndex.toString()] !== null && this.gameData.createUser === this.uid) {
+      if (confirm("Boot Player in Seat " + (seatIndex + 1).toString() + "?"))
+        return this._gameAPIStand(seatIndex);
+
+      return;
+    }
 
     return this._gameAPISit(seatIndex);
   }
@@ -943,10 +946,14 @@ export class BaseApp {
     document.body.classList.add('current_seat_' + this.gameData.currentSeat.toString());
   }
   paintOptions() {
-    if (this.gameData.createUser === this.uid)
+    if (this.gameData.createUser === this.uid) {
       document.body.classList.add('game_owner');
-    else
+      document.body.classList.remove('not_game_owner');
+    }
+    else {
       document.body.classList.remove('game_owner');
+      document.body.classList.add('not_game_owner');
+    }
 
     document.body.classList.remove('mode_ready');
     document.body.classList.remove('mode_running');

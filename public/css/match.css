@@ -117,16 +117,6 @@
   display: none;
 }
 
-.match_finish {
-  visibility: hidden;
-  margin-top: 18px;
-  font-size: 25px;
-}
-
-.mode_running .match_finish {
-  visibility: visible;
-}
-
 .selection_missed {
   border: solid 2px red;
 }
@@ -288,10 +278,6 @@
 
 .beer_name_anchor {
   text-decoration: none;
-}
-
-button.game_header_toggle_button {
-  min-width: 50px;
 }
 
 .members_list {

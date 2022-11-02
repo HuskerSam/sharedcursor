@@ -265,6 +265,7 @@ a {
   text-align: center;
   margin: auto;
   max-width: 450px;
+  min-height: 500px;
 }
 
 .show_game_table .game_table_view, .show_game_options .game_table_view {
@@ -592,11 +593,14 @@ a {
   opacity: 1;
 }
 
-.match_finish {
+button.match_finish.admin_only {
   display: none;
+  margin-top: 18px;
+  font-size: 25px;
+  margin-bottom: 18px;
 }
 
-.game_owner .match_finish {
+.game_owner.mode_running button.match_finish.admin_only {
   display: inline-block;
 }
 
@@ -630,10 +634,11 @@ a {
   max-height: 0px;
   transition: max-height 1s;
   overflow: hidden;
+  text-align: center;
 }
 
 .show_game_options .game_options_view {
-  max-height: 1000px;
+  max-height: 500px;
 }
 
 .message_list_send_wrapper {
@@ -666,13 +671,13 @@ a {
   padding-bottom: 0px;
 }
 
-.mode_running .player_dock .dock_pos_0, .mode_running .player_dock .dock_pos_1,
-.mode_running .player_dock .dock_pos_2, .mode_running .player_dock .dock_pos_3 {
+.mode_running .player_dock .dock_seat0, .mode_running .player_dock .dock_seat1,
+.mode_running .player_dock .dock_seat2, .mode_running .player_dock .dock_seat3 {
   opacity: .5;
 }
 
-.current_seat_0 .player_dock .dock_pos_0, .current_seat_1 .player_dock .dock_pos_1,
-.current_seat_2 .player_dock .dock_pos_2, .current_seat_3 .player_dock .dock_pos_3 {
+.current_seat_0 .player_dock .dock_seat0, .current_seat_1 .player_dock .dock_seat1,
+.current_seat_2 .player_dock .dock_seat2, .current_seat_3 .player_dock .dock_seat3 {
   opacity: 1;
 }
 
@@ -826,7 +831,11 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 }
 
 .game_header_panel {
-  height: 30px;
+  display: inline-block;
+  font-size: 26px;
+  line-height: .5em;
+  position: relative;
+  top: 6px;
 }
 
 .night_mode .navbar-toggler {
@@ -835,4 +844,51 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 
 .night_mode .navbar-toggler .navbar-toggler-icon {
   filter: invert(1);
+}
+
+.player_dock_prompt {
+  font-size: 30px;
+  margin-top: 10px;
+}
+
+.player_dock_prompt[disabled="true"] {
+  background: none;
+  color: inherit;
+  border-color: transparent;
+}
+
+.address_bar {
+  line-height: 4em;
+  text-align: left;
+}
+
+.options_edit_block {
+  max-width: 160px;
+  display: inline-block;
+  text-align: left;
+  margin-bottom: 6px;
+}
+
+.gameid_span {
+  opacity: .75;
+  position: relative;
+  top: 3px;
+  left: 10px;
+}
+
+.options_edit_block>div {
+  font-weight: bold;
+}
+
+.not_game_owner .options_edit_block label {
+  opacity: .75;
+  font-size: .75em;
+}
+
+.not_game_owner .options_edit_block {
+  border: solid 1px silver;
+  margin: 4px;
+  border-radius: 5px;
+  width: 150px;
+  text-align: center;
 }
