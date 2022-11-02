@@ -327,3 +327,7 @@
   flex-direction: column;
   overflow: auto;
 }
+
+.match_instructions {
+  text-align: left;
+}
