@@ -245,16 +245,6 @@ a {
   display: block;
 }
 
-.members_list {
-  max-height: 30vh;
-  overflow: auto;
-  padding-left: 10px;
-}
-
-.messages_list {}
-
-.game_members_view {}
-
 .game_table_view {
   display: none;
   text-align: center;
@@ -263,7 +253,7 @@ a {
   min-height: 500px;
 }
 
-.show_game_table .game_table_view, .show_game_options .game_table_view {
+.show_game_table .game_table_view {
   display: block;
 }
 
@@ -638,17 +628,6 @@ button.match_finish.admin_only, button.match_start.admin_only, button.match_rese
   font-size: 30px;
 }
 
-.game_options_view {
-  max-height: 0px;
-  transition: max-height 1s;
-  overflow: hidden;
-  text-align: center;
-}
-
-.show_game_options .game_options_view {
-  max-height: 500px;
-}
-
 .message_list_send_wrapper {
   position: fixed;
   bottom: 0px;
@@ -764,14 +743,6 @@ button.match_finish.admin_only, button.match_start.admin_only, button.match_rese
   background: white;
 }
 
-.messages_list {
-  display: none;
-}
-
-.game_loaded .messages_list {
-  display: block;
-}
-
 a.nav-link:hover {
   color: rgb(50, 100, 200);
 }
@@ -805,10 +776,6 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 .header_static_bar .mute_button.nav-link i {
   font-size: 30px;
   top: 8px;
-}
-
-.show_game_options .mode_hide_options {
-  color: silver;
 }
 
 .collapse a {
@@ -887,8 +854,8 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 
 .gameid_span {
   font-size: 1.5em;
-  text-align: left;
-  padding-left: 16px;
+  text-align: center;
+  line-height: 2em;
 }
 .not_game_owner .options_edit_block label {
   opacity: .75;
@@ -913,17 +880,10 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   position: relative;
 }
 
-.basic_options .close_options {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border: none;
-  background: none;
-  padding: 4px;
-  z-index: 10;
-  color: inherit;
+.tab_buttons {
+  padding-top: 8px;
 }
 
-.basic_options .close_options i {
-  font-size: 30px;
+.tab_buttons i {
+  font-size: 36px;
 }

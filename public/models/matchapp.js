@@ -25,9 +25,6 @@ export class MatchApp extends BaseApp {
     this.player_dock_prompt = document.querySelector('.player_dock_prompt');
     this.player_dock_prompt.addEventListener('click', e => this.turnPhaseAdvance());
 
-    this.game_header_toggle_button = document.querySelector('.game_header_toggle_button');
-    this.game_header_toggle_button.addEventListener('click', e => this.toggleOptionsPanel(e));
-
     this.tracer_line_0 = document.querySelector('.tracer_line_0');
     this.tracer_line_1 = document.querySelector('.tracer_line_1');
 
@@ -36,7 +33,6 @@ export class MatchApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.toggleOptionsPanel();
   }
   debounce() {
     return false;
@@ -46,23 +42,6 @@ export class MatchApp extends BaseApp {
 
     this.debounceBusy = true;
     setTimeout(() => this.debounceBusy = false, 500);
-    return false;
-  }
-  toggleOptionsPanel(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    if (document.body.classList.contains('show_game_table')) {
-      document.body.classList.remove('show_game_table');
-      document.body.classList.add('show_game_options');
-    } else {
-      document.body.classList.add('show_game_table');
-      document.body.classList.remove('show_game_options');
-
-    }
-
     return false;
   }
   async authUpdateStatusUI() {
@@ -77,7 +56,7 @@ export class MatchApp extends BaseApp {
     if (gameId) {
       await this.gameAPIJoin(gameId);
       this.currentGame = gameId;
-      this.gameid_span.innerHTML = this.currentGame;
+      this.gameid_span.innerHTML = 'id: ' + this.currentGame;
 
       if (this.gameSubscription)
         this.gameSubscription();
@@ -195,6 +174,8 @@ export class MatchApp extends BaseApp {
     this._updateCardStatus();
     this._updateFinishStatus();
     this.updateUserPresence();
+
+    document.body.classList.add('show_game_table');
   }
 
   _updateFinishStatus() {

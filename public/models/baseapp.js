@@ -418,11 +418,25 @@ export class BaseApp {
     if (this.code_link_copy)
       this.code_link_copy.addEventListener('click', e => this.copyGameLinkToClipboard());
 
-    this.close_options = document.querySelector('.close_options');
-    this.close_options.addEventListener('click', e => this.toggleOptionsPanel(e));
+    this.tab_buttons = document.querySelectorAll('.tab_buttons button');
+    this.tab_buttons.forEach((btn, i) => btn.addEventListener('click', e => this.updateOptionsPanel(btn, i)));
+
+    this.tab_panes = document.querySelectorAll(".game_options_panel_wrapper .tab-pane");
 
     this.initGameMessageFeed();
   }
+  updateOptionsPanel(btn, i) {
+    this.tabSelected = btn.value;
+    this.tab_buttons.forEach(btn => btn.classList.remove('active'));
+    this.tab_panes.forEach(tab => {
+      tab.classList.remove('active');
+      tab.classList.remove('show');
+    });
+    this.tab_panes[i].classList.add('active');
+    this.tab_panes[i].classList.add('show');
+    btn.classList.add('active');
+  }
+
 
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)

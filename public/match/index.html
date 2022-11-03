@@ -88,9 +88,6 @@
           <a class="mute_button">
             <i class="material-icons">volume_up</i>
           </a>
-          <a class="game_header_toggle_button">
-            <i class="material-icons mode_hide_options smallerby4">settings</i>
-          </a>
         </div>
       </div>
     </nav>
@@ -113,64 +110,6 @@
                 <button class="match_finish btn btn-secondary admin_only">End</button>
                 <button class="match_reset btn btn-primary admin_only">Next</button>
                 <span class="normal_only game_mode_status impact-font"></span>
-              </div>
-            </div>
-            <div class="game_options_view">
-              <div class="basic_options">
-                <div class="gameid_span"></div>
-                <button class="close_options"><i class="material-icons">close</i></button>
-                <div class="options_edit_block">
-                  <label class="form-label">Visibility</label>
-                  <select class="visibility_select form-select form-select-lg">
-                    <option selected>public</option>
-                    <option>private</option>
-                  </select>
-                  <div class="visibility_display"></div>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Seats</label>
-                  <select class="seat_count_select form-select form-select-lg">
-                    <option value="1">1 seat</option>
-                    <option selected value="2">2 seats</option>
-                    <option value="3">3 seats</option>
-                    <option value="4">4 seats</option>
-                  </select>
-                  <div class="seat_count_display"></div>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Messaging</label>
-                  <select class="message_level_select form-select form-select-lg">
-                    <option value="seated">Seated</option>
-                    <option value="all">All</option>
-                  </select>
-                  <div class="message_level_display"></div>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Seat Limit</label>
-                  <select class="seats_per_user_select form-select form-select-lg">
-                    <option value="one">One</option>
-                    <option value="none">None</option>
-                  </select>
-                  <div class="seats_per_user_display"></div>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Card Deck</label>
-                  <select class="card_deck_select form-select form-select-lg">
-                    <option value="empyrean">Empyrean</option>
-                    <option value="zipline">Zipline</option>
-                  </select>
-                  <div class="card_deck_display"></div>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Scoring</label>
-                  <select class="scoring_system_select form-select form-select-lg">
-                    <option value="simple">Simple</option>
-                    <option value="stable">Stable</option>
-                    <option value="regular" selected>Regular</option>
-                  </select>
-                  <div class="scoring_system_display"></div>
-                </div>
-                <br><br>
               </div>
             </div>
           </div>
@@ -347,15 +286,80 @@
       </div>
       <div class="second_panel_wrapper">
         <div class="second_inner_panel">
-          <div class="message_list_send_wrapper">
-            <input class="message_list_input" name="message" type="text">
-            <a class="send_message_list_button"><i class="material-icons smallerby4">send</i></a>
+          <div class="signed_in_options" style="text-align:center;">
+            <div class="btn-group tab_buttons" role="group">
+              <button class="btn btn-primary active" value="messages"><i class="material-icons">chat</i></button>
+              <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
+              <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
+            </div>
           </div>
-          <div class="members_list"></div>
-          <div class="messages_list"></div>
+          <div class="tab-content game_options_panel_wrapper">
+            <div class="tab-pane fade messages_list show active" role="tabpanel"></div>
+            <div class="tab-pane fade members_list" role="tabpanel"></div>
+            <div class="tab-pane fade basic_options" role="tabpanel">
+              <div class="gameid_span"></div>
+              <div class="options_edit_block">
+                <label class="form-label">Visibility</label>
+                <select class="visibility_select form-select form-select-lg">
+                  <option selected>public</option>
+                  <option>private</option>
+                </select>
+                <div class="visibility_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Seats</label>
+                <select class="seat_count_select form-select form-select-lg">
+                  <option value="1">1 seat</option>
+                  <option selected value="2">2 seats</option>
+                  <option value="3">3 seats</option>
+                  <option value="4">4 seats</option>
+                </select>
+                <div class="seat_count_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Messaging</label>
+                <select class="message_level_select form-select form-select-lg">
+                  <option value="seated">Seated</option>
+                  <option value="all">All</option>
+                </select>
+                <div class="message_level_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Seat Limit</label>
+                <select class="seats_per_user_select form-select form-select-lg">
+                  <option value="one">One</option>
+                  <option value="none">None</option>
+                </select>
+                <div class="seats_per_user_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Card Deck</label>
+                <select class="card_deck_select form-select form-select-lg">
+                  <option value="empyrean">Empyrean</option>
+                  <option value="zipline">Zipline</option>
+                </select>
+                <div class="card_deck_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Scoring</label>
+                <select class="scoring_system_select form-select form-select-lg">
+                  <option value="simple">Simple</option>
+                  <option value="stable">Stable</option>
+                  <option value="regular" selected>Regular</option>
+                </select>
+                <div class="scoring_system_display"></div>
+              </div>
+              <br><br>
+            </div>
+
+          </div>
         </div>
       </div>
       <div style="flex:1"></div>
+    </div>
+    <div class="message_list_send_wrapper">
+      <input class="message_list_input" name="message" type="text">
+      <a class="send_message_list_button"><i class="material-icons smallerby4">send</i></a>
     </div>
 
     <div class="game_loading_display">
