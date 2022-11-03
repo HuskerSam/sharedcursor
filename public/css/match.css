@@ -113,6 +113,14 @@
   display: block;
 }
 
+.game_loading_display {
+  min-height: 500px;
+}
+
+.game_loading_display h1 {
+  float: left;
+}
+
 .game_loaded .game_loading_display {
   display: none;
 }

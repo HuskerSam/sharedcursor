@@ -798,19 +798,15 @@ export class BaseApp {
                   <span style="background-image:url(${img})"></span>
                   <span class="member_name">${name}</span>
                 </div>
+                <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}&nbsp; &nbsp;</div>
                 <div style="flex:1;display:flex;flex-direction:column">
                   <div style="flex:1"></div>
                   <div class="message" style="flex:1">${message}</div>
                   <div style="flex:1"></div>
                 </div>
-                <div style="text-align:right">
-                  <br>
-                  <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
-                  <br>
-                  <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}" data-messageid="${doc.id}">
-                    <i class="material-icons">delete</i>
-                  </button>
-                </div>
+                <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}" data-messageid="${doc.id}">
+                  <i class="material-icons">delete</i>
+                </button>
               </div>`;
 
     return `<div class="game_message_list_item ${game_owner_class}${owner_class}">

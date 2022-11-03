@@ -413,8 +413,11 @@ a {
 }
 
 .game_message_list_item .time_since_updatable {
-  font-size: .9em;
+  font-size: .75em;
   opacity: .85;
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }
 
 .game_message_list_item .member_desc {
@@ -428,9 +431,22 @@ a {
   transform: translateX(-50%);
 }
 
+.game_message_list_item .member_name {
+  opacity: .75;
+}
+
+.game_message_list_item .delete_game {
+  color: inherit;
+  background: none;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
 .game_message_list_item .message {
-  padding-top: 20px;
+  padding-top: 28px;
   text-align: left;
+  padding-right: 50px;
 }
 
 .game_message_list_item .game_date {
