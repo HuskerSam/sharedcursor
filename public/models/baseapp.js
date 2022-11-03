@@ -440,7 +440,6 @@ export class BaseApp {
     btn.classList.add('active');
   }
 
-
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)
       this.userStatusDatabaseRef.set({
@@ -565,7 +564,7 @@ export class BaseApp {
           </div>
 
           <span class="member_list_time_since time_since_updatable ${userSeated}" data-timesince="${members[member]}">${timeSince}</span>
-          <br><br>
+          <br>
         </div>`;
       });
     }
@@ -714,6 +713,9 @@ export class BaseApp {
     }
   }
   async initGameMessageFeed() {
+    if (!this.gameData)
+      return;
+
     if (this.gameFeedInited)
       return;
     this.gameFeedInited = true;
@@ -792,8 +794,10 @@ export class BaseApp {
   }
   _renderMessageFeedLine(doc, messageFeed = true) {
     let data = doc.data();
-    let game_owner_class = data.isGameOwner ? ' message_game_owner' : '';
+
+    let game_owner_class = (this.gameData.createUser === data.uid) ? ' impact-font' : '';
     let owner_class = data.uid === this.uid ? ' message_owner' : '';
+    let owner_msg_impact = data.uid === this.uid ? ' impact-font' : '';
 
     let name = 'Anonymous';
     if (data.memberName)
@@ -811,15 +815,15 @@ export class BaseApp {
     let timeSince = this.timeSince(new Date(data.created));
 
     if (messageFeed)
-      return `<div class="game_message_list_item app_panel card_shadow ${game_owner_class}${owner_class}">
+      return `<div class="game_message_list_item app_panel card_shadow ${owner_class}">
                 <div class="game_user_wrapper member_desc card_shadow app_panel">
                   <span style="background-image:url(${img})"></span>
-                  <span class="member_name">${name}</span>
+                  <span class="member_name ${game_owner_class}">${name}</span>
                 </div>
-                <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}&nbsp; &nbsp;</div>
+                <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
                 <div style="flex:1;display:flex;flex-direction:column">
                   <div style="flex:1"></div>
-                  <div class="message" style="flex:1">${message}</div>
+                  <div class="message ${owner_msg_impact}" style="flex:1">${message}</div>
                   <div style="flex:1"></div>
                 </div>
                 <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}" data-messageid="${doc.id}">
@@ -827,7 +831,7 @@ export class BaseApp {
                 </button>
               </div>`;
 
-    return `<div class="game_message_list_item ${game_owner_class}${owner_class}">
+    return `<div class="game_message_list_item ${owner_class}">
                         <div style="display:flex;flex-direction:row">
                           <div class="game_user_wrapper member_desc">
                             <span style="background-image:url(${img})"></span>

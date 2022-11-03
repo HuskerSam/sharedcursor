@@ -95,6 +95,8 @@ export class MatchApp extends BaseApp {
     if (!this.gameData)
       return;
 
+    this.initGameMessageFeed();
+
     document.body.classList.add('game_loaded');
 
     this.queryStringPaintProcess();
@@ -171,11 +173,11 @@ export class MatchApp extends BaseApp {
     let name = this.gameData.name.replace(' Avenue', '').replace(' Street', '');
     this.game_header_panel.innerHTML = `${name}`;
 
+    document.body.classList.add('show_game_table');
+
     this._updateCardStatus();
     this._updateFinishStatus();
     this.updateUserPresence();
-
-    document.body.classList.add('show_game_table');
   }
 
   _updateFinishStatus() {

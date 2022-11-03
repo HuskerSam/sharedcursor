@@ -414,10 +414,11 @@ a {
   border-radius: 10px;
   clear: both;
   margin: 12px;
-  margin-top: 40px;
+  margin-top: 30px;
   position: relative;
   flex-direction: row;
   padding: 8px;
+  min-height: 88px;
 }
 
 .game_message_list_item .time_since_updatable {
@@ -425,29 +426,31 @@ a {
   opacity: .85;
   position: absolute;
   top: 5px;
-  left: 5px;
+  right: 5px;
 }
 
 .game_message_list_item .member_desc {
   position: absolute;
   top: -30px;
-  padding: 5px;
-  padding-bottom: 10px;
-  background: inherit;
+  padding: 0px 12px;
+  padding-bottom: 4px;
   display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
+  border: solid 1px rgba(255, 255, 255, .5);
+  border-radius: 10px;
 }
 
-.game_message_list_item .member_name {
+.game_message_list_item .game_user_wrapper .member_name {
   opacity: .75;
+  font-size: 20px;
+  position: relative;
+  top: -4px;
 }
 
 .game_message_list_item .delete_game {
   color: inherit;
   background: none;
   position: absolute;
-  top: 5px;
+  top: 30px;
   right: 5px;
 }
 
@@ -455,6 +458,7 @@ a {
   padding-top: 28px;
   text-align: left;
   padding-right: 50px;
+  font-size: 20px;
 }
 
 .game_message_list_item .game_date {
@@ -469,6 +473,7 @@ a {
   clear: both;
   display: block;
   border: solid 3px transparent;
+  min-height: 55px;
 }
 
 .member_list_item.player_up {
@@ -674,7 +679,6 @@ button.match_finish.admin_only, button.match_start.admin_only, button.match_rese
   bottom: 0px;
   text-align: center;
   line-height: 35px;
-  left: 50%;
   transform: translateX(-50%);
   display: inline-flex;
   border-top-left-radius: 10px;

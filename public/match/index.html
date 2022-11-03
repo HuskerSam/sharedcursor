@@ -288,19 +288,24 @@
         </div>
       </div>
       <div class="second_panel_wrapper">
+        <div class="message_list_send_wrapper">
+          <input class="message_list_input" name="message" type="text">
+          <a class="send_message_list_button"><i class="material-icons smallerby4">send</i></a>
+        </div>
+
         <div class="second_inner_panel">
           <div class="signed_in_options" style="text-align:center;">
             <div class="btn-group tab_buttons" role="group">
               <button class="btn btn-primary active" value="messages"><i class="material-icons">chat</i></button>
               <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
               <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
+              <button class="btn btn-primary" value="options"><i class="material-icons">share</i></button>
             </div>
           </div>
           <div class="tab-content game_options_panel_wrapper">
             <div class="tab-pane fade messages_list show active" role="tabpanel"></div>
             <div class="tab-pane fade members_list" role="tabpanel"></div>
             <div class="tab-pane fade basic_options" role="tabpanel">
-              <div class="gameid_span"></div>
               <div class="options_edit_block">
                 <label class="form-label">Visibility</label>
                 <select class="visibility_select form-select form-select-lg">
@@ -354,15 +359,14 @@
               </div>
               <br><br>
             </div>
+            <div class="tab-pane fade share_panel" role="tabpanel">
+              <div class="gameid_span"></div>
 
+            </div>
           </div>
         </div>
       </div>
       <div style="flex:1"></div>
-    </div>
-    <div class="message_list_send_wrapper">
-      <input class="message_list_input" name="message" type="text">
-      <a class="send_message_list_button"><i class="material-icons smallerby4">send</i></a>
     </div>
     <div id="chat_snackbar"></div>
   </div>
