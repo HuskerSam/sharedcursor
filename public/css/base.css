@@ -330,8 +330,6 @@ a {
 
 .messages_list .delete_game {
   visibility: hidden;
-  background: none;
-  border: none;
 }
 
 .messages_list .message_owner .delete_game {
@@ -407,19 +405,32 @@ a {
 .game_message_list_item {
   border-radius: 10px;
   clear: both;
-  line-height: 30px;
+  margin: 12px;
+  margin-top: 40px;
+  position: relative;
+  flex-direction: row;
+  padding: 8px;
+}
+
+.game_message_list_item .time_since_updatable {
+  font-size: .9em;
+  opacity: .85;
 }
 
 .game_message_list_item .member_desc {
-  position: relative;
-  top: -5px;
-  padding-left: 5px;
-  padding-right: 5px;
+  position: absolute;
+  top: -30px;
+  padding: 5px;
+  padding-bottom: 10px;
+  background: inherit;
+  display: inline-block;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .game_message_list_item .message {
+  padding-top: 20px;
   text-align: left;
-  font-size: 22px;
 }
 
 .game_message_list_item .game_date {
@@ -857,6 +868,7 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   text-align: center;
   line-height: 2em;
 }
+
 .not_game_owner .options_edit_block label {
   opacity: .75;
   font-size: .75em;

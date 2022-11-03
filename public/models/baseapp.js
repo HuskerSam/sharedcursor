@@ -785,33 +785,47 @@ export class BaseApp {
     if (data.memberImage)
       img = data.memberImage;
 
-    let deleteHTML = '';
-    if (messageFeed)
-      deleteHTML = `<button class="delete_game" data-gamenumber="${data.gameNumber}" data-messageid="${doc.id}">
-            <i class="material-icons">delete</i>
-            </button>`;
-
-    let memberNameHTML = '';
-    if (!messageFeed)
-      memberNameHTML = `<span class="member_name">${name}</span> <button class="close_button">X</button>`;
-
     let message = data.message;
     if (!messageFeed) {
       if (message.length > 12)
         message = message.substr(0, 11) + '...';
     }
     let timeSince = this.timeSince(new Date(data.created));
-    return `<div class="game_message_list_item card_shadow ${game_owner_class}${owner_class}">
-      <div style="display:flex;flex-direction:row">
-        <div class="game_user_wrapper member_desc">
-          <span style="background-image:url(${img})"></span>
-        </div>
-        <div class="message" style="flex:1">${message}</div>
-        <div class="game_date"><div style="flex:1"></div><div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div><div style="flex:1"></div></div>
-        ${deleteHTML}
-      </div>
-      ${memberNameHTML}
-    </div>`;
+
+    if (messageFeed)
+      return `<div class="game_message_list_item app_panel card_shadow ${game_owner_class}${owner_class}">
+                <div class="game_user_wrapper member_desc card_shadow app_panel">
+                  <span style="background-image:url(${img})"></span>
+                  <span class="member_name">${name}</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column">
+                  <div style="flex:1"></div>
+                  <div class="message" style="flex:1">${message}</div>
+                  <div style="flex:1"></div>
+                </div>
+                <div style="text-align:right">
+                  <br>
+                  <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
+                  <br>
+                  <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}" data-messageid="${doc.id}">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </div>
+              </div>`;
+
+    return `<div class="game_message_list_item ${game_owner_class}${owner_class}">
+                        <div style="display:flex;flex-direction:row">
+                          <div class="game_user_wrapper member_desc">
+                            <span style="background-image:url(${img})"></span>
+                          </div>
+                          <div class="message" style="flex:1">${message}</div>
+                          <div class="game_date"><div style="flex:1"></div>
+                          <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
+                          <div style="flex:1"></div>
+                        </div>
+                      </div>
+                      <span class="member_name">${name}</span> <button class="close_button">X</button>
+                    </div>`;
   }
   async sendGameMessage() {
     let message = this.message_list_input.value.trim();
