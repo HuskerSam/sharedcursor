@@ -45,7 +45,10 @@ export class BaseApp {
       let timeSinceElements = document.querySelectorAll('.time_since_updatable');
       timeSinceElements.forEach(ele => {
         let d = new Date(ele.dataset.timesince);
-        ele.innerHTML = this.timeSince(d);
+        let html = this.timeSince(d);
+
+        if (ele.innerHTML !== html)
+          ele.innerHTML = html;
       });
     }, 10000);
 
@@ -541,13 +544,15 @@ export class BaseApp {
         let data = this._gameMemberData(member);
 
         let timeSince = this.timeSince(new Date(members[member]));
-        html += `<div class="member_list_item">
-          <div class="member_online_status" data-uid="${member}"></div>
+        html += `<div class="member_list_item card_shadow app_panel">
           <div class="game_user_wrapper">
             <span style="background-image:url(${data.img})"></span>
-            <span>${data.name}</span>
+            <span class="name">${data.name}</span>
+            <div class="member_online_status" data-uid="${member}"></div>
           </div>
+
           <span class="member_list_time_since time_since_updatable" data-timesince="${members[member]}">${timeSince}</span>
+          <br><br>
         </div>`;
       });
     }

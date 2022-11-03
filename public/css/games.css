@@ -188,7 +188,7 @@ a.game_number_open {
 
 .member_feed_wrapper>div {
   flex: 1;
-  line-height: 60px;
+  line-height: 55px;
   text-align: center;
   border: ridge 4px rgba(255, 255, 255, 1);
   overflow: hidden;
@@ -219,14 +219,6 @@ a.game_number_open {
   background: none;
   cursor: default;
   border-color: transparent;
-}
-
-.gamefeed_members_list .member_online_status {
-  position: absolute;
-  left: 24px;
-  top: 32px;
-  width: 10px;
-  height: 10px;
 }
 
 button.game.sit_button {
@@ -365,6 +357,7 @@ button.code_link {
   display: block;
   flex: 1;
   overflow: hidden;
+  padding-left: 8px;
 }
 
 .member_feed_wrapper .game_user_wrapper span:nth-child(1) {

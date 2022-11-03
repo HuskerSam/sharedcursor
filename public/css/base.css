@@ -342,8 +342,8 @@ a {
 
 .game_user_wrapper span:nth-child(1) {
   display: inline-block;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
@@ -360,6 +360,11 @@ a {
 .game_user_wrapper {
   display: inline-block;
   white-space: nowrap;
+  position: relative;
+}
+
+.game_user_wrapper .member_list_item .name {
+  padding-left: 8px;
 }
 
 .member_list_time_since {
@@ -373,13 +378,16 @@ a {
 
 .member_online_status {
   border-radius: 100%;
-  width: 24px;
-  height: 24px;
   background: rgb(127, 127, 127);
   border: solid 1px silver;
   display: inline-block;
   position: relative;
   top: 4px;
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  width: 10px;
+  height: 10px;
 }
 
 .member_online_status.online {
@@ -459,6 +467,7 @@ a {
 .member_list_item {
   text-align: left;
   clear: both;
+  display: block;
 }
 
 .game_message_list_item .member_online_status {
