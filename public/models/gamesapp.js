@@ -38,11 +38,6 @@ export class GamesApp extends BaseApp {
     this.updateNewGameType();
 
     this.initRTDBPresence();
-    //redraw feeds to update time since values
-    /*
-    setInterval(() => this.updateGamesFeed(), this.baseRedrawFeedTimer);
-    setInterval(() => this.updatePublicGamesFeed(), this.baseRedrawFeedTimer);
-    */
 
     this.tab_buttons = document.querySelectorAll('.tab_buttons button');
     this.tab_buttons.forEach((btn, i) => btn.addEventListener('click', e => this.updateTabButtons(btn, i)));
@@ -288,7 +283,7 @@ export class GamesApp extends BaseApp {
       <div class="header">
         <div style="background-image:${img}" class="game_type_image"></div>
         <span class="name">${data.name}</span>
-        <span class="timesince">${timeSince}</span>
+        <span class="timesince time_since_updatable" data-timesince="${data.created}">${timeSince}</span>
       </div>
       <div class="open_button_wrapper">
         <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}"><i class="material-icons">delete</i></button>

@@ -921,6 +921,7 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   background: none;
   padding: 4px;
   z-index: 10;
+  color: inherit;
 }
 
 .basic_options .close_options i {

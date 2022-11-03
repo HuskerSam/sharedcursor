@@ -35,15 +35,19 @@ export class BaseApp {
 
     this.lastMessageId = null;
 
-    //redraw message feed to update time since values
-    this.baseRedrawFeedTimer = 10000;
-    setInterval(() => this.updateGameMessagesFeed(), this.baseRedrawFeedTimer);
-
     this.chat_snackbar = document.querySelector('#chat_snackbar');
 
     document.addEventListener('visibilitychange', e => {
       this.refreshOnlinePresence()
     });
+
+    setInterval(() => {
+      let timeSinceElements = document.querySelectorAll('.time_since_updatable');
+      timeSinceElements.forEach(ele => {
+        let d = new Date(ele.dataset.timesince);
+        ele.innerHTML = this.timeSince(d);
+      });
+    }, 10000);
 
     this.load();
   }
@@ -529,7 +533,7 @@ export class BaseApp {
             <span style="background-image:url(${data.img})"></span>
             <span>${data.name}</span>
           </div>
-          <span class="member_list_time_since">${timeSince}</span>
+          <span class="member_list_time_since time_since_updatable" data-timesince="${members[member]}">${timeSince}</span>
         </div>`;
       });
     }
@@ -782,14 +786,14 @@ export class BaseApp {
       if (message.length > 12)
         message = message.substr(0, 11) + '...';
     }
-    let timeSince = this.timeSince(new Date(data.created)).replaceAll(' ago', '');
+    let timeSince = this.timeSince(new Date(data.created));
     return `<div class="game_message_list_item card_shadow ${game_owner_class}${owner_class}">
       <div style="display:flex;flex-direction:row">
         <div class="game_user_wrapper member_desc">
           <span style="background-image:url(${img})"></span>
         </div>
         <div class="message" style="flex:1">${message}</div>
-        <div class="game_date"><div style="flex:1"></div><div>${timeSince}</div><div style="flex:1"></div></div>
+        <div class="game_date"><div style="flex:1"></div><div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div><div style="flex:1"></div></div>
         ${deleteHTML}
       </div>
       ${memberNameHTML}
