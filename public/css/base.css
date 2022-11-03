@@ -468,6 +468,11 @@ a {
   text-align: left;
   clear: both;
   display: block;
+  border: solid 3px transparent;
+}
+
+.member_list_item.player_up {
+  border: ridge 3px rgb(0, 255, 0);
 }
 
 .game_message_list_item .member_online_status {

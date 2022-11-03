@@ -534,6 +534,8 @@ export class BaseApp {
   _updateGameMembersList() {
     let html = '';
     if (this.gameData) {
+      let currentPlayer = this.gameData['seat' + this.gameData.currentSeat];
+
       let members = {};
       if (this.gameData.members)
         members = this.gameData.members;
@@ -542,16 +544,27 @@ export class BaseApp {
       membersList.forEach(member => {
         this.addUserPresenceWatch(member);
         let data = this._gameMemberData(member);
+        let owner = (this.gameData.createUser === member) ? ' impact-font' : '';
+
+        let isUserSeated = false;
+        for (let c = 0; c < this.gameData.numberOfSeats; c++)
+          if (this.gameData['seat' + c] === member) {
+            isUserSeated = true;
+            break;
+          }
+        let userSeated = isUserSeated ? ' impact-font' : '';
+
+        let playerUp = (currentPlayer === member) ? ' player_up' : '';
 
         let timeSince = this.timeSince(new Date(members[member]));
-        html += `<div class="member_list_item card_shadow app_panel">
+        html += `<div class="member_list_item card_shadow app_panel${playerUp}">
           <div class="game_user_wrapper">
-            <span style="background-image:url(${data.img})"></span>
-            <span class="name">${data.name}</span>
+            <span class="logo" style="background-image:url(${data.img})"></span>
+            <span class="name${owner}">${data.name}</span>
             <div class="member_online_status" data-uid="${member}"></div>
           </div>
 
-          <span class="member_list_time_since time_since_updatable" data-timesince="${members[member]}">${timeSince}</span>
+          <span class="member_list_time_since time_since_updatable ${userSeated}" data-timesince="${members[member]}">${timeSince}</span>
           <br><br>
         </div>`;
       });
