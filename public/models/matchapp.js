@@ -71,7 +71,6 @@ export class MatchApp extends BaseApp {
       return;
 
     this.currentGame = null;
-    this.gameid_span.innerHTML = '';
     this.initRTDBPresence();
 
     let gameId = this.urlParams.get('game');

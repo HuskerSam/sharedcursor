@@ -29,9 +29,6 @@ export class BaseApp {
     firebase.auth().onAuthStateChanged(u => this.authHandleEvent(u));
     this.signInWithURL();
 
-    this.collapse_headers = document.querySelectorAll('.collapse_header');
-    this.collapse_headers.forEach(ctl => ctl.addEventListener('click', e => this.toggleCollapsePanel(ctl, e)));
-
     this.apiType = 'invalid';
     this.userPresenceStatus = {};
     this.userPresenceStatusRefs = {};
@@ -292,14 +289,6 @@ export class BaseApp {
     }
     return array;
   }
-  toggleCollapsePanel(ctl, e) {
-    let parent = ctl.parentElement;
-    if (parent.classList.contains('collapsed')) {
-      parent.classList.remove('collapsed');
-    } else {
-      parent.classList.add('collapsed');
-    }
-  }
   timeSince(date) {
     let seconds = Math.floor((new Date() - date) / 1000);
 
@@ -425,9 +414,11 @@ export class BaseApp {
     if (this.code_link_copy)
       this.code_link_copy.addEventListener('click', e => this.copyGameLinkToClipboard());
 
+    this.close_options = document.querySelector('.close_options');
+    this.close_options.addEventListener('click', e => this.toggleOptionsPanel(e));
+
     this.initGameMessageFeed();
   }
-
 
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)

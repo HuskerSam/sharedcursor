@@ -203,11 +203,6 @@ a {
   overflow: hidden;
 }
 
-.collapse_header {
-  margin: 0;
-  cursor: pointer;
-}
-
 .signup_alert {
   display: none;
 }
@@ -912,4 +907,22 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   padding-right: 8px;
   font-size: 1.25em;
   opacity: .5;
+}
+
+.basic_options {
+  position: relative;
+}
+
+.basic_options .close_options {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  padding: 4px;
+  z-index: 10;
+}
+
+.basic_options .close_options i {
+  font-size: 30px;
 }

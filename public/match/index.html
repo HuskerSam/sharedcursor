@@ -118,6 +118,7 @@
             <div class="game_options_view">
               <div class="basic_options">
                 <div class="gameid_span"></div>
+                <button class="close_options"><i class="material-icons">close</i></button>
                 <div class="options_edit_block">
                   <label class="form-label">Visibility</label>
                   <select class="visibility_select form-select form-select-lg">
@@ -169,6 +170,7 @@
                   </select>
                   <div class="scoring_system_display"></div>
                 </div>
+                <br><br>
               </div>
             </div>
           </div>
@@ -213,21 +215,26 @@
           </div>
           <div class="mode_ready_view">
             <div class="match_instructions">
-              Select 2 cards<br>
-              Match: remove them and go again<br>
-              No match: next players turn<br>
-              Most points wins tie break is last player to play.
-
-              <h3>Regular Scoring</h3>
-              Show card: 1pt, First match: 5pts, Matches: 2pts + 2pts * Streak
-              <br><br>
-              <h3>Stable Scoring</h3>
-              Show card: 1pt, Matches: 2pts
-              <br><br>
-
-              <h3>Simple Scoring</h3>
-              Matches: 1pt
-
+              <b>Game Play</b>
+              <br>
+              A player turns 2 cards<br>
+              &nbsp;match -> remove cards, go again<br>
+              &nbsp;no match -> next player
+              <br>
+              Most points wins
+              <br>
+              &nbsp;tiebreaker -> last to play
+              <br>
+              <br>
+              <b>Regular Scoring</b>
+              <br>
+              Cards Shown -> 1 pt each
+              <br>
+              Matches -> 2 pts + 2 pts * Streak
+              <br>
+              &nbsp;Streak = Matches this turn
+              <br>
+              &nbsp;Game first = 5 pts
             </div>
           </div>
           <div class="mode_running_view">
