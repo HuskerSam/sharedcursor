@@ -699,7 +699,7 @@ module.exports = class GameAPI {
 
     let promises = [];
     gamesQuery.docs.forEach(doc => {
-      promises.push(firebaseAdmin.firestore().collection(`Games`).doc(doc.id).set({
+      promises.push(doc.ref.set({
         memberNames: {
           [uid]: name
         }
@@ -709,6 +709,19 @@ module.exports = class GameAPI {
     });
 
     await Promise.all(promises);
+
+    let messagesQuery = await firebaseAdmin.firestore().collectionGroup(`messages`)
+      .where('uid', '==', uid).get();
+    let msgPromises = [];
+    messagesQuery.docs.forEach(doc => {
+      msgPromises.push(doc.ref.set({
+        memberName: name
+      }, {
+        merge: true
+      }));
+    });
+
+    await Promise.all(msgPromises);
 
     return;
   }
@@ -724,7 +737,7 @@ module.exports = class GameAPI {
 
     let promises = [];
     gamesQuery.docs.forEach(doc => {
-      promises.push(firebaseAdmin.firestore().collection(`Games`).doc(doc.id).set({
+      promises.push(doc.ref.set({
         memberImages: {
           [uid]: image
         }
@@ -734,6 +747,19 @@ module.exports = class GameAPI {
     });
 
     await Promise.all(promises);
+
+    let messagesQuery = await firebaseAdmin.firestore().collectionGroup(`messages`)
+      .where('uid', '==', uid).get();
+    let msgPromises = [];
+    messagesQuery.docs.forEach(doc => {
+      msgPromises.push(doc.ref.set({
+        memberImage: image
+      }, {
+        merge: true
+      }));
+    });
+
+    await Promise.all(msgPromises);
 
     return;
   }
