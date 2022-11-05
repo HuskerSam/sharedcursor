@@ -195,7 +195,7 @@
 
 .player_dock {
   display: flex;
-  flex-direction: row
+  flex-direction: row;
 }
 
 .seat0_results, .seat1_results, .seat2_results, .seat3_results {
@@ -237,10 +237,6 @@
   text-align: right;
   font-weight: bold;
   float: right;
-}
-
-.mode_end .player_dock {
-  display: none;
 }
 
 .match_end_result .dock_container {

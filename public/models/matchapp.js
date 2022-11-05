@@ -108,7 +108,7 @@ export class MatchApp extends BaseApp {
 
     this._updateGameMembersList();
     this.paintDock();
-    this._paintDockSeats('.match_end_result ');
+  //  this._paintDockSeats('.match_end_result ');
 
     if (this.gameData.mode === this.previousMode)
       this.matchBoardRendered = false;
@@ -216,7 +216,7 @@ export class MatchApp extends BaseApp {
       let name = this.gameData.memberNames[this.gameData.seat1];
       if (!name) name = "Anonymous";
       this.seat1_total.innerHTML = `<span class="score_name">${name}</span>
-      <span class="score_points">${this.gameData.seatPoints1} pts</span>`;;
+      <span class="score_points">${this.gameData.seatPoints1} pts</span>`;
     } else
       this.seat1_total.innerHTML = '';
 

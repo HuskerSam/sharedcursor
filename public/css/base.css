@@ -489,7 +489,7 @@ a {
   margin-left: 5px;
 }
 
-.dock_container>div {
+.dock_container .game_user_wrapper {
   border: solid 4px transparent;
   border-bottom: none;
   border-top-left-radius: 4px;
@@ -521,6 +521,7 @@ a {
 .dock_container {
   flex: 1;
   position: relative;
+  width: 25%;
 }
 
 .dock_container .stand_button {
@@ -542,12 +543,12 @@ a {
 
 .dock_container .sit_button {
   position: absolute;
-  top: 50%;
+  top: 5px;
   left: 50%;
   background: none;
   border: none;
   color: inherit;
-  transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%);
   z-index: 100;
   padding: 12px 28px;
   display: none;
@@ -932,4 +933,25 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 
 .tab_buttons i {
   font-size: 36px;
+}
+
+.dock_container .score_panel .name {
+  width: inherit;
+  height: 40px;
+  line-height: 40px;
+  overflow: hidden;
+}
+
+
+.dock_container .score_panel .pts {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.score_panel {
+  display: none;
+}
+
+.mode_end .dock_seat_stand .score_panel {
+  display: block;
 }

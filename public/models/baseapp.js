@@ -439,6 +439,25 @@ export class BaseApp {
     this.tab_panes[i].classList.add('show');
     btn.classList.add('active');
   }
+  applyAutoSizeToParagraph(query = '.paragraphfit_auto', startFontSize = 40) {
+    let elements = document.querySelectorAll(query);
+
+    let results = [];
+
+    elements.forEach(el => {
+      let fontSize = startFontSize;
+      el.style.fontSize = fontSize + 'px';
+      let overflow = el.style.overflow;
+      el.style.overflow = 'auto';
+      while (el.scrollHeight > el.offsetHeight) {
+        fontSize -= .5;
+        if (fontSize < 6)
+          break;
+        el.style.fontSize = fontSize + 'px';
+      }
+      el.style.overflow = overflow;
+    });
+  }
 
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)
@@ -918,6 +937,11 @@ export class BaseApp {
       let spans = seat.querySelectorAll('span');
 
       if (this.gameData[key]) {
+        let name = this.gameData.memberNames[this.gameData[key]];
+        if (!name) name = "Anonymous";
+        let nEle = seat.parentElement.querySelector('.score_panel .name');
+        nEle.innerHTML = name;
+
         spans[0].style.backgroundImage = 'url(' + this._gameMemberData(this.gameData[key]).img + ")";
         seat.parentElement.classList.remove('dock_seat_open');
 
@@ -926,6 +950,8 @@ export class BaseApp {
         else
           seat.parentElement.classList.remove('dock_seat_stand');
       } else {
+        seat.parentElement.querySelector('.score_panel .name').innerHTML = '&nbsp;';
+
         seat.parentElement.classList.remove('dock_seat_stand');
         spans[0].style.backgroundImage = '';
 
@@ -934,7 +960,22 @@ export class BaseApp {
         else
           seat.parentElement.classList.add('dock_seat_open');
       }
+
+      let pts = this.gameData['seatPoints' + c.toString()];
+      if (!pts)
+        pts = 0;
+      seat.parentElement.querySelector('.score_panel .pts').innerHTML = pts.toString() + ' pts';
     }
+
+    for (let c = this.gameData.numberOfSeats, l = 4; c < l; c++) {
+      let key = 'seat' + c.toString();
+      let seat = document.querySelector(queryPrefix + `.dock_seat${c.toString()}`);
+      seat.parentElement.classList.remove('dock_seat_stand');
+    }
+
+    setTimeout(() => {
+      this.applyAutoSizeToParagraph('.dock_container .score_panel .name');
+    }, 1);
   }
   paintDock() {
     document.body.classList.remove('seatcount_1');
