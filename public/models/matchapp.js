@@ -108,7 +108,6 @@ export class MatchApp extends BaseApp {
 
     this._updateGameMembersList();
     this.paintDock();
-  //  this._paintDockSeats('.match_end_result ');
 
     if (this.gameData.mode === this.previousMode)
       this.matchBoardRendered = false;
@@ -190,53 +189,18 @@ export class MatchApp extends BaseApp {
     }
 
     this.match_result_message = document.querySelector('.match_result_message');
-    this.seat0_total = document.querySelector('.seat0_results .score_total');
-    this.seat1_total = document.querySelector('.seat1_results .score_total');
-    this.seat2_total = document.querySelector('.seat2_results .score_total');
-    this.seat3_total = document.querySelector('.seat3_results .score_total');
 
-    let name = this.gameData.memberNames[this.gameData.seat0];
-    if (!name) name = "Anonymous";
-
-    document.querySelector('.seat0_results').classList.remove('winner');
-    document.querySelector('.seat1_results').classList.remove('winner');
-    document.querySelector('.seat2_results').classList.remove('winner');
-    document.querySelector('.seat3_results').classList.remove('winner');
+    document.querySelector('.dock_pos_0').classList.remove('winner');
+    document.querySelector('.dock_pos_1').classList.remove('winner');
+    document.querySelector('.dock_pos_2').classList.remove('winner');
+    document.querySelector('.dock_pos_3').classList.remove('winner');
 
     let w_index = this.gameData.winningSeatIndex;
     if (!w_index)
       w_index = 0;
-    document.querySelector(`.seat${w_index}_results`).classList.add('winner');
+    document.querySelector(`.dock_pos_${w_index}`).classList.add('winner');
 
     this.match_result_message.innerHTML = msg;
-    this.seat0_total.innerHTML = `<span class="score_name">${name}</span>
-    <span class="score_points">${this.gameData.seatPoints0} pts</span>`;
-
-    if (this.gameData.runningNumberOfSeats > 1) {
-      let name = this.gameData.memberNames[this.gameData.seat1];
-      if (!name) name = "Anonymous";
-      this.seat1_total.innerHTML = `<span class="score_name">${name}</span>
-      <span class="score_points">${this.gameData.seatPoints1} pts</span>`;
-    } else
-      this.seat1_total.innerHTML = '';
-
-    if (this.gameData.runningNumberOfSeats > 2) {
-      let name = this.gameData.memberNames[this.gameData.seat2];
-      if (!name) name = "Anonymous";
-
-      this.seat2_total.innerHTML = `<span class="score_name">${name}</span>
-      <span class="score_points">${this.gameData.seatPoints2} pts</span>`;;
-    } else
-      this.seat2_total.innerHTML = '';
-
-    if (this.gameData.runningNumberOfSeats > 3) {
-      let name = this.gameData.memberNames[this.gameData.seat3];
-      if (!name) name = "Anonymous";
-
-      this.seat3_total.innerHTML = `<span class="score_name">${name}</span>
-      <span class="score_points">${this.gameData.seatPoints3} pts</span>`;;
-    } else
-      this.seat3_total.innerHTML = '';
 
     this.match_end_display_promo = document.querySelector('.match_end_display_promo');
     let deckIndex = 0;

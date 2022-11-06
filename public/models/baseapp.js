@@ -564,13 +564,25 @@ export class BaseApp {
         let data = this._gameMemberData(member);
         let owner = (this.gameData.createUser === member) ? ' impact-font' : '';
 
-        let isUserSeated = false;
+        let userSeats = [];
+        let seatTotals = '';
         for (let c = 0; c < this.gameData.numberOfSeats; c++)
           if (this.gameData['seat' + c] === member) {
-            isUserSeated = true;
-            break;
+            let points = this.gameData['seatPoints' + c.toString()];
+            if (!points)
+              points = 0;
+            let data = {
+              seat: c,
+              points
+            };
+            seatTotals += `<div class="pts_block">
+              <span class="seat_description">Seat ${(c + 1).toString()}:</span><span class="points">${points} pt${points === 1 ? '' : 's'}</span>
+              </div>`;
+
+            userSeats.push(data);
           }
-        let userSeated = isUserSeated ? ' impact-font' : '';
+
+        let userSeated = userSeats.length > 0 ? ' impact-font' : '';
 
         let playerUp = (currentPlayer === member) ? ' player_up' : '';
 
@@ -584,6 +596,9 @@ export class BaseApp {
 
           <span class="member_list_time_since time_since_updatable ${userSeated}" data-timesince="${members[member]}">${timeSince}</span>
           <br>
+          <div class="seat_stati">
+            ${seatTotals}
+          </div>
         </div>`;
       });
     }
@@ -927,13 +942,16 @@ export class BaseApp {
     }, 3000);
   }
 
-  _paintDockSeats(queryPrefix = '.player_dock ') {
+  _paintDockSeats() {
     let gameOwner = (this.gameData.createUser === this.uid);
     let limit1 = this.gameData.seatsPerUser === 'one';
+    let numberCurrentSeats = this.gameData.runningNumberOfSeats;
+    if (this.gameData.mode === 'ready')
+      numberCurrentSeats = this.gameData.numberOfSeats;
 
-    for (let c = 0; c < this.gameData.numberOfSeats; c++) {
+    for (let c = 0; c < numberCurrentSeats; c++) {
       let key = 'seat' + c.toString();
-      let seat = document.querySelector(queryPrefix + `.dock_seat${c.toString()}`);
+      let seat = document.querySelector(`.player_dock .dock_seat${c.toString()}`);
       let spans = seat.querySelectorAll('span');
 
       if (this.gameData[key]) {
@@ -964,13 +982,14 @@ export class BaseApp {
       let pts = this.gameData['seatPoints' + c.toString()];
       if (!pts)
         pts = 0;
-      seat.parentElement.querySelector('.score_panel .pts').innerHTML = pts.toString() + ' pts';
+      seat.parentElement.querySelector('.score_panel .pts').innerHTML = `${pts} pt${pts === 1 ? '' : 's'}`;
     }
 
-    for (let c = this.gameData.numberOfSeats, l = 4; c < l; c++) {
+    for (let c = numberCurrentSeats, l = 4; c < l; c++) {
       let key = 'seat' + c.toString();
-      let seat = document.querySelector(queryPrefix + `.dock_seat${c.toString()}`);
+      let seat = document.querySelector(`.player_dock .dock_seat${c.toString()}`);
       seat.parentElement.classList.remove('dock_seat_stand');
+      seat.parentElement.classList.remove('dock_seat_open');
     }
 
     setTimeout(() => {

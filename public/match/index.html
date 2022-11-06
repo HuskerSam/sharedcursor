@@ -185,14 +185,27 @@
               <br>
               <br>
               <b>Regular Scoring</b>
-              <br>
-              Cards Shown -> 1 pt each
-              <br>
-              Matches -> 2 pts + 2 pts * Streak
-              <br>
-              &nbsp;Streak = Matches this turn
-              <br>
-              &nbsp;Game first = 5 pts
+              <div style="display:flex;flex-direction:row">
+                <div style="text-align: right;flex:1">
+                Card First Shown =
+                <br>
+                Matches =
+                <br>
+                Streak =
+                <br>
+                First match of game =
+                </div>
+                <div style="flex:1;text-align:left">
+                  &nbsp;1 pt each
+                 <br>
+                  &nbsp;2 pts + 2 pts * Streak
+                 <br>
+                 &nbsp;Matches this turn
+                 <br>
+                 &nbsp;5 pts
+                </div>
+              </div>
+
             </div>
           </div>
           <div class="mode_running_view">
@@ -236,52 +249,6 @@
                 <div class="beer_image"></div>
               </div>
             </div>
-            <div class="match_end_result">
-              <div class="seat0_results">
-                <div class="dock_container dock_pos_0">
-                  <div class="dock_seat0 game_user_wrapper seat_color_0">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                </div>
-                <div class="score_total">
-                </div>
-              </div>
-              <div class="seat1_results">
-                <div class="dock_container dock_pos_1">
-                  <div class="dock_seat1 game_user_wrapper seat_color_1">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                </div>
-                <div class="score_total">
-                </div>
-              </div>
-              <div class="seat2_results">
-                <div class="dock_container dock_pos_2">
-                  <div class="dock_seat2 game_user_wrapper seat_color_2">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                </div>
-                <div class="score_total">
-                </div>
-              </div>
-              <div class="seat3_results">
-                <div class="dock_container dock_pos_3">
-                  <div class="dock_seat3 game_user_wrapper seat_color_3">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                </div>
-                <div class="score_total">
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -297,13 +264,14 @@
               <button class="btn btn-primary active" value="messages"><i class="material-icons">chat</i></button>
               <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
               <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
-              <button class="btn btn-primary" value="options"><i class="material-icons">share</i></button>
             </div>
           </div>
           <div class="tab-content game_options_panel_wrapper">
             <div class="tab-pane fade messages_list show active" role="tabpanel"></div>
             <div class="tab-pane fade members_list" role="tabpanel"></div>
             <div class="tab-pane fade basic_options" role="tabpanel">
+              <div class="gameid_span"></div>
+
               <div class="options_edit_block">
                 <label class="form-label">Visibility</label>
                 <select class="visibility_select form-select form-select-lg">
@@ -356,10 +324,6 @@
                 <div class="scoring_system_display"></div>
               </div>
               <br><br>
-            </div>
-            <div class="tab-pane fade share_panel" role="tabpanel">
-              <div class="gameid_span"></div>
-
             </div>
           </div>
         </div>

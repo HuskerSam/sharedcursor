@@ -198,51 +198,6 @@
   flex-direction: row;
 }
 
-.seat0_results, .seat1_results, .seat2_results, .seat3_results {
-  display: flex;
-  flex-direction: row;
-  margin: 10px;
-}
-
-.seat0_results .dock_container div, .seat1_results .dock_container div,
-.seat2_results .dock_container div, .seat3_results .dock_container div {
-  border-radius: 10px;
-}
-
-.score_total {
-  flex: 3;
-  line-height: 70px;
-  font-size: 22px;
-  text-align: left;
-  border-radius: 10px;
-  margin-left: 5px;
-  padding: 0 5px;
-  margin-bottom: -4px;
-}
-
-.winner {
-  border: ridge 5px rgb(0, 255, 0);
-  border-radius: 10px;
-  background: rgba(0, 255, 0, .5);
-}
-
-.score_name {
-  max-width: 100px;
-  display: inline-block;
-  white-space: nowrap;
-  font-size: .8em;
-}
-
-.score_points {
-  text-align: right;
-  font-weight: bold;
-  float: right;
-}
-
-.match_end_result .dock_container {
-  border: none;
-}
-
 .match_end_display_promo {}
 
 .beer_image {
@@ -323,6 +278,6 @@
 }
 
 .match_instructions {
-  text-align: left;
+  text-align: center;
   padding: 8px;
 }

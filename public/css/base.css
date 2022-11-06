@@ -370,8 +370,6 @@ a {
 .member_list_time_since {
   float: right;
   clear: both;
-  line-height: 40px;
-  font-size: 18px;
   opacity: .75;
   padding-right: 1em;
 }
@@ -942,10 +940,8 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   overflow: hidden;
 }
 
-
 .dock_container .score_panel .pts {
   font-size: 20px;
-  font-weight: bold;
 }
 
 .score_panel {
@@ -954,4 +950,22 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 
 .mode_end .dock_seat_stand .score_panel {
   display: block;
+}
+
+.pts_block {
+  padding: 4px;
+  padding-left: 12px;
+  display: inline-block;
+}
+
+.seat_description {
+  opacity: .75;
+}
+
+.dock_container.winner .score_panel .pts {
+  font-weight: bold;
+}
+
+.seat_stati .points {
+  padding-left: 12px;
 }
