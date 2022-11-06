@@ -180,6 +180,11 @@ export class MatchApp extends BaseApp {
   }
 
   _updateFinishStatus() {
+    document.querySelector('.dock_pos_0').classList.remove('winner');
+    document.querySelector('.dock_pos_1').classList.remove('winner');
+    document.querySelector('.dock_pos_2').classList.remove('winner');
+    document.querySelector('.dock_pos_3').classList.remove('winner');
+
     if (this.gameData.mode !== 'end')
       return;
 
@@ -188,17 +193,16 @@ export class MatchApp extends BaseApp {
       msg = "";
     }
 
-    this.match_result_message = document.querySelector('.match_result_message');
+    //match_end_display_promo
 
-    document.querySelector('.dock_pos_0').classList.remove('winner');
-    document.querySelector('.dock_pos_1').classList.remove('winner');
-    document.querySelector('.dock_pos_2').classList.remove('winner');
-    document.querySelector('.dock_pos_3').classList.remove('winner');
+    this.match_result_message = document.querySelector('.match_result_message');
 
     let w_index = this.gameData.winningSeatIndex;
     if (!w_index)
       w_index = 0;
     document.querySelector(`.dock_pos_${w_index}`).classList.add('winner');
+    document.querySelector('.match_result_message').classList.add('seat_color_' + w_index);
+    document.querySelector('.beer_name_anchor').classList.add('seat_color_' + w_index);
 
     this.match_result_message.innerHTML = msg;
 

@@ -231,6 +231,7 @@
 
 .beer_name_anchor {
   text-decoration: none;
+  display: block;
 }
 
 .members_list {

@@ -474,10 +474,6 @@ a {
   min-height: 55px;
 }
 
-.member_list_item.player_up {
-  border: ridge 3px rgb(0, 255, 0);
-}
-
 .game_message_list_item .member_online_status {
   opacity: .75;
   float: right;
@@ -964,6 +960,14 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 
 .dock_container.winner .score_panel .pts {
   font-weight: bold;
+}
+
+.member_list_item.winner {
+  border: ridge 3px rgb(255, 0, 0);
+}
+
+.mode_running .member_list_item.player_up {
+  border: ridge 3px rgb(0, 255, 0);
 }
 
 .seat_stati .points {

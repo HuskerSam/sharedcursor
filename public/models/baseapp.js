@@ -553,6 +553,7 @@ export class BaseApp {
     let html = '';
     if (this.gameData) {
       let currentPlayer = this.gameData['seat' + this.gameData.currentSeat];
+      let winningPlayer = this.gameData['seat' + this.gameData.winningSeatIndex];
 
       let members = {};
       if (this.gameData.members)
@@ -563,6 +564,7 @@ export class BaseApp {
         this.addUserPresenceWatch(member);
         let data = this._gameMemberData(member);
         let owner = (this.gameData.createUser === member) ? ' impact-font' : '';
+        let winner = (winningPlayer === member && this.gameData.mode === 'end') ? ' winner' : '';
 
         let userSeats = [];
         let seatTotals = '';
@@ -584,10 +586,10 @@ export class BaseApp {
 
         let userSeated = userSeats.length > 0 ? ' impact-font' : '';
 
-        let playerUp = (currentPlayer === member) ? ' player_up' : '';
+        let playerUp = (currentPlayer === member &&  this.gameData.mode === 'running') ? ' player_up' : '';
 
         let timeSince = this.timeSince(new Date(members[member]));
-        html += `<div class="member_list_item card_shadow app_panel${playerUp}">
+        html += `<div class="member_list_item card_shadow app_panel${playerUp}${winner}" data-uid="${member}">
           <div class="game_user_wrapper">
             <span class="logo" style="background-image:url(${data.img})"></span>
             <span class="name${owner}">${data.name}</span>
