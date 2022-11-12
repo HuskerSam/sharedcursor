@@ -21,7 +21,7 @@ module.exports = class GameAPI {
       previousCard1: -1,
       numberOfSeats: 2,
       runningNumberOfSeats: 2,
-      cardDeck: 'empyrean',
+      cardDeck: 'solarsystem',
       visibility: 'private',
       messageLevel: 'seated',
       publicStatus: 'privateClosed',

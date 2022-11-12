@@ -67,10 +67,13 @@ export class MatchApp extends BaseApp {
   async load() {
     await this.readJSONFile(`/match/ziplinedeck.json`, 'ziplineCardDeck');
     await this.readJSONFile(`/match/empyreandeck.json`, 'empyreanCardDeck');
+    await this.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck');
 
     await super.load();
   }
   getCardDeck() {
+    if (this.gameData.cardDeck === 'solarsystem')
+      return window.solarsystemCardDeck;
     if (this.gameData.cardDeck === 'zipline')
       return window.ziplineCardDeck;
     return window.empyreanCardDeck;
