@@ -224,6 +224,7 @@ export class MatchApp extends BaseApp {
       this.matchCards[c].classList.remove('selection_missed');
       this.matchCards[c].classList.remove('selection_matched');
       this.matchCards[c].children[0].innerHTML = '';
+      this.matchCards[c].children[0].style.background = '';
 
       if (this.gameData.cardIndexesShown[c])
         this.matchCards[c].classList.add('previously_shown');
@@ -239,6 +240,7 @@ export class MatchApp extends BaseApp {
       let cardIndex = span.dataset.index;
       let cardInfo = this.getCardInfo(cardIndex);
       span.innerHTML = this._cardFilling(cardInfo);
+      span.style.background = cardInfo.meta.color;
     }
     if (this.gameData.previousCard1 > -1) {
       let card = this.matchCards[this.gameData.previousCard1];
@@ -247,6 +249,7 @@ export class MatchApp extends BaseApp {
       let cardIndex = span.dataset.index;
       let cardInfo = this.getCardInfo(cardIndex);
       span.innerHTML = this._cardFilling(cardInfo);
+      span.style.background = cardInfo.meta.color;
     }
 
     if (!this.zoom_out_beer_cards)
@@ -419,10 +422,14 @@ export class MatchApp extends BaseApp {
   _updateCardZoomState() {
     if (!this.upperLeftDisplayCard)
       return;
-    this.upperLeftDisplayCard.style.display = '';
-    this.upperRightDisplayCard.style.display = '';
-    this.lowerLeftDisplayCard.style.display = '';
-    this.lowerRightDisplayCard.style.display = '';
+    this.upperLeftDisplayCard.innerHTML = '';
+    this.upperRightDisplayCard.innerHTML = '';
+    this.lowerLeftDisplayCard.innerHTML = '';
+    this.lowerRightDisplayCard.innerHTML = '';
+    this.upperLeftDisplayCard.style.background = '';
+    this.upperRightDisplayCard.style.background = '';
+    this.lowerLeftDisplayCard.style.background = '';
+    this.lowerRightDisplayCard.style.background = '';
     if (this.gameData.previousCard0 < 0 ||
       this.gameData.previousCard1 < 0) {
 
@@ -485,11 +492,13 @@ export class MatchApp extends BaseApp {
       }
 
 
-      let card0Meta = this.getCardMeta(this.gameData.cardIndexOrder[card0]);
+      let card0Meta = this.getCardInfo(card0);
       if (qs0 === 0) {
         this.bigDiv0 = this.upperLeftDisplayCard;
-        this.upperLeftDisplayCard.style.display = 'block';
-        //this.upperLeftDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
+        this.upperLeftDisplayCard.style.display = 'flex';
+        this.upperLeftDisplayCard.innerHTML = this._cardFilling(card0Meta, true);
+        this.upperLeftDisplayCard.style.background = card0Meta.meta.color;
+
         if (q0 === 1) {
           this.upperLeftDisplayCard.style.top = '10%';
           this.upperLeftDisplayCard.style.right = '-5%';
@@ -500,8 +509,10 @@ export class MatchApp extends BaseApp {
       }
       if (qs0 === 1) {
         this.bigDiv0 = this.upperRightDisplayCard;
-        this.upperRightDisplayCard.style.display = 'block';
-        //this.upperRightDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
+        this.upperRightDisplayCard.style.display = 'flex';
+        this.upperRightDisplayCard.innerHTML = this._cardFilling(card0Meta, true);
+        this.upperRightDisplayCard.style.background = card0Meta.meta.color;
+
         if (q0 === 0) {
           this.upperRightDisplayCard.style.top = '10%';
           this.upperRightDisplayCard.style.left = '-5%';
@@ -512,8 +523,10 @@ export class MatchApp extends BaseApp {
       }
       if (qs0 === 2) {
         this.bigDiv0 = this.lowerLeftDisplayCard;
-        this.lowerLeftDisplayCard.style.display = 'block';
-        //this.lowerLeftDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
+        this.lowerLeftDisplayCard.style.display = 'flex';
+        this.lowerLeftDisplayCard.innerHTML = this._cardFilling(card0Meta, true);
+        this.lowerLeftDisplayCard.style.background = card0Meta.meta.color;
+
         if (q0 === 0) {
           this.lowerLeftDisplayCard.style.top = '-5%';
           this.lowerLeftDisplayCard.style.left = '10%';
@@ -524,8 +537,10 @@ export class MatchApp extends BaseApp {
       }
       if (qs0 === 3) {
         this.bigDiv0 = this.lowerRightDisplayCard;
-        this.lowerRightDisplayCard.style.display = 'block';
-        //this.lowerRightDisplayCard.style.backgroundImage = `url(${card0Meta.image})`;
+        this.lowerRightDisplayCard.style.display = 'flex';
+        this.lowerRightDisplayCard.innerHTML = this._cardFilling(card0Meta, true);
+        this.lowerRightDisplayCard.style.background = card0Meta.meta.color;
+
         if (q0 === 1) {
           this.lowerRightDisplayCard.style.top = '-5%';
           this.lowerRightDisplayCard.style.left = '10%';
@@ -535,11 +550,13 @@ export class MatchApp extends BaseApp {
         }
       }
 
-      let card1Meta = this.getCardMeta(this.gameData.cardIndexOrder[card1]);
+      let card1Meta = this.getCardInfo(card1);
       if (qs1 === 0) {
         this.bigDiv1 = this.upperLeftDisplayCard;
-        this.upperLeftDisplayCard.style.display = 'block';
-        //this.upperLeftDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
+        this.upperLeftDisplayCard.style.display = 'flex';
+        this.upperLeftDisplayCard.innerHTML = this._cardFilling(card1Meta, true);
+        this.upperLeftDisplayCard.style.background = card1Meta.meta.color;
+
         if (q1 === 1) {
           this.upperLeftDisplayCard.style.top = '10%';
           this.upperLeftDisplayCard.style.right = '-5%';
@@ -550,8 +567,10 @@ export class MatchApp extends BaseApp {
       }
       if (qs1 === 1) {
         this.bigDiv1 = this.upperRightDisplayCard;
-        this.upperRightDisplayCard.style.display = 'block';
-        //this.upperRightDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
+        this.upperRightDisplayCard.style.display = 'flex';
+        this.upperRightDisplayCard.innerHTML = this._cardFilling(card1Meta, true);
+        this.upperRightDisplayCard.style.background = card1Meta.meta.color;
+
         if (q1 === 0) {
           this.upperRightDisplayCard.style.top = '10%';
           this.upperRightDisplayCard.style.left = '-5%';
@@ -562,8 +581,10 @@ export class MatchApp extends BaseApp {
       }
       if (qs1 === 2) {
         this.bigDiv1 = this.lowerLeftDisplayCard;
-        this.lowerLeftDisplayCard.style.display = 'block';
-        //this.lowerLeftDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
+        this.lowerLeftDisplayCard.style.display = 'flex';
+        this.lowerLeftDisplayCard.innerHTML = this._cardFilling(card1Meta, true);
+        this.lowerLeftDisplayCard.style.background = card1Meta.meta.color;
+
         if (q1 === 0) {
           this.lowerLeftDisplayCard.style.top = '-5%';
           this.lowerLeftDisplayCard.style.left = '10%';
@@ -574,8 +595,10 @@ export class MatchApp extends BaseApp {
       }
       if (qs1 === 3) {
         this.bigDiv1 = this.lowerRightDisplayCard;
-        this.lowerRightDisplayCard.style.display = 'block';
-        //this.lowerRightDisplayCard.style.backgroundImage = `url(${card1Meta.image})`;
+        this.lowerRightDisplayCard.style.display = 'flex';
+        this.lowerRightDisplayCard.innerHTML = this._cardFilling(card1Meta, true);
+        this.lowerRightDisplayCard.style.background = card1Meta.meta.color;
+
         if (q1 === 1) {
           this.lowerRightDisplayCard.style.top = '-5%';
           this.lowerRightDisplayCard.style.left = '10%';
@@ -584,7 +607,6 @@ export class MatchApp extends BaseApp {
           this.lowerRightDisplayCard.style.left = '-5%';
         }
       }
-
 
       this.cardShowQs = {
         q0,
@@ -719,11 +741,18 @@ export class MatchApp extends BaseApp {
   _cardTemplate(cardInfo, index) {
     return `<span class="card_inner" data-index="${index}"></span>`
   }
-  _cardFilling(cardInfo) {
-    return `<div class="name">${cardInfo.meta.name}</div>
-
-
+  _cardFilling(cardInfo, includeWrapper = false) {
+    let invert = cardInfo.meta.invert ? ' invert' : '';
+    let guts = `<div class="header${invert}">
+      <img class="symbol" src="${cardInfo.meta.symbol}">
+      <div class="name">${cardInfo.meta.name}</div>
+    </div>
+    <div class="image" style="background-image:url(${cardInfo.image});"></div>
     `;
+
+    if (includeWrapper)
+      return `<span class="card_inner">${guts}</span>`;
+    return guts;
   }
   getCardInfo(cardIndex) {
     let orderIndex = this.gameData.cardIndexOrder[cardIndex];

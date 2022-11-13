@@ -695,8 +695,6 @@ export class BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
-
-    console.log(json);
   }
   async gameAPIOptions() {
     let visibility = this.visibility_select.value;

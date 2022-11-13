@@ -10,7 +10,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Sun",
-    "color": "rgb(255, 255, 0)"
+    "color": "rgb(255, 255, 0)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
@@ -23,12 +24,13 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Mercury_(planet)",
-    "color": "rgb(127, 127, 127)"
+    "color": "rgb(127, 127, 127)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
     "id": "venus",
-    "description": "Venus is the second planet from the Sun. It is sometimes called Earth's \"sister\" or \"twin\" planet as it is almost as large and has a similar composition. Venus does not have any moons, a distinction it shares only with Mercury among the planets in the Solar System. Venus and Uranus are the only planets with a retrograde rotation, making the Sun move in their skies from their western horizon to their eastern. Venus rotates once every 243 Earth days — the slowest rotation of any planet - making it's shape close to spherical.",
+    "description": "Venus is the second planet from the Sun. It is sometimes called Earth's \"sister\" or \"twin\" planet as it is almost as large and has a similar composition. Venus does not have any moons, a distinction it shares only with Mercury among the planets in the Solar System. Venus and Uranus are the only planets with such a retrograde rotation, making the Sun move in their skies from their western horizon to their eastern. Venus rotates clockwise in retrograde rotation once every 243 Earth days—the slowest rotation of any planet. Because its rotation is so slow, Venus is very close to spherical.",
     "image": "/match/deckmedia/venus.jpg",
     "symbol": "/match/deckmedia/venussymbol.svg",
     "name": "Venus",
@@ -36,7 +38,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Venus",
-    "color": "rgb(255, 255, 255)"
+    "color": "rgb(255, 255, 255)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
@@ -49,7 +52,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Earth",
-    "color": "rgb(0, 0, 255)"
+    "color": "rgb(0, 0, 255)",
+    "invert": 1
   },
   {
     "type": "3dmodel",
@@ -62,7 +66,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Mars",
-    "color": "rgb(255, 0, 0)"
+    "color": "rgb(255, 0, 0)",
+    "invert": 1
   },
   {
     "type": "3dmodel",
@@ -75,7 +80,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Jupiter",
-    "color": "rgb(255, 0, 255)"
+    "color": "rgb(255, 0, 255)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
@@ -88,7 +94,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Saturn",
-    "color": "rgb(255, 127, 0)"
+    "color": "rgb(255, 127, 0)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
@@ -101,7 +108,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Uranus",
-    "color": "rgb(0, 255, 127)"
+    "color": "rgb(0, 255, 127)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
@@ -114,7 +122,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Neptune",
-    "color": "rgb(0, 127, 255)"
+    "color": "rgb(0, 127, 255)",
+    "invert": ""
   },
   {
     "type": "3dmodel",
@@ -127,7 +136,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Pluto",
-    "color": "rgb(0, 0, 0)"
+    "color": "rgb(0, 0, 0)",
+    "invert": 1
   },
   {
     "type": "3dmodel",
@@ -140,7 +150,8 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Ceres",
-    "color": "rgb(127, 0, 127)"
+    "color": "rgb(127, 0, 127)",
+    "invert": 1
   },
   {
     "type": "3dmodel",
@@ -153,6 +164,7 @@
     "brand": "Solar System",
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Eris",
-    "color": "rgb(127, 0, 0)"
+    "color": "rgb(127, 0, 0)",
+    "invert": 1
   }
 ]
