@@ -732,7 +732,6 @@ export class BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
-    console.log('change game options result', json);
   }
 
   _gameMemberData(uid) {

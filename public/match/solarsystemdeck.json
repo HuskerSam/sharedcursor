@@ -28,7 +28,7 @@
   {
     "type": "3dmodel",
     "id": "venus",
-    "description": "Venus is the second planet from the Sun. It is sometimes called Earth's \"sister\" or \"twin\" planet as it is almost as large and has a similar composition. Venus does not have any moons, a distinction it shares only with Mercury among the planets in the Solar System. Venus and Uranus are the only planets with such a retrograde rotation, making the Sun move in their skies from their western horizon to their eastern. Venus rotates clockwise in retrograde rotation once every 243 Earth days—the slowest rotation of any planet. Because its rotation is so slow, Venus is very close to spherical.",
+    "description": "Venus is the second planet from the Sun. It is sometimes called Earth's \"sister\" or \"twin\" planet as it is almost as large and has a similar composition. Venus does not have any moons, a distinction it shares only with Mercury among the planets in the Solar System. Venus and Uranus are the only planets with a retrograde rotation, making the Sun move in their skies from their western horizon to their eastern. Venus rotates once every 243 Earth days — the slowest rotation of any planet - making it's shape close to spherical.",
     "image": "/match/deckmedia/venus.jpg",
     "symbol": "/match/deckmedia/venussymbol.svg",
     "name": "Venus",

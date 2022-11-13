@@ -47,6 +47,7 @@
   position: relative;
   border: solid 2px transparent;
   display: inline-block;
+  overflow: hidden;
 }
 
 .previously_shown {
