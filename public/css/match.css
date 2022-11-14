@@ -92,13 +92,15 @@
 }
 
 .card_inner .symbol {
-  height: 20px;
+  height: 32px;
+  margin: 2px;
 }
 
 .card_inner .name {
   flex: 1;
   text-align: left;
-  line-height: 25px;
+  overflow: hidden;
+  line-height: 36px;
 }
 
 .matched_hidden {

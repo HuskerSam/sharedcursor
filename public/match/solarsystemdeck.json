@@ -25,7 +25,7 @@
     "brandid": "solarsystem",
     "url": "https://en.wikipedia.org/wiki/Mercury_(planet)",
     "color": "rgb(127, 127, 127)",
-    "invert": ""
+    "invert": 1
   },
   {
     "type": "3dmodel",
