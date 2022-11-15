@@ -39,6 +39,10 @@
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/match.css" />
 
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
   <!-- Firebase links -->
   <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-database.js"></script>
@@ -195,22 +199,22 @@
               <b>Regular Scoring</b>
               <div style="display:flex;flex-direction:row">
                 <div style="text-align: right;flex:1.04">
-                Card First Shown =
-                <br>
-                Matches =
-                <br>
-                Streak =
-                <br>
-                First match of game =
+                  Card First Shown =
+                  <br>
+                  Matches =
+                  <br>
+                  Streak =
+                  <br>
+                  First match of game =
                 </div>
                 <div style="flex:1;text-align:left">
                   &nbsp;1 pt each
-                 <br>
+                  <br>
                   &nbsp;2 pts + 2 pts * Streak
-                 <br>
-                 &nbsp;Matches this turn
-                 <br>
-                 &nbsp;5 pts
+                  <br>
+                  &nbsp;Matches this turn
+                  <br>
+                  &nbsp;5 pts
                 </div>
               </div>
 
@@ -252,11 +256,9 @@
             <div class="match_end_display_promo">
               <a class="beer_name_anchor" target="_blank">
                 <span class="beer_name"></span>
-                 <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
-               </a>
-              <div class="beer_description">
-                <div class="beer_image"></div>
-              </div>
+                <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
+              </a>
+              <canvas id="renderCanvas" touch-action="none"></canvas>
             </div>
           </div>
         </div>

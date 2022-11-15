@@ -245,23 +245,6 @@
 
 .match_end_display_promo {}
 
-.beer_image {
-  height: 250px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
-  width: 130px;
-}
-
-.beer_description {
-  display: flex;
-  flex-direction: row;
-}
-
-.beer_tags {
-  flex: 1;
-}
-
 .beer_name {
   font-size: 28px;
   font-weight: bold;
@@ -336,4 +319,12 @@
 
 .game_selection_missed .currentplayer_score_dock {
   background: rgb(255, 0, 0);
+}
+
+#renderCanvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  touch-action: none;
 }
