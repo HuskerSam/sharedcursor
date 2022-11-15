@@ -1012,6 +1012,13 @@ export class BaseApp {
     if (this.gameData.mode === 'ready')
       numSeats = this.gameData.numberOfSeats;
     document.body.classList.add('runningseatcount_' + numSeats.toString());
+    if (numSeats < 3) {
+      document.body.classList.remove('large_board');
+      document.body.classList.add('small_board');
+    } else {
+      document.body.classList.add('large_board');
+      document.body.classList.remove('small_board');
+    }
 
     this.seatsFull = 0;
     this.userSeated = false;

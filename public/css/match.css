@@ -140,6 +140,10 @@
   flex-direction: column;
 }
 
+.large_board .zoom_out_beer_card {
+  height: 55%;
+}
+
 .show_face .card_inner {
   display: flex;
   background: rgb(240, 240, 240);
@@ -303,9 +307,11 @@
     display: flex;
     flex-direction: row;
   }
+
   .first_panel_wrapper {
     min-width: 450px;
   }
+
   .second_panel_wrapper {
     min-width: 450px;
   }
