@@ -155,7 +155,6 @@ export class MatchApp extends BaseApp {
     this.player_total_for_turn.innerHTML = this.gameData.pairsInARowMatched;
     this.player_dock_prompt.innerHTML = phaseDesc;
 
-
     this.currentplayer_score_dock.classList.remove('seat_color_0');
     this.currentplayer_score_dock.classList.remove('seat_color_1');
     this.currentplayer_score_dock.classList.remove('seat_color_2');
@@ -272,10 +271,16 @@ export class MatchApp extends BaseApp {
         this.matchCards[this.gameData.previousCard0].classList.add('selection_matched');
         this.matchCards[this.gameData.previousCard1].classList.add('selection_matched');
         this.zoom_out_beer_cards.forEach(ctl => ctl.classList.add('selection_matched'));
+
+        document.body.classList.add('game_selection_matched');
+        document.body.classList.remove('game_selection_missed');
       } else {
         this.matchCards[this.gameData.previousCard0].classList.add('selection_missed');
         this.matchCards[this.gameData.previousCard1].classList.add('selection_missed');
         this.zoom_out_beer_cards.forEach(ctl => ctl.classList.add('selection_missed'));
+
+        document.body.classList.remove('game_selection_matched');
+        document.body.classList.add('game_selection_missed');
       }
 
       let smallCard0 = this.matchCards[this.gameData.previousCard0];
@@ -332,6 +337,8 @@ export class MatchApp extends BaseApp {
     } else {
       this.tracer_line_0.style.display = 'none';
       this.tracer_line_1.style.display = 'none';
+      document.body.classList.remove('game_selection_matched');
+      document.body.classList.remove('game_selection_missed');
 
       this.zoom_out_beer_cards.forEach(ctl => {
         ctl.style.display = '';

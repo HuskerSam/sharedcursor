@@ -329,3 +329,11 @@
   text-align: center;
   padding: 8px;
 }
+
+.game_selection_matched .currentplayer_score_dock {
+  background: rgb(0, 255, 0);
+}
+
+.game_selection_missed .currentplayer_score_dock {
+  background: rgb(255, 0, 0);
+}
