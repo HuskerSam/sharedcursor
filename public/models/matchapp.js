@@ -124,6 +124,8 @@ export class MatchApp extends BaseApp {
       cards = 12;
     cardIndex = cardIndex % cards;
 
+    cardIndex = this.gameData.cardRandomIndex[cardIndex];
+
     let meta = this.getCardDeck()[cardIndex];
 
     if (!meta)

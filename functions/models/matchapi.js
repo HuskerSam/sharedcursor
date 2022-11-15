@@ -82,6 +82,7 @@ module.exports = class MatchAPI {
 
       let cardCount = gameData.numberOfSeats < 3 ? 16 : 24;
       let cardIndexOrder = gameAPI._shuffleNumberArray(cardCount);
+      updatePacket.cardRandomIndex = gameAPI._shuffleNumberArray(12).splice(0, cardCount / 2);
       updatePacket.cardIndexOrder = cardIndexOrder;
 
       updatePacket.mode = 'running';
