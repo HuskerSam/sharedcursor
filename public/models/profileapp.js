@@ -1,5 +1,6 @@
 import BaseApp from '/models/baseapp.js';
 import Utility from '/models/utility.js';
+import GameCards from '/models/gamecards.js';
 
 export class ProfileApp extends BaseApp {
   constructor() {
@@ -78,6 +79,9 @@ export class ProfileApp extends BaseApp {
     this.delete_profile_button = document.querySelector('.delete_profile_button');
     this.delete_profile_button.addEventListener('click', e => this.deleteAccount());
 
+    this.card_select_list = document.querySelector('.card_select_list');
+    this.card_select_viewer = document.querySelector('.card_select_viewer');
+
     this.initPresetLogos();
 
     this.help_panel_buttons = document.querySelectorAll('.help_panel_button');
@@ -92,6 +96,7 @@ export class ProfileApp extends BaseApp {
     this.sign_out_all_button.addEventListener('click', e => this.signOutAll());
   }
   async load() {
+    await GameCards.loadDecks();
     await super.load();
   }
   async initPresetLogos() {
@@ -194,9 +199,38 @@ export class ProfileApp extends BaseApp {
         this.audio_mode_select.selectedIndex = 1;
       }
 
+      this.updateMatchedCards();
     }
 
     super.authUpdateStatusUI();
+  }
+  updateMatchedCards() {
+    if (!this.profile)
+      return;
+    let matchedCards = this.profile.matchedCards;
+    if (!matchedCards)
+      matchedCards = {};
+
+    let html = '';
+    for (let deck in matchedCards) {
+      let cards = matchedCards[deck];
+      let cardDeck = GameCards.getCardDeck(deck);
+
+      let deckHtml = '<div class="deck">';
+      deckHtml += `<div class="title">${deck}</div><div class="card_list">`;
+      for (let cardIndex in cards) {
+        let meta = cardDeck[cardIndex];
+        let filling = GameCards._cardFilling(meta, true);
+
+        deckHtml += `<div class="matched_card">
+          ${filling}
+        </div>`;
+      }
+      deckHtml += '</div></div>';
+      html += deckHtml;
+    }
+
+    this.card_select_list.innerHTML = html;
   }
   uploadProfileImage() {
     this.file_upload_input.click();

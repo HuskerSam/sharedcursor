@@ -1,4 +1,5 @@
 import BaseApp from '/models/baseapp.js';
+import GameCards from '/models/gamecards.js';
 
 export class MatchApp extends BaseApp {
   constructor() {
@@ -108,27 +109,10 @@ export class MatchApp extends BaseApp {
     }
   }
   async load() {
-    await this.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck');
-
+    await GameCards.loadDecks();
     await super.load();
   }
-  getCardDeck() {
-    if (this.gameData.cardDeck === 'solarsystem')
-      return window.solarsystemCardDeck;
 
-    return window.solarsystemCardDeck;
-  }
-  getCardMeta(cardIndex) {
-    cardIndex = cardIndex % (this.gameData.cardCount / 2);
-    cardIndex = this.gameData.cardRandomIndex[cardIndex];
-
-    let meta = this.getCardDeck()[cardIndex];
-
-    if (!meta)
-      meta = {};
-
-    return meta;
-  }
   paintGameData(gameDoc = null) {
     if (gameDoc)
       this.gameData = gameDoc.data();
@@ -250,7 +234,7 @@ export class MatchApp extends BaseApp {
     let deckIndex = 0;
     if (this.gameData.lastMatchIndex)
       deckIndex = this.gameData.lastMatchIndex;
-    let cardMeta = this.getCardMeta(deckIndex);
+    let cardMeta = GameCards.getCardMeta(deckIndex, this.gameData);
 
 
     //store the card in the winning user profile (if this user)
@@ -291,8 +275,8 @@ export class MatchApp extends BaseApp {
       card.classList.add('show_face');
       let span = card.querySelector('span');
       let cardIndex = span.dataset.index;
-      let cardInfo = this.getCardInfo(cardIndex);
-      let filling = this._cardFilling(cardInfo);
+      let cardInfo = GameCards.getCardInfo(cardIndex, this.gameData);
+      let filling = GameCards._cardFilling(cardInfo.meta);
       if (span.innerHTML !== filling)
         span.innerHTML = filling;
       span.style.background = cardInfo.meta.color;
@@ -302,8 +286,8 @@ export class MatchApp extends BaseApp {
       card.classList.add('show_face');
       let span = card.querySelector('span');
       let cardIndex = span.dataset.index;
-      let cardInfo = this.getCardInfo(cardIndex);
-      let filling = this._cardFilling(cardInfo);
+      let cardInfo = GameCards.getCardInfo(cardIndex, this.gameData);
+      let filling = GameCards._cardFilling(cardInfo.meta);
       if (span.innerHTML !== filling)
         span.innerHTML = filling;
       span.style.background = cardInfo.meta.color;
@@ -419,8 +403,9 @@ export class MatchApp extends BaseApp {
       div.classList.add('match_card_wrapper');
       div.addEventListener('click', e => this.cardSelected(e, div, cardIndex));
 
-      let cardInfo = this.getCardInfo(cardIndex);
-      div.innerHTML = this._cardTemplate(cardInfo, cardIndex);
+      let cardInfo = GameCards.getCardInfo(cardIndex, this.gameData);
+      div.innerHTML = `<span class="card_inner" data-index="${cardIndex}"></span>`;
+
       if (cardIndex < this.cardsPerColumn * 2)
         upper_left.appendChild(div);
       else if (cardIndex < this.cardsPerColumn * 4)
@@ -563,11 +548,11 @@ export class MatchApp extends BaseApp {
       }
 
 
-      let card0Meta = this.getCardInfo(card0);
+      let card0Meta = GameCards.getCardInfo(card0, this.gameData);
       if (qs0 === 0) {
         this.bigDiv0 = this.upperLeftDisplayCard;
         this.upperLeftDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card0Meta, true);
+        let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.upperLeftDisplayCard.innerHTML)
           this.upperLeftDisplayCard.innerHTML = filling;
         this.upperLeftDisplayCard.style.background = card0Meta.meta.color;
@@ -583,7 +568,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 1) {
         this.bigDiv0 = this.upperRightDisplayCard;
         this.upperRightDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card0Meta, true);
+        let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.upperRightDisplayCard.innerHTML)
           this.upperRightDisplayCard.innerHTML = filling;
         this.upperRightDisplayCard.style.background = card0Meta.meta.color;
@@ -599,7 +584,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 2) {
         this.bigDiv0 = this.lowerLeftDisplayCard;
         this.lowerLeftDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card0Meta, true);
+        let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.lowerLeftDisplayCard.innerHTML)
           this.lowerLeftDisplayCard.innerHTML = filling;
         this.lowerLeftDisplayCard.style.background = card0Meta.meta.color;
@@ -615,7 +600,7 @@ export class MatchApp extends BaseApp {
       if (qs0 === 3) {
         this.bigDiv0 = this.lowerRightDisplayCard;
         this.lowerRightDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card0Meta, true);
+        let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.lowerRightDisplayCard.innerHTML)
           this.lowerRightDisplayCard.innerHTML = filling;
         this.lowerRightDisplayCard.style.background = card0Meta.meta.color;
@@ -629,11 +614,11 @@ export class MatchApp extends BaseApp {
         }
       }
 
-      let card1Meta = this.getCardInfo(card1);
+      let card1Meta = GameCards.getCardInfo(card1, this.gameData);
       if (qs1 === 0) {
         this.bigDiv1 = this.upperLeftDisplayCard;
         this.upperLeftDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card1Meta, true);
+        let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.upperLeftDisplayCard.innerHTML)
           this.upperLeftDisplayCard.innerHTML = filling;
 
@@ -650,7 +635,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 1) {
         this.bigDiv1 = this.upperRightDisplayCard;
         this.upperRightDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card1Meta, true);
+        let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.upperRightDisplayCard.innerHTML)
           this.upperRightDisplayCard.innerHTML = filling;
         this.upperRightDisplayCard.style.background = card1Meta.meta.color;
@@ -666,7 +651,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 2) {
         this.bigDiv1 = this.lowerLeftDisplayCard;
         this.lowerLeftDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card1Meta, true);
+        let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.lowerLeftDisplayCard.innerHTML)
           this.lowerLeftDisplayCard.innerHTML = filling;
         this.lowerLeftDisplayCard.style.background = card1Meta.meta.color;
@@ -682,7 +667,7 @@ export class MatchApp extends BaseApp {
       if (qs1 === 3) {
         this.bigDiv1 = this.lowerRightDisplayCard;
         this.lowerRightDisplayCard.style.display = 'flex';
-        let filling = this._cardFilling(card1Meta, true);
+        let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.lowerRightDisplayCard.innerHTML)
           this.lowerRightDisplayCard.innerHTML = filling;
         this.lowerRightDisplayCard.style.background = card1Meta.meta.color;
@@ -826,32 +811,5 @@ export class MatchApp extends BaseApp {
       return;
     }
   }
-  _cardTemplate(cardInfo, index) {
-    return `<span class="card_inner" data-index="${index}"></span>`
-  }
-  _cardFilling(cardInfo, includeWrapper = false) {
-    let invert = cardInfo.meta.invert ? ' invert' : '';
-    let guts = `<div class="header${invert}">
-      <img class="symbol" src="${cardInfo.meta.symbol}">
-      <div class="name">${cardInfo.meta.name}</div>
-    </div>
-    <div style="flex:1"></div>
-    <div class="image" style="background-image:url(${cardInfo.image});"></div>
-    <div style="flex:1"></div>
-    `;
 
-    if (includeWrapper)
-      return `<span class="card_inner">${guts}</span>`;
-    return guts;
-  }
-  getCardInfo(cardIndex) {
-    let orderIndex = this.gameData.cardIndexOrder[cardIndex];
-    let meta = this.getCardMeta(orderIndex);
-    return {
-      boardPositionIndex: cardIndex,
-      orderIndex,
-      meta,
-      image: meta.image
-    };
-  }
 }

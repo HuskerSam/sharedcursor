@@ -193,3 +193,9 @@ h3.impact-font {
 .section-title {
   text-align: left;
 }
+
+.matched_card {
+  height: 200px;
+  display: inline-block;
+  width: 120px;
+}
