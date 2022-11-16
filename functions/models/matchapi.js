@@ -245,6 +245,9 @@ module.exports = class MatchAPI {
 
     try {
       let gQuery = await firebaseAdmin.firestore().doc(`Games/${gameId}`);
+      let uidPacket = null;
+      let uidWinner = null;
+
       await firebaseAdmin.firestore().runTransaction(async (transaction) => {
         const sfDoc = await transaction.get(gQuery);
         if (!sfDoc.exists) {
@@ -264,7 +267,29 @@ module.exports = class MatchAPI {
             merge: true
           });
         }
+
+        if (updatePacket.gameFinished && gameData.winningSeatIndex) {
+          let cardIndex = gameData.lastMatchIndex % (gameData.cardCount / 2);
+          cardIndex = gameData.cardRandomIndex[cardIndex];
+          let cardDeck = gameData.cardDeck;
+          if (!cardDeck)
+            cardDeck = 'solarsystem';
+          uidPacket = {
+            matchedCards: {
+              [cardDeck]: {
+                [cardIndex]: new Date().toISOString()
+              }
+            }
+          };
+          uidWinner = gameData['seat' + gameData.winningSeatIndex];
+        }
       });
+
+      if (uidWinner && uidPacket) {
+        await firebaseAdmin.firestore().doc(`Users/${uidWinner}`).set(uidPacket, {
+          merge: true
+        });
+      }
     } catch (e) {
       console.log("Transaction failed: ", e);
       return baseClass.respondError(res, e.message);

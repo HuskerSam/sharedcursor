@@ -119,11 +119,7 @@ export class MatchApp extends BaseApp {
     return window.solarsystemCardDeck;
   }
   getCardMeta(cardIndex) {
-    let cards = 8;
-    if (this.gameData.runningNumberOfSeats > 2)
-      cards = 12;
-    cardIndex = cardIndex % cards;
-
+    cardIndex = cardIndex % (this.gameData.cardCount / 2);
     cardIndex = this.gameData.cardRandomIndex[cardIndex];
 
     let meta = this.getCardDeck()[cardIndex];
@@ -257,8 +253,10 @@ export class MatchApp extends BaseApp {
     let cardMeta = this.getCardMeta(deckIndex);
 
 
+    //store the card in the winning user profile (if this user)
+
 //set model for 3d here
-  this.loadMesh(cardMeta.glbpath, cardMeta.glbfile, 0.01);
+  this.loadMesh(cardMeta.glbpath, cardMeta.glbfile, cardMeta.glbscale);
 
     this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.name;
     this.match_end_display_promo.querySelector('.beer_name_anchor').setAttribute('href', cardMeta.url);
