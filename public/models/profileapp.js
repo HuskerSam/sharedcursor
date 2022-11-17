@@ -222,7 +222,7 @@ export class ProfileApp extends BaseApp {
         let meta = cardDeck[cardIndex];
         let filling = GameCards._cardFilling(meta, true);
 
-        deckHtml += `<div class="matched_card">
+        deckHtml += `<div class="matched_card" style="background:${meta.color}">
           ${filling}
         </div>`;
       }

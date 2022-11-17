@@ -268,7 +268,7 @@ module.exports = class MatchAPI {
           });
         }
 
-        if (updatePacket.gameFinished && gameData.winningSeatIndex) {
+        if (updatePacket.gameFinished && gameData.winningSeatIndex >= 0) {
           let cardIndex = gameData.lastMatchIndex % (gameData.cardCount / 2);
           cardIndex = gameData.cardRandomIndex[cardIndex];
           let cardDeck = gameData.cardDeck;

@@ -1,5 +1,6 @@
 
 .card_inner {
+  display: flex;
   flex-direction: column;
   height: inherit;
   flex: 1;

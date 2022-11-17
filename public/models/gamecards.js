@@ -32,7 +32,7 @@ export default class GameCards {
   }
   static _cardFilling(meta, includeWrapper = false) {
     let invert = meta.invert ? ' invert' : '';
-    let guts = `<div class="header${invert}">
+    let guts = `<div style="flex:1"></div><div class="header${invert}">
       <img class="symbol" src="${meta.symbol}">
       <div class="name">${meta.name}</div>
     </div>

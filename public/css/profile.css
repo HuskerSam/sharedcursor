@@ -196,6 +196,14 @@ h3.impact-font {
 
 .matched_card {
   height: 200px;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
   width: 120px;
+  margin: 4px;
+  border-radius: 8px;
+}
+
+.card_list {
+  overflow: auto;
+  white-space: nowrap;
 }
