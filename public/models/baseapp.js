@@ -546,6 +546,10 @@ export class BaseApp {
       match: {
         name: 'Match!',
         icon: '/images/logo_match.png'
+      },
+      story: {
+        name: 'Story^',
+        icon: '/images/logo_story.png'        
       }
     }
   }

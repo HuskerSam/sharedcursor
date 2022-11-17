@@ -78,6 +78,10 @@ button.logout_game {
   background: rgba(0, 255, 255, .2);
 }
 
+.gametype_story {
+  background: rgba(255, 0, 255, .2);
+}
+
 .feed_game_owner.gamelist_item {}
 
 .gamelist_item .game_date {}
@@ -286,7 +290,11 @@ button.round_wrapper {
   background: rgba(127, 127, 127, .5);
 }
 
-button.new_game_type_wrapper {}
+button.new_game_type_wrapper {
+  margin: 4px;
+  background: none;
+  color: inherit;
+}
 
 .new_game_type_image {
   height: 50px;

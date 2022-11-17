@@ -93,12 +93,14 @@ export class GamesApp extends BaseApp {
   updateNewGameType() {
     document.body.classList.remove('newgametype_guess');
     document.body.classList.remove('newgametype_match');
+    document.body.classList.remove('newgametype_story');
 
     let gameType = this.gametype_select.value;
     document.body.classList.add('newgametype_' + gameType);
 
     this.basic_options.classList.remove('gametype_guess');
     this.basic_options.classList.remove('gametype_match');
+    this.basic_options.classList.remove('gametype_story');
     this.basic_options.classList.add('gametype_' + gameType);
 
     let gameMeta = this.gameTypeMetaData()[gameType];
