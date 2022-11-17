@@ -1187,6 +1187,48 @@ export class BaseApp {
     }
     this.matchBoardRendered = false;
   }
+  initBabylonEngine() {
+    this.canvas = document.getElementById("renderCanvas"); // Get the canvas element
+    this.engine = new BABYLON.Engine(this.canvas, true); // Generate the BABYLON 3D engine
+
+    // Add your code here matching the playground format
+
+    this.scene = this.createScene(); //Call the createScene function
+
+    // Register a render loop to repeatedly render the scene
+    this.engine.runRenderLoop(() => {
+      this.scene.render();
+    });
+
+    // Watch for browser/canvas resize events
+    window.addEventListener("resize", () => {
+      this.engine.resize();
+    });
+  }
+  createScene() {
+    let scene = new BABYLON.Scene(this.engine);
+
+    const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0));
+    camera.attachControl(this.canvas, true);
+    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
+
+
+    return scene;
+  }
+  async loadMesh(path, file, scale) {
+    if (this.mesh) {
+      this.mesh.dispose();
+      this.mesh = null;
+    }
+
+    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
+
+    this.mesh = result.meshes[0];
+
+    this.mesh.scaling.x = scale;
+    this.mesh.scaling.y = scale;
+    this.mesh.scaling.z = scale;
+  }
 }
 
 export default BaseApp;

@@ -94,6 +94,10 @@ export class ProfileApp extends BaseApp {
 
     this.sign_out_all_button = document.querySelector('.sign_out_all_button');
     this.sign_out_all_button.addEventListener('click', e => this.signOutAll());
+
+    this.card_select_viewer = document.querySelector('.card_select_viewer');
+
+    this.initBabylonEngine();
   }
   async load() {
     await GameCards.loadDecks();
@@ -211,26 +215,32 @@ export class ProfileApp extends BaseApp {
     if (!matchedCards)
       matchedCards = {};
 
-    let html = '';
+    let html = '<div class="card_list">';
     for (let deck in matchedCards) {
       let cards = matchedCards[deck];
       let cardDeck = GameCards.getCardDeck(deck);
 
-      let deckHtml = '<div class="deck">';
-      deckHtml += `<div class="title">${deck}</div><div class="card_list">`;
       for (let cardIndex in cards) {
         let meta = cardDeck[cardIndex];
         let filling = GameCards._cardFilling(meta, true);
 
-        deckHtml += `<div class="matched_card" style="background:${meta.color}">
+        html += `<div class="matched_card" data-deck="${deck}" data-index="${cardIndex}" style="background:${meta.color}">
           ${filling}
         </div>`;
       }
-      deckHtml += '</div></div>';
-      html += deckHtml;
     }
-
+    html += '</div>'
     this.card_select_list.innerHTML = html;
+
+    this.cardWrappers = this.card_select_list.querySelectorAll('.matched_card');
+    this.cardWrappers.forEach(cardDom => cardDom.addEventListener('click', e => this.selectCard(cardDom)));
+  }
+  selectCard(cardDom) {
+    this.card_select_viewer.style.display = '';
+    let deck = cardDom.dataset.deck;
+    let cardDeck = GameCards.getCardDeck(deck);
+    let meta = cardDeck[cardDom.dataset.index];
+    this.loadMesh(meta.glbpath, meta.glbfile, meta.glbscale);
   }
   uploadProfileImage() {
     this.file_upload_input.click();

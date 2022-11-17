@@ -201,9 +201,18 @@ h3.impact-font {
   width: 120px;
   margin: 4px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .card_list {
   overflow: auto;
   white-space: nowrap;
+}
+
+#renderCanvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  touch-action: none;
 }
