@@ -24,11 +24,27 @@ export class StoryApp extends BaseApp {
 
     this.initBabylonEngine(".popup-canvas", true);
 
-    this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 0, 0);
-    this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 0, 0);
-    this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 0, 0);
-    this.loadStaticMesh("/match/deckmedia/", "earth.glb", .001, 4, 0, 0);
-    this.loadStaticMesh("/match/deckmedia/", "mars.glb", .001, 8.544, 0, 0);
+    this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
+    this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
+    this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
+    this.loadStaticMesh("/match/deckmedia/", "earth.glb", .001, 4, 1, 0);
+    this.loadStaticMesh("/match/deckmedia/", "mars.glb", .001, 8.544, 1, 0);
+    this.loadStaticMesh("/match/deckmedia/", "sam.glb", 1, 0, 0, 0);
+    this.loadStaticMesh("/match/deckmedia/", "male2.glb", 1, 0, 0, 1);
+    this.loadStaticMesh("/match/deckmedia/", "female1.glb", 1, 0, 0, 2);
+    this.loadStaticMesh("/match/deckmedia/", "male3.glb", 1, 0, 0, 3);
+    this.loadStaticMesh("/match/deckmedia/", "female2.glb", 1, 0, 0, 4);
+    this.loadStaticMesh("/match/deckmedia/", "female3.glb", 1, 0, 0, 5);
+    this.loadStaticMesh("/match/deckmedia/", "male4.glb", 1, 0, 0, -1);
+    this.loadStaticMesh("/match/deckmedia/", "male5.glb", 1, 0, 0, -2);
+    this.loadStaticMesh("/match/deckmedia/", "female4.glb", 1, 0, 0, -3);
+    this.loadStaticMesh("/match/deckmedia/", "female5.glb", 1, 0, 0, -4);
+    this.loadStaticMesh("/match/deckmedia/", "female6.glb", 1, 0, 0, -5);
+    this.loadStaticMesh("/match/deckmedia/", "female7.glb", 1, 0, 0, -6);
+    this.loadStaticMesh("/match/deckmedia/", "female8.glb", 1, 0, 0, -7);
+    this.loadStaticMesh("/match/deckmedia/", "male6.glb", 1, 0, 0, 6);
+    this.loadStaticMesh("/match/deckmedia/", "male7.glb", 1, 0, 0, 7);
+    this.loadStaticMesh("/match/deckmedia/", "male8.glb", 1, 0, 0, 8);
   }
   async loadStaticMesh(path, file, scale, x, y, z) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
