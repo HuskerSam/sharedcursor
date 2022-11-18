@@ -1197,11 +1197,11 @@ export class BaseApp {
 
     this.scene = this.createScene();
 
-    const env = this.scene.createDefaultEnvironment();
+    this.env = this.scene.createDefaultEnvironment();
 
     // here we add XR support
     this.xr = await this.scene.createDefaultXRExperienceAsync({
-      floorMeshes: [env.ground],
+      floorMeshes: [this.env.ground],
     });
 
     this.engine.runRenderLoop(() => {

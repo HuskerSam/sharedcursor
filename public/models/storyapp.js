@@ -24,27 +24,98 @@ export class StoryApp extends BaseApp {
 
     this.initBabylonEngine(".popup-canvas", true);
 
+    this.avatars = [];
+    let gizmoManager = new BABYLON.GizmoManager(
+      this.scene
+    );
+    //gizmoManager.positionGizmoEnabled = true;
     this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "earth.glb", .001, 4, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "mars.glb", .001, 8.544, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/", "sam.glb", 1, 0, 0, 0);
-    this.loadStaticMesh("/match/deckmedia/", "male2.glb", 1, 0, 0, 1);
-    this.loadStaticMesh("/match/deckmedia/", "female1.glb", 1, 0, 0, 2);
-    this.loadStaticMesh("/match/deckmedia/", "male3.glb", 1, 0, 0, 3);
-    this.loadStaticMesh("/match/deckmedia/", "female2.glb", 1, 0, 0, 4);
-    this.loadStaticMesh("/match/deckmedia/", "female3.glb", 1, 0, 0, 5);
-    this.loadStaticMesh("/match/deckmedia/", "male4.glb", 1, 0, 0, -1);
-    this.loadStaticMesh("/match/deckmedia/", "male5.glb", 1, 0, 0, -2);
-    this.loadStaticMesh("/match/deckmedia/", "female4.glb", 1, 0, 0, -3);
-    this.loadStaticMesh("/match/deckmedia/", "female5.glb", 1, 0, 0, -4);
-    this.loadStaticMesh("/match/deckmedia/", "female6.glb", 1, 0, 0, -5);
-    this.loadStaticMesh("/match/deckmedia/", "female7.glb", 1, 0, 0, -6);
-    this.loadStaticMesh("/match/deckmedia/", "female8.glb", 1, 0, 0, -7);
-    this.loadStaticMesh("/match/deckmedia/", "male6.glb", 1, 0, 0, 6);
-    this.loadStaticMesh("/match/deckmedia/", "male7.glb", 1, 0, 0, 7);
-    this.loadStaticMesh("/match/deckmedia/", "male8.glb", 1, 0, 0, 8);
+    this.loadAvatarMesh("/match/deckmedia/", "male1.glb", 2, 0, 0, 1);
+    this.loadAvatarMesh("/match/deckmedia/", "male2.glb", 1, 0, 0, 2);
+    this.loadAvatarMesh("/match/deckmedia/", "male3.glb", 1, 0, 0, 3);
+    this.loadAvatarMesh("/match/deckmedia/", "male4.glb", 1, 0, 0, 4);
+    this.loadAvatarMesh("/match/deckmedia/", "male5.glb", 1, 0, 0, 5);
+    this.loadAvatarMesh("/match/deckmedia/", "male6.glb", 1, 0, 0, 6);
+    this.loadAvatarMesh("/match/deckmedia/", "male7.glb", 1, 0, 0, 7);
+    this.loadAvatarMesh("/match/deckmedia/", "male8.glb", 1, 0, 0, 8);
+    this.loadAvatarMesh("/match/deckmedia/", "female1.glb", 2, 0, 0, -1);
+    this.loadAvatarMesh("/match/deckmedia/", "female2.glb", 1, 0, 0, -2);
+    this.loadAvatarMesh("/match/deckmedia/", "female3.glb", 1, 0, 0, -3);
+    this.loadAvatarMesh("/match/deckmedia/", "female4.glb", 1, 0, 0, -4);
+    this.loadAvatarMesh("/match/deckmedia/", "female5.glb", 1, 0, 0, -5);
+    this.loadAvatarMesh("/match/deckmedia/", "female6.glb", 1, 0, 0, -6);
+    this.loadAvatarMesh("/match/deckmedia/", "female7.glb", 1, 0, 0, -7);
+    this.loadAvatarMesh("/match/deckmedia/", "female8.glb", 1, 0, 0, -8);
+
+    this.scene.onPointerObservable.add((pointerInfo) => {
+      switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+          if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != this.env.ground) {
+            this.pointerDown(pointerInfo.pickInfo.pickedMesh)
+          }
+          break;
+        case BABYLON.PointerEventTypes.POINTERUP:
+          //this.pointerUp();
+          break;
+        case BABYLON.PointerEventTypes.POINTERMOVE:
+          //this.pointerMove();
+          break;
+      }
+    });
+  }
+  pointerDown(pickedMesh) {
+    let mesh = pickedMesh;
+    while (mesh.parent !== null) {
+      mesh = mesh.parent;
+    }
+
+    let meshIndex = this.avatars.indexOf(mesh);
+    if (meshIndex !== -1) {
+      if (mesh.localRunning) {
+        mesh.localRunning = false;
+        mesh.modelAnimationGroup.stop();
+      } else {
+        mesh.localRunning = true;
+        mesh.modelAnimationGroup.start();
+      }
+    }
+  }
+  async loadAvatarMesh(path, file, scale, x, y, z) {
+    let result1 = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
+    let animationGLB = result1.meshes[0];
+    animationGLB.position = new BABYLON.Vector3(x, y, z);
+    result1.animationGroups[0].stop();
+
+    let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, path, file);
+
+    let mesh = result2.meshes[0];
+
+    mesh.scaling.x = scale;
+    mesh.scaling.y = scale;
+    mesh.scaling.z = scale;
+
+    mesh.position.x = x;
+    mesh.position.y = y;
+    mesh.position.z = z;
+
+    mesh.isPickable = true;
+
+    this.avatars.push(mesh);
+
+    const modelTransformNodes = mesh.getChildTransformNodes();
+    const modelAnimationGroup = result1.animationGroups[0].clone("clone", (oldTarget) => {
+      return modelTransformNodes.find((node) => node.name === oldTarget.name);
+    });
+    modelAnimationGroup.start();
+    mesh.modelAnimationGroup = modelAnimationGroup;
+    mesh.localRunning = true;
+
+    modelAnimationGroup.loopAnimation = true;
+    animationGLB.dispose();
   }
   async loadStaticMesh(path, file, scale, x, y, z) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
