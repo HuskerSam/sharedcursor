@@ -24,7 +24,24 @@ export class StoryApp extends BaseApp {
 
     this.initBabylonEngine(".popup-canvas", true);
 
-    this.loadMesh("/match/deckmedia/", "sun.glb", .005);
+    this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 0, 0);
+    this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 0, 0);
+    this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 0, 0);
+    this.loadStaticMesh("/match/deckmedia/", "earth.glb", .001, 4, 0, 0);
+    this.loadStaticMesh("/match/deckmedia/", "mars.glb", .001, 8.544, 0, 0);
+  }
+  async loadStaticMesh(path, file, scale, x, y, z) {
+    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
+
+    let mesh = result.meshes[0];
+
+    mesh.scaling.x = scale;
+    mesh.scaling.y = scale;
+    mesh.scaling.z = scale;
+
+    mesh.position.x = x;
+    mesh.position.y = y;
+    mesh.position.z = z;
   }
   debounce() {
     return false;

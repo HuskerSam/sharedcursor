@@ -264,8 +264,6 @@ export class GamesApp extends BaseApp {
     let title = this.gameTypeMetaData()[data.gameType].name;
     let img = `url(${this.gameTypeMetaData()[data.gameType].icon})`;
     let timeSince = this.timeSince(new Date(data.lastActivity));
-    let shortDate = new Date(data.created).toLocaleDateString();
-    shortDate = shortDate.substring(0, shortDate.length - 5);
     let timeStr = this.isoToLocal(data.created).toISOString().substr(11, 5);
     let hour = Number(timeStr.substr(0, 2));
     let suffix = hour < 12 ? 'am' : 'pm';
@@ -276,7 +274,6 @@ export class GamesApp extends BaseApp {
       hour = 12;
     timeStr = hour.toString() + timeStr.substr(2) + ' ' + suffix;
 
-    shortDate += ' ' + timeStr;
     let round = (Math.floor(data.turnNumber / data.runningNumberOfSeats) + 1).toString();
 
     return `<div class="item_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
@@ -285,7 +282,7 @@ export class GamesApp extends BaseApp {
       <div class="header">
         <div style="background-image:${img}" class="game_type_image"></div>
         <span class="name">${data.name}</span>
-        <span class="timesince time_since_updatable" data-timesince="${data.created}">${timeSince}</span>
+        <span class="timesince time_since_updatable" data-timesince="${data.lastActivity}">${timeSince}</span>
       </div>
       <div class="open_button_wrapper">
         <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}"><i class="material-icons">delete</i></button>
