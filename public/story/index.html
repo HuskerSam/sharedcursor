@@ -37,7 +37,7 @@
 
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/gamecards.css" />
-  <link rel="stylesheet" href="/css/match.css" />
+  <link rel="stylesheet" href="/css/story.css" />
 
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
@@ -60,8 +60,9 @@
   </script>
 </head>
 
-<body class="basic_beer_body matchgame_page">
-  <div class="basic_page_wrapper app_panel">
+<body class="storyverse_page">
+  <canvas class="popup-canvas" touch-action="none"></canvas>
+  <div style="position:absolute;top:0;left:0">
     <nav class="navbar navbar-expand-lg  nav-scroll">
       <div class="container">
         <div class="static_menu">
@@ -95,14 +96,10 @@
         </div>
       </div>
     </nav>
-
     <div class="panel_responsive_wrapper">
       <div style="flex:1"></div>
       <div class="first_panel_wrapper">
-        <div class="game_loading_display card_shadow">
-          <h1>Loading...</h1>
-        </div>
-        <div class="game_table_view card_shadow">
+        <div class="">
           <div class="">
             <div class="address_bar">
               <div>
@@ -177,46 +174,11 @@
           </div>
           <div class="mode_ready_view">
             <div class="match_instructions">
-              <b>Matching Cards</b>
-              <div style="display:flex;flex-direction:row">
-                <div style="text-align:right;flex:1">
-                  Start Turn -<br>
-                  Match -<br>
-                  No Match -<br>
-                  Winner -<br>
-                  Tiebreaker -<br>
-                </div>
-                <div style="text-align:left;flex:1">
-                  &gt; Flip any 2 cards<br>
-                  &gt; Remove cards<br>
-                  &gt; Next Player<br>
-                  &gt; Most Points<br>
-                  &gt; Last to play<br>
-                </div>
-              </div>
 
-              <br>
-              <b>Regular Scoring</b>
-              <div style="display:flex;flex-direction:row">
-                <div style="text-align: right;flex:1.04">
-                  Card First Shown =
-                  <br>
-                  Matches =
-                  <br>
-                  Streak =
-                  <br>
-                  First match of game =
-                </div>
-                <div style="flex:1;text-align:left">
-                  &nbsp;1 pt each
-                  <br>
-                  &nbsp;2 pts + 2 pts * Streak
-                  <br>
-                  &nbsp;Matches this turn
-                  <br>
-                  &nbsp;5 pts
-                </div>
-              </div>
+              <b>Map and describe your storyverse!</b>
+              <br><br>
+              <b>1 to 4 animated paths</b>
+
 
             </div>
           </div>
@@ -248,12 +210,11 @@
                 <span class="beer_name"></span>
                 <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
               </a>
-              <canvas id="renderCanvas" touch-action="none"></canvas>
             </div>
           </div>
         </div>
       </div>
-      <div class="second_panel_wrapper">
+      <div class="second_panel_wrapper" style="display:none;">
         <div class="message_list_send_wrapper">
           <input class="message_list_input" name="message" type="text">
           <a class="send_message_list_button"><i class="material-icons smallerby4">send</i></a>
@@ -307,23 +268,6 @@
                 </select>
                 <div class="seats_per_user_display"></div>
               </div>
-              <div class="options_edit_block">
-                <label class="form-label">Card Deck</label>
-                <select class="card_deck_select form-select form-select-lg">
-                  <option value="solarsystem">Solar System</option>
-                </select>
-                <div class="card_deck_display"></div>
-              </div>
-              <div class="options_edit_block">
-                <label class="form-label">Scoring</label>
-                <select class="scoring_system_select form-select form-select-lg">
-                  <option value="simple">Simple</option>
-                  <option value="stable">Stable</option>
-                  <option value="regular" selected>Regular</option>
-                </select>
-                <div class="scoring_system_display"></div>
-              </div>
-              <br><br>
             </div>
           </div>
         </div>

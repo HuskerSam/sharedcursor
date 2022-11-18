@@ -549,7 +549,7 @@ export class BaseApp {
       },
       story: {
         name: 'Story^',
-        icon: '/images/logo_story.png'        
+        icon: '/images/logo_story.png'
       }
     }
   }
@@ -1191,20 +1191,23 @@ export class BaseApp {
     }
     this.matchBoardRendered = false;
   }
-  initBabylonEngine() {
-    this.canvas = document.getElementById("renderCanvas"); // Get the canvas element
-    this.engine = new BABYLON.Engine(this.canvas, true); // Generate the BABYLON 3D engine
+  async initBabylonEngine(canvasQuery = "#renderCanvas", initVR = false) {
+    this.canvas = document.querySelector(canvasQuery);
+    this.engine = new BABYLON.Engine(this.canvas, true);
 
-    // Add your code here matching the playground format
+    this.scene = this.createScene();
 
-    this.scene = this.createScene(); //Call the createScene function
+    const env = this.scene.createDefaultEnvironment();
 
-    // Register a render loop to repeatedly render the scene
+    // here we add XR support
+    this.xr = await this.scene.createDefaultXRExperienceAsync({
+      floorMeshes: [env.ground],
+    });
+
     this.engine.runRenderLoop(() => {
       this.scene.render();
     });
 
-    // Watch for browser/canvas resize events
     window.addEventListener("resize", () => {
       this.engine.resize();
     });

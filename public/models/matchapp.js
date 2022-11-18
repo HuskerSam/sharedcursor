@@ -10,7 +10,6 @@ export class MatchApp extends BaseApp {
 
     this.currentplayer_score_dock = document.querySelector('.currentplayer_score_dock');
     this.match_board_wrapper = document.querySelector('.match_board_wrapper');
-    this.game_table_view = document.querySelector('.game_table_view');
 
     this.card_deck_display = document.querySelector('.card_deck_display');
     this.card_deck_select = document.querySelector('.card_deck_select');

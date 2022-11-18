@@ -10,15 +10,6 @@ export class StoryApp extends BaseApp {
 
     this.currentplayer_score_dock = document.querySelector('.currentplayer_score_dock');
     this.match_board_wrapper = document.querySelector('.match_board_wrapper');
-    this.game_table_view = document.querySelector('.game_table_view');
-
-    this.card_deck_display = document.querySelector('.card_deck_display');
-    this.card_deck_select = document.querySelector('.card_deck_select');
-    this.card_deck_select.addEventListener('input', e => this.gameAPIOptions());
-
-    this.scoring_system_display = document.querySelector('.scoring_system_display');
-    this.scoring_system_select = document.querySelector('.scoring_system_select');
-    this.scoring_system_select.addEventListener('input', e => this.gameAPIOptions());
 
     this.turn_number_div = document.querySelector('.turn_number_div');
     this.player_total_points = document.querySelector('.player_total_points');
@@ -31,7 +22,9 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.initBabylonEngine();
+    this.initBabylonEngine(".popup-canvas", true);
+
+    this.loadMesh("/match/deckmedia/", "sun.glb", .005);
   }
   debounce() {
     return false;
@@ -81,10 +74,6 @@ export class StoryApp extends BaseApp {
 
     this.queryStringPaintProcess();
     this.paintOptions();
-    this.card_deck_display.innerHTML = this.gameData.cardDeck;
-    this.card_deck_select.value = this.gameData.cardDeck;
-    this.scoring_system_display.innerHTML = this.gameData.scoringSystem;
-    this.scoring_system_select.value = this.gameData.scoringSystem;
 
     this._updateGameMembersList();
     this.paintDock();
@@ -93,8 +82,6 @@ export class StoryApp extends BaseApp {
       this.matchBoardRendered = false;
     this.previousMode = this.gameData.mode;
 
-    if (this.matchBoardRendered !== this.gameData.cardCount)
-      this._renderMatchBoard();
 
     document.body.classList.remove('turnphase_select');
     document.body.classList.remove('turnphase_result');
@@ -153,8 +140,6 @@ export class StoryApp extends BaseApp {
 
     document.body.classList.add('show_game_table');
 
-    this._updateCardStatus();
-    this._updateFinishStatus();
     this.updateUserPresence();
   }
 
