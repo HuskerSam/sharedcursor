@@ -744,14 +744,18 @@ export class BaseApp {
   _gameMemberData(uid) {
     let name = this.gameData.memberNames[uid];
     let img = this.gameData.memberImages[uid];
+    let avatar = this.gameData.memberAvatars[uid];
     if (!name)
       name = 'Anonymous';
     if (!img)
       img = '/images/defaultprofile.png';
+    if (!avatar)
+      avatar = 'male1';
 
     return {
       name,
-      img
+      img,
+      avatar
     }
   }
   async initGameMessageFeed() {
@@ -1020,6 +1024,7 @@ export class BaseApp {
     let numSeats = this.gameData.runningNumberOfSeats;
     if (this.gameData.mode === 'ready')
       numSeats = this.gameData.numberOfSeats;
+    this.runningSeatCount = numSeats;
     document.body.classList.add('runningseatcount_' + numSeats.toString());
     if (numSeats < 3) {
       document.body.classList.remove('large_board');

@@ -24,15 +24,13 @@ export class StoryApp extends BaseApp {
 
     this.initBabylonEngine(".popup-canvas", true);
 
-    this.avatars = [];
+    this.dockDiscRadius = .6;
 
     this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/", "earth.glb", .001, 4, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/", "mars.glb", .001, 8.544, 1, 0);
-
-    this.loadAvatars();
+    this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
+    this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
 
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
@@ -49,19 +47,50 @@ export class StoryApp extends BaseApp {
           break;
       }
     });
+
+    this.settings_button = document.querySelector('.settings_button');
+    this.settings_button.addEventListener('click', e => this.viewSettings());
+
+    this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
+    this.modal = new bootstrap.Modal(this.canvasDisplayModal);
+  }
+  viewSettings() {
+    this.modal.show();
   }
   async loadAvatars() {
-    let mesh = await this.loadAvatarMesh("/match/deckmedia/", "male1.glb", 1, 0, 0, 1);
-    let circle = this.createCircle();
-    circle.color = new BABYLON.Color3(1, 1, 0);
-    circle.position.y = .1;
-    circle.parent = mesh;
-    this.avatars.push(mesh);
+    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
+      if (seatIndex < this.runningSeatCount) {
+        let key = 'seat' + seatIndex.toString();
 
-    this.avatars.push(await this.loadAvatarMesh("/match/deckmedia/", "female2.glb", 1, 0, 0, 4));
-    this.avatars.push(await this.loadAvatarMesh("/match/deckmedia/", "male3.glb", 1, 0, 0, -2));
-    this.avatars.push(await this.loadAvatarMesh("/match/deckmedia/", "female6.glb", 1, 0, 0, -4));
+        if (this.gameData[key]) {
+          let name = this.gameData.memberNames[this.gameData[key]];
+          if (!name) name = "Anonymous";
+          let avatar = this.gameData.memberAvatars[this.gameData[key]];
+          if (!avatar) avatar = "male1";
 
+          let cacheValue = name + avatar;
+          if (this['dockSeatCache' + seatIndex] !== cacheValue) {
+            if (this['dockSeatMesh' + seatIndex])
+              this['dockSeatMesh' + seatIndex].dispose();
+            this['dockSeatCache' + seatIndex] = cacheValue;
+            this['dockSeatMesh' + seatIndex] = await this.renderSeat(seatIndex, avatar, name);
+          }
+        } else {
+          if (this['dockSeatCache' + seatIndex] !== 'empty') {
+            if (this['dockSeatMesh' + seatIndex])
+              this['dockSeatMesh' + seatIndex].dispose();
+            this['dockSeatCache' + seatIndex] = 'empty';
+            this['dockSeatMesh' + seatIndex] = await this.createEmptySeat(seatIndex);
+          }
+        }
+      } else {
+        if (this['dockSeatMesh' + seatIndex]) {
+          this['dockSeatMesh' + seatIndex].dispose();
+          this['dockSeatMesh' + seatIndex] = null;
+          this['dockSeatCache' + seatIndex] = '';
+        }
+      }
+    }
   }
   pointerDown(pickedMesh) {
     let mesh = pickedMesh;
@@ -69,7 +98,7 @@ export class StoryApp extends BaseApp {
       mesh = mesh.parent;
     }
 
-    let meshIndex = this.avatars.indexOf(mesh);
+    let meshIndex = -1; //this.avatars.indexOf(mesh);
     if (meshIndex !== -1) {
       if (mesh.localRunning) {
         mesh.localRunning = false;
@@ -128,6 +157,11 @@ export class StoryApp extends BaseApp {
     await super.load();
   }
 
+  paintDock() {
+    super.paintDock();
+
+    this.loadAvatars();
+  }
   paintGameData(gameDoc = null) {
     if (gameDoc)
       this.gameData = gameDoc.data();
@@ -148,7 +182,6 @@ export class StoryApp extends BaseApp {
     if (this.gameData.mode !== this.previousMode)
       this.matchBoardRendered = false;
     this.previousMode = this.gameData.mode;
-
 
     document.body.classList.remove('turnphase_select');
     document.body.classList.remove('turnphase_result');
@@ -209,15 +242,95 @@ export class StoryApp extends BaseApp {
 
     this.updateUserPresence();
   }
-  createEmptySeat() {
-    var ground = BABYLON.MeshBuilder.CreateDisc("ground", {
-      radius: 3
-    }, scene);
+  async renderSeat(index, avatar, name) {
 
+    let position = this.get3DPosition(index);
+    let colors = this.get3DColors(index);
+
+    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 1);
+    mesh.position.x = position.x;
+    mesh.position.y = position.y;
+    mesh.position.z = position.z;
+
+    let circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = .1;
+    circle.parent = mesh;
+
+    return mesh;
+  }
+  get3DColors(index) {
+    let r = 220 / 255,
+      g = 220 / 255,
+      b = 0;
+    if (index === 1) {
+      r = 0;
+      g = 220 / 255;
+      b = 210 / 255;
+    }
+    if (index === 2) {
+      r = 230 / 255;
+      g = 0;
+      b = 230 / 255;
+    }
+    if (index === 3) {
+      r = 150 / 255;
+      g = 130 / 255;
+      b = 255 / 255;
+    }
+
+    return {
+      r,
+      g,
+      b
+    };
+  }
+  get3DPosition(index) {
+    let x = 0,
+      y = .1,
+      z = (index * 3) - 4;
+    return {
+      x,
+      y,
+      z
+    }
+  }
+  async createEmptySeat(index) {
+    let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
+      radius: this.dockDiscRadius,
+      //    tessellation: 9,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+
+    let position = this.get3DPosition(index);
+    baseDisc.position.x = position.x;
+    baseDisc.position.y = position.y;
+    baseDisc.position.z = position.z;
+
+    baseDisc.rotation.x = Math.PI / 2;
+
+    let colors = this.get3DColors(index);
+    this.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
+
+    return baseDisc;
+  }
+  meshSetVerticeColors(mesh, r, g, b, a = 1) {
+    let colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
+    if (!colors) {
+      colors = [];
+
+      let positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+
+      for (let p = 0; p < positions.length / 3; p++) {
+        colors.push(r, g, b, a);
+      }
+    }
+
+    mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
   createCircle(color) {
     let points = [];
-    let radius = 0.6;
+    let radius = this.dockDiscRadius;
 
     for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 360) {
       points.push(new BABYLON.Vector3(radius * Math.cos(i), 0, radius * Math.sin(i)));

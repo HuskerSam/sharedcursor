@@ -208,7 +208,6 @@ export class GamesApp extends BaseApp {
 
     let membersHtml = '<div class="member_feed_wrapper">';
     let memberUpHtml = '';
-    //let ownerHTML = this.__getUserTemplate(data.createUser, data.memberNames[data.createUser], data.memberImages[data.createUser], true);
     let memberIsUp = '';
     let displayClass = '';
     let seatsFull = true;

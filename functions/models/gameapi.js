@@ -45,6 +45,7 @@ module.exports = class GameAPI {
       members: {},
       memberNames: {},
       memberImages: {},
+      memberAvatars: {},
       cardIndexOrder: [],
       sectors: [],
       solutionText: ''
@@ -207,11 +208,14 @@ module.exports = class GameAPI {
 
     let displayName = baseClass.escapeHTML(profile.displayName);
     let displayImage = profile.displayImage;
+    let displayAvatar = profile.displayAvatar;
 
     if (!displayName)
       displayName = 'Anonymous';
     if (!displayImage)
       displayImage = '';
+    if (!displayAvatar)
+      displayAvatar = '';
 
     game.members = {
       [uid]: new Date().toISOString()
@@ -221,6 +225,9 @@ module.exports = class GameAPI {
     };
     game.memberImages = {
       [uid]: displayImage
+    };
+    game.memberAvatars = {
+      [uid]: displayAvatar
     };
 
     await firebaseAdmin.firestore().doc(`Games/${gameNumber}`).set(game);
@@ -375,11 +382,14 @@ module.exports = class GameAPI {
 
     let displayName = baseClass.escapeHTML(profile.displayName);
     let displayImage = profile.displayImage;
+    let displayAvatar = profile.displayAvatar;
 
     if (!displayName)
       displayName = 'Anonymous';
     if (!displayImage)
       displayImage = '';
+    if (!displayAvatar)
+      displayAvatar = '';
 
     let updatePacket = {
       members: {
@@ -390,6 +400,9 @@ module.exports = class GameAPI {
       },
       memberImages: {
         [uid]: displayImage
+      },
+      memberAvatars: {
+        [uid]: displayAvatar
       },
       lastActivity: new Date().toISOString()
     };
@@ -679,12 +692,16 @@ module.exports = class GameAPI {
 
     let nameChange = (before.displayName !== after.displayName);
     let imageChange = (before.displayImage !== after.displayImage);
+    let avatarChange = (before.displayAvatar !== after.displayAvatar);
 
     if (nameChange) {
       await GameAPI._updateMetaNameForUser(context.params.uid);
     }
     if (imageChange) {
       await GameAPI._updateMetaImageForUser(context.params.uid);
+    }
+    if (avatarChange) {
+      await GameAPI._updateMetaAvatarForUser(context.params.uid);
     }
   }
   static async _updateMetaNameForUser(uid) {
@@ -760,6 +777,31 @@ module.exports = class GameAPI {
     });
 
     await Promise.all(msgPromises);
+
+    return;
+  }
+  static async _updateMetaAvatarForUser(uid) {
+    let freshUser = await firebaseAdmin.firestore().doc(`Users/${uid}`).get();
+
+    let avatar = freshUser.data().displayAvatar;
+    if (!avatar)
+      avatar = '';
+
+    let gamesQuery = await firebaseAdmin.firestore().collection(`Games`)
+      .where('members.' + uid, '>', '').get();
+
+    let promises = [];
+    gamesQuery.docs.forEach(doc => {
+      promises.push(doc.ref.set({
+        memberAvatars: {
+          [uid]: avatar
+        }
+      }, {
+        merge: true
+      }));
+    });
+
+    await Promise.all(promises);
 
     return;
   }
