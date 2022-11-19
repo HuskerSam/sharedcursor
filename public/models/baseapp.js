@@ -1214,8 +1214,10 @@ export class BaseApp {
       floorMeshes: [this.env.ground],
     });
 
+    this.runRender = true;
     this.engine.runRenderLoop(() => {
-      this.scene.render();
+      if (this.runRender)
+        this.scene.render();
     });
 
     window.addEventListener("resize", () => {
@@ -1248,8 +1250,11 @@ export class BaseApp {
   }
 
   async loadAvatarMesh(path, file, scale, x, y, z) {
+    this.runRender = false;
     let result1 = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
+
     let animationGLB = result1.meshes[0];
+    animationGLB.visible = false;
     animationGLB.position = new BABYLON.Vector3(x, y, z);
     result1.animationGroups[0].stop();
 
@@ -1278,6 +1283,7 @@ export class BaseApp {
 
     modelAnimationGroup.loopAnimation = true;
     animationGLB.dispose();
+    this.runRender = true;
 
     return mesh;
   }

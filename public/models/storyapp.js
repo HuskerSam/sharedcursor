@@ -73,7 +73,7 @@ export class StoryApp extends BaseApp {
             if (this['dockSeatMesh' + seatIndex])
               this['dockSeatMesh' + seatIndex].dispose();
             this['dockSeatCache' + seatIndex] = cacheValue;
-            this['dockSeatMesh' + seatIndex] = await this.renderSeat(seatIndex, avatar, name);
+            this['dockSeatMesh' + seatIndex] = await this.renderSeat(seatIndex, avatar, name, this.gameData[key]);
             this['dockSeatMesh' + seatIndex].appClickable = true;
           }
         } else {
@@ -256,7 +256,7 @@ export class StoryApp extends BaseApp {
 
     this.updateUserPresence();
   }
-  async renderSeat(index, avatar, name) {
+  async renderSeat(index, avatar, name, uid) {
     let position = this.get3DPosition(index);
     let colors = this.get3DColors(index);
 
@@ -291,29 +291,40 @@ export class StoryApp extends BaseApp {
     this.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
     name3d.parent = mesh;
 
-    let x3d = this.__createTextMesh('seattextX' + index, {
-      text: 'X',
-      fontFamily: 'monospace',
-      size: 100,
-      depth: .1
-    });
-    x3d.scaling.x = .2;
-    x3d.scaling.y = .2;
-    x3d.scaling.z = .2;
-    x3d.position.y = 2.25;
-    x3d.rotation.z = -Math.PI / 2;
-    x3d.rotation.y = -Math.PI / 2;
+    let isOwner = this.uid === this.gameData.createUser;
+    if (this.uid === uid || isOwner) {
+      let text = 'stand';
+      let intensity = 5;
+      if (this.uid !== uid && isOwner) {
+        intensity = 0;
+        text = 'boot';
+      }
+      let x3d = this.__createTextMesh('seattextX' + index, {
+        text,
+        fontFamily: 'monospace',
+        size: 100,
+        depth: .25
+      });
+      x3d.scaling.x = .08;
+      x3d.scaling.y = .08;
+      x3d.scaling.z = .08;
+      x3d.position.y = 2.15;
+      x3d.rotation.z = -Math.PI / 2;
+      x3d.rotation.y = -Math.PI / 2;
 
-    for (let i in this.scene.meshes) {
-      if (this.scene.meshes[i].parent === x3d)
-        this.meshSetVerticeColors(this.scene.meshes[i], 1, 1, 1);
+
+      for (let i in this.scene.meshes) {
+        if (this.scene.meshes[i].parent === x3d)
+        this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
+      }
+
+      this.meshSetVerticeColors(x3d, intensity, intensity, intensity);
+      x3d.parent = mesh;
+      x3d.appClickable = true;
+      x3d.clickCommand = 'stand';
+      x3d.seatIndex = index;
     }
 
-    this.meshSetVerticeColors(x3d, 1, 1, 1);
-    x3d.parent = mesh;
-    x3d.appClickable = true;
-    x3d.clickCommand = 'stand';
-    x3d.seatIndex = index;
     return mesh;
   }
   get3DColors(index) {
