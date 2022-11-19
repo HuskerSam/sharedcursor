@@ -1250,12 +1250,11 @@ export class BaseApp {
   }
 
   async loadAvatarMesh(path, file, scale, x, y, z) {
-    this.runRender = false;
     let result1 = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
 
     let animationGLB = result1.meshes[0];
-    animationGLB.visible = false;
-    animationGLB.position = new BABYLON.Vector3(x, y, z);
+    animationGLB.position.y = -1000;
+
     result1.animationGroups[0].stop();
 
     let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, path, file);
@@ -1281,9 +1280,9 @@ export class BaseApp {
 
     mesh.localRunning = true;
 
+    modelAnimationGroup.goToFrame(Math.floor(Math.random() * modelAnimationGroup.to));
     modelAnimationGroup.loopAnimation = true;
     animationGLB.dispose();
-    this.runRender = true;
 
     return mesh;
   }

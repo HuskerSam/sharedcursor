@@ -73,8 +73,11 @@ export class StoryApp extends BaseApp {
             if (this['dockSeatMesh' + seatIndex])
               this['dockSeatMesh' + seatIndex].dispose();
             this['dockSeatCache' + seatIndex] = cacheValue;
-            this['dockSeatMesh' + seatIndex] = await this.renderSeat(seatIndex, avatar, name, this.gameData[key]);
-            this['dockSeatMesh' + seatIndex].appClickable = true;
+
+            this.renderSeat(seatIndex, avatar, name, this.gameData[key]).then(mesh => {
+              this['dockSeatMesh' + seatIndex] = mesh;
+              this['dockSeatMesh' + seatIndex].appClickable = true;
+            })
           }
         } else {
           if (this['dockSeatCache' + seatIndex] !== 'empty') {
@@ -107,12 +110,12 @@ export class StoryApp extends BaseApp {
         if (this['dockSeatCache' + seatIndex] === 'empty') {
           this.dockSit(seatIndex);
         } else {
-          if (mesh.localRunning) {
-            mesh.localRunning = false;
-            mesh.modelAnimationGroup.pause();
+          if (mesh.avatarMesh.localRunning) {
+            mesh.avatarMesh.localRunning = false;
+            mesh.avatarMesh.modelAnimationGroup.pause();
           } else {
-            mesh.localRunning = true;
-            mesh.modelAnimationGroup.play();
+            mesh.avatarMesh.localRunning = true;
+            mesh.avatarMesh.modelAnimationGroup.play();
           }
         }
       }
@@ -260,10 +263,20 @@ export class StoryApp extends BaseApp {
     let position = this.get3DPosition(index);
     let colors = this.get3DColors(index);
 
+    let wrapper = BABYLON.MeshBuilder.CreateBox('seatwrapper' + index, {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    wrapper.visibility = 0;
+    wrapper.isContainerBlock = true;
+
     let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 1);
     mesh.position.x = position.x;
     mesh.position.y = position.y;
     mesh.position.z = position.z;
+    mesh.parent = wrapper;
+    wrapper.avatarMesh = mesh;
 
     let circle = this.createCircle();
     circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
@@ -315,7 +328,7 @@ export class StoryApp extends BaseApp {
 
       for (let i in this.scene.meshes) {
         if (this.scene.meshes[i].parent === x3d)
-        this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
+          this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
       }
 
       this.meshSetVerticeColors(x3d, intensity, intensity, intensity);
@@ -325,7 +338,39 @@ export class StoryApp extends BaseApp {
       x3d.seatIndex = index;
     }
 
-    return mesh;
+    var animationBox = new BABYLON.Animation(
+      "myAnimation" + index,
+      "position",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    //At the animation key 0, the value of scaling is "1"
+    let x = mesh.position.x;
+    let y = mesh.position.y;
+    let z = mesh.position.z;
+    var keys = [];
+    keys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
+    keys.push({
+      frame: 20,
+      value: new BABYLON.Vector3(x + 1, y, z - 1)
+    });
+    keys.push({
+      frame: 100,
+      value: new BABYLON.Vector3(x, y, z)
+    });
+
+    animationBox.setKeys(keys);
+    if (!wrapper.animations)
+      wrapper.animations = [];
+    wrapper.animations.push(animationBox);
+    this.scene.beginAnimation(wrapper, 0, 100, true);
+
+    return wrapper;
   }
   get3DColors(index) {
     let r = 220 / 255,
@@ -356,7 +401,7 @@ export class StoryApp extends BaseApp {
   get3DPosition(index) {
     let x = 0,
       y = .1,
-      z = (index * 3) - 4;
+      z = (index * 1.25) - 2;
     return {
       x,
       y,
