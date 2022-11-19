@@ -99,7 +99,7 @@ export class StoryApp extends BaseApp {
       mesh = mesh.parent;
     }
 
-    if (!mesh)
+    if (!mesh || !mesh.appClickable)
       return;
 
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
@@ -109,13 +109,17 @@ export class StoryApp extends BaseApp {
         } else {
           if (mesh.localRunning) {
             mesh.localRunning = false;
-            mesh.modelAnimationGroup.stop();
+            mesh.modelAnimationGroup.pause();
           } else {
             mesh.localRunning = true;
-            mesh.modelAnimationGroup.start();
+            mesh.modelAnimationGroup.play();
           }
         }
       }
+    }
+
+    if (mesh.clickCommand === 'stand') {
+      this._gameAPIStand(mesh.seatIndex);
     }
 
   }
@@ -286,6 +290,30 @@ export class StoryApp extends BaseApp {
 
     this.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
     name3d.parent = mesh;
+
+    let x3d = this.__createTextMesh('seattextX' + index, {
+      text: 'X',
+      fontFamily: 'monospace',
+      size: 100,
+      depth: .1
+    });
+    x3d.scaling.x = .2;
+    x3d.scaling.y = .2;
+    x3d.scaling.z = .2;
+    x3d.position.y = 2.25;
+    x3d.rotation.z = -Math.PI / 2;
+    x3d.rotation.y = -Math.PI / 2;
+
+    for (let i in this.scene.meshes) {
+      if (this.scene.meshes[i].parent === x3d)
+        this.meshSetVerticeColors(this.scene.meshes[i], 1, 1, 1);
+    }
+
+    this.meshSetVerticeColors(x3d, 1, 1, 1);
+    x3d.parent = mesh;
+    x3d.appClickable = true;
+    x3d.clickCommand = 'stand';
+    x3d.seatIndex = index;
     return mesh;
   }
   get3DColors(index) {
