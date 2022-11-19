@@ -253,7 +253,6 @@ export class StoryApp extends BaseApp {
     this.updateUserPresence();
   }
   async renderSeat(index, avatar, name) {
-
     let position = this.get3DPosition(index);
     let colors = this.get3DColors(index);
 
@@ -267,6 +266,26 @@ export class StoryApp extends BaseApp {
     circle.position.y = .1;
     circle.parent = mesh;
 
+    let name3d = this.__createTextMesh('seattext' + index, {
+      text: name,
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .1
+    });
+    name3d.scaling.x = .15;
+    name3d.scaling.y = .15;
+    name3d.scaling.z = .15;
+    name3d.position.y = 2;
+    name3d.rotation.z = -Math.PI / 2;
+    name3d.rotation.y = -Math.PI / 2;
+
+    for (let i in this.scene.meshes) {
+      if (this.scene.meshes[i].parent === name3d)
+        this.meshSetVerticeColors(this.scene.meshes[i], colors.r, colors.g, colors.b);
+    }
+
+    this.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
+    name3d.parent = mesh;
     return mesh;
   }
   get3DColors(index) {
@@ -349,5 +368,96 @@ export class StoryApp extends BaseApp {
     let baseCircle = BABYLON.Mesh.CreateLines("qbezier2", points, this.scene);
 
     return baseCircle;
+  }
+  __createTextMesh(name, options) {
+    let canvas = document.getElementById("highresolutionhiddencanvas");
+    if (!canvas) {
+      let cWrapper = document.createElement('div');
+      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" width="4500" height="1500" style="display:none"></canvas>`;
+      canvas = cWrapper.firstChild;
+      document.body.appendChild(canvas);
+    }
+    let context2D = canvas.getContext("2d");
+    let size = 100;
+    let vectorOptions = {
+      polygons: true,
+      textBaseline: "top",
+      fontStyle: 'normal',
+      fontWeight: 'normal',
+      fontFamily: 'Arial',
+      size: size,
+      stroke: false
+    };
+    for (let i in vectorOptions)
+      if (options[i])
+        vectorOptions[i] = options[i];
+    if (options['size'])
+      size = Number(options['size']);
+
+    let vectorData = vectorizeText(options['text'], canvas, context2D, vectorOptions);
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let thick = 10;
+    if (options['depth'])
+      thick = Number(options['depth']);
+    let scale = size / 100;
+    let lenX = 0;
+    let lenY = 0;
+    let polies = [];
+
+    for (var i = 0; i < vectorData.length; i++) {
+      var letter = vectorData[i];
+      var conners = [];
+      for (var k = 0; k < letter[0].length; k++) {
+        conners[k] = new BABYLON.Vector2(scale * letter[0][k][1], scale * letter[0][k][0]);
+        if (lenX < conners[k].x) lenX = conners[k].x;
+        if (lenY < conners[k].y) lenY = conners[k].y;
+      }
+      var polyBuilder = new BABYLON.PolygonMeshBuilder("pBuilder" + i, conners, this.scene);
+
+      for (var j = 1; j < letter.length; j++) {
+        var hole = [];
+        for (var k = 0; k < letter[j].length; k++) {
+          hole[k] = new BABYLON.Vector2(scale * letter[j][k][1], scale * letter[j][k][0]);
+        }
+        hole.reverse();
+        polyBuilder.addHole(hole);
+      }
+
+      try {
+        var polygon = polyBuilder.build(false, thick);
+        //polygon.receiveShadows = true;
+
+        polies.push(polygon);
+      } catch (e) {
+        console.log('text 3d render polygon error', e);
+      }
+    }
+
+    //if (lenY < .001 && lenX < .001)
+    //  this.context.logError('Zero Length result for text shape ' + this.__getParentRoute());
+    if (lenY === 0)
+      lenY = 0.001;
+    if (lenX === 0)
+      lenX = 0.001;
+    let deltaY = thick / 2.0;
+    let deltaX = lenX / 2.0;
+    let deltaZ = lenY / 2.0;
+
+    let textWrapperMesh = BABYLON.MeshBuilder.CreateBox(this._blockKey + 'textdetailswrapper', {
+      width: lenX,
+      height: thick,
+      depth: lenY
+    }, this.scene);
+    textWrapperMesh.isVisible = false;
+    for (let i = 0, l = polies.length; i < l; i++) {
+      polies[i].position.x -= deltaX;
+      polies[i].position.y += deltaY;
+      polies[i].position.z -= deltaZ;
+      polies[i].setParent(textWrapperMesh);
+    }
+
+    return textWrapperMesh;
   }
 }
