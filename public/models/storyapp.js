@@ -74,6 +74,7 @@ export class StoryApp extends BaseApp {
               this['dockSeatMesh' + seatIndex].dispose();
             this['dockSeatCache' + seatIndex] = cacheValue;
             this['dockSeatMesh' + seatIndex] = await this.renderSeat(seatIndex, avatar, name);
+            this['dockSeatMesh' + seatIndex].appClickable = true;
           }
         } else {
           if (this['dockSeatCache' + seatIndex] !== 'empty') {
@@ -81,6 +82,7 @@ export class StoryApp extends BaseApp {
               this['dockSeatMesh' + seatIndex].dispose();
             this['dockSeatCache' + seatIndex] = 'empty';
             this['dockSeatMesh' + seatIndex] = await this.createEmptySeat(seatIndex);
+            this['dockSeatMesh' + seatIndex].appClickable = true;
           }
         }
       } else {
@@ -92,22 +94,30 @@ export class StoryApp extends BaseApp {
       }
     }
   }
-  pointerDown(pickedMesh) {
-    let mesh = pickedMesh;
-    while (mesh.parent !== null) {
+  pointerDown(mesh) {
+    while (mesh && !mesh.appClickable) {
       mesh = mesh.parent;
     }
 
-    let meshIndex = -1; //this.avatars.indexOf(mesh);
-    if (meshIndex !== -1) {
-      if (mesh.localRunning) {
-        mesh.localRunning = false;
-        mesh.modelAnimationGroup.stop();
-      } else {
-        mesh.localRunning = true;
-        mesh.modelAnimationGroup.start();
+    if (!mesh)
+      return;
+
+    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
+      if (this['dockSeatMesh' + seatIndex] === mesh) {
+        if (this['dockSeatCache' + seatIndex] === 'empty') {
+          this.dockSit(seatIndex);
+        } else {
+          if (mesh.localRunning) {
+            mesh.localRunning = false;
+            mesh.modelAnimationGroup.stop();
+          } else {
+            mesh.localRunning = true;
+            mesh.modelAnimationGroup.start();
+          }
+        }
       }
     }
+
   }
   async loadStaticMesh(path, file, scale, x, y, z) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
