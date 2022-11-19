@@ -13,4 +13,11 @@ export default class Utility {
     let name = Utility.capFirst(name1[Utility.getRandomInt(0, name1.length + 1)]) + ' ' + Utility.capFirst(name2[Utility.getRandomInt(0, name2.length + 1)]);
     return name;
   }
+  static generateAvatarName() {
+    let index = Math.floor(Math.random() * 16);
+    if (index < 8)
+      return 'male' + (index + 1).toString();
+
+    return 'female' + (index - 7).toString();
+  }
 }

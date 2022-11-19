@@ -154,11 +154,16 @@ export class BaseApp {
       points: 0,
       locationTrack: false,
       displayName: Utility.generateName(),
-      displayImage: ''
+      displayImage: '',
+      displayAvatar: Utility.generateAvatarName()
     };
 
     await firebase.firestore().doc(`Users/${this.uid}`).set(this.profile);
   }
+  logAvatarFunction() {
+    console.log(Utility.generateAvatarName());
+  }
+
   updateUserStatus() {}
   async updateProfileAudioMode(ctl, index, e) {
     let mute = false;
@@ -1235,6 +1240,41 @@ export class BaseApp {
     this.mesh.scaling.x = scale;
     this.mesh.scaling.y = scale;
     this.mesh.scaling.z = scale;
+  }
+
+  async loadAvatarMesh(path, file, scale, x, y, z) {
+    let result1 = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
+    let animationGLB = result1.meshes[0];
+    animationGLB.position = new BABYLON.Vector3(x, y, z);
+    result1.animationGroups[0].stop();
+
+    let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, path, file);
+
+    let mesh = result2.meshes[0];
+
+    mesh.scaling.x = scale;
+    mesh.scaling.y = scale;
+    mesh.scaling.z = scale;
+
+    mesh.position.x = x;
+    mesh.position.y = y;
+    mesh.position.z = z;
+
+    mesh.isPickable = true;
+
+    const modelTransformNodes = mesh.getChildTransformNodes();
+    const modelAnimationGroup = result1.animationGroups[0].clone("clone", (oldTarget) => {
+      return modelTransformNodes.find((node) => node.name === oldTarget.name);
+    });
+    modelAnimationGroup.start();
+    mesh.modelAnimationGroup = modelAnimationGroup;
+
+    mesh.localRunning = true;
+
+    modelAnimationGroup.loopAnimation = true;
+    animationGLB.dispose();
+
+    return mesh;
   }
 }
 

@@ -97,7 +97,34 @@ export class ProfileApp extends BaseApp {
 
     this.card_select_viewer = document.querySelector('.card_select_viewer');
 
+    this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
+    this.view_avatar_btn = document.querySelector('.view_avatar_btn');
+    this.view_avatar_btn.addEventListener('click', e => this.viewAvatar());
+
+    this.profile_display_avatar_preset = document.querySelector('.profile_display_avatar_preset');
+    this.profile_display_avatar_preset.addEventListener('input', e => this.updateAvatarPreset());
+
+    this.modal = new bootstrap.Modal(this.canvasDisplayModal);
     this.initBabylonEngine();
+  }
+  async updateAvatarPreset() {
+    let updatePacket = {
+      displayAvatar: this.profile_display_avatar_preset.value
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
+        merge: true
+      });
+  }
+  async viewAvatar() {
+    if (this.currentLoadedAvatar) {
+      this.currentLoadedAvatar.dispose();
+      this.currentLoadedAvatar = null;
+    }
+
+    let prefix = this.profile_display_avatar_preset.value;
+    this.modal.show();
+    this.currentLoadedAvatar = await this.loadAvatarMesh("/match/deckmedia/", prefix + ".glb", 2, 0, 0, -4);
   }
   async load() {
     await GameCards.loadDecks();
@@ -184,6 +211,8 @@ export class ProfileApp extends BaseApp {
         this.user_email.innerHTML = 'Anonymous';
       else
         this.user_email.innerHTML = this.fireUser.email;
+
+      this.profile_display_avatar_preset.value = this.profile.displayAvatar;
 
       if (!this.profile.nightModeState)
         this.profile.nightModeState = 0;

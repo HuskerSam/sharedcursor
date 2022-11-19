@@ -25,31 +25,14 @@ export class StoryApp extends BaseApp {
     this.initBabylonEngine(".popup-canvas", true);
 
     this.avatars = [];
-    let gizmoManager = new BABYLON.GizmoManager(
-      this.scene
-    );
-    //gizmoManager.positionGizmoEnabled = true;
+
     this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "earth.glb", .001, 4, 1, 0);
     this.loadStaticMesh("/match/deckmedia/", "mars.glb", .001, 8.544, 1, 0);
-    this.loadAvatarMesh("/match/deckmedia/", "male1.glb", 2, 0, 0, 1);
-    this.loadAvatarMesh("/match/deckmedia/", "male2.glb", 1, 0, 0, 2);
-    this.loadAvatarMesh("/match/deckmedia/", "male3.glb", 1, 0, 0, 3);
-    this.loadAvatarMesh("/match/deckmedia/", "male4.glb", 1, 0, 0, 4);
-    this.loadAvatarMesh("/match/deckmedia/", "male5.glb", 1, 0, 0, 5);
-    this.loadAvatarMesh("/match/deckmedia/", "male6.glb", 1, 0, 0, 6);
-    this.loadAvatarMesh("/match/deckmedia/", "male7.glb", 1, 0, 0, 7);
-    this.loadAvatarMesh("/match/deckmedia/", "male8.glb", 1, 0, 0, 8);
-    this.loadAvatarMesh("/match/deckmedia/", "female1.glb", 2, 0, 0, -1);
-    this.loadAvatarMesh("/match/deckmedia/", "female2.glb", 1, 0, 0, -2);
-    this.loadAvatarMesh("/match/deckmedia/", "female3.glb", 1, 0, 0, -3);
-    this.loadAvatarMesh("/match/deckmedia/", "female4.glb", 1, 0, 0, -4);
-    this.loadAvatarMesh("/match/deckmedia/", "female5.glb", 1, 0, 0, -5);
-    this.loadAvatarMesh("/match/deckmedia/", "female6.glb", 1, 0, 0, -6);
-    this.loadAvatarMesh("/match/deckmedia/", "female7.glb", 1, 0, 0, -7);
-    this.loadAvatarMesh("/match/deckmedia/", "female8.glb", 1, 0, 0, -8);
+
+    this.loadAvatars();
 
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
@@ -67,6 +50,19 @@ export class StoryApp extends BaseApp {
       }
     });
   }
+  async loadAvatars() {
+    let mesh = await this.loadAvatarMesh("/match/deckmedia/", "male1.glb", 1, 0, 0, 1);
+    let circle = this.createCircle();
+    circle.color = new BABYLON.Color3(1, 1, 0);
+    circle.position.y = .1;
+    circle.parent = mesh;
+    this.avatars.push(mesh);
+
+    this.avatars.push(await this.loadAvatarMesh("/match/deckmedia/", "female2.glb", 1, 0, 0, 4));
+    this.avatars.push(await this.loadAvatarMesh("/match/deckmedia/", "male3.glb", 1, 0, 0, -2));
+    this.avatars.push(await this.loadAvatarMesh("/match/deckmedia/", "female6.glb", 1, 0, 0, -4));
+
+  }
   pointerDown(pickedMesh) {
     let mesh = pickedMesh;
     while (mesh.parent !== null) {
@@ -83,39 +79,6 @@ export class StoryApp extends BaseApp {
         mesh.modelAnimationGroup.start();
       }
     }
-  }
-  async loadAvatarMesh(path, file, scale, x, y, z) {
-    let result1 = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
-    let animationGLB = result1.meshes[0];
-    animationGLB.position = new BABYLON.Vector3(x, y, z);
-    result1.animationGroups[0].stop();
-
-    let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, path, file);
-
-    let mesh = result2.meshes[0];
-
-    mesh.scaling.x = scale;
-    mesh.scaling.y = scale;
-    mesh.scaling.z = scale;
-
-    mesh.position.x = x;
-    mesh.position.y = y;
-    mesh.position.z = z;
-
-    mesh.isPickable = true;
-
-    this.avatars.push(mesh);
-
-    const modelTransformNodes = mesh.getChildTransformNodes();
-    const modelAnimationGroup = result1.animationGroups[0].clone("clone", (oldTarget) => {
-      return modelTransformNodes.find((node) => node.name === oldTarget.name);
-    });
-    modelAnimationGroup.start();
-    mesh.modelAnimationGroup = modelAnimationGroup;
-    mesh.localRunning = true;
-
-    modelAnimationGroup.loopAnimation = true;
-    animationGLB.dispose();
   }
   async loadStaticMesh(path, file, scale, x, y, z) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
@@ -246,5 +209,22 @@ export class StoryApp extends BaseApp {
 
     this.updateUserPresence();
   }
+  createEmptySeat() {
+    var ground = BABYLON.MeshBuilder.CreateDisc("ground", {
+      radius: 3
+    }, scene);
 
+  }
+  createCircle(color) {
+    let points = [];
+    let radius = 0.6;
+
+    for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 360) {
+      points.push(new BABYLON.Vector3(radius * Math.cos(i), 0, radius * Math.sin(i)));
+    }
+
+    let baseCircle = BABYLON.Mesh.CreateLines("qbezier2", points, this.scene);
+
+    return baseCircle;
+  }
 }
