@@ -119,37 +119,46 @@ export class StoryApp extends BaseApp {
   viewSettings() {
     this.modal.show();
   }
+  getSeatData(seatIndex) {
+    let key = 'seat' + seatIndex.toString();
+    let name = '';
+    let avatar = '';
+    let uid = '';
+    let seated = false;
+    if (this.gameData[key]) {
+      name = this.gameData.memberNames[this.gameData[key]];
+      if (!name) name = "Anonymous";
+      avatar = this.gameData.memberAvatars[this.gameData[key]];
+      if (!avatar) avatar = "male1";
+
+      uid = this.gameData[key];
+      seated = true;
+    }
+
+    return {
+      seated,
+      name,
+      key,
+      avatar,
+      uid: this.gameData[key]
+    };
+  }
   async loadAvatars() {
     if (!this.sceneInited)
       return;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
-        let key = 'seat' + seatIndex.toString();
+        let data = this.getSeatData(seatIndex);
+        let cacheValue = data.name + data.avatar + data.seated.toString();
+        if (!this['dockSeatMesh' + seatIndex]) {
+          let mesh = await this.renderSeat(seatIndex);
 
-        if (this.gameData[key]) {
-          let name = this.gameData.memberNames[this.gameData[key]];
-          if (!name) name = "Anonymous";
-          let avatar = this.gameData.memberAvatars[this.gameData[key]];
-          if (!avatar) avatar = "male1";
-
-          let cacheValue = name + avatar;
-          if (this['dockSeatCache' + seatIndex] !== cacheValue) {
-            if (this['dockSeatMesh' + seatIndex])
-              this['dockSeatMesh' + seatIndex].dispose();
-            this['dockSeatCache' + seatIndex] = cacheValue;
-
-            let mesh = await this.renderSeat(seatIndex, avatar, name, this.gameData[key]);
-            this['dockSeatMesh' + seatIndex] = mesh;
-            this['dockSeatMesh' + seatIndex].appClickable = true;
-          }
-        } else {
-          if (this['dockSeatCache' + seatIndex] !== 'empty') {
-            if (this['dockSeatMesh' + seatIndex])
-              this['dockSeatMesh' + seatIndex].dispose();
-            this['dockSeatCache' + seatIndex] = 'empty';
-            this['dockSeatMesh' + seatIndex] = await this.createEmptySeat(seatIndex);
-            this['dockSeatMesh' + seatIndex].appClickable = true;
-          }
+          this['dockSeatMesh' + seatIndex] = mesh;
+          this['dockSeatCache' + seatIndex] = cacheValue;
+          await this._updateSeat(seatIndex);
+        } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
+          await this._updateSeat(seatIndex);
+          this['dockSeatCache' + seatIndex] = cacheValue;
         }
       } else {
         if (this['dockSeatMesh' + seatIndex]) {
@@ -169,20 +178,8 @@ export class StoryApp extends BaseApp {
     if (!mesh || !mesh.appClickable)
       return;
 
-    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      if (this['dockSeatMesh' + seatIndex] === mesh) {
-        if (this['dockSeatCache' + seatIndex] === 'empty') {
-          this.dockSit(seatIndex);
-        } else {
-          if (mesh.avatarMesh.localRunning) {
-            //mesh.avatarMesh.localRunning = false;
-            //mesh.avatarMesh.modelAnimationGroup.pause();
-          } else {
-            //mesh.avatarMesh.localRunning = true;
-            //mesh.avatarMesh.modelAnimationGroup.play();
-          }
-        }
-      }
+    if (mesh.emptySeat) {
+      this.dockSit(mesh.seatIndex);
     }
 
     if (mesh.clickCommand === 'stand') {
@@ -327,36 +324,10 @@ export class StoryApp extends BaseApp {
     this.updateUserPresence();
     this.updateAgents();
   }
-  async renderSeat(index, avatar, name, uid) {
+  renderSeatText(mesh, index) {
+    let seatData = this.getSeatData(index);
+    let name = seatData.name;
     let colors = this.get3DColors(index);
-
-    let wrapper = BABYLON.MeshBuilder.CreateBox('seatwrapper' + index, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    wrapper.visibility = 0;
-
-    let avatarWrapper = BABYLON.MeshBuilder.CreateBox('seatavatarwrapper' + index, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    avatarWrapper.visibility = 0;
-    avatarWrapper.rotation.y = Math.PI;
-    avatarWrapper.parent = wrapper;
-
-    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 0);
-    mesh.position.x = 0;
-    mesh.position.y = 0;
-    mesh.position.z = 0;
-    mesh.parent = avatarWrapper;
-    wrapper.avatarMesh = mesh;
-
-    let circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = .1;
-    circle.parent = mesh;
 
     let name3d = this.__createTextMesh('seattext' + index, {
       text: name,
@@ -378,6 +349,27 @@ export class StoryApp extends BaseApp {
 
     this.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
     name3d.parent = mesh;
+    mesh.name3d = name3d;
+
+    return name3d;
+  }
+  async renderSeatAvatar(wrapper, avatarWrapper, index) {
+    let seatData = this.getSeatData(index);
+    let avatar = seatData.avatar;
+    let uid = seatData.uid;
+
+    let colors = this.get3DColors(index);
+    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 0);
+    mesh.position.x = 0;
+    mesh.position.y = 0;
+    mesh.position.z = 0;
+    mesh.parent = avatarWrapper;
+    wrapper.avatarMesh = mesh;
+
+    let circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = .1;
+    circle.parent = mesh;
 
     let isOwner = this.uid === this.gameData.createUser;
     if (this.uid === uid || isOwner) {
@@ -411,9 +403,74 @@ export class StoryApp extends BaseApp {
       x3d.clickCommand = 'stand';
       x3d.seatIndex = index;
     }
+  }
+  async _updateSeat(index) {
+    let seatData = this.getSeatData(index);
+    let colors = this.get3DColors(index);
 
+    let seat = this['dockSeatMesh' + index];
+    if (seat.avatarMesh) {
+      seat.avatarMesh.dispose();
+      seat.avatarMesh = null;
+    }
 
-    this.navigationAid(wrapper, mesh, index);
+    if (seat.name3d) {
+      seat.name3d.dispose();
+      seat.name3d = null;
+    }
+
+    if (seat.baseDisc) {
+      seat.baseDisc.dispose();
+      seat.baseDisc = null;
+    }
+
+    if (seatData.seated) {
+      this.renderSeatText(seat, index);
+      await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
+    } else {
+      let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
+        radius: this.dockDiscRadius,
+        //    tessellation: 9,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      }, this.scene);
+
+      let position = this.get3DPosition(index);
+      baseDisc.position.x = position.x;
+      baseDisc.position.y = position.y;
+      baseDisc.position.z = position.z;
+
+      baseDisc.rotation.x = Math.PI / 2;
+      baseDisc.emptySeat = true;
+      baseDisc.seatIndex = index;
+
+      let colors = this.get3DColors(index);
+      this.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
+      baseDisc.parent = seat;
+      baseDisc.appClickable = true;
+
+      seat.baseDisc = baseDisc;
+    }
+  }
+  async renderSeat(index) {
+    let wrapper = BABYLON.MeshBuilder.CreateBox('seatwrapper' + index, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    wrapper.visibility = 0;
+
+    let avatarWrapper = BABYLON.MeshBuilder.CreateBox('seatavatarwrapper' + index, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    avatarWrapper.visibility = 0;
+    avatarWrapper.rotation.y = Math.PI;
+    avatarWrapper.parent = wrapper;
+    wrapper.avatarWrapper = avatarWrapper;
+
+    this.navigationAid(wrapper, index);
+
     return wrapper;
   }
 
@@ -444,25 +501,6 @@ export class StoryApp extends BaseApp {
       y = .1,
       z = (index * 1.25) - 2;
     return new BABYLON.Vector3(x, y, z);
-  }
-  async createEmptySeat(index) {
-    let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
-      radius: this.dockDiscRadius,
-      //    tessellation: 9,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-
-    let position = this.get3DPosition(index);
-    baseDisc.position.x = position.x;
-    baseDisc.position.y = position.y;
-    baseDisc.position.z = position.z;
-
-    baseDisc.rotation.x = Math.PI / 2;
-
-    let colors = this.get3DColors(index);
-    this.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
-
-    return baseDisc;
   }
   meshSetVerticeColors(mesh, r, g, b, a = 1) {
     let colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
@@ -607,8 +645,11 @@ export class StoryApp extends BaseApp {
     this.crowd = this.navigationPlugin.createCrowd(6, .25, this.scene);
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
-      this.agents[agentInfos.agentIndex].avatarMesh.localRunning = false;
-      this.agents[agentInfos.agentIndex].avatarMesh.modelAnimationGroup.pause();
+      let seat = this.agents[agentInfos.agentIndex].mesh;
+      if (seat.avatarMesh) {
+        seat.avatarMesh.localRunning = false;
+        seat.avatarMesh.modelAnimationGroup.pause();
+      }
       this.agents[agentInfos.agentIndex].stopped = true;
 
       this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
@@ -646,18 +687,15 @@ export class StoryApp extends BaseApp {
       }
     });
   }
-  navigationAid(mesh, avatarMesh, index) {
-    //let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(0, 0, 0), 0.2);
+  navigationAid(mesh, index) {
     let randomPos = this.get3DPosition(index);
     let transform = new BABYLON.TransformNode();
     let agentIndex = this.crowd.addAgent(randomPos, this.agentParams, transform);
-    //mesh.parent = transform;
     this.agents.push({
       idx: agentIndex,
       trf: transform,
       mesh,
-      target: new BABYLON.Vector3(0, 0, 0),
-      avatarMesh
+      target: new BABYLON.Vector3(0, 0, 0)
     });
   }
   groundClick(pointerInfo) {
@@ -695,6 +733,9 @@ export class StoryApp extends BaseApp {
     let json = await f_result.json();
   }
   updateAgents() {
+    if (!this.crowd)
+      return;
+
     let agents = this.crowd.getAgents();
 
     for (let i = 0; i < agents.length; i++) {
@@ -712,13 +753,15 @@ export class StoryApp extends BaseApp {
   }
   _sendAgentToTarget(i, position) {
     this.crowd.agentGoto(i, position);
-    this.agents[i].avatarMesh.localRunning = true;
+    let seat = this.agents[i].mesh;
+    if (seat.avatarMesh) {
+      seat.avatarMesh.localRunning = true;
+      seat.avatarMesh.modelAnimationGroup.play();
+    }
     this.agents[i].target.x = position.x;
     this.agents[i].target.y = position.y;
     this.agents[i].target.z = position.z;
     this.agents[i].stopped = false;
-
-    this.agents[i].avatarMesh.modelAnimationGroup.play();
 
     let pathPoints = this.navigationPlugin.computePath(this.crowd.getAgentPosition(i), position);
     let pathLine;
