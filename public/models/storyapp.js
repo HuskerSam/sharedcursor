@@ -63,12 +63,16 @@ export class StoryApp extends BaseApp {
     await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
 
     this.staticMeshes.push(this.env.ground);
-    this.setupAgents();
+    await this.setupAgents();
+
+    this.sceneInited = true;
   }
   viewSettings() {
     this.modal.show();
   }
   async loadAvatars() {
+    if (!this.sceneInited)
+      return;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
         let key = 'seat' + seatIndex.toString();
@@ -449,18 +453,20 @@ export class StoryApp extends BaseApp {
     let canvas = document.getElementById("highresolutionhiddencanvas");
     if (!canvas) {
       let cWrapper = document.createElement('div');
-      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" willReadFrequently="true" width="4500" height="1500" style="display:none"></canvas>`;
+      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" width="4500" height="1500" style="display:none"></canvas>`;
       canvas = cWrapper.firstChild;
       document.body.appendChild(canvas);
     }
-    let context2D = canvas.getContext("2d");
+    let context2D = canvas.getContext("2d", {
+      willReadFrequently: true
+    });
     let size = 100;
     let vectorOptions = {
       polygons: true,
       textBaseline: "top",
       fontStyle: 'normal',
       fontWeight: 'normal',
-      fontFamily: 'Arial',
+      fontFamily: 'Georgia',
       size: size,
       stroke: false
     };
@@ -572,7 +578,6 @@ export class StoryApp extends BaseApp {
 
     this.agentParams = {
       radius: 0.5,
-      reachRadius: 1,
       height: 4,
       maxAcceleration: 4.0,
       maxSpeed: 1.0,
