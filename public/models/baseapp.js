@@ -1276,6 +1276,7 @@ export class BaseApp {
       return modelTransformNodes.find((node) => node.name === oldTarget.name);
     });
     modelAnimationGroup.start();
+    modelAnimationGroup.pause();
     mesh.modelAnimationGroup = modelAnimationGroup;
 
     mesh.localRunning = true;

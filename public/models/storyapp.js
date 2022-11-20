@@ -5,6 +5,7 @@ export class StoryApp extends BaseApp {
   constructor() {
     super();
     this.apiType = 'story';
+    this.staticMeshes = [];
 
     this._initGameCommon();
 
@@ -26,17 +27,15 @@ export class StoryApp extends BaseApp {
 
     this.dockDiscRadius = .6;
 
-    this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
-    this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
 
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
           if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != this.env.ground) {
             this.pointerDown(pointerInfo.pickInfo.pickedMesh)
+          }
+          if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
+            this.groundClick(pointerInfo);
           }
           break;
         case BABYLON.PointerEventTypes.POINTERUP:
@@ -53,6 +52,18 @@ export class StoryApp extends BaseApp {
 
     this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
+
+    this.loadStaticScene();
+  }
+  async loadStaticScene() {
+    await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
+    await this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
+    await this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
+    await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
+    await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
+
+    this.staticMeshes.push(this.env.ground);
+    this.setupAgents();
   }
   viewSettings() {
     this.modal.show();
@@ -111,11 +122,11 @@ export class StoryApp extends BaseApp {
           this.dockSit(seatIndex);
         } else {
           if (mesh.avatarMesh.localRunning) {
-            mesh.avatarMesh.localRunning = false;
-            mesh.avatarMesh.modelAnimationGroup.pause();
+            //mesh.avatarMesh.localRunning = false;
+            //mesh.avatarMesh.modelAnimationGroup.pause();
           } else {
-            mesh.avatarMesh.localRunning = true;
-            mesh.avatarMesh.modelAnimationGroup.play();
+            //mesh.avatarMesh.localRunning = true;
+            //mesh.avatarMesh.modelAnimationGroup.play();
           }
         }
       }
@@ -138,6 +149,9 @@ export class StoryApp extends BaseApp {
     mesh.position.x = x;
     mesh.position.y = y;
     mesh.position.z = z;
+
+    this.staticMeshes.push(mesh);
+    return mesh;
   }
   debounce() {
     return false;
@@ -264,17 +278,26 @@ export class StoryApp extends BaseApp {
     let colors = this.get3DColors(index);
 
     let wrapper = BABYLON.MeshBuilder.CreateBox('seatwrapper' + index, {
-      width: 1,
-      height: 1,
-      depth: 1
+      width: .01,
+      height: .01,
+      depth: .01
     }, this.scene);
     wrapper.visibility = 0;
+
+    let avatarWrapper = BABYLON.MeshBuilder.CreateBox('seatavatarwrapper' + index, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    avatarWrapper.visibility = 0;
+    avatarWrapper.rotation.y = Math.PI;
+    avatarWrapper.parent = wrapper;
 
     let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 1);
     mesh.position.x = position.x;
     mesh.position.y = position.y;
     mesh.position.z = position.z;
-    mesh.parent = wrapper;
+    mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;
 
     let circle = this.createCircle();
@@ -336,62 +359,11 @@ export class StoryApp extends BaseApp {
       x3d.seatIndex = index;
     }
 
-    let pAnimation = new BABYLON.Animation(
-      "seatPosition" + index,
-      "position",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-    var rAnimation = new BABYLON.Animation(
-      "seatRotation" + index,
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
 
-    let start = {
-      x: mesh.position.x,
-      y: mesh.position.y,
-      z: mesh.position.z
-    };
-
-  //  let frame_results = this.getCircleFrames(start, center);
-//    pAnimation.setKeys(frame_results.positionKeys);
-  //  rAnimation.setKeys(frame_results.rotationKeys);
-
-    if (!wrapper.animations)
-      wrapper.animations = [];
-  //  wrapper.animations.push(pAnimation);
-  //  wrapper.animations.push(rAnimation);
-  //  this.scene.beginAnimation(wrapper, 0, 100, true);
-
+    this.navigationAid(wrapper, mesh);
     return wrapper;
   }
-  getCircleFrames() {
-    let x = mesh.position.x;
-    let y = mesh.position.y;
-    let z = mesh.position.z;
-    var keys = [];
-    keys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
-    });
-    keys.push({
-      frame: 20,
-      value: new BABYLON.Vector3(x + 1, y, z - 1)
-    });
-    keys.push({
-      frame: 100,
-      value: new BABYLON.Vector3(x, y, z)
-    });
 
-    return {
-      rotationKeys,
-      positionKeys
-    }
-  }
   get3DColors(index) {
     let r = 220 / 255,
       g = 220 / 255,
@@ -477,7 +449,7 @@ export class StoryApp extends BaseApp {
     let canvas = document.getElementById("highresolutionhiddencanvas");
     if (!canvas) {
       let cWrapper = document.createElement('div');
-      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" width="4500" height="1500" style="display:none"></canvas>`;
+      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" willReadFrequently="true" width="4500" height="1500" style="display:none"></canvas>`;
       canvas = cWrapper.firstChild;
       document.body.appendChild(canvas);
     }
@@ -563,5 +535,102 @@ export class StoryApp extends BaseApp {
     }
 
     return textWrapperMesh;
+  }
+
+  async setupAgents() {
+    await Recast();
+    this.navigationPlugin = new BABYLON.RecastJSPlugin();
+    let navmeshParameters = {
+        cs: 0.2,
+        ch: 0.2,
+        walkableSlopeAngle: 90,
+        walkableHeight: 5,
+        walkableClimb: 1,
+        walkableRadius: 1,
+        maxEdgeLen: 12.,
+        maxSimplificationError: 1.3,
+        minRegionArea: 8,
+        mergeRegionArea: 20,
+        maxVertsPerPoly: 6,
+        detailSampleDist: 6,
+        detailSampleMaxError: 1,
+        };
+
+    this.navigationPlugin.createNavMesh(this.staticMeshes, navmeshParameters);
+
+    this.crowd = this.navigationPlugin.createCrowd(6, .25, this.scene);
+
+    this.crowd.onReachTargetObservable.add((agentInfos) => {
+      this.agents[agentInfos.agentIndex].avatarMesh.localRunning = false;
+      this.agents[agentInfos.agentIndex].avatarMesh.modelAnimationGroup.pause();
+      this.agents[agentInfos.agentIndex].stopped = true;
+
+      this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
+      this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
+    });
+
+
+    this.agentParams = {
+      radius: 0.5,
+      reachRadius: 1,
+      height: 4,
+      maxAcceleration: 4.0,
+      maxSpeed: 1.0,
+      collisionQueryRange: 0.5,
+      pathOptimizationRange: 0.0,
+      separationWeight: 1.0
+    };
+    this.agents = [];
+
+    this.scene.onBeforeRenderObservable.add(() => {
+      let agentCount = this.agents.length;
+      for (let i = 0; i < agentCount; i++) {
+        let ag = this.agents[i];
+        if (ag.stopped) {
+          continue;
+        }
+
+        ag.mesh.position = this.crowd.getAgentPosition(ag.idx);
+        let vel = this.crowd.getAgentVelocity(ag.idx);
+        this.crowd.getAgentNextTargetPathToRef(ag.idx, ag.target);
+        if (vel.length() > 0.2) {
+          vel.normalize();
+          let desiredRotation = Math.atan2(vel.x, vel.z);
+          ag.mesh.rotation.y = ag.mesh.rotation.y + (desiredRotation - ag.mesh.rotation.y) * 0.02;
+        }
+
+      }
+    });
+  }
+  navigationAid(mesh, avatarMesh) {
+    //let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
+    let transform = new BABYLON.TransformNode();
+    let agentIndex = this.crowd.addAgent(mesh.position, this.agentParams, transform);
+    mesh.parent = transform;
+    this.agents.push({
+      idx: agentIndex,
+      trf: transform,
+      mesh,
+      target: new BABYLON.Vector3(0, 0, 0),
+      avatarMesh
+    });
+  }
+  groundClick(pointerInfo) {
+    let startingPoint = pointerInfo.pickInfo.pickedPoint;
+    if (startingPoint) {
+      let agents = this.crowd.getAgents();
+      let closest = this.navigationPlugin.getClosestPoint(startingPoint);
+
+      for (let i = 0; i < agents.length; i++) {
+        this.crowd.agentGoto(agents[i], closest);
+        this.agents[i].avatarMesh.localRunning = true;
+        this.agents[i].target.x = closest.x;
+        this.agents[i].target.y = closest.y;
+        this.agents[i].target.z = closest.z;
+        this.agents[i].stopped = false;
+
+        this.agents[i].avatarMesh.modelAnimationGroup.play();
+      }
+    }
   }
 }
