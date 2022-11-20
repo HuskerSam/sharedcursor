@@ -805,4 +805,42 @@ module.exports = class GameAPI {
 
     return;
   }
+
+  static async customAuthCode(req, res) {
+    let authResults = await baseClass.validateCredentials(req.headers.token);
+    if (!authResults.success)
+      return baseClass.respondError(res, authResults.errorMessage);
+
+    let uid = authResults.uid;
+
+    let customToken = await firebaseAdmin.auth().createCustomToken(uid);
+
+    let accessCode = await GameAPI._getUniqueGameSlug('AccessCodes');
+    let data = {
+      customToken,
+      accessCode,
+      created: new Date().toISOString()
+    };
+    await firebaseAdmin.firestore().doc(`AccessCodes/${accessCode}`).set(data);
+
+    return res.status(200).send({
+      success: true,
+      data
+    })
+  }
+  static async queryAuthCode(req, res) {
+    let accessCode = req.body.accessCode;
+    if (!accessCode)
+      accessCode = 'invalidjunk';
+    let query = await firebaseAdmin.firestore().doc(`AccessCodes/${accessCode}`).get();
+    let data = query.data();
+    let customToken = null;
+    if (data)
+      customToken = data.customToken;
+
+    return res.status(200).send({
+      customToken,
+      success: true
+    })
+  }
 };

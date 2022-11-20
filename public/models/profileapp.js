@@ -106,6 +106,61 @@ export class ProfileApp extends BaseApp {
 
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
     this.initBabylonEngine();
+
+    this.create_login_code_button = document.querySelector('.create_login_code_button');
+    this.create_login_code_button.addEventListener('click', e => this.createLoginCode());
+
+    this.access_code_login = document.querySelector('#access_code_login');
+    this.access_code_login.addEventListener('click', e => this.customCodeLogin())
+  }
+  async createLoginCode() {
+    let body = {};
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + `api/user/auth/custom`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+
+    if (!json.success) {
+      alert('failed to create code');
+    }
+    document.querySelector('.login_code_display').innerHTML = json.accessCode;
+    console.log(json);
+  }
+  async customCodeLogin() {
+    let accessCode = document.querySelector('.access_code').value;
+    let body = {
+      accessCode
+    };
+    let f_result = await fetch(this.basePath + `api/user/auth/query`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+
+    if (!json.success) {
+      alert('failed to login');
+      return;
+    }
+    console.log(json);
+    if (json.customToken) {
+      await firebase.auth().signInWithCustomToken(json.customToken);
+    } else {
+      alert('login failed');
+      return;
+    }
   }
   async updateAvatarPreset() {
     let updatePacket = {
