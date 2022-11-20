@@ -27,7 +27,6 @@ export class StoryApp extends BaseApp {
 
     this.dockDiscRadius = .6;
 
-
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
@@ -65,7 +64,15 @@ export class StoryApp extends BaseApp {
     this.staticMeshes.push(this.env.ground);
     await this.setupAgents();
 
+    this.genGround = BABYLON.Mesh.CreateGround("ground1", 20, 20, 2, this.scene);
+    this.genGround.position.y = -.05;
+    let matdebug = new BABYLON.StandardMaterial('matdebug', this.scene);
+    matdebug.diffuseColor = new BABYLON.Color3(0.1, 0.2, 1);
+    this.genGround.material = matdebug;
+
     this.sceneInited = true;
+
+
   }
   viewSettings() {
     this.modal.show();
@@ -278,7 +285,6 @@ export class StoryApp extends BaseApp {
     this.updateUserPresence();
   }
   async renderSeat(index, avatar, name, uid) {
-    let position = this.get3DPosition(index);
     let colors = this.get3DColors(index);
 
     let wrapper = BABYLON.MeshBuilder.CreateBox('seatwrapper' + index, {
@@ -297,10 +303,10 @@ export class StoryApp extends BaseApp {
     avatarWrapper.rotation.y = Math.PI;
     avatarWrapper.parent = wrapper;
 
-    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 1);
-    mesh.position.x = position.x;
-    mesh.position.y = position.y;
-    mesh.position.z = position.z;
+    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 0);
+    mesh.position.x = 0;
+    mesh.position.y = 0;
+    mesh.position.z = 0;
     mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;
 
@@ -550,7 +556,7 @@ export class StoryApp extends BaseApp {
         cs: 0.2,
         ch: 0.2,
         walkableSlopeAngle: 90,
-        walkableHeight: 5,
+        walkableHeight: 1.0,
         walkableClimb: 1,
         walkableRadius: 1,
         maxEdgeLen: 12.,
@@ -563,6 +569,8 @@ export class StoryApp extends BaseApp {
         };
 
     this.navigationPlugin.createNavMesh(this.staticMeshes, navmeshParameters);
+    //var navmeshdebug = this.navigationPlugin.createDebugNavMesh(this.scene);
+    //navmeshdebug.position = new BABYLON.Vector3(0, -0.01, 0);
 
     this.crowd = this.navigationPlugin.createCrowd(6, .25, this.scene);
 
@@ -571,14 +579,15 @@ export class StoryApp extends BaseApp {
       this.agents[agentInfos.agentIndex].avatarMesh.modelAnimationGroup.pause();
       this.agents[agentInfos.agentIndex].stopped = true;
 
-      this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
+    //  this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
       this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
     });
 
 
     this.agentParams = {
-      radius: 0.5,
-      height: 4,
+      radius: 0.1,
+      reachRadius: .5,
+      height: 0.2,
       maxAcceleration: 4.0,
       maxSpeed: 1.0,
       collisionQueryRange: 0.5,
@@ -608,10 +617,10 @@ export class StoryApp extends BaseApp {
     });
   }
   navigationAid(mesh, avatarMesh) {
-    //let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
+    let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(0, 0, 0), 0.2);
     let transform = new BABYLON.TransformNode();
-    let agentIndex = this.crowd.addAgent(mesh.position, this.agentParams, transform);
-    mesh.parent = transform;
+    let agentIndex = this.crowd.addAgent(randomPos, this.agentParams, transform);
+    //mesh.parent = transform;
     this.agents.push({
       idx: agentIndex,
       trf: transform,
@@ -636,6 +645,11 @@ export class StoryApp extends BaseApp {
 
         this.agents[i].avatarMesh.modelAnimationGroup.play();
       }
+
+
+      let pathPoints = this.navigationPlugin.computePath(this.crowd.getAgentPosition(agents[0]), closest);
+      let pathLine;
+      pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {points: pathPoints, updatable: true, instance: pathLine}, this.scene);
     }
   }
 }
