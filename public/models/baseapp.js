@@ -1250,12 +1250,12 @@ export class BaseApp {
   }
 
   async loadAvatarMesh(path, file, scale, x, y, z) {
-    let result1 = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
-
-    let animationGLB = result1.meshes[0];
-    animationGLB.position.y = -1000;
-
-    result1.animationGroups[0].stop();
+    if (!this.animationResult) {
+      this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
+      this.animationGLB = this.animationResult.meshes[0];
+      this.animationGLB.position.y = -1000;
+      this.animationResult.animationGroups[0].stop();
+    }
 
     let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, path, file);
 
@@ -1272,7 +1272,7 @@ export class BaseApp {
     mesh.isPickable = true;
 
     const modelTransformNodes = mesh.getChildTransformNodes();
-    const modelAnimationGroup = result1.animationGroups[0].clone("clone", (oldTarget) => {
+    const modelAnimationGroup = this.animationResult.animationGroups[0].clone("clone", (oldTarget) => {
       return modelTransformNodes.find((node) => node.name === oldTarget.name);
     });
     modelAnimationGroup.start();
@@ -1282,7 +1282,6 @@ export class BaseApp {
 
     modelAnimationGroup.goToFrame(Math.floor(Math.random() * modelAnimationGroup.to));
     modelAnimationGroup.loopAnimation = true;
-    animationGLB.dispose();
 
     return mesh;
   }

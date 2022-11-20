@@ -269,7 +269,6 @@ export class StoryApp extends BaseApp {
       depth: 1
     }, this.scene);
     wrapper.visibility = 0;
-    wrapper.isContainerBlock = true;
 
     let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 1);
     mesh.position.x = position.x;
@@ -325,7 +324,6 @@ export class StoryApp extends BaseApp {
       x3d.rotation.z = -Math.PI / 2;
       x3d.rotation.y = -Math.PI / 2;
 
-
       for (let i in this.scene.meshes) {
         if (this.scene.meshes[i].parent === x3d)
           this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
@@ -338,15 +336,40 @@ export class StoryApp extends BaseApp {
       x3d.seatIndex = index;
     }
 
-    var animationBox = new BABYLON.Animation(
-      "myAnimation" + index,
+    let pAnimation = new BABYLON.Animation(
+      "seatPosition" + index,
       "position",
       30,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
+    var rAnimation = new BABYLON.Animation(
+      "seatRotation" + index,
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
 
-    //At the animation key 0, the value of scaling is "1"
+    let start = {
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z
+    };
+
+  //  let frame_results = this.getCircleFrames(start, center);
+//    pAnimation.setKeys(frame_results.positionKeys);
+  //  rAnimation.setKeys(frame_results.rotationKeys);
+
+    if (!wrapper.animations)
+      wrapper.animations = [];
+  //  wrapper.animations.push(pAnimation);
+  //  wrapper.animations.push(rAnimation);
+  //  this.scene.beginAnimation(wrapper, 0, 100, true);
+
+    return wrapper;
+  }
+  getCircleFrames() {
     let x = mesh.position.x;
     let y = mesh.position.y;
     let z = mesh.position.z;
@@ -364,13 +387,10 @@ export class StoryApp extends BaseApp {
       value: new BABYLON.Vector3(x, y, z)
     });
 
-    animationBox.setKeys(keys);
-    if (!wrapper.animations)
-      wrapper.animations = [];
-    wrapper.animations.push(animationBox);
-    this.scene.beginAnimation(wrapper, 0, 100, true);
-
-    return wrapper;
+    return {
+      rotationKeys,
+      positionKeys
+    }
   }
   get3DColors(index) {
     let r = 220 / 255,
