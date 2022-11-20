@@ -569,6 +569,42 @@ module.exports = class GameAPI {
     });
   }
 
+  static async positionSeat(req, res) {
+    let authResults = await baseClass.validateCredentials(req.headers.token);
+    if (!authResults.success)
+      return baseClass.respondError(res, authResults.errorMessage);
+
+    let uid = authResults.uid;
+
+    let localInstance = baseClass.newLocalInstance();
+    await localInstance.init();
+    let gameNumber = req.body.gameNumber;
+    let db = firebaseAdmin.firestore();
+
+    let gQuery = await firebaseAdmin.firestore().doc(`Games/${gameNumber}`).get();
+    let gameData = gQuery.data();
+
+    let seatIndex = Number(req.body.seatIndex);
+    if (isNaN(seatIndex) || seatIndex < 0 && seatIndex >= gameData.numberOfSeats)
+      throw new Error('Seat index invalid');
+
+    let seatKey = 'seat' + seatIndex.toString();
+    if (gameData[seatKey] === uid || gameData.createUser === uid) {
+      let updatePacket = {};
+      updatePacket[seatKey + '_pos_x'] = req.body.x;
+      updatePacket[seatKey + '_pos_y'] = req.body.y;
+      updatePacket[seatKey + '_pos_z'] = req.body.z;
+      updatePacket[seatKey + '_pos_d'] = new Date().toISOString();
+      await firebaseAdmin.firestore().doc(`Games/${gameNumber}`).set(updatePacket, {
+        merge: true
+      });
+    }
+
+    return res.status(200).send({
+      success: true
+    });
+  }
+
   static async message(req, res) {
     let authResults = await baseClass.validateCredentials(req.headers.token);
     if (!authResults.success)

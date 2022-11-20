@@ -6,6 +6,7 @@ export class StoryApp extends BaseApp {
     super();
     this.apiType = 'story';
     this.staticMeshes = [];
+    this.cache = {};
 
     this._initGameCommon();
 
@@ -52,16 +53,58 @@ export class StoryApp extends BaseApp {
     this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
 
+    this.staticMeshes.push(this.env.ground);
     this.loadStaticScene();
   }
   async loadStaticScene() {
-    await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .001, -7.7721, 1, 0);
+    await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
     await this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
-    await this.loadStaticMesh("/match/deckmedia/", "venus.glb", .001, 1.2962, 1, 0);
+    await this.loadStaticMesh("/match/deckmedia/venus.glb", "", .001, 1.2962, 1, 0);
     await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
     await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
 
-    this.staticMeshes.push(this.env.ground);
+    let mat1 = new BABYLON.StandardMaterial('mat1', this.scene);
+    mat1.alpha = 0;
+
+    let sunsphere = BABYLON.MeshBuilder.CreateSphere("sunsphere", {
+      diameter: 2,
+      segments: 16
+    }, this.scene);
+    sunsphere.material = mat1;
+    sunsphere.position.x = -7.7721;
+    sunsphere.position.y = 0;
+    sunsphere.position.z = 0;
+
+    let mercurysphere = BABYLON.MeshBuilder.CreateSphere("mercurysphere", {
+      diameter: 1.1,
+      segments: 16
+    }, this.scene);
+    mercurysphere.material = mat1;
+    mercurysphere.position.x = -3.2281;
+
+    let venussphere = BABYLON.MeshBuilder.CreateSphere("venussphere", {
+      diameter: 1.2,
+      segments: 16
+    }, this.scene);
+    venussphere.material = mat1;
+    venussphere.position.x = 1.2962;
+
+    let earthsphere = BABYLON.MeshBuilder.CreateSphere("earthsphere", {
+      diameter: 1.2,
+      segments: 16
+    }, this.scene);
+    earthsphere.material = mat1;
+    earthsphere.position.x = 4;
+
+    let marssphere = BABYLON.MeshBuilder.CreateSphere("marssphere", {
+      diameter: 1.15,
+      segments: 16
+    }, this.scene);
+    marssphere.material = mat1;
+    marssphere.position.x = 8.544;
+
+    this.navMesh = BABYLON.Mesh.MergeMeshes([sunsphere, mercurysphere, venussphere, earthsphere, marssphere]);
+
     await this.setupAgents();
 
     this.genGround = BABYLON.Mesh.CreateGround("ground1", 20, 20, 2, this.scene);
@@ -71,8 +114,7 @@ export class StoryApp extends BaseApp {
     this.genGround.material = matdebug;
 
     this.sceneInited = true;
-
-
+    this.loadAvatars();
   }
   viewSettings() {
     this.modal.show();
@@ -96,10 +138,9 @@ export class StoryApp extends BaseApp {
               this['dockSeatMesh' + seatIndex].dispose();
             this['dockSeatCache' + seatIndex] = cacheValue;
 
-            this.renderSeat(seatIndex, avatar, name, this.gameData[key]).then(mesh => {
-              this['dockSeatMesh' + seatIndex] = mesh;
-              this['dockSeatMesh' + seatIndex].appClickable = true;
-            })
+            let mesh = await this.renderSeat(seatIndex, avatar, name, this.gameData[key]);
+            this['dockSeatMesh' + seatIndex] = mesh;
+            this['dockSeatMesh' + seatIndex].appClickable = true;
           }
         } else {
           if (this['dockSeatCache' + seatIndex] !== 'empty') {
@@ -118,6 +159,7 @@ export class StoryApp extends BaseApp {
         }
       }
     }
+    this.updateAgents();
   }
   pointerDown(mesh) {
     while (mesh && !mesh.appClickable) {
@@ -283,6 +325,7 @@ export class StoryApp extends BaseApp {
     document.body.classList.add('show_game_table');
 
     this.updateUserPresence();
+    this.updateAgents();
   }
   async renderSeat(index, avatar, name, uid) {
     let colors = this.get3DColors(index);
@@ -370,7 +413,7 @@ export class StoryApp extends BaseApp {
     }
 
 
-    this.navigationAid(wrapper, mesh);
+    this.navigationAid(wrapper, mesh, index);
     return wrapper;
   }
 
@@ -394,21 +437,13 @@ export class StoryApp extends BaseApp {
       b = 255 / 255;
     }
 
-    return {
-      r,
-      g,
-      b
-    };
+    return new BABYLON.Color3(r, g, b);
   }
   get3DPosition(index) {
     let x = 0,
       y = .1,
       z = (index * 1.25) - 2;
-    return {
-      x,
-      y,
-      z
-    }
+    return new BABYLON.Vector3(x, y, z);
   }
   async createEmptySeat(index) {
     let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
@@ -553,25 +588,22 @@ export class StoryApp extends BaseApp {
     await Recast();
     this.navigationPlugin = new BABYLON.RecastJSPlugin();
     let navmeshParameters = {
-        cs: 0.2,
-        ch: 0.2,
-        walkableSlopeAngle: 90,
-        walkableHeight: 1.0,
-        walkableClimb: 1,
-        walkableRadius: 1,
-        maxEdgeLen: 12.,
-        maxSimplificationError: 1.3,
-        minRegionArea: 8,
-        mergeRegionArea: 20,
-        maxVertsPerPoly: 6,
-        detailSampleDist: 6,
-        detailSampleMaxError: 1,
-        };
+      cs: 0.2,
+      ch: 0.2,
+      walkableSlopeAngle: 90,
+      walkableHeight: 1.0,
+      walkableClimb: 1,
+      walkableRadius: 1,
+      maxEdgeLen: 12.,
+      maxSimplificationError: 1.3,
+      minRegionArea: 8,
+      mergeRegionArea: 20,
+      maxVertsPerPoly: 6,
+      detailSampleDist: 6,
+      detailSampleMaxError: 1,
+    };
 
-    this.navigationPlugin.createNavMesh(this.staticMeshes, navmeshParameters);
-    //var navmeshdebug = this.navigationPlugin.createDebugNavMesh(this.scene);
-    //navmeshdebug.position = new BABYLON.Vector3(0, -0.01, 0);
-
+    this.navigationPlugin.createNavMesh([this.navMesh, this.env.ground], navmeshParameters);
     this.crowd = this.navigationPlugin.createCrowd(6, .25, this.scene);
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
@@ -579,10 +611,8 @@ export class StoryApp extends BaseApp {
       this.agents[agentInfos.agentIndex].avatarMesh.modelAnimationGroup.pause();
       this.agents[agentInfos.agentIndex].stopped = true;
 
-    //  this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
       this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
     });
-
 
     this.agentParams = {
       radius: 0.1,
@@ -616,8 +646,9 @@ export class StoryApp extends BaseApp {
       }
     });
   }
-  navigationAid(mesh, avatarMesh) {
-    let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(0, 0, 0), 0.2);
+  navigationAid(mesh, avatarMesh, index) {
+    //let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(0, 0, 0), 0.2);
+    let randomPos = this.get3DPosition(index);
     let transform = new BABYLON.TransformNode();
     let agentIndex = this.crowd.addAgent(randomPos, this.agentParams, transform);
     //mesh.parent = transform;
@@ -636,20 +667,71 @@ export class StoryApp extends BaseApp {
       let closest = this.navigationPlugin.getClosestPoint(startingPoint);
 
       for (let i = 0; i < agents.length; i++) {
-        this.crowd.agentGoto(agents[i], closest);
-        this.agents[i].avatarMesh.localRunning = true;
-        this.agents[i].target.x = closest.x;
-        this.agents[i].target.y = closest.y;
-        this.agents[i].target.z = closest.z;
-        this.agents[i].stopped = false;
-
-        this.agents[i].avatarMesh.modelAnimationGroup.play();
+        let key = 'seat' + i.toString();
+        if (this.gameData[key] === this.uid)
+          this.updateSeatPosition(i, closest);
       }
-
-
-      let pathPoints = this.navigationPlugin.computePath(this.crowd.getAgentPosition(agents[0]), closest);
-      let pathLine;
-      pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {points: pathPoints, updatable: true, instance: pathLine}, this.scene);
     }
+  }
+  async updateSeatPosition(seatIndex, position) {
+    let body = {
+      seatIndex,
+      gameNumber: this.currentGame,
+      x: position.x,
+      y: position.y,
+      z: position.z
+    };
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + 'api/games/seat/position', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+  }
+  updateAgents() {
+    let agents = this.crowd.getAgents();
+
+    for (let i = 0; i < agents.length; i++) {
+      let key = 'seat' + i.toString();
+      let lastPosChange = this.gameData[key + '_pos_d'];
+      if (lastPosChange && lastPosChange !== this.cache[key + '_pos_d']) {
+        this.cache[key + '_pos_d'] = lastPosChange;
+        let x = Number(this.gameData[key + '_pos_x']);
+        let y = Number(this.gameData[key + '_pos_y']);
+        let z = Number(this.gameData[key + '_pos_z']);
+        let position = new BABYLON.Vector3(x, y, z);
+        this._sendAgentToTarget(i, position);
+      }
+    }
+  }
+  _sendAgentToTarget(i, position) {
+    this.crowd.agentGoto(i, position);
+    this.agents[i].avatarMesh.localRunning = true;
+    this.agents[i].target.x = position.x;
+    this.agents[i].target.y = position.y;
+    this.agents[i].target.z = position.z;
+    this.agents[i].stopped = false;
+
+    this.agents[i].avatarMesh.modelAnimationGroup.play();
+
+    let pathPoints = this.navigationPlugin.computePath(this.crowd.getAgentPosition(i), position);
+    let pathLine;
+    pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
+      points: pathPoints,
+      updatable: true,
+      instance: pathLine
+    }, this.scene);
+    let color = this.get3DColors(i);
+    this.meshSetVerticeColors(pathLine, color.r, color.g, color.b);
+
+    setTimeout(() => {
+      pathLine.dispose();
+    }, 1500);
   }
 }
