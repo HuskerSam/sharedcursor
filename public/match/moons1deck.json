@@ -7,7 +7,7 @@
     "symbol": "/match/deckmedia/moonlunasymbol.svg",
     "glbpath": "/match/deckmedia/moonluna.glb",
     "glbfile": "",
-    "glbscale": 0.002,
+    "glbscale": 0.0008,
     "mp3file": "/match/deckmedia/sirius.mp3",
     "enableMusic": true,
     "name": "Luna",
@@ -17,9 +17,10 @@
     "url": "https://en.wikipedia.org/wiki/Moon",
     "color": "rgb(255, 127, 0)",
     "invert": "",
-    "x": -10.7721,
+    "x": 18,
     "y": 1,
-    "z": 0,
-    "diameter": 2
+    "z": 2,
+    "diameter": 0.75,
+    "noNavMesh": true
   }
 ]

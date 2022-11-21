@@ -51,12 +51,16 @@ export class StoryApp extends BaseApp {
     mat1.alpha = 0;
     this.mat1alpha = mat1;
 
-    this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars', 'moon_luna'];
+    this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars',
+    'jupiter', 'saturn', 'uranus',
+
+    'moon_luna'];
 
     let navMeshes = [];
     this.staticNames.forEach(name => {
       this.loadStaticAsset(name, staticWrapper);
-      navMeshes.push(this.loadStaticNavMesh(name));
+      if (this.allCards[name].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(name));
     });
 
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
@@ -76,6 +80,7 @@ export class StoryApp extends BaseApp {
       segments: 16
     }, this.scene);
     mercurysphere.position.x = meta.x;
+    mercurysphere.position.z = meta.z;
     return mercurysphere;
   }
   async loadStaticAsset(name, parent) {
@@ -90,6 +95,7 @@ export class StoryApp extends BaseApp {
     wrapper.position.x = meta.x;
     wrapper.position.y = meta.y;
     wrapper.position.z = meta.z;
+
     mesh.parent = wrapper;
     wrapper.parent = parent;
 
@@ -113,14 +119,17 @@ export class StoryApp extends BaseApp {
       m.diffuseTexture = t;
       m.emissiveTexture = t;
       m.ambientTexture = t;
+      let extraY = 0;
+      if (meta.symbolY)
+        extraY = meta.symbolY;
       symbolMesh1.material = m;
       symbolMesh1.parent = wrapper;
       symbolMesh1.rotation.y = 0;
-      symbolMesh1.position.y = meta.diameter / 1.5;
+      symbolMesh1.position.y = meta.diameter / 1.25 + extraY;
       symbolMesh3.material = m;
       symbolMesh3.parent = wrapper;
       symbolMesh3.rotation.y = Math.PI;
-      symbolMesh3.position.y = meta.diameter / 1.5;
+      symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
     }
 
     this.shadowGenerator.addShadowCaster(mesh, true);
@@ -131,7 +140,7 @@ export class StoryApp extends BaseApp {
         autoplay: true,
         spatialSound: true,
         distanceModel: "exponential",
-        rolloffFactor: 1.5
+        rolloffFactor: .5
       });
       music.attachToMesh(mesh);
     }
@@ -153,14 +162,30 @@ export class StoryApp extends BaseApp {
       let endFrame = meta.spintime / 1000 * 30;
       let spindirection = meta.spindirection === -1 ? -2 : 2;
 
-      keys.push({
-        frame: 0,
-        value: new BABYLON.Vector3(x, y, z)
-      });
-      keys.push({
-        frame: endFrame,
-        value: new BABYLON.Vector3(x, spindirection * Math.PI, 0)
-      });
+      if (meta.spinrotationz) {
+        z = z + Math.PI / -2;
+        keys.push({
+          frame: 0,
+          value: new BABYLON.Vector3(x, y, z)
+        });
+
+        keys.push({
+          frame: endFrame,
+          value: new BABYLON.Vector3(x + spindirection * Math.PI, y, z)
+        });
+
+      } else {
+        keys.push({
+          frame: 0,
+          value: new BABYLON.Vector3(x, y, z)
+        });
+
+        keys.push({
+          frame: endFrame,
+          value: new BABYLON.Vector3(x, y + spindirection * Math.PI, z)
+        });
+
+      }
 
 
       spinAnimation.setKeys(keys);
