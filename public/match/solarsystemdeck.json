@@ -4,7 +4,8 @@
     "id": "sun",
     "description": "The English word sun developed from Old English sunne. Cognates appear in other Germanic languages, including West Frisian sinne, Dutch zon, Low German Sünn, Standard German Sonne, Bavarian Sunna, Old Norse sunna, and Gothic sunnō. All these words stem from Proto-Germanic *sunnōn. The Sun is a G-type main-sequence star that constitutes about 99.86% of the mass of the Solar System.",
     "image": "/match/deckmedia/sun.jpg",
-    "symbol": "/match/deckmedia/sunsymbol.svg",
+    "symbol": "/match/deckmedia/sunsymbol.png",
+    "showSymbol": true,
     "glbpath": "/match/deckmedia/sun.glb",
     "glbfile": "",
     "glbscale": 0.002,
@@ -19,14 +20,16 @@
     "x": -7.7721,
     "y": 1,
     "z": 0,
-    "diameter": 2
+    "diameter": 2,
+    "spintime": 1000
   },
   {
     "type": "3dmodel",
     "id": "mercury",
     "description": "Mercury is the smallest planet in the Solar System and the closest to the Sun. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the Sun's planets.  Mercury rotates in a way that is unique in the Solar System. It is tidally locked with the Sun in a 3:2 spin–orbit resonance,[19] meaning that relative to the fixed stars, it rotates on its axis exactly three times for every two revolutions it makes around the Sun. Mercury does not have any moons.",
     "image": "/match/deckmedia/mercury.jpg",
-    "symbol": "/match/deckmedia/mercurysymbol.svg",
+    "symbol": "/match/deckmedia/mercurysymbol.png",
+    "showSymbol": true,
     "glbpath": "/match/deckmedia/mercury.glb",
     "glbfile": "",
     "glbscale": 0.001,
@@ -41,14 +44,16 @@
     "x": -3.2281,
     "y": 1,
     "z": 0,
-    "diameter": 1.1
+    "diameter": 1.1,
+    "spintime": 600000
   },
   {
     "type": "3dmodel",
     "id": "venus",
     "description": "Venus is the second planet from the Sun. It is sometimes called Earth's \"sister\" or \"twin\" planet as it is almost as large and has a similar composition. Venus does not have any moons, a distinction it shares only with Mercury among the planets in the Solar System. Venus and Uranus are the only planets with such a retrograde rotation, making the Sun move in their skies from their western horizon to their eastern. Venus rotates clockwise in retrograde rotation once every 243 Earth days—the slowest rotation of any planet. Because its rotation is so slow, Venus is very close to spherical.",
     "image": "/match/deckmedia/venus.jpg",
-    "symbol": "/match/deckmedia/venussymbol.svg",
+    "symbol": "/match/deckmedia/venussymbol.png",
+    "showSymbol": true,
     "glbpath": "/match/deckmedia/venus.glb",
     "glbfile": "",
     "glbscale": 0.001,
@@ -63,17 +68,19 @@
     "x": 1.2962,
     "y": 1,
     "z": 0,
-    "diameter": 1.2
+    "diameter": 1.2,
+    "spintime": 20000,
+    "spindirection": -1
   },
   {
     "type": "3dmodel",
     "id": "earth",
     "description": "Earth is the third planet from the Sun and the only astronomical object known to harbor life. While large volumes of water can be found throughout the Solar System, only Earth sustains liquid surface water. Earth is an ellipsoid with a circumference of about 40,000 km. It is the densest planet in the Solar System. Earth is orbited by one permanent natural satellite, the Moon, which orbits Earth at 380,000 km (1.3 light seconds) and is roughly a quarter as wide as Earth.",
     "image": "/match/deckmedia/earth.jpg",
-    "symbol": "/match/deckmedia/earthsymbol.svg",
+    "symbol": "/match/deckmedia/earthsymbol.png",
+    "showSymbol": true,
     "glbpath": "/match/deckmedia/earth.glb",
     "mp3file": "/match/deckmedia/sirius.mp3",
-    "enableMusic": true,
     "glbfile": "",
     "glbscale": 0.001,
     "name": "Earth",
@@ -86,14 +93,16 @@
     "x": 4,
     "y": 1,
     "z": 0,
-    "diameter": 1.2
+    "diameter": 1.2,
+    "spintime": 5000
   },
   {
     "type": "3dmodel",
     "id": "mars",
     "description": "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, being larger than only Mercury. Two countries have successfully deployed rovers on Mars, the United States first doing so with Sojourner in 1997 and China with Zhurong in 2021. Due to the iron oxide prevalent on its surface, has led to Mars often being called the Red Planet.",
     "image": "/match/deckmedia/mars.jpg",
-    "symbol": "/match/deckmedia/marssymbol.svg",
+    "symbol": "/match/deckmedia/marssymbol.png",
+    "showSymbol": true,
     "glbpath": "/match/deckmedia/mars.glb",
     "glbfile": "",
     "glbscale": 0.001,
@@ -107,7 +116,8 @@
     "x": 8.544,
     "y": 1,
     "z": 0,
-    "diameter": 1.15
+    "diameter": 1.15,
+    "spintime": 8000
   },
   {
     "type": "3dmodel",

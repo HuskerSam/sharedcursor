@@ -1,0 +1,25 @@
+[
+  {
+    "type": "3dmodel",
+    "id": "moon_luna",
+    "description": "Earth's only moon.",
+    "image": "/match/deckmedia/moon.jpg",
+    "symbol": "/match/deckmedia/moonlunasymbol.svg",
+    "glbpath": "/match/deckmedia/moonluna.glb",
+    "glbfile": "",
+    "glbscale": 0.002,
+    "mp3file": "/match/deckmedia/sirius.mp3",
+    "enableMusic": true,
+    "name": "Luna",
+    "objectType": "moon",
+    "brand": "Solar System",
+    "brandid": "solarsystem",
+    "url": "https://en.wikipedia.org/wiki/Moon",
+    "color": "rgb(255, 127, 0)",
+    "invert": "",
+    "x": -10.7721,
+    "y": 1,
+    "z": 0,
+    "diameter": 2
+  }
+]

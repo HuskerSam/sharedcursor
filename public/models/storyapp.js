@@ -51,7 +51,7 @@ export class StoryApp extends BaseApp {
     mat1.alpha = 0;
     this.mat1alpha = mat1;
 
-    this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars'];
+    this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars', 'moon_luna'];
 
     let navMeshes = [];
     this.staticNames.forEach(name => {
@@ -80,8 +80,49 @@ export class StoryApp extends BaseApp {
   }
   async loadStaticAsset(name, parent) {
     let meta = this.allCards[name];
-    let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, meta.x, meta.y, meta.z);
-    mesh.parent = parent;
+    let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
+    let wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    wrapper.visibility = 0;
+    wrapper.position.x = meta.x;
+    wrapper.position.y = meta.y;
+    wrapper.position.z = meta.z;
+    mesh.parent = wrapper;
+    wrapper.parent = parent;
+
+    if (meta.showSymbol) {
+      let size = meta.diameter / 4;
+      let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
+        height: size,
+        width: size
+      }, this.scene);
+      let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3' + name, {
+        height: size,
+        width: size
+      }, this.scene);
+
+      let m = new BABYLON.StandardMaterial('symbolshowmat' + name, this.scene);
+      let t = new BABYLON.Texture(meta.symbol, this.scene);
+      t.vScale = 1;
+      t.uScale = 1;
+      t.hasAlpha = true;
+
+      m.diffuseTexture = t;
+      m.emissiveTexture = t;
+      m.ambientTexture = t;
+      symbolMesh1.material = m;
+      symbolMesh1.parent = wrapper;
+      symbolMesh1.rotation.y = 0;
+      symbolMesh1.position.y = meta.diameter / 1.5;
+      symbolMesh3.material = m;
+      symbolMesh3.parent = wrapper;
+      symbolMesh3.rotation.y = Math.PI;
+      symbolMesh3.position.y = meta.diameter / 1.5;
+    }
+
     this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.enableMusic) {
@@ -93,6 +134,40 @@ export class StoryApp extends BaseApp {
         rolloffFactor: 1.5
       });
       music.attachToMesh(mesh);
+    }
+
+    if (meta.spintime) {
+      let spinAnimation = new BABYLON.Animation(
+        "staticmeshrotation" + name,
+        "rotation",
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+
+      //At the animation key 0, the value of scaling is "1"
+      let x = wrapper.rotation.x;
+      let y = wrapper.rotation.y;
+      let z = wrapper.rotation.z;
+      let keys = [];
+      let endFrame = meta.spintime / 1000 * 30;
+      let spindirection = meta.spindirection === -1 ? -2 : 2;
+
+      keys.push({
+        frame: 0,
+        value: new BABYLON.Vector3(x, y, z)
+      });
+      keys.push({
+        frame: endFrame,
+        value: new BABYLON.Vector3(x, spindirection * Math.PI, 0)
+      });
+
+
+      spinAnimation.setKeys(keys);
+      if (!wrapper.animations)
+        wrapper.animations = [];
+      wrapper.animations.push(spinAnimation);
+      this.scene.beginAnimation(wrapper, 0, endFrame, true);
     }
   }
 
@@ -749,7 +824,7 @@ export class StoryApp extends BaseApp {
     if (!this.crowd)
       return;
 
-//    BABYLON.Engine.audioEngine.unlock();
+    //    BABYLON.Engine.audioEngine.unlock();
 
     let startingPoint = pointerInfo.pickInfo.pickedPoint;
     if (startingPoint) {
