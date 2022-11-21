@@ -349,7 +349,7 @@ export class StoryApp extends BaseApp {
     let uid = seatData.uid;
 
     let colors = this.get3DColors(index);
-    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 0);
+    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, -.25, 0);
     mesh.position.x = 0;
     mesh.position.y = 0;
     mesh.position.z = 0;
