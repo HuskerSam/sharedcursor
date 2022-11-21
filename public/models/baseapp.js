@@ -1222,12 +1222,14 @@ export class BaseApp {
 
     this.scene = scene;
 
-    var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
+    let light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
     light.position = new BABYLON.Vector3(10, 15, -15);
+    light.intensity = 1.5;
 
-    var light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+    let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
+    light2.intensity = .5;
 
-    var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 3, new BABYLON.Vector3(0, 1, 0), scene);
+    var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 6, new BABYLON.Vector3(0, 1, 0), scene);
     camera.attachControl(this.canvas, true);
     scene.activeCamera.beta += 0.8;
     var environment = scene.createDefaultEnvironment({
@@ -1261,7 +1263,7 @@ export class BaseApp {
       floorMeshes: [environment.ground]
     });
     xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-      xrCamera.y = 2.5;
+      xrCamera.y = 5;
     });
 
     this.scene.onPointerObservable.add((pointerInfo) => {
