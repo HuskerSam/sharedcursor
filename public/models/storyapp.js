@@ -159,6 +159,7 @@ export class StoryApp extends BaseApp {
       }
     }
     this.updateAgents();
+    this.updateUserPresence();
   }
   pointerDown(mesh) {
     while (mesh && !mesh.appClickable) {
@@ -690,6 +691,9 @@ export class StoryApp extends BaseApp {
     });
   }
   groundClick(pointerInfo) {
+    if (!this.crowd)
+      return;
+
     let startingPoint = pointerInfo.pickInfo.pickedPoint;
     if (startingPoint) {
       let agents = this.crowd.getAgents();

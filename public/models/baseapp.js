@@ -1230,9 +1230,11 @@ export class BaseApp {
     light.intensity = 1.5;
 
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
-    light2.intensity = .5;
+    light2.intensity = .6;
 
-    scene.createDefaultCamera(false, true, true);
+    scene.createDefaultCamera(true, true, true);
+    this.camera = scene.activeCamera;
+    scene.activeCamera.setPosition(new BABYLON.Vector3(6, 6, 2));
     //var camera = new BABYLON.FreeCamera("camera", -Math.PI / 2, Math.PI / 4, 6, new BABYLON.Vector3(0, 1, 0), scene);
   //  scene.activeCamera.attachControl(this.canvas, true);
   //  scene.activeCamera.beta += 0.8;
@@ -1267,6 +1269,7 @@ export class BaseApp {
       floorMeshes: [environment.ground]
     });
     xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
+        this.camera.detachControl()
     //  xrCamera.position.y = 2;
       /*
       setInterval(() => {
@@ -1351,6 +1354,9 @@ export class BaseApp {
     modelAnimationGroup.loopAnimation = true;
 
     return mesh;
+  }
+  groundClick(pointerInfo) {
+      return;
   }
 }
 
