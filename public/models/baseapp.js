@@ -1292,26 +1292,8 @@ export class BaseApp {
       }
     });
 
-    if (this.loadStaticScene)
-      this.loadStaticScene();
-
     return scene;
   }
-  async loadMesh(path, file, scale) {
-    if (this.mesh) {
-      this.mesh.dispose();
-      this.mesh = null;
-    }
-
-    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
-
-    this.mesh = result.meshes[0];
-
-    this.mesh.scaling.x = scale;
-    this.mesh.scaling.y = scale;
-    this.mesh.scaling.z = scale;
-  }
-
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult) {
       this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);

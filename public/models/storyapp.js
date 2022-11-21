@@ -51,96 +51,51 @@ export class StoryApp extends BaseApp {
     mat1.alpha = 0;
     this.mat1alpha = mat1;
 
-    this.meshSun = await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
-    this.meshSun.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(this.meshSun, true);
+    this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars'];
 
-    let meshMerc = await this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
-    meshMerc.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(meshMerc, true);
-
-    this.meshVenus = await this.loadStaticMesh("/match/deckmedia/venus.glb", "", .001, 1.2962, 1, 0);
-    this.meshVenus.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(this.meshVenus, true);
-
-    this.meshEarth = await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
-    this.meshEarth.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(this.meshEarth, true);
-/*
-    this.pivotEarth = BABYLON.Mesh.CreateBox("pivotEarth", .001, this.scene);
-    this.pivotEarth.position.x = 4;
-    this.pivotEarth.position.y = 1;
-    this.pivotEarth.position.z = -1.5;
-    this.pivotEarth.rotation.x = Math.PI / 2;
-    this.pivotEarth.material = mat1;
-    this.createParticleSystem(this.pivotEarth);
-*/
-
-    let mesh4 = await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
-    mesh4.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(mesh4, true);
-
-    let sunsphere = BABYLON.MeshBuilder.CreateSphere("sunsphere", {
-      diameter: 2,
-      segments: 16
-    }, this.scene);
-    sunsphere.material = mat1;
-    sunsphere.position.x = -7.7721;
-    sunsphere.position.y = 0;
-    sunsphere.position.z = 0;
-
-    let mercurysphere = BABYLON.MeshBuilder.CreateSphere("mercurysphere", {
-      diameter: 1.1,
-      segments: 16
-    }, this.scene);
-    mercurysphere.position.x = -3.2281;
-
-    let venussphere = BABYLON.MeshBuilder.CreateSphere("venussphere", {
-      diameter: 1.2,
-      segments: 16
-    }, this.scene);
-    venussphere.position.x = 1.2962;
-
-    let earthsphere = BABYLON.MeshBuilder.CreateSphere("earthsphere", {
-      diameter: 1.2,
-      segments: 16
-    }, this.scene);
-    earthsphere.position.x = 4;
-
-    let marssphere = BABYLON.MeshBuilder.CreateSphere("marssphere", {
-      diameter: 1.15,
-      segments: 16
-    }, this.scene);
-    marssphere.position.x = 8.544;
-
-    this.navMesh = BABYLON.Mesh.MergeMeshes([sunsphere, mercurysphere, venussphere, earthsphere, marssphere]);
-    this.navMesh.material = mat1;
-
-    this.earthMusic = new BABYLON.Sound("music", "/match/deckmedia/nebraska.mp3", this.scene, null, {
-      loop: true,
-      autoplay: true,
-      spatialSound: true,
-      distanceModel: "exponential",
-      rolloffFactor: 3
+    let navMeshes = [];
+    this.staticNames.forEach(name => {
+      this.loadStaticAsset(name, staticWrapper);
+      navMeshes.push(this.loadStaticNavMesh(name));
     });
-    this.earthMusic.attachToMesh(this.meshEarth);
 
-    this.venusMusic = new BABYLON.Sound("music", "/match/deckmedia/iowa.mp3", this.scene, null, {
-      loop: true,
-      autoplay: true,
-      spatialSound: true,
-      distanceModel: "exponential",
-      rolloffFactor: 3.5
-    });
-    this.venusMusic.attachToMesh(this.meshVenus);
+    this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
+    this.navMesh.material = this.mat1alpha;
 
     await this.setupAgents();
-
-    BABYLON.Engine.audioEngine.unlock();
 
     this.sceneInited = true;
     this.loadAvatars();
   }
+
+  loadStaticNavMesh(name) {
+    let meta = this.allCards[name];
+
+    let mercurysphere = BABYLON.MeshBuilder.CreateSphere(name + "navmeshsphere", {
+      diameter: meta.diameter,
+      segments: 16
+    }, this.scene);
+    mercurysphere.position.x = meta.x;
+    return mercurysphere;
+  }
+  async loadStaticAsset(name, parent) {
+    let meta = this.allCards[name];
+    let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, meta.x, meta.y, meta.z);
+    mesh.parent = parent;
+    this.shadowGenerator.addShadowCaster(mesh, true);
+
+    if (meta.enableMusic) {
+      let music = new BABYLON.Sound("music", meta.mp3file, this.scene, null, {
+        loop: true,
+        autoplay: true,
+        spatialSound: true,
+        distanceModel: "exponential",
+        rolloffFactor: 1.5
+      });
+      music.attachToMesh(mesh);
+    }
+  }
+
   createParticleSystem(mesh, prefix = "static") {
     let useGPUVersion = true;
     if (this[prefix + 'particleSystem']) {
@@ -190,7 +145,9 @@ export class StoryApp extends BaseApp {
     this[prefix + 'particleSystem'].color2 = new BABYLON.Color3(1, .5, 0);
     this[prefix + 'particleSystem'].colorDead = new BABYLON.Color3(1, 0, 0);
 
-    this[prefix + 'particleSystem'].start();
+    //this[prefix + 'particleSystem'].start();
+
+    return this[prefix + 'particleSystem'];
   }
   viewSettings() {
     this.modal.show();
@@ -310,8 +267,11 @@ export class StoryApp extends BaseApp {
     }
   }
   async load() {
-    await GameCards.loadDecks();
+    this.allCards = await GameCards.loadDecks();
     await super.load();
+
+    if (this.loadStaticScene)
+      this.loadStaticScene();
   }
 
   paintDock() {
@@ -448,6 +408,15 @@ export class StoryApp extends BaseApp {
     circle.position.y = .1;
     circle.parent = mesh;
 
+    let particlePivot = BABYLON.Mesh.CreateBox("pivotseat" + index, .001, this.scene);
+    particlePivot.position.x = 0;
+    particlePivot.position.y = 1;
+    particlePivot.position.z = 2;
+    particlePivot.rotation.x = -1 * Math.PI / 2;
+    particlePivot.material = this.mat1alpha;
+    wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
+    particlePivot.parent = wrapper;
+
     let isOwner = this.uid === this.gameData.createUser;
     if (this.uid === uid || isOwner) {
       let text = 'stand';
@@ -504,16 +473,6 @@ export class StoryApp extends BaseApp {
     if (seatData.seated) {
       this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
-
-      let particlePivot = BABYLON.Mesh.CreateBox("pivotseat" + index, .001, this.scene);
-      particlePivot.position.x = 0;
-      particlePivot.position.y = 1;
-      particlePivot.position.z = 2;
-      particlePivot.rotation.x = -1 * Math.PI / 2;
-      particlePivot.material = this.mat1alpha;
-      this.createParticleSystem(particlePivot, 'seat' + index);
-      particlePivot.parent = seat;
-
     } else {
       let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
         radius: this.dockDiscRadius,
@@ -736,6 +695,7 @@ export class StoryApp extends BaseApp {
       if (seat.avatarMesh) {
         seat.avatarMesh.localRunning = false;
         seat.avatarMesh.modelAnimationGroup.pause();
+        seat.particleSystem.stop();
       }
       this.agents[agentInfos.agentIndex].stopped = true;
 
@@ -788,6 +748,8 @@ export class StoryApp extends BaseApp {
   groundClick(pointerInfo) {
     if (!this.crowd)
       return;
+
+//    BABYLON.Engine.audioEngine.unlock();
 
     let startingPoint = pointerInfo.pickInfo.pickedPoint;
     if (startingPoint) {
@@ -847,6 +809,7 @@ export class StoryApp extends BaseApp {
     if (seat.avatarMesh) {
       seat.avatarMesh.localRunning = true;
       seat.avatarMesh.modelAnimationGroup.play();
+      seat.particleSystem.start();
     }
     this.agents[i].target.x = position.x;
     this.agents[i].target.y = position.y;

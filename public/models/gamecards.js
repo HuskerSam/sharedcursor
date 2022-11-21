@@ -18,6 +18,12 @@ export default class GameCards {
   }
   static async loadDecks() {
     await GameCards.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck');
+
+    let allCards = {};
+    let deck = this.getCardDeck('soloarsystem');
+    deck.forEach(card => allCards[card.id] = card);
+
+    return allCards;
   }
   static async readJSONFile(path, varName) {
     if (window[varName]) return;
