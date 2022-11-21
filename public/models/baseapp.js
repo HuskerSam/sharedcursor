@@ -1268,7 +1268,9 @@ export class BaseApp {
       floorMeshes: [environment.ground]
     });
     this.xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-      xrCamera.position.y = 2;
+      xrCamera.position.x = 0;
+      xrCamera.position.y = 0;
+      xrCamera.position.z = 0;
     });
 
     this.scene.onPointerObservable.add((pointerInfo) => {

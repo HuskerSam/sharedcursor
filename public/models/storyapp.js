@@ -47,8 +47,9 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     staticWrapper.visibility = 0;
 
-    let mat1 = new BABYLON.StandardMaterial('mat1', this.scene);
+    let mat1 = new BABYLON.StandardMaterial('mat1alpha', this.scene);
     mat1.alpha = 0;
+    this.mat1alpha = mat1;
 
     this.meshSun = await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
     this.meshSun.parent = staticWrapper;
@@ -64,15 +65,16 @@ export class StoryApp extends BaseApp {
 
     this.meshEarth = await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
     this.meshEarth.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(this.meshEarth, true);
+/*
     this.pivotEarth = BABYLON.Mesh.CreateBox("pivotEarth", .001, this.scene);
     this.pivotEarth.position.x = 4;
     this.pivotEarth.position.y = 1;
     this.pivotEarth.position.z = -1.5;
     this.pivotEarth.rotation.x = Math.PI / 2;
     this.pivotEarth.material = mat1;
-    this.shadowGenerator.addShadowCaster(this.meshEarth, true);
     this.createParticleSystem(this.pivotEarth);
-
+*/
 
     let mesh4 = await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
     mesh4.parent = staticWrapper;
@@ -119,7 +121,7 @@ export class StoryApp extends BaseApp {
       autoplay: true,
       spatialSound: true,
       distanceModel: "exponential",
-      rolloffFactor: 2.5
+      rolloffFactor: 3
     });
     this.earthMusic.attachToMesh(this.meshEarth);
 
@@ -128,7 +130,7 @@ export class StoryApp extends BaseApp {
       autoplay: true,
       spatialSound: true,
       distanceModel: "exponential",
-      rolloffFactor: 3
+      rolloffFactor: 3.5
     });
     this.venusMusic.attachToMesh(this.meshVenus);
 
@@ -139,56 +141,56 @@ export class StoryApp extends BaseApp {
     this.sceneInited = true;
     this.loadAvatars();
   }
-  createParticleSystem(mesh) {
+  createParticleSystem(mesh, prefix = "static") {
     let useGPUVersion = true;
-    if (this.particleSystem) {
-      this.particleSystem.dispose();
+    if (this[prefix + 'particleSystem']) {
+      this[prefix + 'particleSystem'].dispose();
     }
 
     if (useGPUVersion && BABYLON.GPUParticleSystem.IsSupported) {
-      this.particleSystem = new BABYLON.GPUParticleSystem("particles", {
+      this[prefix + 'particleSystem'] = new BABYLON.GPUParticleSystem("particles", {
         capacity: 1000000
       }, this.scene);
-      this.particleSystem.activeParticleCount = 200000;
+      this[prefix + 'particleSystem'].activeParticleCount = 200000;
     } else {
-      this.particleSystem = new BABYLON.ParticleSystem("particles", 50000, this.scene);
+      this[prefix + 'particleSystem'] = new BABYLON.ParticleSystem("particles", 50000, this.scene);
     }
 
-    this.particleSystem.emitRate = 1000;
-    // this.particleSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
-    this.particleSystem.particleTexture = new BABYLON.Texture("/match/deckmedia/flare.png", this.scene);
+    this[prefix + 'particleSystem'].emitRate = 1000;
+    // this[prefix + 'particleSystem'].particleEmitterType = new BABYLON.BoxParticleEmitter(1);
+    this[prefix + 'particleSystem'].particleTexture = new BABYLON.Texture("/match/deckmedia/flare.png", this.scene);
 
-    this.particleSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+    this[prefix + 'particleSystem'].gravity = new BABYLON.Vector3(0, 0, 0);
 
     // how long before the particles dispose?
-    this.particleSystem.minLifeTime = 2;
-    this.particleSystem.maxLifeTime = 2;
+    this[prefix + 'particleSystem'].minLifeTime = 2;
+    this[prefix + 'particleSystem'].maxLifeTime = 2;
 
     // how much "push" from the back of the rocket.
     // Rocket forward movement also (seemingly) effects "push", but not really.
-    this.particleSystem.minEmitPower = 5;
-    this.particleSystem.maxEmitPower = 5;
+    this[prefix + 'particleSystem'].minEmitPower = 5;
+    this[prefix + 'particleSystem'].maxEmitPower = 5;
 
-    this.particleSystem.minSize = 0.01;
-    this.particleSystem.maxSize = 0.1;
+    this[prefix + 'particleSystem'].minSize = 0.01;
+    this[prefix + 'particleSystem'].maxSize = 0.1;
 
     // adjust diections to aim out fat-bottom end of rocket, with slight spread.
-    this.particleSystem.direction1 = new BABYLON.Vector3(-.2, 1, -.2);
-    this.particleSystem.direction2 = new BABYLON.Vector3(.2, 1, .2);
+    this[prefix + 'particleSystem'].direction1 = new BABYLON.Vector3(-.2, 1, -.2);
+    this[prefix + 'particleSystem'].direction2 = new BABYLON.Vector3(.2, 1, .2);
 
-    this.particleSystem.emitter = mesh;
+    this[prefix + 'particleSystem'].emitter = mesh;
 
     // rocket length 4, so move emission point... 2 units toward wide end of rocket.
-    this.particleSystem.minEmitBox = new BABYLON.Vector3(0, 2, 0)
-    this.particleSystem.maxEmitBox = new BABYLON.Vector3(0, 2, 0)
+    this[prefix + 'particleSystem'].minEmitBox = new BABYLON.Vector3(0, 2, 0)
+    this[prefix + 'particleSystem'].maxEmitBox = new BABYLON.Vector3(0, 2, 0)
 
 
     // a few colors, based on age/lifetime.  Yellow to red, generally speaking.
-    this.particleSystem.color1 = new BABYLON.Color3(1, 1, 0);
-    this.particleSystem.color2 = new BABYLON.Color3(1, .5, 0);
-    this.particleSystem.colorDead = new BABYLON.Color3(1, 0, 0);
+    this[prefix + 'particleSystem'].color1 = new BABYLON.Color3(1, 1, 0);
+    this[prefix + 'particleSystem'].color2 = new BABYLON.Color3(1, .5, 0);
+    this[prefix + 'particleSystem'].colorDead = new BABYLON.Color3(1, 0, 0);
 
-    this.particleSystem.start();
+    this[prefix + 'particleSystem'].start();
   }
   viewSettings() {
     this.modal.show();
@@ -503,6 +505,14 @@ export class StoryApp extends BaseApp {
       this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
 
+      let particlePivot = BABYLON.Mesh.CreateBox("pivotseat" + index, .001, this.scene);
+      particlePivot.position.x = 0;
+      particlePivot.position.y = 1;
+      particlePivot.position.z = 2;
+      particlePivot.rotation.x = -1 * Math.PI / 2;
+      particlePivot.material = this.mat1alpha;
+      this.createParticleSystem(particlePivot, 'seat' + index);
+      particlePivot.parent = seat;
 
     } else {
       let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
