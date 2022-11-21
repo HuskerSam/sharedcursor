@@ -53,7 +53,7 @@ export class StoryApp extends BaseApp {
     this.mat1alpha = mat1;
 
     this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars',
-      'jupiter', 'saturn', 'uranus'
+      'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'ceres', 'eris'
     ];
     this.orbitNames = ['moon_luna'];
 
@@ -125,7 +125,7 @@ export class StoryApp extends BaseApp {
       orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
       outer_wrapper.parent = orbit_wrapper;
-      outer_wrapper.position.z = 1.5;
+      outer_wrapper.position.z = 2;
 
 
       let orbitAnimation = new BABYLON.Animation(
@@ -205,7 +205,7 @@ export class StoryApp extends BaseApp {
         autoplay: true,
         spatialSound: true,
         distanceModel: "exponential",
-        rolloffFactor: .5
+        rolloffFactor: 2
       });
       music.attachToMesh(mesh);
     }
