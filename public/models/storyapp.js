@@ -28,40 +28,39 @@ export class StoryApp extends BaseApp {
 
     this.dockDiscRadius = .6;
 
-    this.scene.onPointerObservable.add((pointerInfo) => {
-      switch (pointerInfo.type) {
-        case BABYLON.PointerEventTypes.POINTERDOWN:
-          if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != this.env.ground) {
-            this.pointerDown(pointerInfo.pickInfo.pickedMesh)
-          }
-          if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
-            this.groundClick(pointerInfo);
-          }
-          break;
-        case BABYLON.PointerEventTypes.POINTERUP:
-          //this.pointerUp();
-          break;
-        case BABYLON.PointerEventTypes.POINTERMOVE:
-          //this.pointerMove();
-          break;
-      }
-    });
-
     this.settings_button = document.querySelector('.settings_button');
     this.settings_button.addEventListener('click', e => this.viewSettings());
 
     this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
-
-    this.staticMeshes.push(this.env.ground);
-    this.loadStaticScene();
   }
   async loadStaticScene() {
-    await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
-    await this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
-    await this.loadStaticMesh("/match/deckmedia/venus.glb", "", .001, 1.2962, 1, 0);
-    await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
-    await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
+    let staticWrapper = BABYLON.MeshBuilder.CreateBox('staticwrapper', {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    staticWrapper.visibility = 0;
+
+    let mesh1 = await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
+    mesh1.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(mesh1, true);
+
+    let meshMerc = await this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
+    meshMerc.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(meshMerc, true);
+
+    let mesh2 = await this.loadStaticMesh("/match/deckmedia/venus.glb", "", .001, 1.2962, 1, 0);
+    mesh2.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(mesh2, true);
+
+    let mesh3 = await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
+    mesh3.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(mesh3, true);
+
+    let mesh4 = await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
+    mesh4.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(mesh4, true);
 
     let mat1 = new BABYLON.StandardMaterial('mat1', this.scene);
     mat1.alpha = 0;
@@ -79,39 +78,30 @@ export class StoryApp extends BaseApp {
       diameter: 1.1,
       segments: 16
     }, this.scene);
-    mercurysphere.material = mat1;
     mercurysphere.position.x = -3.2281;
 
     let venussphere = BABYLON.MeshBuilder.CreateSphere("venussphere", {
       diameter: 1.2,
       segments: 16
     }, this.scene);
-    venussphere.material = mat1;
     venussphere.position.x = 1.2962;
 
     let earthsphere = BABYLON.MeshBuilder.CreateSphere("earthsphere", {
       diameter: 1.2,
       segments: 16
     }, this.scene);
-    earthsphere.material = mat1;
     earthsphere.position.x = 4;
 
     let marssphere = BABYLON.MeshBuilder.CreateSphere("marssphere", {
       diameter: 1.15,
       segments: 16
     }, this.scene);
-    marssphere.material = mat1;
     marssphere.position.x = 8.544;
 
     this.navMesh = BABYLON.Mesh.MergeMeshes([sunsphere, mercurysphere, venussphere, earthsphere, marssphere]);
+    this.navMesh.material = mat1;
 
     await this.setupAgents();
-
-    this.genGround = BABYLON.Mesh.CreateGround("ground1", 20, 20, 2, this.scene);
-    this.genGround.position.y = -.05;
-    let matdebug = new BABYLON.StandardMaterial('matdebug', this.scene);
-    matdebug.diffuseColor = new BABYLON.Color3(0.1, 0.2, 1);
-    this.genGround.material = matdebug;
 
     this.sceneInited = true;
     this.loadAvatars();
@@ -365,6 +355,7 @@ export class StoryApp extends BaseApp {
     mesh.position.z = 0;
     mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;
+    this.shadowGenerator.addShadowCaster(wrapper.avatarMesh, true);
 
     let circle = this.createCircle();
     circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);

@@ -595,7 +595,7 @@ export class BaseApp {
 
         let userSeated = userSeats.length > 0 ? ' impact-font' : '';
 
-        let playerUp = (currentPlayer === member &&  this.gameData.mode === 'running') ? ' player_up' : '';
+        let playerUp = (currentPlayer === member && this.gameData.mode === 'running') ? ' player_up' : '';
 
         let timeSince = this.timeSince(new Date(members[member]));
         html += `<div class="member_list_item card_shadow app_panel${playerUp}${winner}" data-uid="${member}">
@@ -1205,14 +1205,7 @@ export class BaseApp {
     this.canvas = document.querySelector(canvasQuery);
     this.engine = new BABYLON.Engine(this.canvas, true);
 
-    this.scene = this.createScene();
-
-    this.env = this.scene.createDefaultEnvironment();
-
-    // here we add XR support
-    this.xr = await this.scene.createDefaultXRExperienceAsync({
-      floorMeshes: [this.env.ground],
-    });
+    this.scene = await this.createScene();
 
     this.runRender = true;
     this.engine.runRenderLoop(() => {
@@ -1224,13 +1217,70 @@ export class BaseApp {
       this.engine.resize();
     });
   }
-  createScene() {
+  async createScene() {
     let scene = new BABYLON.Scene(this.engine);
 
-    const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0));
+    this.scene = scene;
+
+    var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
+    light.position = new BABYLON.Vector3(0, 15, -1.5);
+    var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 3, new BABYLON.Vector3(0, 1, 0), scene);
     camera.attachControl(this.canvas, true);
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
-    light.intensity = .75;
+    scene.activeCamera.beta += 0.8;
+    var environment = scene.createDefaultEnvironment({
+      enableGroundShadow: true,
+      createSkybox: false,
+      groundSize: 30
+    });
+    environment.setMainColor(BABYLON.Color3.FromHexString("#2222ff"))
+    environment.ground.parent.position.y = 0;
+    environment.ground.position.y = 0;
+    this.env = environment;
+    this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+    this.shadowGenerator.useBlurExponentialShadowMap = true;
+    this.shadowGenerator.blurKernel = 32;
+
+    let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
+    skybox.isPickable = false;
+    let equipath = 'https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/nebula_orange_blue.jpg';
+    let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
+    skyboxMaterial.backFaceCulling = false;
+
+    skyboxMaterial.reflectionTexture = new BABYLON.EquiRectangularCubeTexture(equipath, this.scene, 800);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;
+
+    var xr = await scene.createDefaultXRExperienceAsync({
+      floorMeshes: [environment.ground]
+    });
+    xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
+      xrCamera.y = 2.5;
+    });
+
+    this.scene.onPointerObservable.add((pointerInfo) => {
+      switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+          if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != this.env.ground) {
+            this.pointerDown(pointerInfo.pickInfo.pickedMesh)
+          }
+          if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
+            this.groundClick(pointerInfo);
+          }
+          break;
+        case BABYLON.PointerEventTypes.POINTERUP:
+          //this.pointerUp();
+          break;
+        case BABYLON.PointerEventTypes.POINTERMOVE:
+          //this.pointerMove();
+          break;
+      }
+    });
+
+    this.staticMeshes.push(this.env.ground);
+    this.loadStaticScene();
 
     return scene;
   }
