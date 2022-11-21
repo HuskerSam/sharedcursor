@@ -797,7 +797,7 @@ export class StoryApp extends BaseApp {
             segments: 16
           }, this.scene);
           sphere.position.y = 1.85;
-          sphere.position.x = .15;
+          sphere.position.x = .25;
           sphere.material = mat1;
           sphere.parent = seat;
           seat.onlineSphere = sphere;

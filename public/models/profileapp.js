@@ -131,7 +131,7 @@ export class ProfileApp extends BaseApp {
     if (!json.success) {
       alert('failed to create code');
     }
-    document.querySelector('.login_code_display').innerHTML = json.accessCode;
+    document.querySelector('.login_code_display').innerHTML = json.data.accessCode;
     console.log(json);
   }
   async customCodeLogin() {
