@@ -5,7 +5,6 @@ export class StoryApp extends BaseApp {
   constructor() {
     super();
     this.apiType = 'story';
-    this.staticMeshes = [];
     this.cache = {};
 
     this._initGameCommon();
@@ -33,6 +32,12 @@ export class StoryApp extends BaseApp {
 
     this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
+
+    this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
+    this.menu_bar_toggle.addEventListener('click', e => this.toggleMenuBar());
+  }
+  toggleMenuBar() {
+    document.body.classList.toggle('menu_bar_expanded');
   }
   async loadStaticScene() {
     let staticWrapper = BABYLON.MeshBuilder.CreateBox('staticwrapper', {
@@ -191,7 +196,6 @@ export class StoryApp extends BaseApp {
     mesh.position.y = y;
     mesh.position.z = z;
 
-    this.staticMeshes.push(mesh);
     return mesh;
   }
   debounce() {

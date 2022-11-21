@@ -68,189 +68,112 @@
   <div class="modal fade" id="canvasDisplayModal" tabindex="-1" role="dialog" aria-labelledby="canvasDisplayModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content app_panel">
-        <div class="modal-body">
-          <div class="panel_responsive_wrapper">
-            <div style="flex:1"></div>
-            <div class="first_panel_wrapper">
-              <div class="">
-                <div class="">
-                  <div class="address_bar">
-                    <div>
-                      <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
-                    </div>
-                    <div style="flex:1;">
-                      <div class="game_header_panel"></div>
-                      <a href="#" style="display:none;" class="code_link_href">URL</a>
-                    </div>
-                    <div>
-                      <button class="match_start btn btn-primary admin_only">Start</button>
-                      <button class="match_finish btn btn-secondary admin_only">End</button>
-                      <button class="match_reset btn btn-primary admin_only">Next</button>
-                      <span class="normal_only game_mode_status impact-font"></span>
-                    </div>
-                  </div>
-                </div>
+        <div class="modal-body" style="padding:0">
+          <div class="signed_in_options" style="text-align:center;">
+            <div class="btn-group tab_buttons" role="group">
+              <button class="btn btn-primary active" value="messages"><i class="material-icons">chat</i></button>
+              <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
+              <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
+            </div>
+            &nbsp;
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+          </div>
 
-              </div>
+          <div class="address_bar">
+            <div>
+              <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
+            </div>
+            <div style="flex:1;">
+              <div class="game_header_panel"></div>
+              <a href="#" style="display:none;" class="code_link_href">URL</a>
+            </div>
+            <div>
+              <button class="match_start btn btn-primary admin_only">Start</button>
+              <button class="match_finish btn btn-secondary admin_only">End</button>
+              <button class="match_reset btn btn-primary admin_only">Next</button>
+              <span class="normal_only game_mode_status impact-font"></span>
             </div>
           </div>
-          <div class="second_panel_wrapper">
-            <div class="message_list_send_wrapper">
-              <input class="message_list_input" name="message" type="text">
-              <a class="send_message_list_button"><i class="material-icons smallerby4">send</i></a>
+          <div class="mode_ready_view">
+            <div class="match_instructions">
+              <b>Map and describe your storyverse!</b>
+              <br><br>
+              <b>1 to 4 animated paths</b>
             </div>
-
-            <div class="mode_ready_view">
-              <div class="match_instructions">
-
-                <b>Map and describe your storyverse!</b>
-                <br><br>
-                <b>1 to 4 animated paths</b>
-
-
-              </div>
-            </div>
-            <div class="mode_running_view">
-              <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
-                <div style="display:flex;flex-direction:column;flex:3">
-                  <div class="score_dock_row">
-                    <span class="">round</span>
-                    <span>points</span>
-                    <span class="">streak</span>
-                  </div>
-                  <div class="score_dock_row">
-                    <div class="turn_number_div"></div>
-                    <div class="player_total_points"></div>
-                    <div class="player_total_for_turn"></div>
-                  </div>
+          </div>
+          <div class="mode_running_view">
+            <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
+              <div style="display:flex;flex-direction:column;flex:3">
+                <div class="score_dock_row">
+                  <span class="">round</span>
+                  <span>points</span>
+                  <span class="">streak</span>
                 </div>
-                <div style="flex:2" class="">
-                  <button class="player_dock_prompt btn btn-primary"></button>
+                <div class="score_dock_row">
+                  <div class="turn_number_div"></div>
+                  <div class="player_total_points"></div>
+                  <div class="player_total_for_turn"></div>
                 </div>
               </div>
-              <div class="match_board_wrapper">
+              <div style="flex:2" class="">
+                <button class="player_dock_prompt btn btn-primary"></button>
               </div>
             </div>
-            <div class="mode_end_view">
-              <div class="match_result_message"></div>
-              <div class="match_end_display_promo">
-                <a class="beer_name_anchor" target="_blank">
-                  <span class="beer_name"></span>
-                  <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
-                </a>
-              </div>
+            <div class="match_board_wrapper">
             </div>
-            <div class="second_inner_panel">
-              <div class="player_dock">
-                <div class="dock_container dock_pos_0">
-                  <button class="stand_button"><i class="material-icons">close</i></button>
-                  <button class="sit_button"><i class="material-icons">chair</i></button>
-                  <div class="dock_seat0 game_user_wrapper seat_color_0">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                  <div class="score_panel seat_color_0">
-                    <div class="name"></div>
-                    <div class="pts"></div>
-                  </div>
-                </div>
-                <div class="dock_container dock_pos_1">
-                  <button class="stand_button"><i class="material-icons">close</i></button>
-                  <button class="sit_button"><i class="material-icons">chair</i></button>
-                  <div class="dock_seat1 game_user_wrapper seat_color_1">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                  <div class="score_panel seat_color_1">
-                    <div class="name"></div>
-                    <div class="pts"></div>
-                  </div>
-                </div>
-                <div class="dock_container dock_pos_2">
-                  <button class="stand_button"><i class="material-icons">close</i></button>
-                  <button class="sit_button"><i class="material-icons">chair</i></button>
-                  <div class="dock_seat2 game_user_wrapper seat_color_2">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                  <div class="score_panel seat_color_2">
-                    <div class="name"></div>
-                    <div class="pts"></div>
-                  </div>
-                </div>
-                <div class="dock_container dock_pos_3">
-                  <button class="stand_button"><i class="material-icons">close</i></button>
-                  <button class="sit_button"><i class="material-icons">chair</i></button>
-                  <div class="dock_seat3 game_user_wrapper seat_color_3">
-                    <span></span>
-                    <span></span>
-                    <span class="online_status"></span>
-                  </div>
-                  <div class="score_panel seat_color_3">
-                    <div class="name"></div>
-                    <div class="pts"></div>
-                  </div>
-                </div>
-              </div>
+          </div>
+          <div class="mode_end_view">
+            <div class="match_result_message"></div>
+            <div class="match_end_display_promo">
+              <a class="beer_name_anchor" target="_blank">
+                <span class="beer_name"></span>
+                <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
+              </a>
+            </div>
+          </div>
+          <div class="tab-content game_options_panel_wrapper">
+            <div class="tab-pane fade messages_list show active" role="tabpanel"></div>
+            <div class="tab-pane fade members_list" role="tabpanel"></div>
+            <div class="tab-pane fade basic_options" role="tabpanel">
+              <div class="gameid_span"></div>
 
-              <div class="signed_in_options" style="text-align:center;">
-                <div class="btn-group tab_buttons" role="group">
-                  <button class="btn btn-primary active" value="messages"><i class="material-icons">chat</i></button>
-                  <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
-                  <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
-                </div>
+              <div class="options_edit_block">
+                <label class="form-label">Visibility</label>
+                <select class="visibility_select form-select form-select-lg">
+                  <option selected>public</option>
+                  <option>private</option>
+                </select>
+                <div class="visibility_display"></div>
               </div>
-              <div class="tab-content game_options_panel_wrapper">
-                <div class="tab-pane fade messages_list show active" role="tabpanel"></div>
-                <div class="tab-pane fade members_list" role="tabpanel"></div>
-                <div class="tab-pane fade basic_options" role="tabpanel">
-                  <div class="gameid_span"></div>
-
-                  <div class="options_edit_block">
-                    <label class="form-label">Visibility</label>
-                    <select class="visibility_select form-select form-select-lg">
-                      <option selected>public</option>
-                      <option>private</option>
-                    </select>
-                    <div class="visibility_display"></div>
-                  </div>
-                  <div class="options_edit_block">
-                    <label class="form-label">Seats</label>
-                    <select class="seat_count_select form-select form-select-lg">
-                      <option value="1">1 seat</option>
-                      <option selected value="2">2 seats</option>
-                      <option value="3">3 seats</option>
-                      <option value="4">4 seats</option>
-                    </select>
-                    <div class="seat_count_display"></div>
-                  </div>
-                  <div class="options_edit_block">
-                    <label class="form-label">Messaging</label>
-                    <select class="message_level_select form-select form-select-lg">
-                      <option value="seated">Seated</option>
-                      <option value="all">All</option>
-                    </select>
-                    <div class="message_level_display"></div>
-                  </div>
-                  <div class="options_edit_block">
-                    <label class="form-label">Seat Limit</label>
-                    <select class="seats_per_user_select form-select form-select-lg">
-                      <option value="one">One</option>
-                      <option value="none">None</option>
-                    </select>
-                    <div class="seats_per_user_display"></div>
-                  </div>
-                </div>
+              <div class="options_edit_block">
+                <label class="form-label">Seats</label>
+                <select class="seat_count_select form-select form-select-lg">
+                  <option value="1">1 seat</option>
+                  <option selected value="2">2 seats</option>
+                  <option value="3">3 seats</option>
+                  <option value="4">4 seats</option>
+                </select>
+                <div class="seat_count_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Messaging</label>
+                <select class="message_level_select form-select form-select-lg">
+                  <option value="seated">Seated</option>
+                  <option value="all">All</option>
+                </select>
+                <div class="message_level_display"></div>
+              </div>
+              <div class="options_edit_block">
+                <label class="form-label">Seat Limit</label>
+                <select class="seats_per_user_select form-select form-select-lg">
+                  <option value="one">One</option>
+                  <option value="none">None</option>
+                </select>
+                <div class="seats_per_user_display"></div>
               </div>
             </div>
           </div>
 
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -258,42 +181,95 @@
 
   <canvas class="popup-canvas" touch-action="none"></canvas>
   <div style="position:absolute;top:0;left:0" class="app_panel">
-    <nav class="navbar navbar-expand-lg  nav-scroll">
-      <div class="container">
-        <div class="static_menu">
-          <a class="logo" href="/">
-            <svg version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-              <clipPath id="p.0">
-                <path d="m0 0l686.2231 0l0 689.7769l-686.2231 0l0 -689.7769z" clip-rule="nonzero" />
-              </clipPath>
-              <g clip-path="url(#p.0)">
-                <path fill="#000000" fill-opacity="0.0" d="m0 0l686.2231 0l0 689.7769l-686.2231 0z" fill-rule="evenodd" />
-                <path fill="#000000" d="m8.0 344.0l0 0c0 -185.56767 150.43233 -336.0 336.0 -336.0l0 0c89.11273 0 174.57568 35.3999 237.58789 98.412125c63.012207 63.012222 98.41211 148.47513 98.41211 237.58788l0 0c0 185.56769 -150.43231 336.0 -336.0 336.0l0 0c-185.56767 0 -336.0 -150.43231 -336.0 -336.0z"
-                  fill-rule="evenodd" />
-                <path fill="currentColor" d="m65.60555 344.0l0 0c0 -153.7526 124.641106 -278.3937 278.3937 -278.3937l0 0c73.834595 0 144.64511 29.33068 196.85406 81.53962c52.208923 52.208954 81.53961 123.019485 81.53961 196.85408l0 0c0 153.7526 -124.64108 278.39368 -278.39368 278.39368l0 0c-153.75261 0 -278.3937 -124.64108 -278.3937 -278.39368z"
-                  fill-rule="evenodd" />
-                <path fill="#0000ff" d="m314.7801 518.6186l0 0c-35.476685 39.39923 -96.1756 42.57904 -135.57481 7.102356l0 0c-18.920166 -17.036499 -30.297684 -40.891235 -31.629639 -66.31644c-1.331955 -25.425201 7.4907684 -50.338196 24.527283 -69.25836l0 0c35.476685 -39.3992 96.17558 -42.57904 135.57481 -7.102356l0 0c39.3992 35.476685 42.57904 96.1756 7.102356 135.5748z"
-                  fill-rule="evenodd" />
-                <path fill="#00ff00" d="m558.9682 443.61438l0 0c-35.476685 39.3992 -96.1756 42.57904 -135.5748 7.102356l0 0c-18.920166 -17.036499 -30.297699 -40.891235 -31.629639 -66.31644c-1.3319397 -25.425201 7.4907837 -50.338196 24.527283 -69.25836l0 0c35.476685 -39.3992 96.17557 -42.57904 135.5748 -7.102356l0 0c39.39923 35.476685 42.57904 96.1756 7.102356 135.5748z"
-                  fill-rule="evenodd" />
-                <path fill="#ff0000" d="m366.05234 268.79144l0 0c-35.476715 39.3992 -96.1756 42.57904 -135.57481 7.102356l0 0c-18.920166 -17.036499 -30.297699 -40.89125 -31.629654 -66.31647c-1.3319397 -25.425201 7.4907837 -50.33818 24.527283 -69.25835l0 0c35.476685 -39.399208 96.1756 -42.57904 135.5748 -7.102356l0 0c39.39923 35.476685 42.57907 96.17558 7.1023865 135.57481z"
-                  fill-rule="evenodd" />
-              </g>
-            </svg>
-          </a>
-          <a class="night_mode_toggle">
-            <i class="material-icons mode_day">light_mode</i>
-            <i class="material-icons mode_night smallerby4">mode_night</i>
-          </a>
-          <a class="mute_button">
-            <i class="material-icons">volume_up</i>
-          </a>
-          <a class="settings_button">
-            <i class="material-icons">settings</i>
-          </a>
+    <div class="container static_menu" style="display:inline-flex;width:300px;padding:0;flex-direction:row">
+        <a class="logo" href="/">
+          <svg version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+            <clipPath id="p.0">
+              <path d="m0 0l686.2231 0l0 689.7769l-686.2231 0l0 -689.7769z" clip-rule="nonzero" />
+            </clipPath>
+            <g clip-path="url(#p.0)">
+              <path fill="#000000" fill-opacity="0.0" d="m0 0l686.2231 0l0 689.7769l-686.2231 0z" fill-rule="evenodd" />
+              <path fill="#000000" d="m8.0 344.0l0 0c0 -185.56767 150.43233 -336.0 336.0 -336.0l0 0c89.11273 0 174.57568 35.3999 237.58789 98.412125c63.012207 63.012222 98.41211 148.47513 98.41211 237.58788l0 0c0 185.56769 -150.43231 336.0 -336.0 336.0l0 0c-185.56767 0 -336.0 -150.43231 -336.0 -336.0z"
+                fill-rule="evenodd" />
+              <path fill="currentColor" d="m65.60555 344.0l0 0c0 -153.7526 124.641106 -278.3937 278.3937 -278.3937l0 0c73.834595 0 144.64511 29.33068 196.85406 81.53962c52.208923 52.208954 81.53961 123.019485 81.53961 196.85408l0 0c0 153.7526 -124.64108 278.39368 -278.39368 278.39368l0 0c-153.75261 0 -278.3937 -124.64108 -278.3937 -278.39368z"
+                fill-rule="evenodd" />
+              <path fill="#0000ff" d="m314.7801 518.6186l0 0c-35.476685 39.39923 -96.1756 42.57904 -135.57481 7.102356l0 0c-18.920166 -17.036499 -30.297684 -40.891235 -31.629639 -66.31644c-1.331955 -25.425201 7.4907684 -50.338196 24.527283 -69.25836l0 0c35.476685 -39.3992 96.17558 -42.57904 135.57481 -7.102356l0 0c39.3992 35.476685 42.57904 96.1756 7.102356 135.5748z"
+                fill-rule="evenodd" />
+              <path fill="#00ff00" d="m558.9682 443.61438l0 0c-35.476685 39.3992 -96.1756 42.57904 -135.5748 7.102356l0 0c-18.920166 -17.036499 -30.297699 -40.891235 -31.629639 -66.31644c-1.3319397 -25.425201 7.4907837 -50.338196 24.527283 -69.25836l0 0c35.476685 -39.3992 96.17557 -42.57904 135.5748 -7.102356l0 0c39.39923 35.476685 42.57904 96.1756 7.102356 135.5748z"
+                fill-rule="evenodd" />
+              <path fill="#ff0000" d="m366.05234 268.79144l0 0c-35.476715 39.3992 -96.1756 42.57904 -135.57481 7.102356l0 0c-18.920166 -17.036499 -30.297699 -40.89125 -31.629654 -66.31647c-1.3319397 -25.425201 7.4907837 -50.33818 24.527283 -69.25835l0 0c35.476685 -39.399208 96.1756 -42.57904 135.5748 -7.102356l0 0c39.39923 35.476685 42.57907 96.17558 7.1023865 135.57481z"
+                fill-rule="evenodd" />
+            </g>
+          </svg>
+        </a>
+        <a class="mute_button">
+          <i class="material-icons">volume_up</i>
+        </a>
+        <a class="settings_button">
+          <i class="material-icons">settings</i>
+        </a>
+        <a class="menu_bar_toggle" style="flex:1"><span>▼</span></a>
+      </div>
+    <div class="menu_bar_expanded_options">
+      <div class="player_dock" style="min-width:300px;">
+        <div class="dock_container dock_pos_0">
+          <button class="stand_button"><i class="material-icons">close</i></button>
+          <button class="sit_button"><i class="material-icons">chair</i></button>
+          <div class="dock_seat0 game_user_wrapper seat_color_0">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+          <div class="score_panel seat_color_0">
+            <div class="name"></div>
+            <div class="pts"></div>
+          </div>
+        </div>
+        <div class="dock_container dock_pos_1">
+          <button class="stand_button"><i class="material-icons">close</i></button>
+          <button class="sit_button"><i class="material-icons">chair</i></button>
+          <div class="dock_seat1 game_user_wrapper seat_color_1">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+          <div class="score_panel seat_color_1">
+            <div class="name"></div>
+            <div class="pts"></div>
+          </div>
+        </div>
+        <div class="dock_container dock_pos_2">
+          <button class="stand_button"><i class="material-icons">close</i></button>
+          <button class="sit_button"><i class="material-icons">chair</i></button>
+          <div class="dock_seat2 game_user_wrapper seat_color_2">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+          <div class="score_panel seat_color_2">
+            <div class="name"></div>
+            <div class="pts"></div>
+          </div>
+        </div>
+        <div class="dock_container dock_pos_3">
+          <button class="stand_button"><i class="material-icons">close</i></button>
+          <button class="sit_button"><i class="material-icons">chair</i></button>
+          <div class="dock_seat3 game_user_wrapper seat_color_3">
+            <span></span>
+            <span></span>
+            <span class="online_status"></span>
+          </div>
+          <div class="score_panel seat_color_3">
+            <div class="name"></div>
+            <div class="pts"></div>
+          </div>
         </div>
       </div>
-    </nav>
+      <div style="display:flex;flex-direction:row;">
+        <input class="message_list_input" name="message" style="flex:1;margin: 4px;" type="text">
+        <a class="send_message_list_button" style="padding:16px;"><i class="material-icons">send</i></a>
+      </div>
+    </div>
 
     <div id="chat_snackbar"></div>
   </div>

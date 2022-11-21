@@ -199,10 +199,6 @@
   }
 }
 
-.player_dock {
-  display: flex;
-  flex-direction: row;
-}
 
 .match_end_display_promo {}
 

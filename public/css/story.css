@@ -12,3 +12,28 @@ body {
   width: 100%;
   height: 100%;
 }
+
+.menu_bar_toggle {
+  text-align: center;
+}
+
+.menu_bar_toggle span {
+  font-size: 30px;
+  transform: rotate(90deg);
+  display: inline-block;
+  transition: transform .5s;
+}
+
+.menu_bar_expanded .menu_bar_toggle span {
+  transform: rotate(0deg);
+}
+
+.menu_bar_expanded_options {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s;
+}
+
+.menu_bar_expanded .menu_bar_expanded_options {
+  max-height: 150px;
+}

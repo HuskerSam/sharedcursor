@@ -1264,17 +1264,11 @@ export class BaseApp {
     skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;
 
-    var xr = await scene.createDefaultXRExperienceAsync({
+    this.xr = await scene.createDefaultXRExperienceAsync({
       floorMeshes: [environment.ground]
     });
-    xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-      //  this.camera.detachControl()
+    this.xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
       xrCamera.position.y = .25;
-      /*
-      setInterval(() => {
-        xrCamera.position.y = 2
-      }, 500);
-      */
     });
 
     this.scene.onPointerObservable.add((pointerInfo) => {
@@ -1296,7 +1290,6 @@ export class BaseApp {
       }
     });
 
-    //  this.staticMeshes.push(this.env.ground);
     if (this.loadStaticScene)
       this.loadStaticScene();
 

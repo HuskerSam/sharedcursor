@@ -973,3 +973,9 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 .seat_stati .points {
   padding-left: 12px;
 }
+
+
+.player_dock {
+  display: flex;
+  flex-direction: row;
+}
