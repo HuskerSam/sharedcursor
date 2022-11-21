@@ -6,6 +6,7 @@ export class StoryApp extends BaseApp {
     super();
     this.apiType = 'story';
     this.cache = {};
+    this.staticAssetMeshes = {};
 
     this._initGameCommon();
 
@@ -52,12 +53,20 @@ export class StoryApp extends BaseApp {
     this.mat1alpha = mat1;
 
     this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars',
-    'jupiter', 'saturn', 'uranus',
-
-    'moon_luna'];
+      'jupiter', 'saturn', 'uranus'
+    ];
+    this.orbitNames = ['moon_luna'];
 
     let navMeshes = [];
+    let promises = [];
     this.staticNames.forEach(name => {
+      promises.push(this.loadStaticAsset(name, staticWrapper));
+      if (this.allCards[name].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(name));
+    });
+    await Promise.all(promises);
+
+    this.orbitNames.forEach(name => {
       this.loadStaticAsset(name, staticWrapper);
       if (this.allCards[name].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(name));
@@ -86,18 +95,74 @@ export class StoryApp extends BaseApp {
   async loadStaticAsset(name, parent) {
     let meta = this.allCards[name];
     let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
+    let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    outer_wrapper.visibility = 0;
+
     let wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
       width: .01,
       height: .01,
       depth: .01
     }, this.scene);
     wrapper.visibility = 0;
-    wrapper.position.x = meta.x;
-    wrapper.position.y = meta.y;
-    wrapper.position.z = meta.z;
+    wrapper.parent = outer_wrapper;
 
+    outer_wrapper.position.x = meta.x;
+    outer_wrapper.position.y = meta.y;
+    outer_wrapper.position.z = meta.z;
+
+    let orbit_wrapper;
+    if (meta.parent) {
+      orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      orbit_wrapper.visibility = 0;
+      orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
+
+      outer_wrapper.parent = orbit_wrapper;
+      outer_wrapper.position.z = 1.5;
+
+
+      let orbitAnimation = new BABYLON.Animation(
+        "staticorbitmeshrotation" + name,
+        "rotation",
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+
+      //At the animation key 0, the value of scaling is "1"
+      let x = outer_wrapper.rotation.x;
+      let y = outer_wrapper.rotation.y;
+      let z = outer_wrapper.rotation.z;
+      let orbitkeys = [];
+      let endFrame = meta.spintime / 1000 * 30;
+      orbitkeys.push({
+        frame: 0,
+        value: new BABYLON.Vector3(x, y, z)
+      });
+
+      orbitkeys.push({
+        frame: endFrame,
+        value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
+      });
+
+
+      orbitAnimation.setKeys(orbitkeys);
+      if (!orbit_wrapper.animations)
+        orbit_wrapper.animations = [];
+      orbit_wrapper.animations.push(orbitAnimation);
+      this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+    } else {
+      outer_wrapper.parent = parent;
+    }
+    this.staticAssetMeshes[name] = outer_wrapper;
     mesh.parent = wrapper;
-    wrapper.parent = parent;
 
     if (meta.showSymbol) {
       let size = meta.diameter / 4;
@@ -160,8 +225,11 @@ export class StoryApp extends BaseApp {
       let z = wrapper.rotation.z;
       let keys = [];
       let endFrame = meta.spintime / 1000 * 30;
-      let spindirection = meta.spindirection === -1 ? -2 : 2;
-
+      let spindirection = meta.spindirection === -1 ? 2 : -2;
+      if (meta.parent) {
+        y += meta.ry;
+        spindirection *= 0;
+      }
       if (meta.spinrotationz) {
         z = z + Math.PI / -2;
         keys.push({
@@ -184,7 +252,6 @@ export class StoryApp extends BaseApp {
           frame: endFrame,
           value: new BABYLON.Vector3(x, y + spindirection * Math.PI, z)
         });
-
       }
 
 
@@ -497,7 +564,7 @@ export class StoryApp extends BaseApp {
     let colors = this.get3DColors(index);
     let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 0);
     mesh.position.x = 0;
-    mesh.position.y = -.15;
+    mesh.position.y = 0;
     mesh.position.z = 0;
     mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;

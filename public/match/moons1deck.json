@@ -17,10 +17,14 @@
     "url": "https://en.wikipedia.org/wiki/Moon",
     "color": "rgb(255, 127, 0)",
     "invert": "",
-    "x": 18,
-    "y": 1,
-    "z": 2,
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "ry": -1,
+    "radius": 1.5,
     "diameter": 0.75,
-    "noNavMesh": true
+    "noNavMesh": true,
+    "spintime": 10000,
+    "parent": "earth"
   }
 ]
