@@ -43,3 +43,8 @@ body {
   max-height: 50vh;
   overflow: auto;
 }
+
+.static_menu a {
+  padding: 0;
+  padding-top: 8px;
+}

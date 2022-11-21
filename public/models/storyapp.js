@@ -47,28 +47,36 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     staticWrapper.visibility = 0;
 
-    let mesh1 = await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
-    mesh1.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(mesh1, true);
+    let mat1 = new BABYLON.StandardMaterial('mat1', this.scene);
+    mat1.alpha = 0;
+
+    this.meshSun = await this.loadStaticMesh("/match/deckmedia/", "sun.glb", .002, -7.7721, 1, 0);
+    this.meshSun.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(this.meshSun, true);
 
     let meshMerc = await this.loadStaticMesh("/match/deckmedia/", "mercury.glb", .001, -3.2281, 1, 0);
     meshMerc.parent = staticWrapper;
     this.shadowGenerator.addShadowCaster(meshMerc, true);
 
-    let mesh2 = await this.loadStaticMesh("/match/deckmedia/venus.glb", "", .001, 1.2962, 1, 0);
-    mesh2.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(mesh2, true);
+    this.meshVenus = await this.loadStaticMesh("/match/deckmedia/venus.glb", "", .001, 1.2962, 1, 0);
+    this.meshVenus.parent = staticWrapper;
+    this.shadowGenerator.addShadowCaster(this.meshVenus, true);
 
-    let mesh3 = await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
-    mesh3.parent = staticWrapper;
-    this.shadowGenerator.addShadowCaster(mesh3, true);
+    this.meshEarth = await this.loadStaticMesh("/match/deckmedia/earth.glb", "", .001, 4, 1, 0);
+    this.meshEarth.parent = staticWrapper;
+    this.pivotEarth = BABYLON.Mesh.CreateBox("pivotEarth", .001, this.scene);
+    this.pivotEarth.position.x = 4;
+    this.pivotEarth.position.y = 1;
+    this.pivotEarth.position.z = -1.5;
+    this.pivotEarth.rotation.x = Math.PI / 2;
+    this.pivotEarth.material = mat1;
+    this.shadowGenerator.addShadowCaster(this.meshEarth, true);
+    this.createParticleSystem(this.pivotEarth);
+
 
     let mesh4 = await this.loadStaticMesh("/match/deckmedia/mars.glb", "", .001, 8.544, 1, 0);
     mesh4.parent = staticWrapper;
     this.shadowGenerator.addShadowCaster(mesh4, true);
-
-    let mat1 = new BABYLON.StandardMaterial('mat1', this.scene);
-    mat1.alpha = 0;
 
     let sunsphere = BABYLON.MeshBuilder.CreateSphere("sunsphere", {
       diameter: 2,
@@ -106,10 +114,81 @@ export class StoryApp extends BaseApp {
     this.navMesh = BABYLON.Mesh.MergeMeshes([sunsphere, mercurysphere, venussphere, earthsphere, marssphere]);
     this.navMesh.material = mat1;
 
+    this.earthMusic = new BABYLON.Sound("music", "/match/deckmedia/nebraska.mp3", this.scene, null, {
+      loop: true,
+      autoplay: true,
+      spatialSound: true,
+      distanceModel: "exponential",
+      rolloffFactor: 2.5
+    });
+    this.earthMusic.attachToMesh(this.meshEarth);
+
+    this.venusMusic = new BABYLON.Sound("music", "/match/deckmedia/iowa.mp3", this.scene, null, {
+      loop: true,
+      autoplay: true,
+      spatialSound: true,
+      distanceModel: "exponential",
+      rolloffFactor: 3
+    });
+    this.venusMusic.attachToMesh(this.meshVenus);
+
     await this.setupAgents();
+
+    BABYLON.Engine.audioEngine.unlock();
 
     this.sceneInited = true;
     this.loadAvatars();
+  }
+  createParticleSystem(mesh) {
+    let useGPUVersion = true;
+    if (this.particleSystem) {
+      this.particleSystem.dispose();
+    }
+
+    if (useGPUVersion && BABYLON.GPUParticleSystem.IsSupported) {
+      this.particleSystem = new BABYLON.GPUParticleSystem("particles", {
+        capacity: 1000000
+      }, this.scene);
+      this.particleSystem.activeParticleCount = 200000;
+    } else {
+      this.particleSystem = new BABYLON.ParticleSystem("particles", 50000, this.scene);
+    }
+
+    this.particleSystem.emitRate = 1000;
+    // this.particleSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
+    this.particleSystem.particleTexture = new BABYLON.Texture("/match/deckmedia/flare.png", this.scene);
+
+    this.particleSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+
+    // how long before the particles dispose?
+    this.particleSystem.minLifeTime = 2;
+    this.particleSystem.maxLifeTime = 2;
+
+    // how much "push" from the back of the rocket.
+    // Rocket forward movement also (seemingly) effects "push", but not really.
+    this.particleSystem.minEmitPower = 5;
+    this.particleSystem.maxEmitPower = 5;
+
+    this.particleSystem.minSize = 0.01;
+    this.particleSystem.maxSize = 0.1;
+
+    // adjust diections to aim out fat-bottom end of rocket, with slight spread.
+    this.particleSystem.direction1 = new BABYLON.Vector3(-.2, 1, -.2);
+    this.particleSystem.direction2 = new BABYLON.Vector3(.2, 1, .2);
+
+    this.particleSystem.emitter = mesh;
+
+    // rocket length 4, so move emission point... 2 units toward wide end of rocket.
+    this.particleSystem.minEmitBox = new BABYLON.Vector3(0, 2, 0)
+    this.particleSystem.maxEmitBox = new BABYLON.Vector3(0, 2, 0)
+
+
+    // a few colors, based on age/lifetime.  Yellow to red, generally speaking.
+    this.particleSystem.color1 = new BABYLON.Color3(1, 1, 0);
+    this.particleSystem.color2 = new BABYLON.Color3(1, .5, 0);
+    this.particleSystem.colorDead = new BABYLON.Color3(1, 0, 0);
+
+    this.particleSystem.start();
   }
   viewSettings() {
     this.modal.show();
@@ -423,6 +502,8 @@ export class StoryApp extends BaseApp {
     if (seatData.seated) {
       this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
+
+
     } else {
       let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
         radius: this.dockDiscRadius,
@@ -795,7 +876,7 @@ export class StoryApp extends BaseApp {
           let color = new BABYLON.Color3(1, 1, 1);
           if (online) {
             color = new BABYLON.Color3(0, 2, 0)
-          //  mat1.emissiveColor = color;
+            //  mat1.emissiveColor = color;
             mat1.ambientColor = color;
           }
           mat1.diffuseColor = color;

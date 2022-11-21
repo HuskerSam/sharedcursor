@@ -1246,10 +1246,10 @@ export class BaseApp {
     this.shadowGenerator.useBlurExponentialShadowMap = true;
     this.shadowGenerator.blurKernel = 32;
 
-    scene.createDefaultCamera(false, true, true);
+    scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
     scene.activeCamera.position = new BABYLON.Vector3(6, 6, 2);
-    scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
+  //  scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
     let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
     skybox.isPickable = false;
@@ -1268,7 +1268,7 @@ export class BaseApp {
       floorMeshes: [environment.ground]
     });
     this.xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-      xrCamera.position.y = .25;
+      xrCamera.position.y = 2;
     });
 
     this.scene.onPointerObservable.add((pointerInfo) => {
