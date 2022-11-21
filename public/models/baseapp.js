@@ -1224,6 +1224,9 @@ export class BaseApp {
 
     var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
     light.position = new BABYLON.Vector3(10, 15, -15);
+
+    var light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+
     var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 3, new BABYLON.Vector3(0, 1, 0), scene);
     camera.attachControl(this.canvas, true);
     scene.activeCamera.beta += 0.8;
