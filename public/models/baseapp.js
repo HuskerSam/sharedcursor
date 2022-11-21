@@ -1232,12 +1232,6 @@ export class BaseApp {
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
     light2.intensity = .6;
 
-    scene.createDefaultCamera(true, true, true);
-    this.camera = scene.activeCamera;
-    scene.activeCamera.setPosition(new BABYLON.Vector3(6, 6, 2));
-    //var camera = new BABYLON.FreeCamera("camera", -Math.PI / 2, Math.PI / 4, 6, new BABYLON.Vector3(0, 1, 0), scene);
-  //  scene.activeCamera.attachControl(this.canvas, true);
-  //  scene.activeCamera.beta += 0.8;
     var environment = scene.createDefaultEnvironment({
       enableGroundShadow: true,
       createSkybox: false,
@@ -1251,6 +1245,11 @@ export class BaseApp {
     this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
     this.shadowGenerator.useBlurExponentialShadowMap = true;
     this.shadowGenerator.blurKernel = 32;
+
+    scene.createDefaultCamera(false, true, true);
+    this.camera = scene.activeCamera;
+    scene.activeCamera.position = new BABYLON.Vector3(6, 6, 2);
+    scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
     let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
     skybox.isPickable = false;
@@ -1269,8 +1268,8 @@ export class BaseApp {
       floorMeshes: [environment.ground]
     });
     xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-        this.camera.detachControl()
-    //  xrCamera.position.y = 2;
+      //  this.camera.detachControl()
+      xrCamera.position.y = .25;
       /*
       setInterval(() => {
         xrCamera.position.y = 2
