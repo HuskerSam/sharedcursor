@@ -71,7 +71,7 @@
         <div class="modal-body" style="padding:0">
           <div class="signed_in_options" style="text-align:center;">
             <div class="btn-group tab_buttons" role="group">
-              <button class="btn btn-primary active" value="messages"><i class="material-icons">chat</i></button>
+              <button class="btn btn-primary active" value="messages"><i class="material-icons">games</i></button>
               <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
               <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
             </div>
@@ -79,61 +79,66 @@
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
           </div>
 
-          <div class="address_bar">
-            <div>
-              <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
-            </div>
-            <div style="flex:1;">
-              <div class="game_header_panel"></div>
-              <a href="#" style="display:none;" class="code_link_href">URL</a>
-            </div>
-            <div>
-              <button class="match_start btn btn-primary admin_only">Start</button>
-              <button class="match_finish btn btn-secondary admin_only">End</button>
-              <button class="match_reset btn btn-primary admin_only">Next</button>
-              <span class="normal_only game_mode_status impact-font"></span>
-            </div>
-          </div>
-          <div class="mode_ready_view">
-            <div class="match_instructions">
-              <b>Map and describe your storyverse!</b>
-              <br><br>
-              <b>1 to 4 animated paths</b>
-            </div>
-          </div>
-          <div class="mode_running_view">
-            <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
-              <div style="display:flex;flex-direction:column;flex:3">
-                <div class="score_dock_row">
-                  <span class="">round</span>
-                  <span>points</span>
-                  <span class="">streak</span>
-                </div>
-                <div class="score_dock_row">
-                  <div class="turn_number_div"></div>
-                  <div class="player_total_points"></div>
-                  <div class="player_total_for_turn"></div>
-                </div>
-              </div>
-              <div style="flex:2" class="">
-                <button class="player_dock_prompt btn btn-primary"></button>
-              </div>
-            </div>
-            <div class="match_board_wrapper">
-            </div>
-          </div>
-          <div class="mode_end_view">
-            <div class="match_result_message"></div>
-            <div class="match_end_display_promo">
-              <a class="beer_name_anchor" target="_blank">
-                <span class="beer_name"></span>
-                <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
-              </a>
-            </div>
-          </div>
           <div class="tab-content game_options_panel_wrapper">
-            <div class="tab-pane fade messages_list show active" role="tabpanel"></div>
-            <div class="tab-pane fade members_list" role="tabpanel"></div>
+            <div class="tab-pane fade show active" role="tabpanel">
+              <div class="address_bar">
+                <div>
+                  <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
+                </div>
+                <div style="flex:1;">
+                  <div class="game_header_panel"></div>
+                  <a href="#" style="display:none;" class="code_link_href">URL</a>
+                </div>
+                <div>
+                  <button class="match_start btn btn-primary admin_only">Start</button>
+                  <button class="match_finish btn btn-secondary admin_only">End</button>
+                  <button class="match_reset btn btn-primary admin_only">Next</button>
+                  <span class="normal_only game_mode_status impact-font"></span>
+                </div>
+              </div>
+              <div class="mode_ready_view">
+                <div class="match_instructions">
+                  <b>Map and describe your storyverse!</b>
+                  <br><br>
+                  <b>1 to 4 animated paths</b>
+                </div>
+              </div>
+              <div class="mode_running_view">
+                <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
+                  <div style="display:flex;flex-direction:column;flex:3">
+                    <div class="score_dock_row">
+                      <span class="">round</span>
+                      <span>points</span>
+                      <span class="">streak</span>
+                    </div>
+                    <div class="score_dock_row">
+                      <div class="turn_number_div"></div>
+                      <div class="player_total_points"></div>
+                      <div class="player_total_for_turn"></div>
+                    </div>
+                  </div>
+                  <div style="flex:2" class="">
+                    <button class="player_dock_prompt btn btn-primary"></button>
+                  </div>
+                </div>
+                <div class="match_board_wrapper">
+                </div>
+              </div>
+              <div class="mode_end_view">
+                <div class="match_result_message"></div>
+                <div class="match_end_display_promo">
+                  <a class="beer_name_anchor" target="_blank">
+                    <span class="beer_name"></span>
+                    <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+            <div class="tab-pane fade" role="tabpanel">
+              <div class="members_list"></div>
+              <div class="messages_list"></div>
+            </div>
             <div class="tab-pane fade basic_options" role="tabpanel">
               <div class="gameid_span"></div>
 
@@ -206,7 +211,7 @@
           <i class="material-icons">volume_up</i>
         </a>
         <a class="settings_button">
-          <i class="material-icons">settings</i>
+          <i class="material-icons">menu</i>
         </a>
         <a class="menu_bar_toggle" style="flex:1"><span>▼</span></a>
       </div>
@@ -267,7 +272,7 @@
       </div>
       <div style="display:flex;flex-direction:row;">
         <input class="message_list_input" name="message" style="flex:1;margin: 4px;" type="text">
-        <a class="send_message_list_button" style="padding:16px;"><i class="material-icons">send</i></a>
+        <a class="send_message_list_button" style="padding:16px;"><i class="material-icons" style="font-size:44px">send</i></a>
       </div>
     </div>
 

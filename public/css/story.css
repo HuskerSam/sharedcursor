@@ -37,3 +37,9 @@ body {
 .menu_bar_expanded .menu_bar_expanded_options {
   max-height: 150px;
 }
+
+.members_list {
+  padding-left: 10px;
+  max-height: 50vh;
+  overflow: auto;
+}
