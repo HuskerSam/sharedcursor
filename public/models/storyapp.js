@@ -768,4 +768,41 @@ export class StoryApp extends BaseApp {
       pathLine.dispose();
     }, 1500);
   }
+
+  updateUserPresence() {
+    super.updateUserPresence();
+
+    for (let c = 0; c < 4; c++) {
+      let seat = this['dockSeatMesh' + c];
+      if (seat) {
+        if (seat.onlineSphere) {
+          seat.onlineSphere.dispose();
+          seat.onlineSphere = null;
+        }
+
+        let seatData = this.getSeatData(c);
+        if (seatData.seated) {
+          let online = this.userPresenceStatus[seatData.uid] === true;
+          let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + c, this.scene);
+          let color = new BABYLON.Color3(1, 1, 1);
+          if (online) {
+            color = new BABYLON.Color3(0, 2, 0)
+          //  mat1.emissiveColor = color;
+            mat1.ambientColor = color;
+          }
+          mat1.diffuseColor = color;
+
+          let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + c, {
+            diameter: .1,
+            segments: 16
+          }, this.scene);
+          sphere.position.y = 1.85;
+          sphere.position.x = .15;
+          sphere.material = mat1;
+          sphere.parent = seat;
+          seat.onlineSphere = sphere;
+        }
+      }
+    }
+  }
 }

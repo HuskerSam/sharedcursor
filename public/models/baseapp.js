@@ -510,6 +510,9 @@ export class BaseApp {
         if (data) {
           if (data.state === 'online')
             this.userPresenceStatus[uid] = true;
+          else if (uid === this.uid) {
+            this.userStatusDatabaseRef.set(this.isOnlineForDatabase);
+          }
         }
         this.updateUserPresence();
       });
