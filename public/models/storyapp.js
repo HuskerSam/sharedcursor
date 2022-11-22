@@ -121,7 +121,7 @@ export class StoryApp extends BaseApp {
       outer_wrapper.clickCommand = 'pauseSpin';
     }
     if (meta.parent) {
-      orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
+      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
         width: .01,
         height: .01,
         depth: .01
@@ -166,6 +166,66 @@ export class StoryApp extends BaseApp {
     } else {
       outer_wrapper.parent = parent;
     }
+
+    if (meta.freeOrbit) {
+      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      orbit_wrapper.visibility = 0;
+      orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
+
+      outer_wrapper.parent = orbit_wrapper;
+      outer_wrapper.position.z = meta.orbitRadius;
+
+
+      outer_wrapper.position.x = 0;
+      outer_wrapper.position.y = 0;
+      //      outer_wrapper.position.z =0;
+
+      orbit_wrapper.position.x = meta.x;
+      orbit_wrapper.position.y = meta.y;
+      orbit_wrapper.position.z = meta.z;
+      //outer_wrapper.position.x = meta.x;
+      //outer_wrapper.position.z = meta.z;
+
+      let orbitAnimation = new BABYLON.Animation(
+        "staticorbitmeshrotation" + name,
+        "rotation",
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+
+      //At the animation key 0, the value of scaling is "1"
+      let x = outer_wrapper.rotation.x;
+      let y = outer_wrapper.rotation.y;
+      let z = outer_wrapper.rotation.z;
+      let orbitkeys = [];
+      let endFrame = meta.spintime / 1000 * 30;
+      orbitkeys.push({
+        frame: 0,
+        value: new BABYLON.Vector3(x, y, z)
+      });
+
+      let factor = -2;
+      if (meta.spindirection === -1)
+        factor = 2;
+
+      orbitkeys.push({
+        frame: endFrame,
+        value: new BABYLON.Vector3(x, y + factor * Math.PI, z)
+      });
+
+
+      orbitAnimation.setKeys(orbitkeys);
+      if (!orbit_wrapper.animations)
+        orbit_wrapper.animations = [];
+      orbit_wrapper.animations.push(orbitAnimation);
+      outer_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+    }
+
     this.staticAssetMeshes[name] = outer_wrapper;
     mesh.parent = wrapper;
 
@@ -232,8 +292,7 @@ export class StoryApp extends BaseApp {
       let endFrame = meta.spintime / 1000 * 30;
       let spindirection = meta.spindirection === -1 ? 2 : -2;
       if (meta.parent) {
-        y += meta.ry;
-        spindirection *= 0;
+        wrapper.rotation.y = meta.ry;
       }
       if (meta.spinrotationz) {
         z = z + Math.PI / -2;
@@ -264,7 +323,9 @@ export class StoryApp extends BaseApp {
         if (!wrapper.animations)
           wrapper.animations = [];
         wrapper.animations.push(spinAnimation);
-        outer_wrapper.spinAnimation = this.scene.beginAnimation(wrapper, 0, endFrame, true);
+        let anim = this.scene.beginAnimation(wrapper, 0, endFrame, true);
+        if (!meta.freeOrbit)
+          outer_wrapper.spinAnimation = anim;
       }
     }
   }
@@ -414,7 +475,7 @@ export class StoryApp extends BaseApp {
 
     let mesh = result.meshes[0];
 
-    mesh.scaling.x = scale;
+    mesh.scaling.x = -1 * scale;
     mesh.scaling.y = scale;
     mesh.scaling.z = scale;
 

@@ -21,7 +21,7 @@
     "x": 0,
     "y": 0,
     "z": 0,
-    "ry": 2.14,
+    "ry": 1,
     "radius": 1.5,
     "diameter": 0.75,
     "noNavMesh": true,

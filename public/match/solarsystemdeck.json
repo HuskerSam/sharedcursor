@@ -233,12 +233,14 @@
     "url": "https://en.wikipedia.org/wiki/Pluto",
     "color": "rgb(0, 0, 0)",
     "invert": 1,
-    "x": -10,
+    "x": -12.0,
     "y": 2.5,
-    "z": 4,
+    "z": 0,
+    "orbitRadius": 10,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 50000
+    "spintime": 10000,
+    "freeOrbit": true
   },
   {
     "type": "3dmodel",
@@ -258,12 +260,14 @@
     "url": "https://en.wikipedia.org/wiki/Ceres",
     "color": "rgb(127, 0, 0)",
     "invert": 1,
-    "x": -5,
-    "y": 2.5,
-    "z": -4,
+    "x": -12,
+    "y": 4,
+    "z": 0,
     "diameter": 1,
+    "orbitRadius": 11,
     "noNavMesh": true,
-    "spintime": 50000
+    "spintime": 12000,
+    "freeOrbit": true
   },
   {
     "type": "3dmodel",
@@ -283,11 +287,14 @@
     "url": "https://en.wikipedia.org/wiki/Eris",
     "color": "rgb(127, 0, 127)",
     "invert": 1,
-    "x": 5,
-    "y": 2.5,
-    "z": -4,
+    "x": -12,
+    "y": 5.5,
+    "orbitRadius": 9,
+    "z": 0,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 50000
+    "spintime": 20000,
+    "freeOrbit": true,
+    "spindirection": -1
   }
 ]
