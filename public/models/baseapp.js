@@ -34,6 +34,11 @@ export class BaseApp {
     this.userPresenceStatusRefs = {};
 
     this.lastMessageId = null;
+    this.highFi = true;
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      this.highFi = false;
+    }
 
     this.chat_snackbar = document.querySelector('#chat_snackbar');
 
@@ -1232,19 +1237,26 @@ export class BaseApp {
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
     light2.intensity = .6;
 
+    let enableGroundShadow = false;
+    if (this.highFi) {
+      enableGroundShadow = true;
+    }
+
     var environment = scene.createDefaultEnvironment({
-      enableGroundShadow: true,
+      enableGroundShadow,
       createSkybox: false,
-      groundSize: 100,
-      enableGroundMirror: true
+      groundSize: 100
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#2222ff"))
     environment.ground.parent.position.y = 0;
     environment.ground.position.y = 0;
     this.env = environment;
-    this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
-    this.shadowGenerator.useBlurExponentialShadowMap = true;
-    this.shadowGenerator.blurKernel = 32;
+
+    if (enableGroundShadow) {
+      this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+      this.shadowGenerator.useBlurExponentialShadowMap = true;
+      this.shadowGenerator.blurKernel = 32;
+    }
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
@@ -1298,7 +1310,7 @@ export class BaseApp {
   pointerUp() {
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
-    if (!this.animationResult) {
+    if (!this.animationResult && this.highFi) {
       this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/solar/avatar-walk.glb", null, this.scene);
       this.animationGLB = this.animationResult.meshes[0];
       this.animationGLB.position.y = -1000;
@@ -1319,18 +1331,19 @@ export class BaseApp {
 
     mesh.isPickable = true;
 
-    const modelTransformNodes = mesh.getChildTransformNodes();
-    const modelAnimationGroup = this.animationResult.animationGroups[0].clone("clone", (oldTarget) => {
-      return modelTransformNodes.find((node) => node.name === oldTarget.name);
-    });
-    modelAnimationGroup.start();
-    modelAnimationGroup.pause();
-    mesh.modelAnimationGroup = modelAnimationGroup;
+    if (this.highFi) {
+      const modelTransformNodes = mesh.getChildTransformNodes();
+      const modelAnimationGroup = this.animationResult.animationGroups[0].clone("clone", (oldTarget) => {
+        return modelTransformNodes.find((node) => node.name === oldTarget.name);
+      });
+      modelAnimationGroup.start();
+      modelAnimationGroup.pause();
+      mesh.modelAnimationGroup = modelAnimationGroup;
+      mesh.localRunning = true;
+      modelAnimationGroup.goToFrame(Math.floor(Math.random() * modelAnimationGroup.to));
+      modelAnimationGroup.loopAnimation = true;
+    }
 
-    mesh.localRunning = true;
-
-    modelAnimationGroup.goToFrame(Math.floor(Math.random() * modelAnimationGroup.to));
-    modelAnimationGroup.loopAnimation = true;
 
     return mesh;
   }

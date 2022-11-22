@@ -24,8 +24,6 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.initBabylonEngine(".popup-canvas", true);
-
     this.dockDiscRadius = .6;
 
     this.settings_button = document.querySelector('.settings_button');
@@ -301,9 +299,10 @@ export class StoryApp extends BaseApp {
       symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
     }
 
-    this.shadowGenerator.addShadowCaster(mesh, true);
+    if (this.shadowGenerator)
+      this.shadowGenerator.addShadowCaster(mesh, true);
 
-    if (meta.enableMusic) {
+    if (meta.enableMusic && this.highFi) {
       let music = new BABYLON.Sound("music", meta.mp3file, this.scene, null, {
         loop: true,
         autoplay: true,
@@ -558,22 +557,30 @@ export class StoryApp extends BaseApp {
   async load() {
     this.allCards = await GameCards.loadDecks();
     await super.load();
-
-    if (this.loadStaticScene)
-      this.loadStaticScene();
   }
 
+  async initGraphics() {
+    await this.initBabylonEngine(".popup-canvas", true);
+    if (this.loadStaticScene)
+      await this.loadStaticScene();
+  }
   paintDock() {
     super.paintDock();
 
     this.loadAvatars();
   }
-  paintGameData(gameDoc = null) {
+  async paintGameData(gameDoc = null) {
     if (gameDoc)
       this.gameData = gameDoc.data();
 
     if (!this.gameData)
       return;
+
+    if (!this.engine)  {
+      if (this.gameData.lowFi === true)
+        this.highFi = false;
+      await this.initGraphics();
+    }
 
     this.initGameMessageFeed();
 
@@ -696,7 +703,8 @@ export class StoryApp extends BaseApp {
     mesh.position.z = 0;
     mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;
-    this.shadowGenerator.addShadowCaster(wrapper.avatarMesh, true);
+    if (this.shadowGenerator)
+      this.shadowGenerator.addShadowCaster(wrapper.avatarMesh, true);
 
     let circle = this.createCircle();
     circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
@@ -709,7 +717,8 @@ export class StoryApp extends BaseApp {
     particlePivot.position.z = 2;
     particlePivot.rotation.x = -1 * Math.PI / 2;
     particlePivot.material = this.mat1alpha;
-    wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
+    if (this.highFi)
+      wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
     particlePivot.parent = wrapper;
 
     let isOwner = this.uid === this.gameData.createUser;
@@ -766,7 +775,8 @@ export class StoryApp extends BaseApp {
     }
 
     if (seatData.seated) {
-      this.renderSeatText(seat, index);
+      if (this.highFi)
+        this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
       let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
@@ -989,8 +999,10 @@ export class StoryApp extends BaseApp {
       let seat = this.agents[agentInfos.agentIndex].mesh;
       if (seat.avatarMesh) {
         seat.avatarMesh.localRunning = false;
-        seat.avatarMesh.modelAnimationGroup.pause();
-        seat.particleSystem.stop();
+        if (seat.avatarMesh.modelAnimationGroup)
+          seat.avatarMesh.modelAnimationGroup.pause();
+        if (seat.particleSystem)
+          seat.particleSystem.stop();
       }
       this.agents[agentInfos.agentIndex].stopped = true;
 
@@ -1108,8 +1120,10 @@ export class StoryApp extends BaseApp {
 
     if (seat.avatarMesh) {
       seat.avatarMesh.localRunning = true;
-      seat.avatarMesh.modelAnimationGroup.play();
-      seat.particleSystem.start();
+      if (seat.avatarMesh.modelAnimationGroup)
+        seat.avatarMesh.modelAnimationGroup.play();
+      if (seat.particleSystem)
+        seat.particleSystem.start();
     }
     this.agents[i].target.x = position.x;
     this.agents[i].target.y = position.y;
