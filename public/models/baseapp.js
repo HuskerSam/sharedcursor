@@ -1321,7 +1321,7 @@ export class BaseApp {
 
     let mesh = result2.meshes[0];
 
-    mesh.scaling.x = scale;
+    mesh.scaling.x = scale * -1;
     mesh.scaling.y = scale;
     mesh.scaling.z = scale;
 
