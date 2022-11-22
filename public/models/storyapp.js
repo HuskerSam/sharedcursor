@@ -55,7 +55,8 @@ export class StoryApp extends BaseApp {
     this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars',
       'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'ceres', 'eris'
     ];
-    this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos'];
+    this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos', 'moon_europa',
+    'moon_io', 'moon_ganymede', 'moon_callisto'];
 
     let navMeshes = [];
     let promises = [];
@@ -94,7 +95,34 @@ export class StoryApp extends BaseApp {
   }
   async loadStaticAsset(name, parent, clickToPause = false) {
     let meta = this.allCards[name];
-    let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
+
+    let mesh;
+    if (meta.texturepath) {
+      mesh = BABYLON.MeshBuilder.CreateSphere('meshtexture' + name, {
+        diameter: meta.diameter
+      }, this.scene);
+
+      let m = new BABYLON.StandardMaterial('meshtexturemat' + name, this.scene);
+      let t = new BABYLON.Texture(meta.texturepath, this.scene);
+      t.vScale = 1;
+      t.uScale = 1;
+      m.diffuseTexture = t;
+      m.specularPower = 32;
+
+      if (meta.bumppath) {
+        let b = new BABYLON.Texture(meta.bumppath, this.scene);
+        b.vScale = 1;
+        b.uScale = 1;
+        m.bumpTexture = b;
+      }
+
+      m.emissiveColor = new BABYLON.Color3(1, 1, 1);
+      m.emissiveTexture = new BABYLON.Texture(meta.texturepath, this.scene);
+
+      mesh.material = m;
+    } else {
+      mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
+    }
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
       height: .01,
