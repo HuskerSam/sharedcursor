@@ -59,7 +59,7 @@ export class StoryApp extends BaseApp {
     this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos', 'moon_europa',
     'moon_io', 'moon_ganymede', 'moon_callisto', 'moon_titan', 'moon_encedulas',
     'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
-  'moon_hyperion', 'moon_mimas'];
+  'moon_hyperion', 'moon_mimas', 'moon_lander', 'moon_buggy'];
 
     let navMeshes = [];
     let promises = [];
