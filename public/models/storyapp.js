@@ -112,6 +112,8 @@ export class StoryApp extends BaseApp {
       m.diffuseTexture = t;
       m.specularPower = 32;
 
+      if (!meta.bumppath)
+        meta.bumppath = meta.texturepath;
       if (meta.bumppath) {
         let b = new BABYLON.Texture(meta.bumppath, this.scene);
         b.vScale = 1;
@@ -509,12 +511,12 @@ export class StoryApp extends BaseApp {
     }
 
   }
-  async loadStaticMesh(path, file, scale, x, y, z) {
+  async loadStaticMesh(path, file, scale, x, y, z, invert = -1) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
 
     let mesh = result.meshes[0];
 
-    mesh.scaling.x = -1 * scale;
+    mesh.scaling.x = invert * scale;
     mesh.scaling.y = scale;
     mesh.scaling.z = scale;
 
