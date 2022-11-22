@@ -1276,15 +1276,17 @@ export class BaseApp {
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
-          if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != this.env.ground) {
-            this.pointerDown(pointerInfo.pickInfo.pickedMesh)
-          }
           if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
             this.groundClick(pointerInfo);
+            break;
+          }
+          if (pointerInfo.pickInfo.hit) {
+            this.pointerDown(pointerInfo.pickInfo.pickedMesh)
           }
           break;
         case BABYLON.PointerEventTypes.POINTERUP:
-          //this.pointerUp();
+        console.log('up', pointerInfo, this.lastMesh)
+          this.pointerUp(this.lastMesh, pointerInfo);
           break;
         case BABYLON.PointerEventTypes.POINTERMOVE:
           //this.pointerMove();
@@ -1293,6 +1295,9 @@ export class BaseApp {
     });
 
     return scene;
+  }
+  pointerUp() {
+console.log('412343');
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult) {

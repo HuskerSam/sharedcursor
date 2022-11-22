@@ -60,7 +60,7 @@ export class StoryApp extends BaseApp {
     let navMeshes = [];
     let promises = [];
     this.staticNames.forEach(name => {
-      promises.push(this.loadStaticAsset(name, staticWrapper));
+      promises.push(this.loadStaticAsset(name, staticWrapper, true));
       if (this.allCards[name].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(name));
     });
@@ -92,7 +92,7 @@ export class StoryApp extends BaseApp {
     mercurysphere.position.z = meta.z;
     return mercurysphere;
   }
-  async loadStaticAsset(name, parent) {
+  async loadStaticAsset(name, parent, clickToPause = false) {
     let meta = this.allCards[name];
     let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
@@ -115,6 +115,11 @@ export class StoryApp extends BaseApp {
     outer_wrapper.position.z = meta.z;
 
     let orbit_wrapper;
+    if (clickToPause) {
+      outer_wrapper.appClickable = true;
+      outer_wrapper.clickToPause = clickToPause;
+      outer_wrapper.clickCommand = 'pauseSpin';
+    }
     if (meta.parent) {
       orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
         width: .01,
@@ -157,7 +162,7 @@ export class StoryApp extends BaseApp {
       if (!orbit_wrapper.animations)
         orbit_wrapper.animations = [];
       orbit_wrapper.animations.push(orbitAnimation);
-      this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+      outer_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
     } else {
       outer_wrapper.parent = parent;
     }
@@ -254,12 +259,13 @@ export class StoryApp extends BaseApp {
         });
       }
 
-
-      spinAnimation.setKeys(keys);
-      if (!wrapper.animations)
-        wrapper.animations = [];
-      wrapper.animations.push(spinAnimation);
-      this.scene.beginAnimation(wrapper, 0, endFrame, true);
+      if (!meta.parent) {
+        spinAnimation.setKeys(keys);
+        if (!wrapper.animations)
+          wrapper.animations = [];
+        wrapper.animations.push(spinAnimation);
+        outer_wrapper.spinAnimation = this.scene.beginAnimation(wrapper, 0, endFrame, true);
+      }
     }
   }
 
@@ -371,6 +377,15 @@ export class StoryApp extends BaseApp {
     this.updateAgents();
     this.updateUserPresence();
   }
+  pointerUp(mesh, pointerInfo) {
+    if (!mesh)
+      return;
+
+    if (mesh.clickCommand === 'pauseSpin') {
+      if (mesh.spinAnimation._paused)
+        mesh.spinAnimation.restart();
+    }
+  }
   pointerDown(mesh) {
     while (mesh && !mesh.appClickable) {
       mesh = mesh.parent;
@@ -385,6 +400,12 @@ export class StoryApp extends BaseApp {
 
     if (mesh.clickCommand === 'stand') {
       this._gameAPIStand(mesh.seatIndex);
+    }
+
+    if (mesh.clickCommand === 'pauseSpin') {
+
+      this.lastMesh = mesh;
+      mesh.spinAnimation.pause();
     }
 
   }
