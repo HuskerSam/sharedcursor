@@ -1067,8 +1067,13 @@ export class StoryApp extends BaseApp {
     }
   }
   _sendAgentToTarget(i, position) {
-    this.crowd.agentGoto(i, position);
     let seat = this.agents[i].mesh;
+    if (this.gameData['seat' + i] && !seat.avatarMesh) {
+      return setTimeout(() => this._sendAgentToTarget(i, position), 50);
+    }
+
+    this.crowd.agentGoto(i, position);
+
     if (seat.avatarMesh) {
       seat.avatarMesh.localRunning = true;
       seat.avatarMesh.modelAnimationGroup.play();
