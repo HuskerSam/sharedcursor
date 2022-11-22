@@ -39,7 +39,7 @@
     "glbpath": "/match/deckmedia/moondeimos.glb",
     "glbfile": "",
     "glbscale": 0.025,
-    "mp3file": "/match/deckmedia/sirius.mp3",
+    "mp3file": "/match/deckmedia/nebraska.mp3",
     "enableMusic": true,
     "name": "Deimos",
     "objectType": "moon",
@@ -56,7 +56,8 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "spintime": 5000,
-    "parent": "mars"
+    "parent": "mars",
+    "clickToPause": true
   },
   {
     "type": "3dmodel",
@@ -68,7 +69,7 @@
     "glbpath": "/match/deckmedia/moonphobos.glb",
     "glbfile": "",
     "glbscale": 0.01,
-    "mp3file": "/match/deckmedia/sirius.mp3",
+    "mp3file": "/match/deckmedia/alabama.mp3",
     "enableMusic": true,
     "name": "Phobos",
     "objectType": "moon",
@@ -85,6 +86,7 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "spintime": 3500,
-    "parent": "mars"
+    "parent": "mars",
+    "clickToPause": true
   }
 ]

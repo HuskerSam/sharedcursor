@@ -443,6 +443,8 @@ export class StoryApp extends BaseApp {
     }
     this.updateAgents();
     this.updateUserPresence();
+
+    this.avatarsLoaded = true;
   }
   pointerUp(mesh, pointerInfo) {
     if (!mesh)
@@ -614,6 +616,12 @@ export class StoryApp extends BaseApp {
 
     this.updateUserPresence();
     this.updateAgents();
+
+    if (this.avatarsLoaded)
+      setTimeout(() => {
+        this.runRender = true;
+        document.body.classList.add('avatars_loaded');
+      }, 100);
   }
   renderSeatText(mesh, index) {
     let seatData = this.getSeatData(index);
@@ -674,11 +682,11 @@ export class StoryApp extends BaseApp {
 
     let isOwner = this.uid === this.gameData.createUser;
     if (this.uid === uid || isOwner) {
-      let text = 'stand';
+      let text = 'X';
       let intensity = 5;
       if (this.uid !== uid && isOwner) {
         intensity = 0;
-        text = 'boot';
+        text = 'X';
       }
       let x3d = this.__createTextMesh('seattextX' + index, {
         text,
@@ -686,10 +694,10 @@ export class StoryApp extends BaseApp {
         size: 100,
         depth: .25
       });
-      x3d.scaling.x = .08;
-      x3d.scaling.y = .08;
-      x3d.scaling.z = .08;
-      x3d.position.y = 2.15;
+      x3d.scaling.x = .2;
+      x3d.scaling.y = .2;
+      x3d.scaling.z = .2;
+      x3d.position.y = 2.25;
       x3d.rotation.z = -Math.PI / 2;
       x3d.rotation.y = -Math.PI / 2;
 

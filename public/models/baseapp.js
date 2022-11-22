@@ -1210,7 +1210,7 @@ export class BaseApp {
 
     this.scene = await this.createScene();
 
-    this.runRender = true;
+    this.runRender = false;
     this.engine.runRenderLoop(() => {
       if (this.runRender)
         this.scene.render();
@@ -1296,7 +1296,6 @@ export class BaseApp {
     return scene;
   }
   pointerUp() {
-console.log('412343');
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult) {
