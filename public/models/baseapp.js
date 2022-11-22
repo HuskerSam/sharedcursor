@@ -1285,7 +1285,6 @@ export class BaseApp {
           }
           break;
         case BABYLON.PointerEventTypes.POINTERUP:
-        console.log('up', pointerInfo, this.lastMesh)
           this.pointerUp(this.lastMesh, pointerInfo);
           break;
         case BABYLON.PointerEventTypes.POINTERMOVE:

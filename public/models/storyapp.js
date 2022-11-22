@@ -55,7 +55,7 @@ export class StoryApp extends BaseApp {
     this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars',
       'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'ceres', 'eris'
     ];
-    this.orbitNames = ['moon_luna'];
+    this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos'];
 
     let navMeshes = [];
     let promises = [];
@@ -109,19 +109,14 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     wrapper.visibility = 0;
     wrapper.parent = outer_wrapper;
+    mesh.parent = wrapper;
 
     outer_wrapper.position.x = meta.x;
     outer_wrapper.position.y = meta.y;
     outer_wrapper.position.z = meta.z;
 
-    let orbit_wrapper;
-    if (clickToPause) {
-      outer_wrapper.appClickable = true;
-      outer_wrapper.clickToPause = clickToPause;
-      outer_wrapper.clickCommand = 'pauseSpin';
-    }
     if (meta.parent) {
-      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
+      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
         width: .01,
         height: .01,
         depth: .01
@@ -130,7 +125,14 @@ export class StoryApp extends BaseApp {
       orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
       outer_wrapper.parent = orbit_wrapper;
-      outer_wrapper.position.z = 2;
+      outer_wrapper.position.z = meta.z;
+      outer_wrapper.position.x = meta.x;
+
+      if (meta.clickToPause) {
+        orbit_wrapper.appClickable = true;
+        orbit_wrapper.clickToPause = clickToPause;
+        orbit_wrapper.clickCommand = 'pauseSpin';
+      }
 
 
       let orbitAnimation = new BABYLON.Animation(
@@ -162,8 +164,13 @@ export class StoryApp extends BaseApp {
       if (!orbit_wrapper.animations)
         orbit_wrapper.animations = [];
       orbit_wrapper.animations.push(orbitAnimation);
-      outer_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+      orbit_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
     } else {
+      if (clickToPause) {
+        outer_wrapper.appClickable = true;
+        outer_wrapper.clickToPause = clickToPause;
+        outer_wrapper.clickCommand = 'pauseSpin';
+      }
       outer_wrapper.parent = parent;
     }
 
@@ -227,7 +234,6 @@ export class StoryApp extends BaseApp {
     }
 
     this.staticAssetMeshes[name] = outer_wrapper;
-    mesh.parent = wrapper;
 
     if (meta.showSymbol) {
       let size = meta.diameter / 4;
