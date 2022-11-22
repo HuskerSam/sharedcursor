@@ -222,14 +222,6 @@ export class BaseApp {
 
     if (muted) {
       this.mute_button.children[0].innerHTML = 'volume_off';
-      if (this.pickAudio)
-        this.pickAudio.pause();
-      if (this.downAudio)
-        this.downAudio.pause();
-      if (this.upAudio)
-        this.upAudio.pause();
-      if (this.lockAudio)
-        this.lockAudio.pause();
 
       muted = true;
     } else {

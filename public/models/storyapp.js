@@ -55,9 +55,10 @@ export class StoryApp extends BaseApp {
       'makemake', 'haumea', 'arrokoth', 'itokawa', 'bennu', 'eros'
     ];
     this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos', 'moon_europa',
-    'moon_io', 'moon_ganymede', 'moon_callisto', 'moon_titan', 'moon_encedulas',
-    'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
-  'moon_hyperion', 'moon_mimas', 'moon_lander', 'moon_buggy'];
+      'moon_io', 'moon_ganymede', 'moon_callisto', 'moon_titan', 'moon_encedulas',
+      'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
+      'moon_hyperion', 'moon_mimas', 'moon_lander', 'moon_buggy'
+    ];
 
     let navMeshes = [];
     let promises = [];
@@ -118,6 +119,9 @@ export class StoryApp extends BaseApp {
     outer_wrapper.position.y = meta.y;
     outer_wrapper.position.z = meta.z;
 
+    if (meta.showSymbol)
+      this._renderSymbolInfoPanel(name, meta, wrapper);
+
     if (meta.parent) {
       let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
         width: .01,
@@ -161,7 +165,6 @@ export class StoryApp extends BaseApp {
         frame: endFrame,
         value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
       });
-
 
       orbitAnimation.setKeys(orbitkeys);
       if (!orbit_wrapper.animations)
@@ -238,39 +241,6 @@ export class StoryApp extends BaseApp {
 
     this.staticAssetMeshes[name] = outer_wrapper;
 
-    if (meta.showSymbol) {
-      let size = meta.diameter / 4;
-      let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
-        height: size,
-        width: size
-      }, this.scene);
-      let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3' + name, {
-        height: size,
-        width: size
-      }, this.scene);
-
-      let m = new BABYLON.StandardMaterial('symbolshowmat' + name, this.scene);
-      let t = new BABYLON.Texture(meta.symbol, this.scene);
-      t.vScale = 1;
-      t.uScale = 1;
-      t.hasAlpha = true;
-
-      m.diffuseTexture = t;
-      m.emissiveTexture = t;
-      m.ambientTexture = t;
-      let extraY = 0;
-      if (meta.symbolY)
-        extraY = meta.symbolY;
-      symbolMesh1.material = m;
-      symbolMesh1.parent = wrapper;
-      symbolMesh1.rotation.y = 0;
-      symbolMesh1.position.y = meta.diameter / 1.25 + extraY;
-      symbolMesh3.material = m;
-      symbolMesh3.parent = wrapper;
-      symbolMesh3.rotation.y = Math.PI;
-      symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
-    }
-
     if (this.shadowGenerator)
       this.shadowGenerator.addShadowCaster(mesh, true);
 
@@ -339,7 +309,155 @@ export class StoryApp extends BaseApp {
       }
     }
   }
+  _renderSymbolInfoPanel(name, meta, wrapper) {
+    let size = meta.diameter / 4;
+    let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
+      height: size,
+      width: size
+    }, this.scene);
+    let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3' + name, {
+      height: size,
+      width: size
+    }, this.scene);
 
+    let m = new BABYLON.StandardMaterial('symbolshowmat' + name, this.scene);
+    let t = new BABYLON.Texture(meta.symbol, this.scene);
+    t.vScale = 1;
+    t.uScale = 1;
+    t.hasAlpha = true;
+
+    m.diffuseTexture = t;
+    m.emissiveTexture = t;
+    m.ambientTexture = t;
+    let extraY = 0;
+    if (meta.symbolY)
+      extraY = meta.symbolY;
+    symbolMesh1.material = m;
+    symbolMesh1.parent = wrapper;
+    symbolMesh1.rotation.y = 0;
+    symbolMesh1.position.y = meta.diameter / 1.25 + extraY;
+    symbolMesh3.material = m;
+    symbolMesh3.parent = wrapper;
+    symbolMesh3.rotation.y = Math.PI;
+    symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
+    symbolMesh3.scaling.x = -1;
+
+    let boardWrapper = BABYLON.MeshBuilder.CreateBox('boardpopupwrapper' + name, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    boardWrapper.visibility = 0;
+    boardWrapper.parent = wrapper;
+
+
+    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
+      height: size * 5,
+      width: size * 5
+    }, this.scene);
+    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
+      height: size * 5,
+      width: size * 5
+    }, this.scene);
+
+    let factor = .2;
+    if (meta.symbolY < -0.99)
+      factor = -.75;
+    nameMesh1.position.y = symbolMesh1.position.y + factor;
+    nameMesh2.position.y = symbolMesh1.position.y + factor;
+    nameMesh2.rotation.y = Math.PI;
+
+    let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
+    let nameTexture = this.__texture2DText(meta.name, meta.color);
+    nameTexture.vScale = 1;
+    nameTexture.uScale = 1;
+    nameTexture.hasAlpha = true;
+    nameMat.diffuseTexture = nameTexture;
+    nameMat.emissiveTexture = nameTexture;
+    nameMat.ambientTexture = nameTexture;
+    nameMesh1.material = nameMat;
+    nameMesh1.parent = boardWrapper;
+    nameMesh2.material = nameMat;
+    nameMesh2.parent = boardWrapper;
+    nameMesh2.scaling.x = -1;
+
+    boardWrapper.parent = wrapper;
+    wrapper.parent.boardWrapper = boardWrapper;
+
+    this.hideBoardWrapper(wrapper.parent);
+  }
+  showBoardWrapper(mesh) {
+    if (!mesh.boardWrapper)
+      return;
+    mesh.boardWrapper.position.y = 0;
+    mesh.boardWrapper.scaling.x = 1;
+    mesh.boardWrapper.scaling.y = 1;
+    mesh.boardWrapper.scaling.z = 1;
+  }
+  hideBoardWrapper(mesh) {
+    if (!mesh.boardWrapper)
+      return;
+    mesh.boardWrapper.position.y = -1000;
+    mesh.boardWrapper.scaling.x = .001;
+    mesh.boardWrapper.scaling.y = .001;
+    mesh.boardWrapper.scaling.z = .001;
+  }
+  __texture2DText(textureText, cssColor, cssClearColor, textFontSize = 150, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
+    let texture = new BABYLON.DynamicTexture("dynamic texture", renderSize, this.scene, true);
+    let numChar = textureText.length;
+    let minFontSize = Math.ceil(renderSize * 1.5 / numChar);
+
+    let font = fontWeight + ' ' + textFontSize + 'px ' + textFontFamily;
+    let invertY = true;
+
+    let color = cssColor ? cssColor : "white";
+    let clearColor = cssClearColor ? cssClearColor : 'transparent';
+    let x = 0;
+    let y = textFontSize;
+
+    texture._context.font = font;
+    let wResult = texture.getContext().measureText(textureText);
+    let text1Width = wResult.width;
+    let leftOffset = (renderSize - text1Width) / 2.0;
+    texture.drawText(textureText, x + leftOffset, y, font, color, clearColor);
+
+    return texture;
+  }
+  color(str) {
+    if (!str) {
+      str = '1,1,1';
+    }
+    let parts = str.split(',');
+    let cA = [];
+    let r = Number(parts[0]);
+    if (isNaN(r))
+      r = 0;
+    let g = Number(parts[1]);
+    if (isNaN(g))
+      g = 0;
+    let b = Number(parts[2]);
+    if (isNaN(b))
+      b = 0;
+    if (typeof window !== "undefined" && window.BABYLON)
+      return new BABYLON.Color3(r, g, b);
+
+    return {
+      r,
+      g,
+      b
+    };
+  }
+  colorRGB255(str) {
+    let bC = this.color(str);
+    if (isNaN(bC.r))
+      bC.r = 1;
+    if (isNaN(bC.g))
+      bC.g = 1;
+    if (isNaN(bC.b))
+      bC.b = 1;
+
+    return 'rgb(' + (bC.r * 255.0).toFixed(0) + ',' + (bC.g * 255.0).toFixed(0) + ',' + (bC.b * 255.0).toFixed(0) + ')'
+  }
   createParticleSystem(mesh, prefix = "static") {
     let useGPUVersion = true;
     if (this[prefix + 'particleSystem']) {
@@ -455,6 +573,8 @@ export class StoryApp extends BaseApp {
       return;
 
     if (mesh.clickCommand === 'pauseSpin') {
+      this.hideBoardWrapper(mesh);
+
       if (mesh.spinAnimation._paused)
         mesh.spinAnimation.restart();
     }
@@ -467,6 +587,7 @@ export class StoryApp extends BaseApp {
     if (!mesh || !mesh.appClickable)
       return;
 
+
     if (mesh.emptySeat) {
       this.dockSit(mesh.seatIndex);
     }
@@ -476,6 +597,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (mesh.clickCommand === 'pauseSpin') {
+      this.showBoardWrapper(mesh);
 
       this.lastMesh = mesh;
       mesh.spinAnimation.pause();
@@ -548,7 +670,7 @@ export class StoryApp extends BaseApp {
     if (!this.gameData)
       return;
 
-    if (!this.engine)  {
+    if (!this.engine) {
       if (this.gameData.lowFi === true)
         this.highFi = false;
       await this.initGraphics();
