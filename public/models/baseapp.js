@@ -1299,7 +1299,7 @@ export class BaseApp {
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult) {
-      this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/match/deckmedia/avatar-walk.glb", null, this.scene);
+      this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/solar/avatar-walk.glb", null, this.scene);
       this.animationGLB = this.animationResult.meshes[0];
       this.animationGLB.position.y = -1000;
       this.animationResult.animationGroups[0].stop();

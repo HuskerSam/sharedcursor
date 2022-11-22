@@ -509,7 +509,6 @@ export class StoryApp extends BaseApp {
       this.lastMesh = mesh;
       mesh.spinAnimation.pause();
     }
-
   }
   async loadStaticMesh(path, file, scale, x, y, z, invert = -1) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
@@ -691,7 +690,7 @@ export class StoryApp extends BaseApp {
     let uid = seatData.uid;
 
     let colors = this.get3DColors(index);
-    let mesh = await this.loadAvatarMesh(`/match/deckmedia/${avatar}.glb`, "", 1, 0, 0, 0);
+    let mesh = await this.loadAvatarMesh(`/avatars/${avatar}.glb`, "", 1, 0, 0, 0);
     mesh.position.x = 0;
     mesh.position.y = 0;
     mesh.position.z = 0;

@@ -179,7 +179,7 @@ export class ProfileApp extends BaseApp {
 
     let prefix = this.profile_display_avatar_preset.value;
     this.modal.show();
-    this.currentLoadedAvatar = await this.loadAvatarMesh("/match/deckmedia/", prefix + ".glb", 2, 0, 0, -4);
+    this.currentLoadedAvatar = await this.loadAvatarMesh("/avatars/", prefix + ".glb", 2, 0, 0, -4);
   }
   async load() {
     await GameCards.loadDecks();
