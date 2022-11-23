@@ -167,13 +167,13 @@ export class StoryApp extends BaseApp {
         outer_wrapper.position.x = meta.x;
         outer_wrapper.position.y = meta.y;
         outer_wrapper.position.z = meta.z;
+
         if (meta.rx !== undefined)
           wrapper.rotation.x = meta.rx;
         if (meta.ry !== undefined)
           wrapper.rotation.y = meta.ry;
         if (meta.rz !== undefined)
           wrapper.rotation.z = meta.rz;
-
       } else {
         let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
           width: .01,
