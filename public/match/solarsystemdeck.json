@@ -238,7 +238,8 @@
     "diameter": 2,
     "noNavMesh": true,
     "spintime": 38000,
-    "freeOrbit": true
+    "freeOrbit": true,
+    "binaryOrbit": true
   },
   {
     "type": "3dmodel",

@@ -64,7 +64,7 @@ export class StoryApp extends BaseApp {
       'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
       'moon_hyperion', 'moon_mimas'
     ];
-    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy'];
+    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno'];
 
     let navMeshes = [];
     let promises = [];
@@ -244,27 +244,72 @@ export class StoryApp extends BaseApp {
     }
 
     if (meta.freeOrbit) {
-      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapper' + name, {
+      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('orbitassetwrapper' + name, {
         width: .01,
         height: .01,
         depth: .01
       }, this.scene);
       orbit_wrapper.visibility = 0;
-      orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
       outer_wrapper.parent = orbit_wrapper;
-      outer_wrapper.position.z = meta.orbitRadius;
 
+      outer_wrapper.position.z = meta.orbitRadius;
+      orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
+
+      if (meta.binaryOrbit) {
+        let binaryOrbit_wrapper = BABYLON.MeshBuilder.CreateBox('binaryassetwrapper' + name, {
+          width: .01,
+          height: .01,
+          depth: .01
+        }, this.scene);
+        binaryOrbit_wrapper.visibility = 0;
+
+        binaryOrbit_wrapper.parent = orbit_wrapper.parent;
+        orbit_wrapper.parent = binaryOrbit_wrapper;
+
+        let binaryAnimation = new BABYLON.Animation(
+          "staticorbitmeshrotationbinary" + name,
+          "position",
+          30,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+
+        let x = binaryOrbit_wrapper.position.x;
+        let y = binaryOrbit_wrapper.position.y;
+        let z = binaryOrbit_wrapper.position.z;
+        let binarykeys = [];
+        let endFrame = 5 * 30;
+        binarykeys.push({
+          frame: 0,
+          value: new BABYLON.Vector3(x, y, z)
+        });
+        binarykeys.push({
+          frame: 60,
+          value: new BABYLON.Vector3(x - 0.5, y, z - 0.5)
+        });
+        binarykeys.push({
+          frame: 120,
+          value: new BABYLON.Vector3(x + 0.5, y, z + 0.5)
+        });
+        binarykeys.push({
+          frame: 149,
+          value: new BABYLON.Vector3(x, y, z)
+        });
+
+        binaryAnimation.setKeys(binarykeys);
+        if (!binaryOrbit_wrapper.animations)
+          binaryOrbit_wrapper.animations = [];
+        binaryOrbit_wrapper.animations.push(binaryAnimation);
+        outer_wrapper.binaryAnimation = this.scene.beginAnimation(binaryOrbit_wrapper, 0, endFrame, true);
+      }
 
       outer_wrapper.position.x = 0;
       outer_wrapper.position.y = 0;
-      //      outer_wrapper.position.z =0;
 
       orbit_wrapper.position.x = meta.x;
       orbit_wrapper.position.y = meta.y;
       orbit_wrapper.position.z = meta.z;
-      //outer_wrapper.position.x = meta.x;
-      //outer_wrapper.position.z = meta.z;
 
       let orbitAnimation = new BABYLON.Animation(
         "staticorbitmeshrotation" + name,
