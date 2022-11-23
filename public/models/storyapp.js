@@ -565,7 +565,7 @@ export class StoryApp extends BaseApp {
 
     this[prefix + 'particleSystem'].emitRate = 1000;
     // this[prefix + 'particleSystem'].particleEmitterType = new BABYLON.BoxParticleEmitter(1);
-    this[prefix + 'particleSystem'].particleTexture = new BABYLON.Texture("/match/deckmedia/flare.png", this.scene);
+    this[prefix + 'particleSystem'].particleTexture = new BABYLON.Texture("/images/flare.png", this.scene);
 
     this[prefix + 'particleSystem'].gravity = new BABYLON.Vector3(0, 0, 0);
 
