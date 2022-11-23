@@ -119,8 +119,6 @@ export class StoryApp extends BaseApp {
     outer_wrapper.position.y = meta.y;
     outer_wrapper.position.z = meta.z;
 
-    if (meta.showSymbol)
-      this._renderSymbolInfoPanel(name, meta, wrapper);
 
     if (meta.parent) {
       let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
@@ -178,6 +176,11 @@ export class StoryApp extends BaseApp {
         outer_wrapper.clickCommand = 'pauseSpin';
       }
       outer_wrapper.parent = parent;
+    }
+
+    if (meta.showSymbol) {
+      let parent = meta.parent ? outer_wrapper.parent : outer_wrapper;
+      this._renderSymbolInfoPanel(name, meta, wrapper, parent);
     }
 
     if (meta.freeOrbit) {
@@ -309,8 +312,8 @@ export class StoryApp extends BaseApp {
       }
     }
   }
-  _renderSymbolInfoPanel(name, meta, wrapper) {
-    let size = meta.diameter / 4;
+  _renderSymbolInfoPanel(name, meta, wrapper, parent) {
+    let size = 1;
     let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
       height: size,
       width: size
@@ -362,7 +365,7 @@ export class StoryApp extends BaseApp {
 
     let factor = .2;
     if (meta.symbolY < -0.99)
-      factor = -.75;
+      factor = -2.75;
     nameMesh1.position.y = symbolMesh1.position.y + factor;
     nameMesh2.position.y = symbolMesh1.position.y + factor;
     nameMesh2.rotation.y = Math.PI;
@@ -382,9 +385,9 @@ export class StoryApp extends BaseApp {
     nameMesh2.scaling.x = -1;
 
     boardWrapper.parent = wrapper;
-    wrapper.parent.boardWrapper = boardWrapper;
+    parent.boardWrapper = boardWrapper;
 
-    this.hideBoardWrapper(wrapper.parent);
+    this.hideBoardWrapper(parent);
   }
   showBoardWrapper(mesh) {
     if (!mesh.boardWrapper)
@@ -811,8 +814,8 @@ export class StoryApp extends BaseApp {
     particlePivot.position.z = 2;
     particlePivot.rotation.x = -1 * Math.PI / 2;
     particlePivot.material = this.mat1alpha;
-    if (this.highFi)
-      wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
+    //if (this.highFi)
+    //  wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
     particlePivot.parent = wrapper;
 
     let isOwner = this.uid === this.gameData.createUser;
@@ -942,7 +945,7 @@ export class StoryApp extends BaseApp {
     return new BABYLON.Color3(r, g, b);
   }
   get3DPosition(index) {
-    let x = 0,
+    let x = 5,
       y = .1,
       z = (index * 1.25) - 2;
     return new BABYLON.Vector3(x, y, z);
