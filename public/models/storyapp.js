@@ -881,9 +881,7 @@ export class StoryApp extends BaseApp {
     if (!seatWrapperMesh)
       return;
 
-    if (this.currentSeatMesh) {
-      this.currentSeatMesh.musicCache.stop();
-    }
+    this.musicMeshes.forEach(music => music.stop());
 
     let seatMesh = this.seatMeshes[seatIndex];
     this.currentSeatMesh = seatMesh;
@@ -896,7 +894,6 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = 3;
 
     let colors = this.get3DColors(seatIndex);
-    console.log(seatIndex, colors);
     this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
     this.selectedPlayerPanel.material.ambientColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
     this.selectedPlayerPanel.material.emissiveColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
@@ -1297,7 +1294,7 @@ export class StoryApp extends BaseApp {
       let agents = this.crowd.getAgents();
       let closest = this.navigationPlugin.getClosestPoint(startingPoint);
 
-      let key = 'seat' + this.currentSeatMeshIndex.toString();
+      let key = 'seat' + this.currentSeatMeshIndex;
       if (this.gameData[key] === this.uid) // || this.uid === this.gameData.createUser)
         this.updateSeatPosition(this.currentSeatMeshIndex, closest);
     }
