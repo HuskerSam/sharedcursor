@@ -92,7 +92,7 @@
     "symbol": "/match/deckmedia/moonlunasymbol.png",
     "glbpath": "/solar/juno.glb",
     "glbfile": "",
-    "glbscale": 0.1,
+    "glbscale": 0.075,
     "name": "Juno Probe",
     "objectType": "moon",
     "brand": "Solar System",
