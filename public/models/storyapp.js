@@ -94,6 +94,15 @@ export class StoryApp extends BaseApp {
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
 
+    this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    this.selectedPlayerPanel.position.y = -1000;
+    let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
+    this.selectedPlayerPanel.material = pm;
+
     await this.setupAgents();
 
     this.sceneInited = true;
@@ -637,6 +646,7 @@ export class StoryApp extends BaseApp {
     }
     this.updateAgents();
     this.updateUserPresence();
+    this.__updateSelectedSeatMesh();
 
     this.avatarsLoaded = true;
   }
@@ -838,14 +848,22 @@ export class StoryApp extends BaseApp {
         this.__updateSelectedSeatMesh(seatIndex);
       }, 100);
 
-    this.__updateSelectedSeatMesh(seatIndex);
+    this.__updateSelectedSeatMesh();
   }
-  __updateSelectedSeatMesh(seatIndex) {
+  __updateSelectedSeatMesh() {
+    let seatIndex = this.gameData.currentSeat;
     if (this.currentSeatMeshIndex === seatIndex)
       return;
 
     if (!this.runRender)
       return;
+
+    let seatWrapperMesh = this['dockSeatMesh' + seatIndex];
+
+    if (!seatWrapperMesh)
+      return;
+
+    this.selectedPlayerPanel.parent = seatWrapperMesh;
 
     if (this.currentSeatMesh) {
       this.currentSeatMesh.musicCache.stop();
@@ -855,6 +873,13 @@ export class StoryApp extends BaseApp {
     this.currentSeatMesh = seatMesh;
     if (!seatMesh.musicCache.isPlaying)
       seatMesh.musicCache.play();
+
+    this.selectedPlayerPanel.position.y = 4;
+    let colors = this.get3DColors(seatIndex);
+    console.log(seatIndex, colors);
+    this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    this.selectedPlayerPanel.material.ambientColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    this.selectedPlayerPanel.material.emissiveColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
     this.currentSeatMeshIndex = seatIndex;
   }
@@ -980,11 +1005,6 @@ export class StoryApp extends BaseApp {
         //    tessellation: 9,
         sideOrientation: BABYLON.Mesh.DOUBLESIDE
       }, this.scene);
-
-      let position = this.get3DPosition(index);
-      baseDisc.position.x = position.x;
-      baseDisc.position.y = position.y;
-      baseDisc.position.z = position.z;
 
       baseDisc.rotation.x = Math.PI / 2;
       baseDisc.emptySeat = true;
@@ -1259,11 +1279,9 @@ export class StoryApp extends BaseApp {
       let agents = this.crowd.getAgents();
       let closest = this.navigationPlugin.getClosestPoint(startingPoint);
 
-      for (let i = 0; i < agents.length; i++) {
-        let key = 'seat' + i.toString();
-        if (this.gameData[key] === this.uid)
-          this.updateSeatPosition(i, closest);
-      }
+      let key = 'seat' + this.currentSeatMeshIndex.toString();
+      if (this.gameData[key] === this.uid)
+        this.updateSeatPosition(this.currentSeatMeshIndex, closest);
     }
   }
   async updateSeatPosition(seatIndex, position) {
