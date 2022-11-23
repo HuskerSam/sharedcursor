@@ -669,8 +669,13 @@ export class StoryApp extends BaseApp {
       if (mesh.spinAnimation._paused)
         mesh.spinAnimation.restart();
 
-      if (mesh.musicCache && mesh.musicCache.isPlaying)
-        mesh.musicCache.stop();
+      if (this.currentSeatMesh !== mesh) {
+
+        if (mesh.musicCache && mesh.musicCache.isPlaying)
+          mesh.musicCache.stop();
+        if (this.currentSeatMesh)
+          this.currentSeatMesh.musicCache.play();
+      }
     }
   }
   pointerDown(mesh) {
@@ -696,8 +701,12 @@ export class StoryApp extends BaseApp {
       this.lastMesh = mesh;
       mesh.spinAnimation.pause();
 
-      if (mesh.musicCache && !mesh.musicCache.isPlaying)
-        mesh.musicCache.play();
+      if (this.currentSeatMesh !== mesh) {
+        if (this.currentSeatMesh)
+          this.currentSeatMesh.musicCache.stop();
+        if (mesh.musicCache && !mesh.musicCache.isPlaying)
+          mesh.musicCache.play();
+      }
     }
 
     if (mesh.wrapperName === 'sun')
@@ -884,7 +893,7 @@ export class StoryApp extends BaseApp {
     this.selectedPlayerPanel.parent = seatWrapperMesh;
     this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].rawMeshWrapper;
     this.selectedPlayerPanel.position.y = 4;
-    this.selectedMoonPanel.position.y = 2;
+    this.selectedMoonPanel.position.y = 3;
 
     let colors = this.get3DColors(seatIndex);
     console.log(seatIndex, colors);
@@ -1282,8 +1291,6 @@ export class StoryApp extends BaseApp {
   groundClick(pointerInfo) {
     if (!this.crowd)
       return;
-
-    //    BABYLON.Engine.audioEngine.unlock();
 
     let startingPoint = pointerInfo.pickInfo.pickedPoint;
     if (startingPoint) {
