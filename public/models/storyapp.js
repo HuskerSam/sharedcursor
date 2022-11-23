@@ -103,6 +103,14 @@ export class StoryApp extends BaseApp {
     let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
     this.selectedPlayerPanel.material = pm;
 
+    this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    this.selectedMoonPanel.position.y = -1000;
+    this.selectedMoonPanel.material = pm;
+
     await this.setupAgents();
 
     this.sceneInited = true;
@@ -229,6 +237,7 @@ export class StoryApp extends BaseApp {
     if (meta.seatIndex !== undefined)
       this.seatMeshes[meta.seatIndex] = clickParent;
     clickParent.wrapperName = name;
+    clickParent.rawMeshWrapper = wrapper;
 
     if (meta.showSymbol) {
       this._renderSymbolInfoPanel(name, meta, wrapper, clickParent);
@@ -863,8 +872,6 @@ export class StoryApp extends BaseApp {
     if (!seatWrapperMesh)
       return;
 
-    this.selectedPlayerPanel.parent = seatWrapperMesh;
-
     if (this.currentSeatMesh) {
       this.currentSeatMesh.musicCache.stop();
     }
@@ -874,7 +881,11 @@ export class StoryApp extends BaseApp {
     if (!seatMesh.musicCache.isPlaying)
       seatMesh.musicCache.play();
 
+    this.selectedPlayerPanel.parent = seatWrapperMesh;
+    this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].rawMeshWrapper;
     this.selectedPlayerPanel.position.y = 4;
+    this.selectedMoonPanel.position.y = 2;
+
     let colors = this.get3DColors(seatIndex);
     console.log(seatIndex, colors);
     this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
@@ -1280,7 +1291,7 @@ export class StoryApp extends BaseApp {
       let closest = this.navigationPlugin.getClosestPoint(startingPoint);
 
       let key = 'seat' + this.currentSeatMeshIndex.toString();
-      if (this.gameData[key] === this.uid)
+      if (this.gameData[key] === this.uid) // || this.uid === this.gameData.createUser)
         this.updateSeatPosition(this.currentSeatMeshIndex, closest);
     }
   }
