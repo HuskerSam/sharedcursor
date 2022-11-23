@@ -63,22 +63,19 @@ module.exports = class StoryAPI {
       updatePacket.mode = 'ready';
     }
     if (action === 'endTurn') {
-      if (!currentPlayer)
-        throw new Error("Must be current player");
+      if (!currentPlayer && !isOwner)
+        throw new Error("Must be current player or game owner");
 
-      if (gameData.turnPhase === 'result') {
-        updatePacket.turnPhase = 'clearprevious';
+      updatePacket.turnNumber = gameData.turnNumber + 1;
+      updatePacket.turnPhase = 'select';
+      updatePacket.currentSeat = updatePacket.turnNumber % gameData.runningNumberOfSeats;
 
-        updatePacket.currentSeat = updatePacket.turnNumber % gameData.runningNumberOfSeats;
-
-        let nextUser = gameData['seat' + updatePacket.currentSeat];
-        if (nextUser) {
-          if (!updatePacket.members)
-            updatePacket.members = {};
-          updatePacket.members[nextUser] = new Date().toISOString();
-        }
-      } else
-        throw new Error('Turn Phase is not in result');
+      let nextUser = gameData['seat' + updatePacket.currentSeat];
+      if (nextUser) {
+        if (!updatePacket.members)
+          updatePacket.members = {};
+        updatePacket.members[nextUser] = new Date().toISOString();
+      }
     }
 
     return updatePacket;
@@ -110,7 +107,7 @@ module.exports = class StoryAPI {
         }
         let gameData = sfDoc.data();
 
-        let updatePacket = await MatchAPI._processUserAction(gameData, uid, localInstance, action, card0, card1);
+        let updatePacket = await StoryAPI._processUserAction(gameData, uid, localInstance, action, card0, card1);
 
         if (Object.keys(updatePacket).length > 0) {
           updatePacket.lastActivity = new Date().toISOString();

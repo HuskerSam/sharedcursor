@@ -5,6 +5,7 @@ const functions = require('firebase-functions');
 const firebaseAdmin = require('firebase-admin');
 const gameAPI = require('./models/gameapi.js');
 const matchAPI = require('./models/matchapi.js');
+const storyAPI = require('./models/storyapi.js');
 const baseClass = require('./models/baseclass.js');
 
 firebaseAdmin.initializeApp();
@@ -53,3 +54,5 @@ apiApp.post('/user/auth/custom', async (req, res) => gameAPI.customAuthCode(req,
 apiApp.post('/user/auth/query', async (req, res) => gameAPI.queryAuthCode(req, res));
 
 apiApp.post('/match/action', async (req, res) => matchAPI.userAction(req, res));
+
+apiApp.post('/story/action', async (req, res) => storyAPI.userAction(req, res));

@@ -8,6 +8,7 @@ export class StoryApp extends BaseApp {
     this.cache = {};
     this.staticAssetMeshes = {};
     this.musicMeshes = [];
+    this.seatMeshes = {};
 
     this._initGameCommon();
 
@@ -35,6 +36,9 @@ export class StoryApp extends BaseApp {
 
     this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
     this.menu_bar_toggle.addEventListener('click', e => this.toggleMenuBar());
+
+    this.end_turn_button = document.querySelector('.end_turn_button');
+    this.end_turn_button.addEventListener('click', e => this._endTurn());
   }
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
@@ -58,9 +62,9 @@ export class StoryApp extends BaseApp {
     this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos', 'moon_europa',
       'moon_io', 'moon_ganymede', 'moon_callisto', 'moon_titan', 'moon_encedulas',
       'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
-      'moon_hyperion', 'moon_mimas', 'moon_lander', 'moon_buggy'
+      'moon_hyperion', 'moon_mimas'
     ];
-    this.mascotNames = ['mascot_nebraska'];
+    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy'];
 
     let navMeshes = [];
     let promises = [];
@@ -213,6 +217,10 @@ export class StoryApp extends BaseApp {
     }
 
     let clickParent = meta.parent ? outer_wrapper.parent : outer_wrapper;
+    if (meta.seatIndex !== undefined)
+      this.seatMeshes[meta.seatIndex] = clickParent;
+    clickParent.wrapperName = name;
+
     if (meta.showSymbol) {
       this._renderSymbolInfoPanel(name, meta, wrapper, clickParent);
     }
@@ -672,6 +680,9 @@ export class StoryApp extends BaseApp {
       if (mesh.musicCache && !mesh.musicCache.isPlaying)
         mesh.musicCache.play();
     }
+
+    if (mesh.wrapperName === 'sun')
+      this._endTurn();
   }
   async loadStaticMesh(path, file, scale, x, y, z) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
@@ -824,13 +835,28 @@ export class StoryApp extends BaseApp {
       setTimeout(() => {
         this.runRender = true;
         document.body.classList.add('avatars_loaded');
+        this.__updateSelectedSeatMesh(seatIndex);
       }, 100);
 
-    this.musicMeshes.forEach(music => music.isPlaying ? music.stop() : '');
+    this.__updateSelectedSeatMesh(seatIndex);
+  }
+  __updateSelectedSeatMesh(seatIndex) {
+    if (this.currentSeatMeshIndex === seatIndex)
+      return;
 
-    if (this.runRender)
-      if (this.musicMeshes[seatIndex] && !this.musicMeshes[seatIndex].isPlaying)
-        this.musicMeshes[seatIndex].play();
+    if (!this.runRender)
+      return;
+
+    if (this.currentSeatMesh) {
+      this.currentSeatMesh.musicCache.stop();
+    }
+
+    let seatMesh = this.seatMeshes[seatIndex];
+    this.currentSeatMesh = seatMesh;
+    if (!seatMesh.musicCache.isPlaying)
+      seatMesh.musicCache.play();
+
+    this.currentSeatMeshIndex = seatIndex;
   }
   renderSeatText(mesh, index) {
     let seatData = this.getSeatData(index);
@@ -1349,6 +1375,36 @@ export class StoryApp extends BaseApp {
           seat.onlineSphere = sphere;
         }
       }
+    }
+  }
+
+  async _endTurn() {
+    if (this.debounce())
+      return;
+
+    let action = 'endTurn';
+    let body = {
+      gameId: this.currentGame,
+      action
+    };
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+
+    if (!json.success) {
+      console.log('selection send resolve', json);
+      if (this.alertErrors)
+        alert('Failed to resolve selection: ' + json.errorMessage);
+      return;
     }
   }
 }
