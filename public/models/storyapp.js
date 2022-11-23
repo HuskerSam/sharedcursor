@@ -314,6 +314,17 @@ export class StoryApp extends BaseApp {
   }
   _renderSymbolInfoPanel(name, meta, wrapper, parent) {
     let size = 1;
+
+    let symbolWrapper = BABYLON.MeshBuilder.CreateBox('symbolpopupwrapper' + name, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    symbolWrapper.visibility = 0;
+    symbolWrapper.parent = wrapper;
+    parent.symbolWrapper = symbolWrapper;
+
+
     let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
       height: size,
       width: size
@@ -336,11 +347,11 @@ export class StoryApp extends BaseApp {
     if (meta.symbolY)
       extraY = meta.symbolY;
     symbolMesh1.material = m;
-    symbolMesh1.parent = wrapper;
+    symbolMesh1.parent = symbolWrapper;
     symbolMesh1.rotation.y = 0;
     symbolMesh1.position.y = meta.diameter / 1.25 + extraY;
     symbolMesh3.material = m;
-    symbolMesh3.parent = wrapper;
+    symbolMesh3.parent = symbolWrapper;
     symbolMesh3.rotation.y = Math.PI;
     symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
     symbolMesh3.scaling.x = -1;
@@ -363,9 +374,9 @@ export class StoryApp extends BaseApp {
       width: size * 5
     }, this.scene);
 
-    let factor = .2;
-    if (meta.symbolY < -0.99)
-      factor = -2.75;
+    let factor = -1.8;
+//    if (meta.symbolY < -0.99)
+  //    factor = -2.75;
     nameMesh1.position.y = symbolMesh1.position.y + factor;
     nameMesh2.position.y = symbolMesh1.position.y + factor;
     nameMesh2.rotation.y = Math.PI;
@@ -396,6 +407,11 @@ export class StoryApp extends BaseApp {
     mesh.boardWrapper.scaling.x = 1;
     mesh.boardWrapper.scaling.y = 1;
     mesh.boardWrapper.scaling.z = 1;
+
+    mesh.symbolWrapper.position.y = -1000;
+    mesh.symbolWrapper.scaling.x = .001;
+    mesh.symbolWrapper.scaling.y = .001;
+    mesh.symbolWrapper.scaling.z = .001;
   }
   hideBoardWrapper(mesh) {
     if (!mesh.boardWrapper)
@@ -404,8 +420,13 @@ export class StoryApp extends BaseApp {
     mesh.boardWrapper.scaling.x = .001;
     mesh.boardWrapper.scaling.y = .001;
     mesh.boardWrapper.scaling.z = .001;
+
+    mesh.symbolWrapper.position.y = 0;
+    mesh.symbolWrapper.scaling.x = 1;
+    mesh.symbolWrapper.scaling.y = 1;
+    mesh.symbolWrapper.scaling.z = 1;
   }
-  __texture2DText(textureText, cssColor, cssClearColor, textFontSize = 150, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
+  __texture2DText(textureText, cssColor, cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
     let texture = new BABYLON.DynamicTexture("dynamic texture", renderSize, this.scene, true);
     let numChar = textureText.length;
     let minFontSize = Math.ceil(renderSize * 1.5 / numChar);
