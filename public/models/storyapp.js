@@ -7,6 +7,7 @@ export class StoryApp extends BaseApp {
     this.apiType = 'story';
     this.cache = {};
     this.staticAssetMeshes = {};
+    this.musicMeshes = [];
 
     this._initGameCommon();
 
@@ -111,7 +112,6 @@ export class StoryApp extends BaseApp {
 
     let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
 
-
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
       height: .01,
@@ -212,9 +212,9 @@ export class StoryApp extends BaseApp {
       outer_wrapper.parent = parent;
     }
 
+    let clickParent = meta.parent ? outer_wrapper.parent : outer_wrapper;
     if (meta.showSymbol) {
-      let parent = meta.parent ? outer_wrapper.parent : outer_wrapper;
-      this._renderSymbolInfoPanel(name, meta, wrapper, parent);
+      this._renderSymbolInfoPanel(name, meta, wrapper, clickParent);
     }
 
     if (meta.freeOrbit) {
@@ -281,15 +281,21 @@ export class StoryApp extends BaseApp {
     if (this.shadowGenerator)
       this.shadowGenerator.addShadowCaster(mesh, true);
 
-    if (meta.enableMusic && this.highFi) {
+    if (meta.mp3file && this.highFi) {
       let music = new BABYLON.Sound("music", meta.mp3file, this.scene, null, {
         loop: true,
-        autoplay: true,
         spatialSound: true,
         distanceModel: "exponential",
         rolloffFactor: 2
       });
       music.attachToMesh(mesh);
+
+      //if (meta.enableMusic)
+      this.musicMeshes.push(music);
+
+      //if (meta.musicOnClick)
+      clickParent.musicCache = music;
+
     }
 
     if (meta.spintime) {
@@ -635,6 +641,9 @@ export class StoryApp extends BaseApp {
 
       if (mesh.spinAnimation._paused)
         mesh.spinAnimation.restart();
+
+      if (mesh.musicCache && mesh.musicCache.isPlaying)
+        mesh.musicCache.stop();
     }
   }
   pointerDown(mesh) {
@@ -659,6 +668,9 @@ export class StoryApp extends BaseApp {
 
       this.lastMesh = mesh;
       mesh.spinAnimation.pause();
+
+      if (mesh.musicCache && !mesh.musicCache.isPlaying)
+        mesh.musicCache.play();
     }
   }
   async loadStaticMesh(path, file, scale, x, y, z) {
@@ -813,6 +825,12 @@ export class StoryApp extends BaseApp {
         this.runRender = true;
         document.body.classList.add('avatars_loaded');
       }, 100);
+
+    this.musicMeshes.forEach(music => music.isPlaying ? music.stop() : '');
+
+    if (this.runRender)
+      if (this.musicMeshes[seatIndex] && !this.musicMeshes[seatIndex].isPlaying)
+        this.musicMeshes[seatIndex].play();
   }
   renderSeatText(mesh, index) {
     let seatData = this.getSeatData(index);
