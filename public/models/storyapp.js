@@ -168,11 +168,11 @@ export class StoryApp extends BaseApp {
         outer_wrapper.position.y = meta.y;
         outer_wrapper.position.z = meta.z;
         if (meta.rx !== undefined)
-          outer_wrapper.rotation.x = meta.rx;
+          wrapper.rotation.x = meta.rx;
         if (meta.ry !== undefined)
-          outer_wrapper.rotation.y = meta.ry;
+          wrapper.rotation.y = meta.ry;
         if (meta.rz !== undefined)
-          outer_wrapper.rotation.z = meta.rz;
+          wrapper.rotation.z = meta.rz;
 
       } else {
         let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
@@ -715,11 +715,8 @@ export class StoryApp extends BaseApp {
         mesh.spinAnimation.restart();
 
       if (this.currentSeatMesh !== mesh) {
-
-        if (mesh.musicCache && mesh.musicCache.isPlaying)
+        if (mesh.musicCache)
           mesh.musicCache.stop();
-        if (this.currentSeatMesh)
-          this.currentSeatMesh.musicCache.play();
       }
     }
   }
@@ -730,7 +727,6 @@ export class StoryApp extends BaseApp {
 
     if (!mesh || !mesh.appClickable)
       return;
-
 
     if (mesh.emptySeat) {
       this.dockSit(mesh.seatIndex);
@@ -747,9 +743,7 @@ export class StoryApp extends BaseApp {
       mesh.spinAnimation.pause();
 
       if (this.currentSeatMesh !== mesh) {
-        if (this.currentSeatMesh)
-          this.currentSeatMesh.musicCache.stop();
-        if (mesh.musicCache && !mesh.musicCache.isPlaying)
+        if (mesh.musicCache)
           mesh.musicCache.play();
       }
     }
