@@ -6,6 +6,8 @@ export default class GameCards {
       return window.moons1CardDeck;
     if (cardDeck === 'moons2')
       return window.moons2CardDeck;
+    if (cardDeck === 'mascots')
+      return window.mascotsCardDeck;
 
     return window.solarsystemCardDeck;
   }
@@ -21,9 +23,12 @@ export default class GameCards {
     return meta;
   }
   static async loadDecks() {
-    await GameCards.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck');
-    await GameCards.readJSONFile(`/match/moons1deck.json`, 'moons1CardDeck');
-    await GameCards.readJSONFile(`/match/moons2deck.json`, 'moons2CardDeck');
+    await Promise.all([
+      await GameCards.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck'),
+      await GameCards.readJSONFile(`/match/moons1deck.json`, 'moons1CardDeck'),
+      await GameCards.readJSONFile(`/match/moons2deck.json`, 'moons2CardDeck'),
+      await GameCards.readJSONFile(`/match/mascotsdeck.json`, 'mascotsCardDeck')
+    ]);
 
     let allCards = {};
     let deck = this.getCardDeck('soloarsystem');
@@ -33,6 +38,9 @@ export default class GameCards {
     deck.forEach(card => allCards[card.id] = card);
 
     deck = this.getCardDeck('moons2');
+    deck.forEach(card => allCards[card.id] = card);
+
+    deck = this.getCardDeck('mascots');
     deck.forEach(card => allCards[card.id] = card);
 
     return allCards;

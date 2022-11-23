@@ -553,7 +553,7 @@ export class BaseApp {
         icon: '/images/logo_match.png'
       },
       story: {
-        name: 'Story^',
+        name: 'Solar*',
         icon: '/images/logo_story.png'
       }
     }

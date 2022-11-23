@@ -1,0 +1,31 @@
+[
+  {
+    "type": "3dmodel",
+    "id": "mascot_nebraska",
+    "description": "Herbie Husker v3.",
+    "image": "/match/deckmedia/phobos.jpg",
+    "symbol": "/match/deckmedia/moonlunasymbol.png",
+    "showSymbol": false,
+    "glbpath": "/mascots/herbie.glb",
+    "glbfile": "",
+    "glbscale": 1.5,
+    "mp3file": "/match/deckmedia/alabama.mp3",
+    "name": "Herbie Husker",
+    "objectType": "mascot",
+    "brand": "College Mascots",
+    "brandid": "collegemascots",
+    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "color": "rgb(255, 0, 0)",
+    "invert": "",
+    "x": 0.2,
+    "y": 0,
+    "z": 0.5,
+    "ry": 1.2,
+    "radius": 1.5,
+    "diameter": 0.75,
+    "noNavMesh": true,
+    "spintime": 10000,
+    "parent": "moon_luna",
+    "noOrbit": true
+  }
+]

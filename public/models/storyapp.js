@@ -59,6 +59,7 @@ export class StoryApp extends BaseApp {
       'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
       'moon_hyperion', 'moon_mimas', 'moon_lander', 'moon_buggy'
     ];
+    this.mascotNames = ['mascot_nebraska'];
 
     let navMeshes = [];
     let promises = [];
@@ -69,11 +70,21 @@ export class StoryApp extends BaseApp {
     });
     await Promise.all(promises);
 
+    promises = [];
     this.orbitNames.forEach(name => {
-      this.loadStaticAsset(name, staticWrapper);
+      promises.push(this.loadStaticAsset(name, staticWrapper));
       if (this.allCards[name].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(name));
     });
+    await Promise.all(promises);
+
+    promises = [];
+    this.mascotNames.forEach(name => {
+      promises.push(this.loadStaticAsset(name, staticWrapper));
+      if (this.allCards[name].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(name));
+    });
+    await Promise.all(promises);
 
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
@@ -99,6 +110,8 @@ export class StoryApp extends BaseApp {
     let meta = this.allCards[name];
 
     let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
+
+
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
       height: .01,
@@ -119,56 +132,77 @@ export class StoryApp extends BaseApp {
     outer_wrapper.position.y = meta.y;
     outer_wrapper.position.z = meta.z;
 
-
     if (meta.parent) {
-      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
-        width: .01,
-        height: .01,
-        depth: .01
-      }, this.scene);
-      orbit_wrapper.visibility = 0;
-      orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
+      if (meta.noOrbit) {
+        let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
+          width: .01,
+          height: .01,
+          depth: .01
+        }, this.scene);
+        orbit_wrapper.visibility = 0;
+        orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
-      outer_wrapper.parent = orbit_wrapper;
-      outer_wrapper.position.z = meta.z;
-      outer_wrapper.position.x = meta.x;
+        outer_wrapper.parent = orbit_wrapper;
+        outer_wrapper.position.x = meta.x;
+        outer_wrapper.position.y = meta.y;
+        outer_wrapper.position.z = meta.z;
+        if (meta.rx !== undefined)
+          outer_wrapper.rotation.x = meta.rx;
+        if (meta.ry !== undefined)
+          outer_wrapper.rotation.y = meta.ry;
+        if (meta.rz !== undefined)
+          outer_wrapper.rotation.z = meta.rz;
 
-      if (meta.clickToPause) {
-        orbit_wrapper.appClickable = true;
-        orbit_wrapper.clickToPause = clickToPause;
-        orbit_wrapper.clickCommand = 'pauseSpin';
+      } else {
+        let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
+          width: .01,
+          height: .01,
+          depth: .01
+        }, this.scene);
+        orbit_wrapper.visibility = 0;
+        orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
+
+        outer_wrapper.parent = orbit_wrapper;
+        outer_wrapper.position.z = meta.z;
+        outer_wrapper.position.x = meta.x;
+
+        if (meta.clickToPause) {
+          orbit_wrapper.appClickable = true;
+          orbit_wrapper.clickToPause = clickToPause;
+          orbit_wrapper.clickCommand = 'pauseSpin';
+        }
+
+
+        let orbitAnimation = new BABYLON.Animation(
+          "staticorbitmeshrotation" + name,
+          "rotation",
+          30,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+
+        //At the animation key 0, the value of scaling is "1"
+        let x = outer_wrapper.rotation.x;
+        let y = outer_wrapper.rotation.y;
+        let z = outer_wrapper.rotation.z;
+        let orbitkeys = [];
+        let endFrame = meta.spintime / 1000 * 30;
+        orbitkeys.push({
+          frame: 0,
+          value: new BABYLON.Vector3(x, y, z)
+        });
+
+        orbitkeys.push({
+          frame: endFrame,
+          value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
+        });
+
+        orbitAnimation.setKeys(orbitkeys);
+        if (!orbit_wrapper.animations)
+          orbit_wrapper.animations = [];
+        orbit_wrapper.animations.push(orbitAnimation);
+        orbit_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
       }
-
-
-      let orbitAnimation = new BABYLON.Animation(
-        "staticorbitmeshrotation" + name,
-        "rotation",
-        30,
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-      );
-
-      //At the animation key 0, the value of scaling is "1"
-      let x = outer_wrapper.rotation.x;
-      let y = outer_wrapper.rotation.y;
-      let z = outer_wrapper.rotation.z;
-      let orbitkeys = [];
-      let endFrame = meta.spintime / 1000 * 30;
-      orbitkeys.push({
-        frame: 0,
-        value: new BABYLON.Vector3(x, y, z)
-      });
-
-      orbitkeys.push({
-        frame: endFrame,
-        value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
-      });
-
-      orbitAnimation.setKeys(orbitkeys);
-      if (!orbit_wrapper.animations)
-        orbit_wrapper.animations = [];
-      orbit_wrapper.animations.push(orbitAnimation);
-      orbit_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
     } else {
       if (clickToPause) {
         outer_wrapper.appClickable = true;
@@ -375,8 +409,8 @@ export class StoryApp extends BaseApp {
     }, this.scene);
 
     let factor = -1.8;
-//    if (meta.symbolY < -0.99)
-  //    factor = -2.75;
+    //    if (meta.symbolY < -0.99)
+    //    factor = -2.75;
     nameMesh1.position.y = symbolMesh1.position.y + factor;
     nameMesh2.position.y = symbolMesh1.position.y + factor;
     nameMesh2.rotation.y = Math.PI;
