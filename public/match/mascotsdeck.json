@@ -230,7 +230,7 @@
     "particlesEnabled": true,
     "spindirection": -1,
     "px": 0,
-    "py": -3,
-    "pz": 2
+    "py": -4.75,
+    "pz": 0
   }
 ]

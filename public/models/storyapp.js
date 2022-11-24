@@ -159,15 +159,21 @@ export class StoryApp extends BaseApp {
     outer_wrapper.position.z = meta.z;
 
     if (meta.parent) {
-      if (meta.noOrbit) {
-        let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
-          width: .01,
-          height: .01,
-          depth: .01
-        }, this.scene);
-        orbit_wrapper.visibility = 0;
-        orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
+      let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      orbit_wrapper.visibility = 0;
+      orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
+      if (meta.clickToPause) {
+        orbit_wrapper.appClickable = true;
+        orbit_wrapper.clickToPause = clickToPause;
+        orbit_wrapper.clickCommand = 'pauseSpin';
+      }
+
+      if (meta.noOrbit) {
         outer_wrapper.parent = orbit_wrapper;
         outer_wrapper.position.x = meta.x;
         outer_wrapper.position.y = meta.y;
@@ -180,24 +186,9 @@ export class StoryApp extends BaseApp {
         if (meta.rz !== undefined)
           wrapper.rotation.z = meta.rz;
       } else {
-        let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
-          width: .01,
-          height: .01,
-          depth: .01
-        }, this.scene);
-        orbit_wrapper.visibility = 0;
-        orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
-
         outer_wrapper.parent = orbit_wrapper;
         outer_wrapper.position.z = meta.z;
         outer_wrapper.position.x = meta.x;
-
-        if (meta.clickToPause) {
-          orbit_wrapper.appClickable = true;
-          orbit_wrapper.clickToPause = clickToPause;
-          orbit_wrapper.clickCommand = 'pauseSpin';
-        }
-
 
         let orbitAnimation = new BABYLON.Animation(
           "staticorbitmeshrotation" + name,
@@ -356,6 +347,13 @@ export class StoryApp extends BaseApp {
         orbit_wrapper.animations = [];
       orbit_wrapper.animations.push(orbitAnimation);
       outer_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+
+      if (meta.noDaySpin) {
+        orbit_wrapper.appClickable = true;
+        orbit_wrapper.clickToPause = clickToPause;
+        orbit_wrapper.clickCommand = 'pauseSpin';
+        orbit_wrapper.spinAnimation = outer_wrapper.spinAnimation;
+      }
     }
 
     this.staticAssetMeshes[name] = outer_wrapper;
@@ -438,7 +436,7 @@ export class StoryApp extends BaseApp {
         particlePivot.position.x = meta.px;
         particlePivot.position.y = meta.py;
         particlePivot.position.z = meta.pz;
-        particlePivot.rotation.x = -1 * Math.PI / 2;
+        //  particlePivot.rotation.x = -1 * Math.PI / 2;
         particlePivot.material = this.mat1alpha;
         particlePivot.parent = wrapper;
 
@@ -627,12 +625,12 @@ export class StoryApp extends BaseApp {
       this[prefix + 'particleSystem'] = new BABYLON.GPUParticleSystem("particles", {
         capacity: 1000000
       }, this.scene);
-      this[prefix + 'particleSystem'].activeParticleCount = 200000;
+      this[prefix + 'particleSystem'].activeParticleCount = 100000;
     } else {
-      this[prefix + 'particleSystem'] = new BABYLON.ParticleSystem("particles", 50000, this.scene);
+      this[prefix + 'particleSystem'] = new BABYLON.ParticleSystem("particles", 25000, this.scene);
     }
 
-    this[prefix + 'particleSystem'].emitRate = 1000;
+    this[prefix + 'particleSystem'].emitRate = 500;
     // this[prefix + 'particleSystem'].particleEmitterType = new BABYLON.BoxParticleEmitter(1);
     this[prefix + 'particleSystem'].particleTexture = new BABYLON.Texture("/images/flare.png", this.scene);
 
@@ -745,6 +743,7 @@ export class StoryApp extends BaseApp {
     }
   }
   pointerDown(mesh) {
+    console.log('hit', mesh);
     while (mesh && !mesh.appClickable) {
       mesh = mesh.parent;
     }
