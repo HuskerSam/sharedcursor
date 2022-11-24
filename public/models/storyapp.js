@@ -65,8 +65,8 @@ export class StoryApp extends BaseApp {
       'moon_hyperion', 'moon_mimas', 'moon_dione'
     ];
     this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
-      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv','probe_tgo', 'rocket_exploreri',
-       'probe_voyager', 'probe_psp', 'probe_newhorizon', 'probe_radiodish'
+      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv', 'probe_tgo', 'rocket_exploreri',
+      'probe_voyager', 'probe_psp', 'probe_newhorizon', 'probe_radiodish'
     ];
 
     let navMeshes = [];
@@ -113,6 +113,8 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
+
+    //this.createGuides();
 
     await this.setupAgents();
 
@@ -1508,5 +1510,66 @@ export class StoryApp extends BaseApp {
         alert('Failed to resolve selection: ' + json.errorMessage);
       return;
     }
+  }
+  createGuides(size = 200) {
+    let wrapper = null;
+    let sObjects = [];
+    let axisX = BABYLON.Mesh.CreateLines("axisX", [
+      new BABYLON.Vector3.Zero(),
+      new BABYLON.Vector3(size, 0, 0),
+      new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+      new BABYLON.Vector3(size, 0, 0),
+      new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+    ], this.scene);
+    axisX.color = new BABYLON.Color3(1, 0, 0);
+    wrapper = axisX;
+
+    let localScene = this.scene;
+
+    function __make2DTextMesh(text, color, size) {
+      let dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, localScene, true);
+      dynamicTexture.hasAlpha = true;
+      dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
+      let plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, localScene, true);
+      plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", localScene);
+      plane.material.backFaceCulling = false;
+      plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+      plane.material.diffuseTexture = dynamicTexture;
+      return plane;
+    }
+
+    let xChar = __make2DTextMesh("X", "red", size / 10);
+    xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+    xChar.setParent(wrapper);
+
+    let axisY = BABYLON.Mesh.CreateLines("axisY", [
+      new BABYLON.Vector3.Zero(),
+      new BABYLON.Vector3(0, size, 0),
+      new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+      new BABYLON.Vector3(0, size, 0),
+      new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+    ], this.scene);
+    axisY.color = new BABYLON.Color3(0, 1, 0);
+    axisY.setParent(wrapper);
+
+    let yChar = __make2DTextMesh("Y", "green", size / 10);
+    yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+    yChar.setParent(wrapper);
+
+    let axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+      new BABYLON.Vector3.Zero(),
+      new BABYLON.Vector3(0, 0, size),
+      new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+      new BABYLON.Vector3(0, 0, size),
+      new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
+    ], this.scene);
+    axisZ.color = new BABYLON.Color3(0, 0, 1);
+    axisZ.setParent(wrapper);
+
+    let zChar = __make2DTextMesh("Z", "blue", size / 10);
+    zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+    zChar.setParent(wrapper);
+
+    return wrapper;
   }
 }
