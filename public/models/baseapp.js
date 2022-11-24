@@ -34,11 +34,6 @@ export class BaseApp {
     this.userPresenceStatusRefs = {};
 
     this.lastMessageId = null;
-    this.highFi = true;
-    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      this.highFi = false;
-    }
 
     this.chat_snackbar = document.querySelector('#chat_snackbar');
 

@@ -355,7 +355,7 @@ export class StoryApp extends BaseApp {
     if (this.shadowGenerator)
       this.shadowGenerator.addShadowCaster(mesh, true);
 
-    if (meta.mp3file && this.highFi) {
+    if (meta.mp3file && this.gameData.performanceFlags.indexOf('sound_all') !== -1) {
       let music = new BABYLON.Sound("music", meta.mp3file, this.scene, null, {
         loop: true,
         spatialSound: true,
@@ -822,8 +822,6 @@ export class StoryApp extends BaseApp {
       return;
 
     if (!this.engine) {
-      if (this.gameData.lowFi === true)
-        this.highFi = false;
       await this.initGraphics();
     }
 
@@ -927,7 +925,7 @@ export class StoryApp extends BaseApp {
 
     let seatMesh = this.seatMeshes[seatIndex];
     this.currentSeatMesh = seatMesh;
-    if (!seatMesh.musicCache.isPlaying)
+    if (seatMesh.musicCache && !seatMesh.musicCache.isPlaying)
       seatMesh.musicCache.play();
 
     this.selectedPlayerPanel.parent = seatWrapperMesh;
@@ -1056,7 +1054,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (seatData.seated) {
-      if (this.highFi)
+      if (this.gameData.performanceFlags.indexOf('text3d_names') !== -1)
         this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {

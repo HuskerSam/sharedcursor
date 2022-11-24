@@ -373,6 +373,8 @@ export class GamesApp extends BaseApp {
     let particles_status = document.querySelector('.particles_status').value;
     let bones_status = document.querySelector('.bones_status').value;
     let shadow_status = document.querySelector('.shadow_status').value;
+    let sound_status = document.querySelector('.sound_status').value;
+    let text3d_status = document.querySelector('.text3d_status').value;
     let scoringSystem = document.querySelector('.scoring_system_select').value;
 
     let body = {
@@ -387,7 +389,9 @@ export class GamesApp extends BaseApp {
         rover_status,
         particles_status,
         bones_status,
-        shadow_status
+        shadow_status,
+        sound_status,
+        text3d_status
       ]
     };
 
