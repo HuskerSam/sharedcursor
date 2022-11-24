@@ -114,7 +114,7 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
 
-    //this.createGuides();
+    this.createGuides();
 
     await this.setupAgents();
 
@@ -229,6 +229,9 @@ export class StoryApp extends BaseApp {
           orbit_wrapper.animations = [];
         orbit_wrapper.animations.push(orbitAnimation);
         orbit_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+
+        if (meta.startRatio !== undefined)
+          orbit_wrapper.spinAnimation .goToFrame(Math.floor(endFrame * meta.startRatio));
       }
     } else {
       if (clickToPause) {
@@ -338,6 +341,7 @@ export class StoryApp extends BaseApp {
       let z = outer_wrapper.rotation.z;
       let orbitkeys = [];
       let endFrame = meta.spintime / 1000 * 30;
+
       orbitkeys.push({
         frame: 0,
         value: new BABYLON.Vector3(x, y, z)
@@ -356,7 +360,11 @@ export class StoryApp extends BaseApp {
       if (!orbit_wrapper.animations)
         orbit_wrapper.animations = [];
       orbit_wrapper.animations.push(orbitAnimation);
+
       outer_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
+
+      if (meta.startRatio !== undefined)
+        outer_wrapper.spinAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
 
       if (meta.noDaySpin) {
         orbit_wrapper.appClickable = true;
@@ -409,6 +417,7 @@ export class StoryApp extends BaseApp {
       }
       if (meta.spinrotationz) {
         z = z + Math.PI / -2;
+        y += Math.PI;
         keys.push({
           frame: 0,
           value: new BABYLON.Vector3(x, y, z)
@@ -439,6 +448,9 @@ export class StoryApp extends BaseApp {
         let anim = this.scene.beginAnimation(wrapper, 0, endFrame, true);
         if (!meta.freeOrbit)
           outer_wrapper.spinAnimation = anim;
+
+        if (meta.startRatio !== undefined)
+          anim.goToFrame(Math.floor(endFrame * meta.startRatio));
       }
 
       if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
