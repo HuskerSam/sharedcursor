@@ -62,10 +62,11 @@ export class StoryApp extends BaseApp {
     this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos', 'moon_europa',
       'moon_io', 'moon_ganymede', 'moon_callisto', 'moon_titan', 'moon_encedulas',
       'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
-      'moon_hyperion', 'moon_mimas'
+      'moon_hyperion', 'moon_mimas', 'moon_dione'
     ];
     this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
-      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv','probe_tgo', 'rocket_exploreri', 'probe_voyager'
+      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv','probe_tgo', 'rocket_exploreri',
+       'probe_voyager', 'probe_psp', 'probe_newhorizon', 'probe_radiodish'
     ];
 
     let navMeshes = [];
@@ -189,6 +190,13 @@ export class StoryApp extends BaseApp {
         outer_wrapper.parent = orbit_wrapper;
         outer_wrapper.position.z = meta.z;
         outer_wrapper.position.x = meta.x;
+
+        if (meta.norx !== undefined)
+          outer_wrapper.rotation.x = meta.norx;
+        if (meta.nory !== undefined)
+          outer_wrapper.rotation.y = meta.nory;
+        if (meta.norz !== undefined)
+          outer_wrapper.rotation.z = meta.norz;
 
         let orbitAnimation = new BABYLON.Animation(
           "staticorbitmeshrotation" + name,
