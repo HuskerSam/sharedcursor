@@ -33,7 +33,7 @@
     "showSymbol": true,
     "glbpath": "/solar/mercury.glb",
     "glbfile": "",
-    "glbscale": 0.0015,
+    "glbscale": 0.0012,
     "name": "Mercury",
     "objectType": "planet",
     "brand": "Solar System",

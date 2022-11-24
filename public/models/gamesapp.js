@@ -369,6 +369,9 @@ export class GamesApp extends BaseApp {
     let messageLevel = document.querySelector('.message_level_select').value;
     let seatsPerUser = document.querySelector('.seats_per_user_select').value;
     let cardDeck = document.querySelector('.card_deck_select').value;
+    let rover_status = document.querySelector('.rover_status').value;
+    let particles_status = document.querySelector('.particles_status').value;
+    let bones_status = document.querySelector('.bones_status').value;
     let scoringSystem = document.querySelector('.scoring_system_select').value;
 
     let body = {
@@ -378,7 +381,12 @@ export class GamesApp extends BaseApp {
       messageLevel,
       seatsPerUser,
       cardDeck,
-      scoringSystem
+      scoringSystem,
+      performanceFlags: [
+        rover_status,
+        particles_status,
+        bones_status
+      ]
     };
 
     let token = await firebase.auth().currentUser.getIdToken();

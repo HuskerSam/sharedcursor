@@ -64,7 +64,7 @@ export class StoryApp extends BaseApp {
       'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
       'moon_hyperion', 'moon_mimas'
     ];
-    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno'];
+    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini', 'rover_perseverance', 'rover_curiosity'];
 
     let navMeshes = [];
     let promises = [];
@@ -130,6 +130,9 @@ export class StoryApp extends BaseApp {
   }
   async loadStaticAsset(name, parent, clickToPause = false) {
     let meta = this.allCards[name];
+
+    if (meta.performanceFlagEnabled && this.gameData.performanceFlags.indexOf(name) === -1)
+      return;
 
     let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
 

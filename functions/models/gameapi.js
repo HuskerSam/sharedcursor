@@ -168,6 +168,8 @@ module.exports = class GameAPI {
       game.seatsPerUser = req.body.seatsPerUser;
     if (req.body.cardDeck)
       game.cardDeck = req.body.cardDeck;
+    if (req.body.performanceFlags)
+      game.performanceFlags = req.body.performanceFlags;
 
     let randomAve = Math.floor(Math.random() * 52);
     let randomSt = Math.floor(Math.random() * 52);

@@ -125,6 +125,15 @@ button.create_new_game_btn {
   display: block;
 }
 
+
+.story_additional_options {
+  display: none;
+}
+
+.newgametype_story .story_additional_options {
+  display: block;
+}
+
 .game_type_image {
   background-repeat: no-repeat;
   background-position: center 40%;
