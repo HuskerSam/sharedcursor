@@ -65,7 +65,7 @@ export class StoryApp extends BaseApp {
       'moon_hyperion', 'moon_mimas'
     ];
     this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
-      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv','probe_tgo'
+      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv','probe_tgo', 'rocket_exploreri', 'probe_voyager'
     ];
 
     let navMeshes = [];
