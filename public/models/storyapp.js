@@ -997,8 +997,9 @@ export class StoryApp extends BaseApp {
     particlePivot.position.z = 2;
     particlePivot.rotation.x = -1 * Math.PI / 2;
     particlePivot.material = this.mat1alpha;
-    //if (this.highFi)
-    //  wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
+
+    if (this.gameData.performanceFlags.indexOf('particles_all') !== -1)
+      wrapper.particleSystem = this.createParticleSystem(particlePivot, 'seat' + index);
     particlePivot.parent = wrapper;
 
     let isOwner = this.uid === this.gameData.createUser;

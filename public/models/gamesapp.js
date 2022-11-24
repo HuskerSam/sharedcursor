@@ -372,6 +372,7 @@ export class GamesApp extends BaseApp {
     let rover_status = document.querySelector('.rover_status').value;
     let particles_status = document.querySelector('.particles_status').value;
     let bones_status = document.querySelector('.bones_status').value;
+    let shadow_status = document.querySelector('.shadow_status').value;
     let scoringSystem = document.querySelector('.scoring_system_select').value;
 
     let body = {
@@ -385,7 +386,8 @@ export class GamesApp extends BaseApp {
       performanceFlags: [
         rover_status,
         particles_status,
-        bones_status
+        bones_status,
+        shadow_status
       ]
     };
 

@@ -1230,7 +1230,7 @@ export class BaseApp {
     light2.intensity = .6;
 
     let enableGroundShadow = false;
-    if (this.highFi) {
+    if (this.gameData && this.gameData.performanceFlags.indexOf('render_shadows') !== -1) {
       enableGroundShadow = true;
     }
 
@@ -1302,7 +1302,7 @@ export class BaseApp {
   pointerUp() {
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
-    if (!this.animationResult && this.highFi) {
+    if (!this.animationResult && this.gameData.performanceFlags.indexOf('animation_full') !== -1) {
       this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/solar/avatar-walk.glb", null, this.scene);
       this.animationGLB = this.animationResult.meshes[0];
       this.animationGLB.position.y = -1000;
@@ -1323,7 +1323,7 @@ export class BaseApp {
 
     mesh.isPickable = true;
 
-    if (this.highFi) {
+    if (this.animationResult) {
       const modelTransformNodes = mesh.getChildTransformNodes();
       const modelAnimationGroup = this.animationResult.animationGroups[0].clone("clone", (oldTarget) => {
         return modelTransformNodes.find((node) => node.name === oldTarget.name);

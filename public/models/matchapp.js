@@ -95,7 +95,7 @@ export class MatchApp extends BaseApp {
       this.matchBoardRendered = false;
     this.previousMode = this.gameData.mode;
 
-    if (this.matchBoardRendered !== this.gameData.cardCount)
+    if (this.matchBoardRendered !== this.gameData.cardCount && this.gameData.cardIndexOrder.length > 0)
       this._renderMatchBoard();
 
     document.body.classList.remove('turnphase_select');
