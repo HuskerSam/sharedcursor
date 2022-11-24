@@ -64,7 +64,9 @@ export class StoryApp extends BaseApp {
       'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
       'moon_hyperion', 'moon_mimas'
     ];
-    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini', 'rover_perseverance', 'rover_curiosity'];
+    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
+      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv'
+    ];
 
     let navMeshes = [];
     let promises = [];
@@ -314,6 +316,13 @@ export class StoryApp extends BaseApp {
       orbit_wrapper.position.y = meta.y;
       orbit_wrapper.position.z = meta.z;
 
+      if (meta.rx !== undefined)
+        wrapper.rotation.x = meta.rx;
+      if (meta.ry !== undefined)
+        wrapper.rotation.y = meta.ry;
+      if (meta.rz !== undefined)
+        wrapper.rotation.z = meta.rz;
+
       let orbitAnimation = new BABYLON.Animation(
         "staticorbitmeshrotation" + name,
         "rotation",
@@ -341,7 +350,6 @@ export class StoryApp extends BaseApp {
         frame: endFrame,
         value: new BABYLON.Vector3(x, y + factor * Math.PI, z)
       });
-
 
       orbitAnimation.setKeys(orbitkeys);
       if (!orbit_wrapper.animations)
@@ -415,7 +423,7 @@ export class StoryApp extends BaseApp {
         });
       }
 
-      if (!meta.parent) {
+      if (!meta.parent && meta.noDaySpin !== true) {
         spinAnimation.setKeys(keys);
         if (!wrapper.animations)
           wrapper.animations = [];
