@@ -65,7 +65,7 @@ export class StoryApp extends BaseApp {
       'moon_hyperion', 'moon_mimas'
     ];
     this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
-      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv'
+      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv','probe_tgo'
     ];
 
     let navMeshes = [];
@@ -436,7 +436,8 @@ export class StoryApp extends BaseApp {
         particlePivot.position.x = meta.px;
         particlePivot.position.y = meta.py;
         particlePivot.position.z = meta.pz;
-        //  particlePivot.rotation.x = -1 * Math.PI / 2;
+        //particlePivot.rotation.x = -1 * Math.PI / 2;
+        particlePivot.rotation.z = Math.PI;
         particlePivot.material = this.mat1alpha;
         particlePivot.parent = wrapper;
 
@@ -743,7 +744,6 @@ export class StoryApp extends BaseApp {
     }
   }
   pointerDown(mesh) {
-    console.log('hit', mesh);
     while (mesh && !mesh.appClickable) {
       mesh = mesh.parent;
     }
