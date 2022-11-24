@@ -228,6 +228,9 @@
     "freeOrbit": true,
     "noDaySpin": true,
     "particlesEnabled": true,
-    "spindirection": -1
+    "spindirection": -1,
+    "px": 0,
+    "py": -3,
+    "pz": 2
   }
 ]

@@ -432,6 +432,19 @@ export class StoryApp extends BaseApp {
         if (!meta.freeOrbit)
           outer_wrapper.spinAnimation = anim;
       }
+
+      if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
+        let particlePivot = BABYLON.Mesh.CreateBox("staticpivotparticle" + name, .001, this.scene);
+        particlePivot.position.x = meta.px;
+        particlePivot.position.y = meta.py;
+        particlePivot.position.z = meta.pz;
+        particlePivot.rotation.x = -1 * Math.PI / 2;
+        particlePivot.material = this.mat1alpha;
+        particlePivot.parent = wrapper;
+
+        wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
+        wrapper.particleSystem.start();
+      }
     }
   }
   _renderSymbolInfoPanel(name, meta, wrapper, parent) {
