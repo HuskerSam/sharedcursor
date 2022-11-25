@@ -59,11 +59,7 @@ export class StoryApp extends BaseApp {
       'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'ceres', 'eris',
       'makemake', 'haumea', 'arrokoth', 'itokawa', 'bennu', 'eros'
     ];
-    this.orbitNames = ['moon_luna', 'moon_deimos', 'moon_phobos', 'moon_europa',
-      'moon_io', 'moon_ganymede', 'moon_callisto', 'moon_titan', 'moon_encedulas',
-      'moon_miranda', 'moon_titania', 'moon_charon', 'moon_tethys', 'moon_lapetus',
-      'moon_hyperion', 'moon_mimas', 'moon_dione', 'moon_triton', 'moon_rhea'
-    ];
+
     this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
       'rover_perseverance', 'rover_curiosity', 'rocket_atlasv', 'probe_tgo', 'rocket_exploreri',
       'probe_voyager', 'probe_psp', 'probe_newhorizon', 'probe_radiodish'
@@ -79,10 +75,17 @@ export class StoryApp extends BaseApp {
     await Promise.all(promises);
 
     promises = [];
-    this.orbitNames.forEach(name => {
-      promises.push(this.loadStaticAsset(name, staticWrapper));
-      if (this.allCards[name].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(name));
+    let deck = GameCards.getCardDeck('moons1');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      if (this.allCards[card.id].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(card.id));
+    });
+    deck = GameCards.getCardDeck('moons2');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      if (this.allCards[card.id].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
 
@@ -540,7 +543,10 @@ export class StoryApp extends BaseApp {
     nameMesh2.rotation.y = Math.PI;
 
     let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
-    let nameTexture = this.__texture2DText(meta.name, meta.color);
+    let nameDesc = meta.name;
+    if (meta.solarPosition)
+      nameDesc += ` (${meta.solarPosition})`
+    let nameTexture = this.__texture2DText(nameDesc, meta.color);
     nameTexture.vScale = 1;
     nameTexture.uScale = 1;
     nameTexture.hasAlpha = true;
