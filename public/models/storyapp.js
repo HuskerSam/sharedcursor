@@ -384,7 +384,8 @@ export class StoryApp extends BaseApp {
       this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.mp3file && this.gameData.performanceFlags.indexOf('sound_all') !== -1) {
-      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.mp3file) + '?alt=media';
+      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes'
+       + encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
 
       let music = new BABYLON.Sound("music", song, this.scene, null, {
         loop: true,
