@@ -138,7 +138,7 @@
     "noNavMesh": true,
     "spintime": 30000,
     "noOrbit": true,
-    "parent": "moon_titan"
+    "parent": "s22_titan"
   },
   {
     "type": "3dmodel",
