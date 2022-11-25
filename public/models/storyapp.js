@@ -7,7 +7,7 @@ export class StoryApp extends BaseApp {
     this.apiType = 'story';
     this.cache = {};
     this.staticAssetMeshes = {};
-    this.musicMeshes = [];
+    this.musicMeshes = {};
     this.seatMeshes = {};
 
     this._initGameCommon();
@@ -173,6 +173,7 @@ export class StoryApp extends BaseApp {
 
       if (meta.clickToPause) {
         orbit_wrapper.appClickable = true;
+        orbit_wrapper.masterid = name;
         orbit_wrapper.clickToPause = clickToPause;
         orbit_wrapper.clickCommand = 'pauseSpin';
       }
@@ -232,11 +233,12 @@ export class StoryApp extends BaseApp {
         orbit_wrapper.spinAnimation = this.scene.beginAnimation(orbit_wrapper, 0, endFrame, true);
 
         if (meta.startRatio !== undefined)
-          orbit_wrapper.spinAnimation .goToFrame(Math.floor(endFrame * meta.startRatio));
+          orbit_wrapper.spinAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
       }
     } else {
       if (clickToPause) {
         outer_wrapper.appClickable = true;
+        outer_wrapper.masterid = name;
         outer_wrapper.clickToPause = clickToPause;
         outer_wrapper.clickCommand = 'pauseSpin';
       }
@@ -369,6 +371,7 @@ export class StoryApp extends BaseApp {
 
       if (meta.noDaySpin) {
         orbit_wrapper.appClickable = true;
+        orbit_wrapper.masterid = name;
         orbit_wrapper.clickToPause = clickToPause;
         orbit_wrapper.clickCommand = 'pauseSpin';
         orbit_wrapper.spinAnimation = outer_wrapper.spinAnimation;
@@ -391,12 +394,7 @@ export class StoryApp extends BaseApp {
       });
       music.attachToMesh(mesh);
 
-      //if (meta.enableMusic)
-      this.musicMeshes.push(music);
-
-      //if (meta.musicOnClick)
-      clickParent.musicCache = music;
-
+      this.musicMeshes[name] = music;
     }
 
     if (meta.spintime) {
@@ -763,8 +761,8 @@ export class StoryApp extends BaseApp {
         mesh.spinAnimation.restart();
 
       if (this.currentSeatMesh !== mesh) {
-        if (mesh.musicCache)
-          mesh.musicCache.stop();
+        if (mesh.masterid && this.musicMeshes[mesh.masterid])
+          this.musicMeshes[mesh.masterid].stop();
       }
     }
   }
@@ -791,8 +789,8 @@ export class StoryApp extends BaseApp {
       mesh.spinAnimation.pause();
 
       if (this.currentSeatMesh !== mesh) {
-        if (mesh.musicCache)
-          mesh.musicCache.play();
+        if (mesh.masterid && this.musicMeshes[mesh.masterid])
+          this.musicMeshes[mesh.masterid].play();
       }
     }
 
@@ -966,12 +964,14 @@ export class StoryApp extends BaseApp {
     if (!seatWrapperMesh)
       return;
 
-    this.musicMeshes.forEach(music => music.stop());
+    for (let name in this.musicMeshes) {
+      this.musicMeshes[name].stop();
+    }
 
     let seatMesh = this.seatMeshes[seatIndex];
     this.currentSeatMesh = seatMesh;
-    if (seatMesh.musicCache && !seatMesh.musicCache.isPlaying)
-      seatMesh.musicCache.play();
+    if (seatMesh.masterid && !this.musicMeshes[seatMesh.masterid].isPlaying)
+      this.musicMeshes[seatMesh.masterid].play();
 
     this.selectedPlayerPanel.parent = seatWrapperMesh;
     this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].rawMeshWrapper;
