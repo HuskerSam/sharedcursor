@@ -114,7 +114,7 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
 
-    this.createGuides();
+    //this.createGuides();
 
     await this.setupAgents();
 
