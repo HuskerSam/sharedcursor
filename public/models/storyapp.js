@@ -139,7 +139,8 @@ export class StoryApp extends BaseApp {
     if (meta.performanceFlagEnabled && this.gameData.performanceFlags.indexOf(name) === -1)
       return;
 
-    let mesh = await this.loadStaticMesh(meta.glbpath, '', meta.glbscale, 0, 0, 0);
+    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
+    let mesh = await this.loadStaticMesh(path, '', meta.glbscale, 0, 0, 0);
 
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
@@ -380,7 +381,9 @@ export class StoryApp extends BaseApp {
       this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.mp3file && this.gameData.performanceFlags.indexOf('sound_all') !== -1) {
-      let music = new BABYLON.Sound("music", meta.mp3file, this.scene, null, {
+      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.mp3file) + '?alt=media';
+
+      let music = new BABYLON.Sound("music", song, this.scene, null, {
         loop: true,
         spatialSound: true,
         distanceModel: "exponential",

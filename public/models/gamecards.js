@@ -74,11 +74,14 @@ export default class GameCards {
   static getCardInfo(cardIndex, gameData) {
     let orderIndex = gameData.cardIndexOrder[cardIndex];
     let meta = GameCards.getCardMeta(orderIndex, gameData);
+
+    let image = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';
+
     return {
       boardPositionIndex: cardIndex,
       orderIndex,
       meta,
-      image: meta.image
+      image
     };
   }
 }

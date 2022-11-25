@@ -290,7 +290,7 @@
     "objectType": "moon",
     "brand": "Solar System",
     "brandid": "solarsystem",
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "url": "https://en.wikipedia.org/wiki/Miranda_(moon)",
     "color": "rgb(63, 0, 63)",
     "invert": "",
     "x": 0.5,
@@ -301,7 +301,7 @@
     "diameter": 0.35,
     "noNavMesh": true,
     "spintime": 43000,
-    "parent": "saturn",
+    "parent": "uranus",
     "clickToPause": true
   },
   {
@@ -319,7 +319,7 @@
     "objectType": "moon",
     "brand": "Solar System",
     "brandid": "solarsystem",
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "url": "https://en.wikipedia.org/wiki/Titania_(moon)",
     "color": "rgb(63, 0, 0)",
     "invert": "",
     "x": 0,

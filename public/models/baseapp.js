@@ -1298,13 +1298,16 @@ export class BaseApp {
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult && this.gameData.performanceFlags.indexOf('animation_full') !== -1) {
-      this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, "/solar/avatar-walk.glb", null, this.scene);
+      let bonesPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent("/solar/avatar-walk.glb") + '?alt=media';
+
+      this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, bonesPath, null, this.scene);
       this.animationGLB = this.animationResult.meshes[0];
       this.animationGLB.position.y = -1000;
       this.animationResult.animationGroups[0].stop();
     }
 
-    let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, path, file);
+    let skinPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(path) + '?alt=media';
+    let result2 = await BABYLON.SceneLoader.ImportMeshAsync(null, skinPath, file);
 
     let mesh = result2.meshes[0];
 

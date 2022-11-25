@@ -324,7 +324,8 @@ export class ProfileApp extends BaseApp {
     let deck = cardDom.dataset.deck;
     let cardDeck = GameCards.getCardDeck(deck);
     let meta = cardDeck[cardDom.dataset.index];
-    this.loadMesh(meta.glbpath, meta.glbfile, meta.glbscale);
+    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
+    this.loadMesh(meta.glbpath, '', meta.glbscale);
   }
   uploadProfileImage() {
     this.file_upload_input.click();

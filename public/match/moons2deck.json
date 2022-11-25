@@ -325,7 +325,7 @@
     "id": "moon_triton",
     "description": "Saturn moon",
     "image": "/cardimages/phobos.jpg",
-    "symbol": "/symbol/dione.png",
+    "symbol": "/symbol/triton.png",
     "showSymbol": true,
     "glbpath": "/solar/moontriton.glb",
     "glbfile": "",
