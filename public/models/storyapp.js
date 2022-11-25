@@ -55,27 +55,18 @@ export class StoryApp extends BaseApp {
     mat1.alpha = 0;
     this.mat1alpha = mat1;
 
-    this.staticNames = ['sun', 'mercury', 'venus', 'earth', 'mars',
-      'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'ceres', 'eris',
-      'makemake', 'haumea', 'arrokoth', 'itokawa', 'bennu', 'eros'
-    ];
-
-    this.mascotNames = ['mascot_nebraska', 'moon_lander', 'moon_buggy', 'mascot_juno', 'mascot_cassini',
-      'rover_perseverance', 'rover_curiosity', 'rocket_atlasv', 'probe_tgo', 'rocket_exploreri',
-      'probe_voyager', 'probe_psp', 'probe_newhorizon', 'probe_radiodish'
-    ];
-
     let navMeshes = [];
     let promises = [];
-    this.staticNames.forEach(name => {
-      promises.push(this.loadStaticAsset(name, staticWrapper, true));
-      if (this.allCards[name].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(name));
+    let deck = GameCards.getCardDeck('solarsystem');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      if (this.allCards[card.id].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
 
     promises = [];
-    let deck = GameCards.getCardDeck('moons1');
+    deck = GameCards.getCardDeck('moons1');
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, staticWrapper));
       if (this.allCards[card.id].noNavMesh !== true)
@@ -87,13 +78,20 @@ export class StoryApp extends BaseApp {
       if (this.allCards[card.id].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
+    deck = GameCards.getCardDeck('moons3');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      if (this.allCards[card.id].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(card.id));
+    });
     await Promise.all(promises);
 
     promises = [];
-    this.mascotNames.forEach(name => {
-      promises.push(this.loadStaticAsset(name, staticWrapper));
-      if (this.allCards[name].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(name));
+    deck = GameCards.getCardDeck('mascots');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      if (this.allCards[card.id].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
 
