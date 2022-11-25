@@ -121,6 +121,52 @@ export class StoryApp extends BaseApp {
 
     this.sceneInited = true;
     this.loadAvatars();
+    this.loadAsteroids();
+  }
+
+  async loadAsteroids() {
+
+
+    this._loadAsteroid('aruna', .25);
+  }
+
+  async _loadAsteroid(asteroid, startRatio = 0.0) {
+    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' + encodeURIComponent(asteroid) + '.obj?alt=media';
+    let mesh = await this.loadStaticMesh(path, '', 1, 0, 1.5, 0);
+
+    let anim = new BABYLON.Animation(
+      "asteroid" + asteroid,
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    mesh.position.x = 2;
+
+    let x = mesh.rotation.x;
+    let y = mesh.rotation.y;
+    let z = mesh.rotation.z;
+    let orbitkeys = [];
+    let endFrame = 30 * 30;
+    orbitkeys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
+
+    orbitkeys.push({
+      frame: endFrame,
+      value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
+    });
+
+    anim.setKeys(orbitkeys);
+    if (!mesh.animations)
+      mesh.animations = [];
+    mesh.animations.push(anim);
+    mesh.spinAnimation = this.scene.beginAnimation(mesh, 0, endFrame, true);
+
+    if (startRatio !== 0.0)
+      mesh.spinAnimation.goToFrame(Math.floor(endFrame * startRatio));
   }
 
   loadStaticNavMesh(name) {
@@ -134,7 +180,7 @@ export class StoryApp extends BaseApp {
     mercurysphere.position.z = meta.z;
     return mercurysphere;
   }
-  async loadStaticAsset(name, parent, clickToPause = false) {
+  async loadStaticAsset(name, parent) {
     let meta = this.allCards[name];
 
     if (meta.performanceFlagEnabled && this.gameData.performanceFlags.indexOf(name) === -1)
@@ -175,7 +221,7 @@ export class StoryApp extends BaseApp {
       if (meta.clickToPause) {
         orbit_wrapper.appClickable = true;
         orbit_wrapper.masterid = name;
-        orbit_wrapper.clickToPause = clickToPause;
+        orbit_wrapper.clickToPause = true;
         orbit_wrapper.clickCommand = 'pauseSpin';
       }
 
@@ -237,12 +283,10 @@ export class StoryApp extends BaseApp {
           orbit_wrapper.spinAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
       }
     } else {
-      if (clickToPause) {
-        outer_wrapper.appClickable = true;
-        outer_wrapper.masterid = name;
-        outer_wrapper.clickToPause = clickToPause;
-        outer_wrapper.clickCommand = 'pauseSpin';
-      }
+      outer_wrapper.appClickable = true;
+      outer_wrapper.masterid = name;
+      outer_wrapper.clickToPause = true;
+      outer_wrapper.clickCommand = 'pauseSpin';
       outer_wrapper.parent = parent;
     }
 
@@ -373,7 +417,7 @@ export class StoryApp extends BaseApp {
       if (meta.noDaySpin) {
         orbit_wrapper.appClickable = true;
         orbit_wrapper.masterid = name;
-        orbit_wrapper.clickToPause = clickToPause;
+        orbit_wrapper.clickToPause = true;
         orbit_wrapper.clickCommand = 'pauseSpin';
         orbit_wrapper.spinAnimation = outer_wrapper.spinAnimation;
       }
@@ -385,8 +429,8 @@ export class StoryApp extends BaseApp {
       this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.mp3file && this.gameData.performanceFlags.indexOf('sound_all') !== -1) {
-      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes'
-       + encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
+      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
+        encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
 
       let music = new BABYLON.Sound("music", song, this.scene, null, {
         loop: true,
@@ -802,7 +846,7 @@ export class StoryApp extends BaseApp {
     if (mesh.wrapperName === 'sun')
       this._endTurn();
   }
-  async loadStaticMesh(path, file, scale, x, y, z) {
+  async loadStaticMesh(path, file, scale = 1, x = 0, y = 0, z = 0) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
 
     let mesh = result.meshes[0];
@@ -975,7 +1019,7 @@ export class StoryApp extends BaseApp {
 
     let seatMesh = this.seatMeshes[seatIndex];
     this.currentSeatMesh = seatMesh;
-    if (seatMesh.masterid && !this.musicMeshes[seatMesh.masterid].isPlaying)
+    if (seatMesh.masterid && this.musicMeshes[seatMesh.masterid] && !this.musicMeshes[seatMesh.masterid].isPlaying)
       this.musicMeshes[seatMesh.masterid].play();
 
     this.selectedPlayerPanel.parent = seatWrapperMesh;
