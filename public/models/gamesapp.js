@@ -376,6 +376,7 @@ export class GamesApp extends BaseApp {
     let sound_status = document.querySelector('.sound_status').value;
     let text3d_status = document.querySelector('.text3d_status').value;
     let scoringSystem = document.querySelector('.scoring_system_select').value;
+    let moon_status = document.querySelector('.moon_status').value;
 
     let body = {
       gameType,
@@ -391,7 +392,8 @@ export class GamesApp extends BaseApp {
         bones_status,
         shadow_status,
         sound_status,
-        text3d_status
+        text3d_status,
+        moon_status
       ]
     };
 

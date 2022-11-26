@@ -24,7 +24,7 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "spintime": 10000,
-    "parent": "moon_luna",
+    "parent": "e1_luna",
     "noOrbit": true
   },
   {
