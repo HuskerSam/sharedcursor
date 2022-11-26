@@ -161,21 +161,94 @@ export class StoryApp extends BaseApp {
       "choukyongchol.obj",
       "claudia.obj",
       "constantia.obj",
-      "cosima.obj"
-    ];
+      "cosima.obj",
+      "cuitlahuac.obj",
+      "cyane.obj",
+      "cybele.obj",
+      "dabu.obj",
+      "danzig.obj",
+      "datura.obj",
+      "davida.obj",
+      "dejanira.obj",
+      "denisyuk.obj",
+      "diebel.obj",
+      "dike.obj",
+      "doris.obj",
+      "dudu.obj",
+      "dysona.obj",
+      "echo.obj",
+      "einhardress.obj",
+      "einstein.obj",
+      "ella.obj",
+      "elly.obj",
+      "epyaxa.obj",
+      "erigone.obj",
+      "eryan.obj",
+      "euler.obj",
+      "faulkes.obj",
+      "feiyiou.obj",
+      "florentina.obj",
+      "fragaria.obj",
+      "fukuhara.obj",
+      "gaby.obj",
+      "gagarin.obj",
+      "gajdariya.obj",
+      "galinskij.obj",
+      "ganymed.obj",
+      "geographos.obj",
+      "glarona.obj",
+      "glasenappia.obj",
+      "godwin.obj",
+      "golevka.obj",
+      "golia.obj",
+      "gorgo.obj",
+      "hagar.obj",
+      "halawe.obj",
+      "hardersen.obj",
+      "hedera.obj",
+      "hektor.obj",
+      "hela.obj",
+      "hera.obj",
+      "herculina.obj",
+      "herge.obj",
+      "hermia.obj",
+      "hertzsprung.obj",
+      "hildrun.obj",
+      "hirosetamotsu.obj",
+      "hus.obj",
+      "jugurtha.obj",
+      "kaho.obj",
+      "kalm.obj",
+      "kani.obj",
+      "karin.obj",
+      "kate.obj",
+      "kitty.obj",
+      "klumpkea.obj",
+      "klytaemnestra.obj",
+      "kuritariku.obj",
+      "landi.obj",
+      "laputa.obj",
+      "lucifer.obj",
+      "ludmilla.obj",
+      "lundmarka.obj",
+      "magnitka.obj"    ];
 
     let ratio = 0;
-    asteroids.forEach(asteroid => {
-      this._loadAsteroid(asteroid, ratio);
-      ratio += 0.04;
-      ratio %= 1;
+    let max = asteroids.length;
+    asteroids.forEach((asteroid, index) => {
+      this._loadAsteroid(asteroid, index, max);
     });
   }
 
-  async _loadAsteroid(asteroid, startRatio = 0.0) {
+  async _loadAsteroid(asteroid, index, count) {
+    let startRatio = index / count;
+    let mainY = 1;
+    if (index % 2 !== 0)
+      mainY = 2.5;
+
      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F'
       + encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', 1, 0, 1.5, 0);
+    let mesh = await this.loadStaticMesh(path, '', 0.75, 0, mainY, 0);
 
     if (!this.asteroidMaterial) {
       let m = new BABYLON.StandardMaterial('asteroidmaterial' + asteroid, this.scene);
@@ -195,6 +268,7 @@ export class StoryApp extends BaseApp {
     //  m.specularTexture = s;
 
       this.asteroidMaterial = m;
+      m.wireframe = true;
     }
   //console.log(mesh);
     mesh.material = this.asteroidMaterial;
@@ -206,7 +280,7 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     orbitWrapper.visibility = 0;
     mesh.parent = orbitWrapper;
-    mesh.position.x = 10;
+    mesh.position.x = 25;
 
     let orbitAnim = new BABYLON.Animation(
       "asteroidorbit" + asteroid,
@@ -217,7 +291,7 @@ export class StoryApp extends BaseApp {
     );
 
     let orbitkeys = [];
-    let endFrame = 30 * 30;
+    let endFrame = 60 * 30;
     orbitkeys.push({
       frame: 0,
       value: new BABYLON.Vector3(0, 0, 0)
