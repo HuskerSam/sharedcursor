@@ -231,7 +231,8 @@ export class StoryApp extends BaseApp {
       "lucifer.obj",
       "ludmilla.obj",
       "lundmarka.obj",
-      "magnitka.obj"    ];
+      "magnitka.obj"
+    ];
 
     let ratio = 0;
     let max = asteroids.length;
@@ -246,31 +247,25 @@ export class StoryApp extends BaseApp {
     if (index % 2 !== 0)
       mainY = 2.5;
 
-     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F'
-      + encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', 0.75, 0, mainY, 0);
+    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
+      encodeURIComponent(asteroid) + '?alt=media';
+    let mesh = await this.loadStaticMesh(path, '', 1, 0, mainY, 0);
 
     if (!this.asteroidMaterial) {
-      let m = new BABYLON.StandardMaterial('asteroidmaterial' + asteroid, this.scene);
-
-      let t = new BABYLON.Texture('/images/asteroid2diff.jpg', this.scene);
-    //  t.uScale = 5;
-    //  t.vScale = 5;
-      m.diffuseTexture = t;
-      m.roughness = 1;
-      m.specularColor = new BABYLON.Color3(0, 0, 0);
-    //  m.specularPower = 0;
-    //  let b = new BABYLON.Texture('/images/asteroid2normal.jpg', this.scene);
-    //  m.bumpTexture = b;
-  //    b.uScale = 5;
-  //    b.vScale = 5;
-    //  let s = new BABYLON.Texture('/images/asteroid2specular.jpg', this.scene);
-    //  m.specularTexture = s;
-
+      let m = new BABYLON.StandardMaterial('asteroidmaterial', this.scene);
       this.asteroidMaterial = m;
       m.wireframe = true;
+      m.diffuseColor = new BABYLON.Color3(0.25, 0.2, 0.25);
+      m.specularColor = new BABYLON.Color3(0, 0, 0);
+
+      this.asteroidSelectedMaterial = new BABYLON.StandardMaterial('asteroidmaterialselected', this.scene)
+      let t = new BABYLON.Texture('/images/asteroid2diff.jpg', this.scene);
+      this.asteroidSelectedMaterial.diffuseTexture = t;
+      let bt = new BABYLON.Texture('/images/asteroid2normal.jpg', this.scene);
+      this.asteroidSelectedMaterial.bumpTexture = bt;
+      this.asteroidSelectedMaterial.roughness = 1;
+      this.asteroidSelectedMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     }
-  //console.log(mesh);
     mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = BABYLON.MeshBuilder.CreateBox('assetorbitwrapper' + asteroid, {
@@ -343,6 +338,12 @@ export class StoryApp extends BaseApp {
     orbitWrapper.appClickable = true;
     orbitWrapper.clickToPause = true;
     orbitWrapper.clickCommand = 'pauseSpin';
+    orbitWrapper.asteroidMesh = mesh;
+    orbitWrapper.asteroidType = true;
+
+    mesh.origsx = mesh.scaling.x;
+    mesh.origsy = mesh.scaling.y;
+    mesh.origsz = mesh.scaling.z;
   }
 
   loadStaticNavMesh(name) {
@@ -985,6 +986,16 @@ export class StoryApp extends BaseApp {
       if (mesh.spinAnimation._paused)
         mesh.spinAnimation.restart();
 
+      if (mesh.asteroidType) {
+        mesh.asteroidMesh.material = this.asteroidMaterial;
+        mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx;
+        mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy;
+        mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz;
+
+      //  mesh.asteroidMesh.position.y -= 1;
+      }
+
+
       if (this.currentSeatMesh !== mesh) {
         if (mesh.masterid && this.musicMeshes[mesh.masterid])
           this.musicMeshes[mesh.masterid].stop();
@@ -1012,6 +1023,15 @@ export class StoryApp extends BaseApp {
 
       this.lastMesh = mesh;
       mesh.spinAnimation.pause();
+
+      if (mesh.asteroidType) {
+        mesh.asteroidMesh.material = this.asteroidSelectedMaterial;
+        mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx * 2;
+        mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy * 2;
+        mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz * 2;
+
+        //mesh.asteroidMesh.position.y += 1;
+      }
 
       if (this.currentSeatMesh !== mesh) {
         if (mesh.masterid && this.musicMeshes[mesh.masterid])
