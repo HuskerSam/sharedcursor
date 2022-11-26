@@ -236,6 +236,7 @@ export class StoryApp extends BaseApp {
 
     let ratio = 0;
     let max = 40; //asteroids.length;
+    asteroids = asteroids.slice(0, max);
     asteroids.forEach((asteroid, index) => {
       this._loadAsteroid(asteroid, index, max);
     });
