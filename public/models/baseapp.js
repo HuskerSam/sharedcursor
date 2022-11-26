@@ -1199,6 +1199,7 @@ export class BaseApp {
   async initBabylonEngine(canvasQuery = "#renderCanvas", initVR = false) {
     this.canvas = document.querySelector(canvasQuery);
     this.engine = new BABYLON.Engine(this.canvas, true);
+    BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
 
     this.scene = await this.createScene();
 
@@ -1318,8 +1319,6 @@ export class BaseApp {
     mesh.position.x = x;
     mesh.position.y = y;
     mesh.position.z = z;
-
-    mesh.isPickable = true;
 
     if (this.animationResult) {
       const modelTransformNodes = mesh.getChildTransformNodes();

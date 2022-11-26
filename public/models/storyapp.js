@@ -125,48 +125,122 @@ export class StoryApp extends BaseApp {
   }
 
   async loadAsteroids() {
-
-
-    this._loadAsteroid('aruna', .25);
+    let asteroids = [
+      'aruna2'
+      /*
+      'asterope',
+      'athene',
+      'augusta',
+      'azalea',
+      'bacchus',
+      'backlunda',
+      'bali'
+      */
+    ];
+    let ratio = 0;
+    asteroids.forEach(asteroid => {
+      this._loadAsteroid(asteroid, ratio);
+      ratio += 0.05;
+      ratio %= 1;
+    });
+    ratio = 0.02;
+    asteroids.forEach(asteroid => {
+      this._loadAsteroid(asteroid, ratio);
+      ratio += 0.05;
+      ratio %= 1;
+    });
   }
 
   async _loadAsteroid(asteroid, startRatio = 0.0) {
-    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' + encodeURIComponent(asteroid) + '.obj?alt=media';
+     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F'
+      + encodeURIComponent(asteroid) + '.obj?alt=media';
     let mesh = await this.loadStaticMesh(path, '', 1, 0, 1.5, 0);
 
-    let anim = new BABYLON.Animation(
-      "asteroid" + asteroid,
+    if (!this.asteroidMaterial) {
+      let m = new BABYLON.StandardMaterial('asteroidmaterial' + asteroid, this.scene);
+
+      let t = new BABYLON.Texture('/images/asteroid2diff.jpg', this.scene);
+      m.diffuseTexture = t;
+      let b = new BABYLON.Texture('/images/asteroid2normal.jpg', this.scene);
+      m.bumpTexture = b;
+      let s = new BABYLON.Texture('/images/asteroid2specular.jpg', this.scene);
+      m.specularTexture = s;
+
+      this.asteroidMaterial = m;
+    }
+  //console.log(mesh);
+    mesh.material = this.asteroidMaterial;
+
+    let orbitWrapper = BABYLON.MeshBuilder.CreateBox('assetorbitwrapper' + asteroid, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    orbitWrapper.visibility = 0;
+    mesh.parent = orbitWrapper;
+    mesh.position.x = 10;
+
+    let orbitAnim = new BABYLON.Animation(
+      "asteroidorbit" + asteroid,
       "rotation",
       30,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    mesh.position.x = 2;
-
-    let x = mesh.rotation.x;
-    let y = mesh.rotation.y;
-    let z = mesh.rotation.z;
     let orbitkeys = [];
     let endFrame = 30 * 30;
     orbitkeys.push({
       frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
+      value: new BABYLON.Vector3(0, 0, 0)
     });
 
     orbitkeys.push({
       frame: endFrame,
+      value: new BABYLON.Vector3(0, -2 * Math.PI, 0)
+    });
+
+    orbitAnim.setKeys(orbitkeys);
+    if (!orbitWrapper.animations)
+      orbitWrapper.animations = [];
+    orbitWrapper.animations.push(orbitAnim);
+    orbitWrapper.spinAnimation = this.scene.beginAnimation(orbitWrapper, 0, endFrame, true);
+
+    if (startRatio !== 0.0)
+      orbitWrapper.spinAnimation.goToFrame(Math.floor(endFrame * startRatio));
+
+    let anim = new BABYLON.Animation(
+      "asteroidspiny" + asteroid,
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let x = mesh.rotation.x;
+    let y = mesh.rotation.y;
+    let z = mesh.rotation.z;
+    let spinkeys = [];
+    endFrame = 5 * 30;
+    spinkeys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
+
+    spinkeys.push({
+      frame: endFrame,
       value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
     });
 
-    anim.setKeys(orbitkeys);
+    anim.setKeys(spinkeys);
     if (!mesh.animations)
       mesh.animations = [];
     mesh.animations.push(anim);
-    mesh.spinAnimation = this.scene.beginAnimation(mesh, 0, endFrame, true);
+    orbitWrapper.localAnimation = this.scene.beginAnimation(mesh, 0, endFrame, true);
 
-    if (startRatio !== 0.0)
-      mesh.spinAnimation.goToFrame(Math.floor(endFrame * startRatio));
+    orbitWrapper.appClickable = true;
+    orbitWrapper.clickToPause = true;
+    orbitWrapper.clickCommand = 'pauseSpin';
   }
 
   loadStaticNavMesh(name) {
