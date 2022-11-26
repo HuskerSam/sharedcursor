@@ -235,7 +235,7 @@ export class StoryApp extends BaseApp {
     ];
 
     let ratio = 0;
-    let max = asteroids.length;
+    let max = 40; //asteroids.length;
     asteroids.forEach((asteroid, index) => {
       this._loadAsteroid(asteroid, index, max);
     });
@@ -255,8 +255,8 @@ export class StoryApp extends BaseApp {
       let m = new BABYLON.StandardMaterial('asteroidmaterial', this.scene);
       this.asteroidMaterial = m;
       m.wireframe = true;
-      m.diffuseColor = new BABYLON.Color3(0.25, 0.2, 0.25);
-      m.specularColor = new BABYLON.Color3(0, 0, 0);
+      let at = new BABYLON.Texture('/images/asteroid2diff.jpg', this.scene);
+      this.asteroidMaterial.diffuseTexture = at;
 
       this.asteroidSelectedMaterial = new BABYLON.StandardMaterial('asteroidmaterialselected', this.scene)
       let t = new BABYLON.Texture('/images/asteroid2diff.jpg', this.scene);
@@ -318,7 +318,7 @@ export class StoryApp extends BaseApp {
     let y = mesh.rotation.y;
     let z = mesh.rotation.z;
     let spinkeys = [];
-    endFrame = 5 * 30;
+    endFrame = 24 * 30;
     spinkeys.push({
       frame: 0,
       value: new BABYLON.Vector3(x, y, z)
@@ -326,7 +326,7 @@ export class StoryApp extends BaseApp {
 
     spinkeys.push({
       frame: endFrame,
-      value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
+      value: new BABYLON.Vector3(x + -4 * Math.PI, y + -2 * Math.PI, z + 4 * Math.PI)
     });
 
     anim.setKeys(spinkeys);
@@ -339,11 +339,106 @@ export class StoryApp extends BaseApp {
     orbitWrapper.clickToPause = true;
     orbitWrapper.clickCommand = 'pauseSpin';
     orbitWrapper.asteroidMesh = mesh;
+    mesh.asteroidName = asteroid;
     orbitWrapper.asteroidType = true;
+    orbitWrapper.asteroidName = asteroid;
 
     mesh.origsx = mesh.scaling.x;
     mesh.origsy = mesh.scaling.y;
     mesh.origsz = mesh.scaling.z;
+
+    orbitWrapper.symbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid);
+  }
+  loadSymbolForAsteroid(parent, name) {
+    let size = 1;
+
+    if (!this.asteroidSymbolMesh) {
+      let symbolWrapper = BABYLON.MeshBuilder.CreateBox('asteroidsymbolwrapper', {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      symbolWrapper.parent = parent;
+      this.asteroidSymbolMesh = symbolWrapper;
+
+      let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
+        height: size,
+        width: size
+      }, this.scene);
+      let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3asteroid', {
+        height: size,
+        width: size
+      }, this.scene);
+
+      let m = new BABYLON.StandardMaterial('symbolshowmatasteroid', this.scene);
+      let t = new BABYLON.Texture('/symbol/asteroid.png', this.scene);
+      t.vScale = 1;
+      t.uScale = 1;
+      t.hasAlpha = true;
+
+      m.diffuseTexture = t;
+      m.emissiveTexture = t;
+      m.ambientTexture = t;
+      let extraY = 0;
+      symbolMesh1.material = m;
+      symbolMesh1.parent = symbolWrapper;
+      symbolMesh1.rotation.y = 0;
+      symbolMesh1.position.y = extraY;
+      symbolMesh3.material = m;
+      symbolMesh3.parent = symbolWrapper;
+      symbolMesh3.rotation.y = Math.PI;
+      symbolMesh3.position.y = extraY;
+      symbolMesh3.scaling.x = -1;
+
+      this.asteroidSymbolMeshName = BABYLON.MeshBuilder.CreateBox('asteroidnamewrapper', {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      this.asteroidSymbolMeshName.position.y = 1;
+      this.asteroidSymbolMeshName.setEnabled(false);
+
+      let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1asteroid', {
+        height: size * 5,
+        width: size * 5
+      }, this.scene);
+      let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2asteroid', {
+        height: size * 5,
+        width: size * 5
+      }, this.scene);
+
+      let nameMat = new BABYLON.StandardMaterial('nameshowmatasteroid', this.scene);
+      this.__setTextMaterial(nameMat, 'asteroid');
+      this.asteroidSymbolMeshName.nameMaterial = nameMat;
+
+      nameMesh1.material = nameMat;
+      nameMesh1.parent = this.asteroidSymbolMeshName;
+      nameMesh2.material = nameMat;
+      nameMesh2.parent = this.asteroidSymbolMeshName;
+      nameMesh2.scaling.x = -1;
+
+      let factor = -1.8;
+      //    if (meta.symbolY < -0.99)
+      //    factor = -2.75;
+      nameMesh1.position.y = symbolMesh1.position.y + factor;
+      nameMesh2.position.y = symbolMesh1.position.y + factor;
+      nameMesh2.rotation.y = Math.PI;
+    }
+
+    //parent.symbolWrapper = symbolWrapper;
+    const asteroidSymbol = this.asteroidSymbolMesh.clone("asteroidsymbol" + name);
+    asteroidSymbol.parent = parent;
+
+    return asteroidSymbol;
+  }
+  __setTextMaterial(mat, text, rgbColor = 'rgb(255,0,0)') {
+    let nameTexture = this.__texture2DText(text, rgbColor);
+    nameTexture.vScale = 1;
+    nameTexture.uScale = 1;
+    nameTexture.hasAlpha = true;
+    mat.diffuseTexture = nameTexture;
+    mat.emissiveTexture = nameTexture;
+    mat.ambientTexture = nameTexture;
   }
 
   loadStaticNavMesh(name) {
@@ -749,7 +844,7 @@ export class StoryApp extends BaseApp {
       height: size * 5,
       width: size * 5
     }, this.scene);
-    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
+    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2' + name, {
       height: size * 5,
       width: size * 5
     }, this.scene);
@@ -786,28 +881,14 @@ export class StoryApp extends BaseApp {
   showBoardWrapper(mesh) {
     if (!mesh.boardWrapper)
       return;
-    mesh.boardWrapper.position.y = 0;
-    mesh.boardWrapper.scaling.x = 1;
-    mesh.boardWrapper.scaling.y = 1;
-    mesh.boardWrapper.scaling.z = 1;
-
-    mesh.symbolWrapper.position.y = -1000;
-    mesh.symbolWrapper.scaling.x = .001;
-    mesh.symbolWrapper.scaling.y = .001;
-    mesh.symbolWrapper.scaling.z = .001;
+    mesh.boardWrapper.setEnabled(true);
+    mesh.symbolWrapper.setEnabled(false);
   }
   hideBoardWrapper(mesh) {
     if (!mesh.boardWrapper)
       return;
-    mesh.boardWrapper.position.y = -1000;
-    mesh.boardWrapper.scaling.x = .001;
-    mesh.boardWrapper.scaling.y = .001;
-    mesh.boardWrapper.scaling.z = .001;
-
-    mesh.symbolWrapper.position.y = 0;
-    mesh.symbolWrapper.scaling.x = 1;
-    mesh.symbolWrapper.scaling.y = 1;
-    mesh.symbolWrapper.scaling.z = 1;
+    mesh.boardWrapper.setEnabled(false);
+    mesh.symbolWrapper.setEnabled(true);
   }
   __texture2DText(textureText, cssColor, cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
     let texture = new BABYLON.DynamicTexture("dynamic texture", renderSize, this.scene, true);
@@ -986,15 +1067,8 @@ export class StoryApp extends BaseApp {
       if (mesh.spinAnimation._paused)
         mesh.spinAnimation.restart();
 
-      if (mesh.asteroidType) {
-        mesh.asteroidMesh.material = this.asteroidMaterial;
-        mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx;
-        mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy;
-        mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz;
-
-      //  mesh.asteroidMesh.position.y -= 1;
-      }
-
+      if (mesh.asteroidType)
+        this.asteroidPtrDown(mesh, true);
 
       if (this.currentSeatMesh !== mesh) {
         if (mesh.masterid && this.musicMeshes[mesh.masterid])
@@ -1024,14 +1098,8 @@ export class StoryApp extends BaseApp {
       this.lastMesh = mesh;
       mesh.spinAnimation.pause();
 
-      if (mesh.asteroidType) {
-        mesh.asteroidMesh.material = this.asteroidSelectedMaterial;
-        mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx * 2;
-        mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy * 2;
-        mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz * 2;
-
-        //mesh.asteroidMesh.position.y += 1;
-      }
+      if (mesh.asteroidType)
+        this.asteroidPtrDown(mesh);
 
       if (this.currentSeatMesh !== mesh) {
         if (mesh.masterid && this.musicMeshes[mesh.masterid])
@@ -1041,6 +1109,29 @@ export class StoryApp extends BaseApp {
 
     if (mesh.wrapperName === 'sun')
       this._endTurn();
+  }
+  asteroidPtrDown(mesh, up = false) {
+    if (!up) {
+      mesh.asteroidMesh.material = this.asteroidSelectedMaterial;
+      mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx * 1.25;
+      mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy * 1.25;
+      mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz * 1.25;
+
+      mesh.symbolWrapper.setEnabled(false);
+      this.asteroidSymbolMeshName.setEnabled(true);
+      this.asteroidSymbolMeshName.parent = mesh.asteroidMesh;
+
+      let text = mesh.asteroidMesh.asteroidName.replace('.obj', '');
+      this.__setTextMaterial(this.asteroidSymbolMeshName.nameMaterial, text);
+    } else {
+      mesh.asteroidMesh.material = this.asteroidMaterial;
+      mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx;
+      mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy;
+      mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz;
+
+      mesh.symbolWrapper.setEnabled(true);
+      this.asteroidSymbolMeshName.setEnabled(false);
+    }
   }
   async loadStaticMesh(path, file, scale = 1, x = 0, y = 0, z = 0) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
