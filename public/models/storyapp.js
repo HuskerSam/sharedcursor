@@ -126,45 +126,73 @@ export class StoryApp extends BaseApp {
 
   async loadAsteroids() {
     let asteroids = [
-      'aruna2'
-      /*
-      'asterope',
-      'athene',
-      'augusta',
-      'azalea',
-      'bacchus',
-      'backlunda',
-      'bali'
-      */
+      "aruna.obj",
+      "asterope.obj",
+      "athene.obj",
+      "augusta.obj",
+      "aurelia.obj",
+      "azalea.obj",
+      "bacchus.obj",
+      "backlunda.obj",
+      "bali.obj",
+      "bambery.obj",
+      "barolo.obj",
+      "barringer.obj",
+      "bauschinger.obj",
+      "begonia.obj",
+      "bella.obj",
+      "bertha.obj",
+      "billboyle.obj",
+      "bodea.obj",
+      "borsenberger.obj",
+      "bressi.obj",
+      "bruna.obj",
+      "buda.obj",
+      "buzzi.obj",
+      "calvinia.obj",
+      "carandrews.obj",
+      "carlova.obj",
+      "castalia.obj",
+      "celsius.obj",
+      "celuta.obj",
+      "cerberus.obj",
+      "cevenola.obj",
+      "cheruskia.obj",
+      "choukyongchol.obj",
+      "claudia.obj",
+      "constantia.obj",
+      "cosima.obj"
     ];
+
     let ratio = 0;
     asteroids.forEach(asteroid => {
       this._loadAsteroid(asteroid, ratio);
-      ratio += 0.05;
-      ratio %= 1;
-    });
-    ratio = 0.02;
-    asteroids.forEach(asteroid => {
-      this._loadAsteroid(asteroid, ratio);
-      ratio += 0.05;
+      ratio += 0.04;
       ratio %= 1;
     });
   }
 
   async _loadAsteroid(asteroid, startRatio = 0.0) {
      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F'
-      + encodeURIComponent(asteroid) + '.obj?alt=media';
+      + encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', 1, 0, 1.5, 0);
 
     if (!this.asteroidMaterial) {
       let m = new BABYLON.StandardMaterial('asteroidmaterial' + asteroid, this.scene);
 
       let t = new BABYLON.Texture('/images/asteroid2diff.jpg', this.scene);
+    //  t.uScale = 5;
+    //  t.vScale = 5;
       m.diffuseTexture = t;
-      let b = new BABYLON.Texture('/images/asteroid2normal.jpg', this.scene);
-      m.bumpTexture = b;
-      let s = new BABYLON.Texture('/images/asteroid2specular.jpg', this.scene);
-      m.specularTexture = s;
+      m.roughness = 1;
+      m.specularColor = new BABYLON.Color3(0, 0, 0);
+    //  m.specularPower = 0;
+    //  let b = new BABYLON.Texture('/images/asteroid2normal.jpg', this.scene);
+    //  m.bumpTexture = b;
+  //    b.uScale = 5;
+  //    b.vScale = 5;
+    //  let s = new BABYLON.Texture('/images/asteroid2specular.jpg', this.scene);
+    //  m.specularTexture = s;
 
       this.asteroidMaterial = m;
     }
