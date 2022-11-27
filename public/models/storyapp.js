@@ -459,7 +459,7 @@ export class StoryApp extends BaseApp {
       rawPath = rawPath.replace('blue', '');
       scale = 0.035;
     }
-    
+
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
 
@@ -604,6 +604,8 @@ export class StoryApp extends BaseApp {
       outer_wrapper.parent = orbit_wrapper;
 
       outer_wrapper.position.z = meta.orbitRadius;
+      if (meta.orbitRadiusX)
+        outer_wrapper.position.x = meta.orbitRadiusX;
       orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
       if (meta.binaryOrbit) {
