@@ -29,6 +29,7 @@
     "moon90orbit": true,
     "startRatio": 0.3,
     "parent": "uranus",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -61,6 +62,7 @@
     "startRatio": 0.5,
     "parent": "uranus",
     "moon90orbit": true,
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -93,6 +95,7 @@
     "startRatio": 0.6,
     "parent": "uranus",
     "moon90orbit": true,
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -123,6 +126,7 @@
     "noNavMesh": true,
     "spintime": 19000,
     "parent": "neptune",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -153,6 +157,7 @@
     "noNavMesh": true,
     "spintime": 19000,
     "parent": "neptune",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -183,6 +188,7 @@
     "noNavMesh": true,
     "spintime": 19000,
     "parent": "neptune",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -215,6 +221,7 @@
     "startRatio": 0.9,
     "parent": "uranus",
     "moon90orbit": true,
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -246,6 +253,7 @@
     "spintime": 33000,
     "parent": "uranus",
     "moon90orbit": true,
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -275,7 +283,7 @@
     "noNavMesh": true,
     "spintime": 10000,
     "parent": "pluto",
+    "moonType": 5,
     "clickToPause": true
   }
-
 ]

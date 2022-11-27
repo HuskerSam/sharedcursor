@@ -46,6 +46,8 @@ export class StoryApp extends BaseApp {
   async loadStaticScene() {
     this.hugeAssets = this.gameData.performanceFlags.indexOf('hugemodel_all') !== -1;
 
+    this.minMoonsLoad = this.gameData.performanceFlags.indexOf('moonlevel_5') !== -1;
+
     let staticWrapper = BABYLON.MeshBuilder.CreateBox('staticwrapper', {
       width: .01,
       height: .01,
@@ -88,7 +90,7 @@ export class StoryApp extends BaseApp {
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
-
+/*
     promises = [];
     deck = GameCards.getCardDeck('mascots');
     deck.forEach(card => {
@@ -97,7 +99,7 @@ export class StoryApp extends BaseApp {
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
-
+*/
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
 
@@ -443,6 +445,9 @@ export class StoryApp extends BaseApp {
   }
   async loadStaticAsset(name, parent) {
     let meta = this.allCards[name];
+
+    if (this.minMoonsLoad && meta.moonType === 5)
+      return;
 
     if (meta.performanceFlagEnabled && this.gameData.performanceFlags.indexOf(name) === -1)
       return;

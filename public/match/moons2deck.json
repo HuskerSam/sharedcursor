@@ -28,6 +28,7 @@
     "spintime": 36000,
     "startRatio": 0.65,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -59,6 +60,7 @@
     "spintime": 36000,
     "startRatio": 0.25,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -90,6 +92,7 @@
     "spintime": 36000,
     "startRatio": 0.45,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -121,6 +124,7 @@
     "spintime": 36000,
     "startRatio": 0.45,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -152,6 +156,7 @@
     "spintime": 36000,
     "startRatio": 0.75,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -183,6 +188,7 @@
     "spintime": 36000,
     "startRatio": 0.5,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -214,6 +220,7 @@
     "spintime": 39000,
     "startRatio": 0.95,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -245,6 +252,7 @@
     "spintime": 36000,
     "startRatio": 0.65,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -276,6 +284,7 @@
     "spintime": 72000,
     "startRatio": 0.75,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -307,6 +316,7 @@
     "spintime": 40000,
     "parent": "saturn",
     "startRatio": 0.5,
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -338,6 +348,7 @@
     "spintime": 39000,
     "startRatio": 0.45,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -430,6 +441,7 @@
     "spintime": 39000,
     "startRatio": 0.55,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -460,6 +472,7 @@
     "noNavMesh": true,
     "spintime": 200000,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -522,6 +535,7 @@
     "spintime": 39000,
     "parent": "saturn",
     "startRatio": 0.41,
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -553,6 +567,7 @@
     "spintime": 45000,
     "startRatio": 0.9,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   },
   {
@@ -584,6 +599,7 @@
     "spintime": 36000,
     "startRatio": 0.25,
     "parent": "saturn",
+    "moonType": 5,
     "clickToPause": true
   }
 ]
