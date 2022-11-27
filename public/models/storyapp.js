@@ -448,14 +448,18 @@ export class StoryApp extends BaseApp {
       return;
 
     let rawPath = meta.glbpath;
-    if (this.hugeAssets && meta.largeglbpath)
-      rawPath = meta.largeglbpath;
-
     let scale = meta.glbscale;
+    if (this.hugeAssets && meta.largeglbpath) {
+      rawPath = meta.largeglbpath;
+      if (meta.largeglbscale !== undefined)
+        scale = meta.largeglbscale
+    }
+
     if (name === 'e1_luna' && this.gameData.performanceFlags.indexOf('moon_gray') !== -1) {
       rawPath = rawPath.replace('blue', '');
       scale = 0.035;
     }
+    
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
 
