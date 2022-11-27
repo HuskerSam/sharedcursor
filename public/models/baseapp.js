@@ -1255,7 +1255,7 @@ export class BaseApp {
     scene.activeCamera.position = new BABYLON.Vector3(6, 6, 2);
   //  scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
-    this.skyBox = this.initSkybox();
+    this.initSkybox();
 
     this.xr = await scene.createDefaultXRExperienceAsync({
       floorMeshes: [environment.ground]
@@ -1311,6 +1311,13 @@ export class BaseApp {
     skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;
 
+    if (this.gameData.performanceFlags.indexOf('skyboxrotation_none') !== -1)
+      return;
+
+    let endFrame = 3000 * 30;
+    if (this.gameData.performanceFlags.indexOf('skyboxrotation_') !== -1)
+      endFrame += 10;
+
     let orbitAnimation = new BABYLON.Animation(
       "staticorbitmeshrotation" + name,
       "rotation",
@@ -1320,7 +1327,6 @@ export class BaseApp {
     );
 
     let orbitkeys = [];
-    let endFrame = 1000 * 30;
 
     orbitkeys.push({
       frame: 0,
