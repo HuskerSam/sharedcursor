@@ -18,6 +18,14 @@ body {
   visibility: visible;
 }
 
+.babylonVRicon {
+  display: none;
+}
+
+.avatars_loaded .babylonVRicon {
+  display: inline-block;
+}
+
 .loading_banner {
   position: absolute;
   padding: 10px;

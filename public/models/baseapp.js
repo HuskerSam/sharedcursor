@@ -1218,6 +1218,10 @@ export class BaseApp {
 
     this.scene = scene;
 
+    this.scene.autoClear = false; // Color buffer
+    this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
+
+
     let light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
     light.position = new BABYLON.Vector3(10, 15, -15);
     light.intensity = 1.5;

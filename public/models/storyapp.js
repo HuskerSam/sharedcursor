@@ -116,7 +116,8 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
 
-    //this.createGuides();
+    if (this.urlParams.get('showguides'))
+      this.createGuides();
 
     await this.setupAgents();
 
@@ -141,8 +142,6 @@ export class StoryApp extends BaseApp {
           count = Number(ct);
       }
     });
-
-    count = 100;
 
     let randomArray = [];
     for (let c = 0; c < max; c++)
@@ -1292,17 +1291,15 @@ export class StoryApp extends BaseApp {
     this.game_header_panel.innerHTML = `${name}`;
 
     document.body.classList.add('show_game_table');
+    
+    if (!this.avatarsLoaded)
+      return;
 
     this.updateUserPresence();
     this.updateAgents();
 
-    if (this.avatarsLoaded)
-      setTimeout(() => {
-        this.runRender = true;
-        document.body.classList.add('avatars_loaded');
-        this.__updateSelectedSeatMesh();
-      }, 100);
-
+    this.runRender = true;
+    document.body.classList.add('avatars_loaded');
     this.__updateSelectedSeatMesh();
   }
   __updateSelectedSeatMesh() {
