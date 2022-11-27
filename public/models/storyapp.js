@@ -451,6 +451,16 @@ export class StoryApp extends BaseApp {
         let x = outer_wrapper.rotation.x;
         let y = outer_wrapper.rotation.y;
         let z = outer_wrapper.rotation.z;
+
+        let y_factor = -2 * Math.PI;
+        let x_factor = 0;
+        if (meta.moon90orbit) {
+          x_factor = y_factor;
+          y_factor = 0;
+          y += 0.85;
+        //  x -= 1.57;
+        }
+
         let orbitkeys = [];
         let endFrame = meta.spintime / 1000 * 30;
         orbitkeys.push({
@@ -460,7 +470,7 @@ export class StoryApp extends BaseApp {
 
         orbitkeys.push({
           frame: endFrame,
-          value: new BABYLON.Vector3(x, y + -2 * Math.PI, z)
+          value: new BABYLON.Vector3(x + x_factor, y + y_factor, z)
         });
 
         orbitAnimation.setKeys(orbitkeys);
@@ -654,7 +664,9 @@ export class StoryApp extends BaseApp {
       }
       if (meta.spinrotationz) {
         z = z + Math.PI / -2;
-        y += Math.PI;
+      //  if (meta.startRy)
+      //    y = meta.startRy;
+        y += Math.PI + 0.75;
         keys.push({
           frame: 0,
           value: new BABYLON.Vector3(x, y, z)
@@ -2033,7 +2045,6 @@ export class StoryApp extends BaseApp {
       "tolosa.obj",
       "tombecka.obj",
       "tooting.obj",
-      "toro.obj",
       "trebon.obj",
       "tsia.obj",
       "tsoj.obj",
