@@ -208,9 +208,9 @@
     "url": "https://en.wikipedia.org/wiki/Neptune",
     "color": "rgb(0, 127, 255)",
     "invert": "",
-    "x": 40,
+    "x": 36,
     "y": 3,
-    "z": -16,
+    "z": -38,
     "diameter": 1.2,
     "spintime": 7000
   },
