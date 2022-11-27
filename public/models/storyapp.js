@@ -49,6 +49,7 @@ export class StoryApp extends BaseApp {
       height: .01,
       depth: .01
     }, this.scene);
+    staticWrapper.material = this.mat1alpha;
     staticWrapper.visibility = 0;
 
     let mat1 = new BABYLON.StandardMaterial('mat1alpha', this.scene);
@@ -188,6 +189,7 @@ export class StoryApp extends BaseApp {
       depth: .01
     }, this.scene);
     orbitWrapper.visibility = 0;
+    orbitWrapper.material = this.mat1alpha;
     mesh.parent = orbitWrapper;
     mesh.position.x = 25;
 
@@ -273,6 +275,7 @@ export class StoryApp extends BaseApp {
         depth: .01
       }, this.scene);
       symbolWrapper.parent = parent;
+      symbolWrapper.material = this.mat1alpha;
       this.asteroidSymbolMesh = symbolWrapper;
 
       let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
@@ -310,6 +313,8 @@ export class StoryApp extends BaseApp {
         depth: .01
       }, this.scene);
       this.asteroidSymbolMeshName.position.y = 1;
+      this.asteroidSymbolMeshName.visibility = 0;
+      this.asteroidSymbolMeshName.material = this.mat1alpha;
       this.asteroidSymbolMeshName.setEnabled(false);
 
       let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1asteroid', {
@@ -457,8 +462,8 @@ export class StoryApp extends BaseApp {
         if (meta.moon90orbit) {
           x_factor = y_factor;
           y_factor = 0;
-          y += 0.85;
-        //  x -= 1.57;
+          y += 0.8;
+          wrapper.rotation.x += Math.PI / 2;
         }
 
         let orbitkeys = [];
@@ -728,7 +733,9 @@ export class StoryApp extends BaseApp {
     symbolWrapper.visibility = 0;
     symbolWrapper.parent = wrapper;
     parent.symbolWrapper = symbolWrapper;
-
+    if (meta.moon90orbit) {
+      symbolWrapper.rotation.x -= 1.57;
+    }
 
     let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
       height: size,
@@ -768,6 +775,9 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     boardWrapper.visibility = 0;
     boardWrapper.parent = wrapper;
+    if (meta.moon90orbit) {
+      boardWrapper.rotation.x -= 1.57;
+    }
 
 
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
@@ -808,6 +818,7 @@ export class StoryApp extends BaseApp {
 
     this.hideBoardWrapper(parent);
   }
+
   showBoardWrapper(mesh) {
     if (!mesh.boardWrapper)
       return;
@@ -1547,7 +1558,7 @@ export class StoryApp extends BaseApp {
       height: thick,
       depth: lenY
     }, this.scene);
-    textWrapperMesh.isVisible = false;
+    textWrapperMesh.material = this.mat1alpha;
     for (let i = 0, l = polies.length; i < l; i++) {
       polies[i].position.x -= deltaX;
       polies[i].position.y += deltaY;
