@@ -450,12 +450,14 @@ export class StoryApp extends BaseApp {
     let rawPath = meta.glbpath;
     if (this.hugeAssets && meta.largeglbpath)
       rawPath = meta.largeglbpath;
-      
+
+    let scale = meta.glbscale;
     if (name === 'e1_luna' && this.gameData.performanceFlags.indexOf('moon_gray') !== -1) {
       rawPath = rawPath.replace('blue', '');
+      scale = 0.035;
     }
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', meta.glbscale, 0, 0, 0);
+    let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
 
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
