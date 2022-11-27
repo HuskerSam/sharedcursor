@@ -116,7 +116,7 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
 
-    //this.createGuides();
+    this.createGuides();
 
     await this.setupAgents();
 
@@ -191,7 +191,9 @@ export class StoryApp extends BaseApp {
     orbitWrapper.visibility = 0;
     orbitWrapper.material = this.mat1alpha;
     mesh.parent = orbitWrapper;
-    mesh.position.x = 25;
+    mesh.position.x = 20;
+    orbitWrapper.position.x = 7;
+    orbitWrapper.position.z = 9;
 
     let orbitAnim = new BABYLON.Animation(
       "asteroidorbit" + asteroid,
