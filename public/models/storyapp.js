@@ -116,7 +116,7 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
 
-    this.createGuides();
+    //this.createGuides();
 
     await this.setupAgents();
 
@@ -142,20 +142,19 @@ export class StoryApp extends BaseApp {
       }
     });
 
+    count = 100;
+
     let randomArray = [];
     for (let c = 0; c < max; c++)
       randomArray.push(c);
     randomArray = this._shuffleArray(randomArray);
     randomArray = randomArray.slice(0, count);
 
-    for (let c = 0; c < count; c++) {
-      let index = c;
-      setTimeout(() => {
-        this._loadAsteroid(asteroids[randomArray[index]], index, count);
-      }, 5000 + c * 50);
-    }
+    setTimeout(() => {
+      for (let c = 0; c < count; c++)
+        this._loadAsteroid(asteroids[randomArray[c]], c, count);
+    }, 1000);
   }
-
   async _loadAsteroid(asteroid, index, count) {
     let startRatio = index / count;
     let mainY = 1;
@@ -190,10 +189,60 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     orbitWrapper.visibility = 0;
     orbitWrapper.material = this.mat1alpha;
-    mesh.parent = orbitWrapper;
+
     mesh.position.x = 20;
     orbitWrapper.position.x = 7;
     orbitWrapper.position.z = 9;
+
+    mesh.parent = orbitWrapper;
+    /*
+    let shakeWrapper = BABYLON.MeshBuilder.CreateBox('assetshakewrapper' + asteroid, {
+      width: .01,
+      height: .01,
+      depth: .01
+    }, this.scene);
+    shakeWrapper.visibility = 0;
+    shakeWrapper.material = this.mat1alpha;
+    shakeWrapper.parent = orbitWrapper;
+    mesh.parent = shakeWrapper;
+
+    let positionKeys = [];
+    let px = orbitWrapper.position.x;
+    let py = orbitWrapper.position.y;
+    let pz = orbitWrapper.position.z;
+    positionKeys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(px, py, pz)
+    });
+
+    let position2factor = index % 2 === 1 ? -1 : 1;
+    let position3factor = index % 3 === 1 ? -1 : 1;
+    let position4factor = index % 4 === 1 ? 1 : -1;
+    let wobbleEndFrame = 5 * 30;
+    positionKeys.push({
+      frame: wobbleEndFrame / 2,
+      value: new BABYLON.Vector3(px + position4factor, py + position2factor, pz + position3factor + position2factor)
+    });
+
+    positionKeys.push({
+      frame: wobbleEndFrame,
+      value: new BABYLON.Vector3(px, py, pz)
+    });
+
+    let positionAnim = new BABYLON.Animation(
+      "asteroidspinyposion" + asteroid,
+      "position",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+    positionAnim.setKeys(positionKeys);
+
+    if (!shakeWrapper.animations)
+      shakeWrapper.animations = [];
+    shakeWrapper.animations.push(positionAnim);
+    //    shakeWrapper.spinAnimation = this.scene.beginAnimation(shakeWrapper, 0, wobbleEndFrame, true);
+    */
 
     let orbitAnim = new BABYLON.Animation(
       "asteroidorbit" + asteroid,
@@ -203,15 +252,15 @@ export class StoryApp extends BaseApp {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
+    let orbitEndFrame = 60 * 30;
     let orbitkeys = [];
-    let endFrame = 60 * 30;
     orbitkeys.push({
       frame: 0,
       value: new BABYLON.Vector3(0, 0, 0)
     });
 
     orbitkeys.push({
-      frame: endFrame,
+      frame: orbitEndFrame,
       value: new BABYLON.Vector3(0, -2 * Math.PI, 0)
     });
 
@@ -219,10 +268,10 @@ export class StoryApp extends BaseApp {
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];
     orbitWrapper.animations.push(orbitAnim);
-    orbitWrapper.spinAnimation = this.scene.beginAnimation(orbitWrapper, 0, endFrame, true);
+    orbitWrapper.spinAnimation = this.scene.beginAnimation(orbitWrapper, 0, orbitEndFrame, true);
 
     if (startRatio !== 0.0)
-      orbitWrapper.spinAnimation.goToFrame(Math.floor(endFrame * startRatio));
+      orbitWrapper.spinAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
 
     let anim = new BABYLON.Animation(
       "asteroidspiny" + asteroid,
@@ -236,22 +285,39 @@ export class StoryApp extends BaseApp {
     let y = mesh.rotation.y;
     let z = mesh.rotation.z;
     let spinkeys = [];
-    endFrame = 24 * 30;
+
+    let extraFrames = 0;
+    if (index % 3 === 0)
+      extraFrames += 75;
+    if (index % 3 === 1)
+      extraFrames += 150;
+    if (index % 2 === 0)
+      extraFrames -= 50;
+    if (index % 2 === 1)
+      extraFrames -= 50;
+    if (index % 5 === 0)
+      extraFrames -= 50;
+
+    let spinEndFrame = 24 * 30 + extraFrames;
     spinkeys.push({
       frame: 0,
       value: new BABYLON.Vector3(x, y, z)
     });
 
+    let endY = y + -2 * Math.PI;
+    if (Math.random() > 0.5)
+      endY *= -1;
     spinkeys.push({
-      frame: endFrame,
-      value: new BABYLON.Vector3(x + -4 * Math.PI, y + -2 * Math.PI, z + 4 * Math.PI)
+      frame: spinEndFrame,
+      value: new BABYLON.Vector3(x + -4 * Math.PI, endY, z + 4 * Math.PI)
     });
 
     anim.setKeys(spinkeys);
     if (!mesh.animations)
       mesh.animations = [];
+
     mesh.animations.push(anim);
-    orbitWrapper.localAnimation = this.scene.beginAnimation(mesh, 0, endFrame, true);
+    orbitWrapper.localAnimation = this.scene.beginAnimation(mesh, 0, spinEndFrame, true);
 
     orbitWrapper.appClickable = true;
     orbitWrapper.clickToPause = true;
@@ -352,6 +418,7 @@ export class StoryApp extends BaseApp {
 
     return asteroidSymbol;
   }
+
   __setTextMaterial(mat, text, rgbColor = 'rgb(255,0,0)') {
     let nameTexture = this.__texture2DText(text, rgbColor);
     nameTexture.vScale = 1;
@@ -413,6 +480,7 @@ export class StoryApp extends BaseApp {
         depth: .01
       }, this.scene);
       orbit_wrapper.visibility = 0;
+      orbit_wrapper.material = this.mat1alpha;
       orbit_wrapper.parent = this.staticAssetMeshes[meta.parent];
 
       if (meta.clickToPause) {
@@ -636,18 +704,7 @@ export class StoryApp extends BaseApp {
       this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.mp3file && this.gameData.performanceFlags.indexOf('sound_all') !== -1) {
-      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
-        encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
-
-      let music = new BABYLON.Sound("music", song, this.scene, null, {
-        loop: true,
-        spatialSound: true,
-        distanceModel: "exponential",
-        rolloffFactor: 2
-      });
-      music.attachToMesh(mesh);
-
-      this.musicMeshes[name] = music;
+      this._loadMeshMusic(meta, mesh, name);
     }
 
     if (meta.spintime) {
@@ -721,6 +778,22 @@ export class StoryApp extends BaseApp {
         wrapper.particleSystem.start();
       }
     }
+  }
+  _loadMeshMusic(meta, mesh, name) {
+    setTimeout(() => {
+      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
+        encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
+
+      let music = new BABYLON.Sound("music", song, this.scene, null, {
+        loop: true,
+        spatialSound: true,
+        distanceModel: "exponential",
+        rolloffFactor: 2
+      });
+      music.attachToMesh(mesh);
+
+      this.musicMeshes[name] = music;
+    }, 10000);
   }
   _renderSymbolInfoPanel(name, meta, wrapper, parent) {
     let size = 1;
@@ -1064,6 +1137,10 @@ export class StoryApp extends BaseApp {
 
       let text = mesh.asteroidMesh.asteroidName.replace('.obj', '');
       this.__setTextMaterial(this.asteroidSymbolMeshName.nameMaterial, text);
+
+      setTimeout(() => {
+        mesh.asteroidMesh.material = this.asteroidMaterial;
+      }, 3000);
     } else {
       mesh.asteroidMesh.material = this.asteroidMaterial;
       mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx;
@@ -1223,7 +1300,7 @@ export class StoryApp extends BaseApp {
       setTimeout(() => {
         this.runRender = true;
         document.body.classList.add('avatars_loaded');
-        this.__updateSelectedSeatMesh(seatIndex);
+        this.__updateSelectedSeatMesh();
       }, 100);
 
     this.__updateSelectedSeatMesh();

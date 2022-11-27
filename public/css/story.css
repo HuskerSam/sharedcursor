@@ -11,10 +11,26 @@ body {
   touch-action: none;
   width: 100%;
   height: 100%;
+  visibility: hidden;
 }
 
 .avatars_loaded .popup-canvas {
   visibility: visible;
+}
+
+.loading_banner {
+  position: absolute;
+  padding: 10px;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  width: 300px;
+  background: rgb(220, 220, 200);
+  color: black;
+}
+
+.avatars_loaded .loading_banner {
+  display: none;
 }
 
 .menu_bar_toggle {
