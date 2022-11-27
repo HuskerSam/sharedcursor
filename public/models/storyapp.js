@@ -464,7 +464,7 @@ export class StoryApp extends BaseApp {
         if (meta.moon90orbit) {
           x_factor = y_factor;
           y_factor = 0;
-          y += 0.8;
+          y += 1.2;
           wrapper.rotation.x += Math.PI / 2;
         }
 
@@ -669,11 +669,9 @@ export class StoryApp extends BaseApp {
       if (meta.parent) {
         wrapper.rotation.y = meta.ry;
       }
-      if (meta.spinrotationz) {
+      if (name === 'uranus') {
         z = z + Math.PI / -2;
-      //  if (meta.startRy)
-      //    y = meta.startRy;
-        y += Math.PI + 0.75;
+        y += Math.PI + 1.15;
         keys.push({
           frame: 0,
           value: new BABYLON.Vector3(x, y, z)
