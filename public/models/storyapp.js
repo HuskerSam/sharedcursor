@@ -130,11 +130,28 @@ export class StoryApp extends BaseApp {
     let ratio = 0;
     let max = asteroids.length;
 
-    max = 20;
-    for (let c = 0; c < max; c++) {
+    let count = 20;
+    this.gameData.performanceFlags.forEach(flag => {
+      if (flag.indexOf('asteroids_') !== -1) {
+        let ct = flag.replace('asteroids_', '');
+        if (ct === 'all')
+          count = asteroids.length;
+        else
+          count = Number(ct);
+      }
+    });
+
+    let randomArray = [];
+    for (let c = 0; c < max; c++)
+      randomArray.push(c);
+    randomArray = this._shuffleArray(randomArray);
+    randomArray = randomArray.slice(0, count);
+
+    for (let c = 0; c < count; c++) {
+      let index = c;
       setTimeout(() => {
-        this._loadAsteroid(asteroids[100 + c], c, max);
-      }, c * 50);
+        this._loadAsteroid(asteroids[randomArray[index]], index, count);
+      }, 5000 + c * 50);
     }
   }
 
