@@ -44,6 +44,8 @@ export class StoryApp extends BaseApp {
     document.body.classList.toggle('menu_bar_expanded');
   }
   async loadStaticScene() {
+    this.hugeAssets = this.gameData.performanceFlags.indexOf('hugemodel_all') !== -1;
+
     let staticWrapper = BABYLON.MeshBuilder.CreateBox('staticwrapper', {
       width: .01,
       height: .01,
@@ -446,6 +448,9 @@ export class StoryApp extends BaseApp {
       return;
 
     let rawPath = meta.glbpath;
+    if (this.hugeAssets && meta.largeglbpath)
+      rawPath = meta.largeglbpath;
+      
     if (name === 'e1_luna' && this.gameData.performanceFlags.indexOf('moon_gray') !== -1) {
       rawPath = rawPath.replace('blue', '');
     }
