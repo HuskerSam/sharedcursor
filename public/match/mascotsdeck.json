@@ -262,7 +262,8 @@
     "spindirection": -1,
     "px": 0,
     "py": -1,
-    "pz": 0
+    "pz": 0,
+    "loadDisabled": true
   },
   {
     "type": "3dmodel",
@@ -324,7 +325,8 @@
     "particlesEnabled": true,
     "px": 0,
     "py": -2,
-    "pz": 0
+    "pz": 0,
+    "loadDisabled": true
   },
   {
     "type": "3dmodel",

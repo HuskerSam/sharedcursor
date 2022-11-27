@@ -378,6 +378,7 @@ export class GamesApp extends BaseApp {
     let scoringSystem = document.querySelector('.scoring_system_select').value;
     let moon_status = document.querySelector('.moon_status').value;
     let asteroid_status = document.querySelector('.asteroid_status').value;
+    let skybox_status = document.querySelector('.skybox_status').value;
 
     let body = {
       gameType,
@@ -395,7 +396,8 @@ export class GamesApp extends BaseApp {
         sound_status,
         text3d_status,
         moon_status,
-        asteroid_status
+        asteroid_status,
+        skybox_status
       ]
     };
 

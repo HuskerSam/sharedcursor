@@ -110,8 +110,7 @@
     "diameter": 1,
     "noNavMesh": true,
     "spintime": 27000,
-    "freeOrbit": true,
-    "spindirection": -1
+    "freeOrbit": true
   },
   {
     "type": "3dmodel",
@@ -123,7 +122,8 @@
     "symbolY": -1.35,
     "glbpath": "/solar/bennu.glb",
     "glbfile": "",
-    "glbscale": 0.005,
+    "glbscale": 0.0025,
+    "symbolY": 1.25,
     "name": "Bennu",
     "objectType": "dwarf",
     "brand": "Solar System",
@@ -139,8 +139,7 @@
     "diameter": 1,
     "noNavMesh": true,
     "spintime": 18000,
-    "freeOrbit": true,
-    "spindirection": -1
+    "freeOrbit": true
   },
   {
     "type": "3dmodel",
@@ -168,8 +167,7 @@
     "diameter": 1,
     "noNavMesh": true,
     "spintime": 19000,
-    "freeOrbit": true,
-    "spindirection": -1
+    "freeOrbit": true
   },
   {
     "type": "3dmodel",

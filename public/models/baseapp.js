@@ -1255,18 +1255,7 @@ export class BaseApp {
     scene.activeCamera.position = new BABYLON.Vector3(6, 6, 2);
   //  scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
-    let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
-    skybox.isPickable = false;
-    let equipath = 'https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/nebula_orange_blue.jpg';
-    let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
-    skyboxMaterial.backFaceCulling = false;
-
-    skyboxMaterial.reflectionTexture = new BABYLON.EquiRectangularCubeTexture(equipath, this.scene, 800);
-    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMaterial.disableLighting = true;
-    skybox.material = skyboxMaterial;
+    this.skyBox = this.initSkybox();
 
     this.xr = await scene.createDefaultXRExperienceAsync({
       floorMeshes: [environment.ground]
@@ -1298,6 +1287,57 @@ export class BaseApp {
     });
 
     return scene;
+  }
+  initSkybox() {
+    let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
+    this.skyBox = skybox;
+    skybox.isPickable = false;
+
+    let skyboxname = 'nebula_orange_blue';
+    this.gameData.performanceFlags.forEach(flag => {
+      if (flag.indexOf('skybox_') !== -1) {
+        skyboxname = flag.replace('skybox_', '');
+      }
+    });
+
+    let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
+    let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
+    skyboxMaterial.backFaceCulling = false;
+
+    skyboxMaterial.reflectionTexture = new BABYLON.EquiRectangularCubeTexture(equipath, this.scene, 800);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;
+
+    let orbitAnimation = new BABYLON.Animation(
+      "staticorbitmeshrotation" + name,
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let orbitkeys = [];
+    let endFrame = 1000 * 30;
+
+    orbitkeys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(0, 0, 0)
+    });
+
+    orbitkeys.push({
+      frame: endFrame,
+      value: new BABYLON.Vector3(- 6 * Math.PI, 2 * Math.PI, 4 * Math.PI)
+    });
+
+    orbitAnimation.setKeys(orbitkeys);
+    if (!this.skyBox.animations)
+      this.skyBox.animations = [];
+    this.skyBox.animations.push(orbitAnimation);
+
+    this.skyBox.spinAnimation = this.scene.beginAnimation(this.skyBox, 0, endFrame, true);
   }
   pointerUp() {
   }

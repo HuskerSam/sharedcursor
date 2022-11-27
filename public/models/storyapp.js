@@ -472,6 +472,14 @@ export class StoryApp extends BaseApp {
     outer_wrapper.position.y = meta.y;
     outer_wrapper.position.z = meta.z;
 
+    this._addParticlesStaticMesh(meta, wrapper, name);
+
+    if (meta.loadDisabled) {
+      mesh.setEnabled(false);
+      this.staticAssetMeshes[name] = outer_wrapper;
+      return;
+    }
+
     if (meta.parent) {
       let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('assetwrapperorbit' + name, {
         width: .01,
@@ -763,19 +771,22 @@ export class StoryApp extends BaseApp {
           anim.goToFrame(Math.floor(endFrame * meta.startRatio));
       }
 
-      if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
-        let particlePivot = BABYLON.Mesh.CreateBox("staticpivotparticle" + name, .001, this.scene);
-        particlePivot.position.x = meta.px;
-        particlePivot.position.y = meta.py;
-        particlePivot.position.z = meta.pz;
-        //particlePivot.rotation.x = -1 * Math.PI / 2;
-        particlePivot.rotation.z = Math.PI;
-        particlePivot.material = this.mat1alpha;
-        particlePivot.parent = wrapper;
+    }
+  }
+  _addParticlesStaticMesh(meta, wrapper, name) {
+    if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
+      let particlePivot = BABYLON.Mesh.CreateBox("staticpivotparticle" + name, .001, this.scene);
+      particlePivot.position.x = meta.px;
+      particlePivot.position.y = meta.py;
+      particlePivot.position.z = meta.pz;
+      //particlePivot.rotation.x = -1 * Math.PI / 2;
+      particlePivot.rotation.z = Math.PI;
+      particlePivot.material = this.mat1alpha;
+      particlePivot.parent = wrapper;
 
-        wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
+      wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
+      if (!meta.loadDisabled)
         wrapper.particleSystem.start();
-      }
     }
   }
   _loadMeshMusic(meta, mesh, name) {
@@ -1291,7 +1302,7 @@ export class StoryApp extends BaseApp {
     this.game_header_panel.innerHTML = `${name}`;
 
     document.body.classList.add('show_game_table');
-    
+
     if (!this.avatarsLoaded)
       return;
 
