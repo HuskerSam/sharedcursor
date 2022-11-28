@@ -582,7 +582,7 @@
     "largeglbpath": "/solar/s28_phoebehuge.glb",
     "smallglbpath": "/solar/s28_phoebesmall.glb",
     "glbfile": "",
-    "glbscale": 0.01,
+    "glbscale": 0.5,
     "symbolY": 1.5,
     "name": "Phoebe",
     "objectType": "moon",

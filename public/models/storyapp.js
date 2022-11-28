@@ -347,7 +347,7 @@ export class StoryApp extends BaseApp {
       }, this.scene);
       symbolWrapper.parent = parent;
       symbolWrapper.material = this.mat1alpha;
-      this.asteroidSymbolMesh = symbolWrapper;
+      this.asteroidSymbolMesh1 = symbolWrapper;
 
       let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
         height: size,
@@ -452,48 +452,12 @@ export class StoryApp extends BaseApp {
       symbolMesh3.rotation.y = Math.PI;
       symbolMesh3.position.y = extraY;
       symbolMesh3.scaling.x = -1;
-
-      this.asteroidSymbolMeshName = BABYLON.MeshBuilder.CreateBox('asteroidnamewrapper2', {
-        width: .01,
-        height: .01,
-        depth: .01
-      }, this.scene);
-      this.asteroidSymbolMeshName.position.y = 1;
-      this.asteroidSymbolMeshName.visibility = 0;
-      this.asteroidSymbolMeshName.material = this.mat1alpha;
-      this.asteroidSymbolMeshName.setEnabled(false);
-
-      let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1asteroid2', {
-        height: size * 5,
-        width: size * 5
-      }, this.scene);
-      let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2asteroid2', {
-        height: size * 5,
-        width: size * 5
-      }, this.scene);
-
-      let nameMat = new BABYLON.StandardMaterial('nameshowmatasteroid2', this.scene);
-      this.__setTextMaterial(nameMat, 'asteroid2');
-      this.asteroidSymbolMeshName.nameMaterial = nameMat;
-
-      nameMesh1.material = nameMat;
-      nameMesh1.parent = this.asteroidSymbolMeshName;
-      nameMesh2.material = nameMat;
-      nameMesh2.parent = this.asteroidSymbolMeshName;
-      nameMesh2.scaling.x = -1;
-
-      let factor = -1.8;
-      //    if (meta.symbolY < -0.99)
-      //    factor = -2.75;
-      nameMesh1.position.y = symbolMesh1.position.y + factor;
-      nameMesh2.position.y = symbolMesh1.position.y + factor;
-      nameMesh2.rotation.y = Math.PI;
     }
 
     //parent.symbolWrapper = symbolWrapper;
     let asteroidSymbol;
     if (index % 2 === 0) {
-      asteroidSymbol = this.asteroidSymbolMesh.clone("asteroidsymbol" + name);
+      asteroidSymbol = this.asteroidSymbolMesh1.clone("asteroidsymbol" + name);
       asteroidSymbol.parent = parent;
     } else {
       asteroidSymbol = this.asteroidSymbolMesh2.clone("asteroidsymbol" + name);
