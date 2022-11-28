@@ -66,7 +66,9 @@
 
 <body class="storyverse_page">
   <div class="loading_banner">
-    Loading lots of textures and models based on space as best as we know it.  Please be patient!
+    Loading lots of models based on radar data... <button class="hide_loading_screen">x</button>
+    <div class="loading_dynamic_area">
+    </div>
   </div>
   <div class="modal fade" id="canvasDisplayModal" tabindex="-1" role="dialog" aria-labelledby="canvasDisplayModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -144,7 +146,9 @@
             </div>
             <div class="tab-pane fade basic_options" role="tabpanel">
               <div class="gameid_span"></div>
-
+              <div>
+                  <button class="show_loading_screen">Show Loading Screen</button>
+              </div>
               <div class="options_edit_block">
                 <label class="form-label">Visibility</label>
                 <select class="visibility_select form-select form-select-lg">

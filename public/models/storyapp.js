@@ -9,6 +9,17 @@ export class StoryApp extends BaseApp {
     this.staticAssetMeshes = {};
     this.musicMeshes = {};
     this.seatMeshes = {};
+    this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
+
+    this.hide_loading_screen = document.querySelector('.hide_loading_screen');
+    this.hide_loading_screen.addEventListener('click', e => {
+      document.body.classList.remove('show_loading_banner');
+    });
+
+    this.show_loading_screen = document.querySelector('.show_loading_screen');
+    this.show_loading_screen.addEventListener('click', e => {
+      document.body.classList.add('show_loading_banner');
+    });
 
     this._initGameCommon();
 
@@ -39,9 +50,15 @@ export class StoryApp extends BaseApp {
 
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
+
   }
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
+  }
+  addLineToLoading(str) {
+    let div = document.createElement('div');
+    div.innerHTML = str;
+    this.loading_dynamic_area.appendChild(div);
   }
   async loadStaticScene() {
     this.hugeAssets = this.gameData.performanceFlags.indexOf('hugemodel_all') !== -1;
@@ -90,16 +107,16 @@ export class StoryApp extends BaseApp {
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
-/*
-    promises = [];
-    deck = GameCards.getCardDeck('mascots');
-    deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, staticWrapper));
-      if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(card.id));
-    });
-    await Promise.all(promises);
-*/
+    /*
+        promises = [];
+        deck = GameCards.getCardDeck('mascots');
+        deck.forEach(card => {
+          promises.push(this.loadStaticAsset(card.id, staticWrapper));
+          if (this.allCards[card.id].noNavMesh !== true)
+            navMeshes.push(this.loadStaticNavMesh(card.id));
+        });
+        await Promise.all(promises);
+    */
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
 
@@ -510,6 +527,11 @@ export class StoryApp extends BaseApp {
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
+    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+
+    this.addLineToLoading(`<img src="${symbolPath}" class="symbol_image"> ${meta.name}:
+        <a href="${meta.url}" target="_blank">wikipedia</a> <a href="${path}" target="_blank">model</a>
+      `);
 
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,

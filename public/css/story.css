@@ -32,13 +32,26 @@ body {
   top: 10px;
   left: 10px;
   z-index: 10;
-  width: 300px;
   background: rgb(220, 220, 200);
   color: black;
+  max-height: 90%;
+  overflow: auto;
 }
 
 .avatars_loaded .loading_banner {
   display: none;
+}
+
+.hide_loading_screen {
+  display: none;
+}
+
+.avatars_loaded .hide_loading_screen {
+  display: inline-block;
+}
+
+.show_loading_banner .loading_banner {
+  display: block;
 }
 
 .menu_bar_toggle {
@@ -75,4 +88,8 @@ body {
 .static_menu a {
   padding: 0;
   padding-top: 8px;
+}
+
+.symbol_image {
+  height: 32px;
 }
