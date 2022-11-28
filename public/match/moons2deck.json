@@ -579,6 +579,8 @@
     "solarPosition": "S28",
     "showSymbol": true,
     "glbpath": "/solar/s28_phoebe.glb",
+    "largeglbpath": "/solar/s28_phoebehuge.glb",
+    "smallglbpath": "/solar/s28_phoebesmall.glb",
     "glbfile": "",
     "glbscale": 0.01,
     "symbolY": 1.5,
