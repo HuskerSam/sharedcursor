@@ -32,10 +32,11 @@ body {
   top: 10px;
   left: 10px;
   z-index: 10;
-  background: rgb(220, 220, 200);
+  background: rgb(230, 240, 230);
   color: black;
   max-height: 90%;
   overflow: auto;
+  line-height: 2.5em;
 }
 
 .avatars_loaded .loading_banner {

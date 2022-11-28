@@ -59,6 +59,8 @@ export class StoryApp extends BaseApp {
     let div = document.createElement('div');
     div.innerHTML = str;
     this.loading_dynamic_area.appendChild(div);
+
+    this.loading_dynamic_area.scrollIntoView(false);
   }
   async loadStaticScene() {
     this.hugeAssets = this.gameData.performanceFlags.indexOf('hugemodel_all') !== -1;
@@ -77,6 +79,7 @@ export class StoryApp extends BaseApp {
     mat1.alpha = 0;
     this.mat1alpha = mat1;
 
+    this.addLineToLoading('Solar System Objects<br>');
     let navMeshes = [];
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
@@ -86,6 +89,8 @@ export class StoryApp extends BaseApp {
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     await Promise.all(promises);
+
+    this.addLineToLoading('Moons<br>');
 
     promises = [];
     deck = GameCards.getCardDeck('moons1');
@@ -164,16 +169,33 @@ export class StoryApp extends BaseApp {
       }
     });
 
-    let randomArray = [];
-    for (let c = 0; c < max; c++)
-      randomArray.push(c);
-    randomArray = this._shuffleArray(randomArray);
-    randomArray = randomArray.slice(0, count);
+    this.addLineToLoading(`Loading Asteroids
+      <a href="https://3d-asteroids.space/asteroids" target="_blank">radar based  data</a>`);
+    this.addLineToLoading(`Picking ${count} from ${max} available`);
 
-    setTimeout(() => {
-      for (let c = 0; c < count; c++)
-        this._loadAsteroid(asteroids[randomArray[c]], c, count);
-    }, 1000);
+    let randomArray = [];
+    for (let c = 0; c < max; c++) {
+      randomArray.push(c);
+    }
+    randomArray = this._shuffleArray(randomArray);
+    randomArray = randomArray.slice(0, count); //.sort();
+
+
+    let linkNameList = '';
+    randomArray.forEach((index, i) => {
+      let name = asteroids[index];
+      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
+        encodeURIComponent(name) + '?alt=media';
+      linkNameList += `<a target="_blank" href="${path}">${name}</a>`;
+      if (i < count - 1)
+        linkNameList += ', '
+      if (i % 4 === 3)
+        linkNameList += '<br>';
+    });
+    this.addLineToLoading(linkNameList);
+
+    for (let c = 0; c < count; c++)
+      this._loadAsteroid(asteroids[randomArray[c]], c, count);
   }
   async _loadAsteroid(asteroid, index, count) {
     let startRatio = index / count;
