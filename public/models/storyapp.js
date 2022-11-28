@@ -334,12 +334,12 @@ export class StoryApp extends BaseApp {
     mesh.origsy = mesh.scaling.y;
     mesh.origsz = mesh.scaling.z;
 
-    orbitWrapper.symbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid);
+    orbitWrapper.symbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid, index);
   }
-  loadSymbolForAsteroid(parent, name) {
+  loadSymbolForAsteroid(parent, name, index) {
     let size = 1;
 
-    if (!this.asteroidSymbolMesh) {
+    if (!this.asteroidSymbolMesh1) {
       let symbolWrapper = BABYLON.MeshBuilder.CreateBox('asteroidsymbolwrapper', {
         width: .01,
         height: .01,
@@ -414,10 +414,91 @@ export class StoryApp extends BaseApp {
       nameMesh2.position.y = symbolMesh1.position.y + factor;
       nameMesh2.rotation.y = Math.PI;
     }
+    if (!this.asteroidSymbolMesh2) {
+      let symbolWrapper = BABYLON.MeshBuilder.CreateBox('asteroidsymbolwrapper2', {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      symbolWrapper.parent = parent;
+      symbolWrapper.material = this.mat1alpha;
+      this.asteroidSymbolMesh2 = symbolWrapper;
+
+      let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid2', {
+        height: size,
+        width: size
+      }, this.scene);
+      let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3asteroid2', {
+        height: size,
+        width: size
+      }, this.scene);
+
+      let m = new BABYLON.StandardMaterial('symbolshowmatasteroid2', this.scene);
+      let t = new BABYLON.Texture('/symbol/asteroid2.png', this.scene);
+      t.vScale = 1;
+      t.uScale = 1;
+      t.hasAlpha = true;
+
+      m.diffuseTexture = t;
+      m.emissiveTexture = t;
+      m.ambientTexture = t;
+      let extraY = 0;
+      symbolMesh1.material = m;
+      symbolMesh1.parent = symbolWrapper;
+      symbolMesh1.rotation.y = 0;
+      symbolMesh1.position.y = extraY;
+      symbolMesh3.material = m;
+      symbolMesh3.parent = symbolWrapper;
+      symbolMesh3.rotation.y = Math.PI;
+      symbolMesh3.position.y = extraY;
+      symbolMesh3.scaling.x = -1;
+
+      this.asteroidSymbolMeshName = BABYLON.MeshBuilder.CreateBox('asteroidnamewrapper2', {
+        width: .01,
+        height: .01,
+        depth: .01
+      }, this.scene);
+      this.asteroidSymbolMeshName.position.y = 1;
+      this.asteroidSymbolMeshName.visibility = 0;
+      this.asteroidSymbolMeshName.material = this.mat1alpha;
+      this.asteroidSymbolMeshName.setEnabled(false);
+
+      let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1asteroid2', {
+        height: size * 5,
+        width: size * 5
+      }, this.scene);
+      let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2asteroid2', {
+        height: size * 5,
+        width: size * 5
+      }, this.scene);
+
+      let nameMat = new BABYLON.StandardMaterial('nameshowmatasteroid2', this.scene);
+      this.__setTextMaterial(nameMat, 'asteroid2');
+      this.asteroidSymbolMeshName.nameMaterial = nameMat;
+
+      nameMesh1.material = nameMat;
+      nameMesh1.parent = this.asteroidSymbolMeshName;
+      nameMesh2.material = nameMat;
+      nameMesh2.parent = this.asteroidSymbolMeshName;
+      nameMesh2.scaling.x = -1;
+
+      let factor = -1.8;
+      //    if (meta.symbolY < -0.99)
+      //    factor = -2.75;
+      nameMesh1.position.y = symbolMesh1.position.y + factor;
+      nameMesh2.position.y = symbolMesh1.position.y + factor;
+      nameMesh2.rotation.y = Math.PI;
+    }
 
     //parent.symbolWrapper = symbolWrapper;
-    const asteroidSymbol = this.asteroidSymbolMesh.clone("asteroidsymbol" + name);
-    asteroidSymbol.parent = parent;
+    let asteroidSymbol;
+    if (index % 2 === 0) {
+      asteroidSymbol = this.asteroidSymbolMesh.clone("asteroidsymbol" + name);
+      asteroidSymbol.parent = parent;
+    } else {
+      asteroidSymbol = this.asteroidSymbolMesh2.clone("asteroidsymbol" + name);
+      asteroidSymbol.parent = parent;
+    }
 
     return asteroidSymbol;
   }
