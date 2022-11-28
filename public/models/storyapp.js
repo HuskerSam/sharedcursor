@@ -505,11 +505,6 @@ export class StoryApp extends BaseApp {
         scale = meta.largeglbscale
     }
 
-    if (name === 'e1_luna' && this.gameData.performanceFlags.indexOf('moon_gray') !== -1) {
-      rawPath = rawPath.replace('blue', '');
-      scale = 0.035;
-    }
-
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
 
@@ -893,7 +888,8 @@ export class StoryApp extends BaseApp {
     }, this.scene);
 
     let m = new BABYLON.StandardMaterial('symbolshowmat' + name, this.scene);
-    let t = new BABYLON.Texture(meta.symbol, this.scene);
+    let symbol = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+    let t = new BABYLON.Texture(symbol, this.scene);
     t.vScale = 1;
     t.uScale = 1;
     t.hasAlpha = true;

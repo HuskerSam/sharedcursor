@@ -64,12 +64,16 @@ export default class GameCards {
   }
   static _cardFilling(meta, includeWrapper = false) {
     let invert = meta.invert ? ' invert' : '';
+
+    let symbol = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+    let image = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';
+
     let guts = `<div style="flex:1"></div><div class="header${invert}">
-      <img class="symbol" src="${meta.symbol}">
+      <img class="symbol" src="${symbol}">
       <div class="name">${meta.name}</div>
     </div>
     <div style="flex:1"></div>
-    <div class="image" style="background-image:url(${meta.image});"></div>
+    <div class="image" style="background-image:url(${image});"></div>
     <div style="flex:1"></div>
     `;
 
