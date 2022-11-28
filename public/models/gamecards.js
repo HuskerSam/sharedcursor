@@ -6,8 +6,6 @@ export default class GameCards {
       return window.moons1CardDeck;
     if (cardDeck === 'moons2')
       return window.moons2CardDeck;
-    if (cardDeck === 'moons3')
-      return window.moons3CardDeck;
     if (cardDeck === 'mascots')
       return window.mascotsCardDeck;
 
@@ -29,7 +27,6 @@ export default class GameCards {
       await GameCards.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck'),
       await GameCards.readJSONFile(`/match/moons1deck.json`, 'moons1CardDeck'),
       await GameCards.readJSONFile(`/match/moons2deck.json`, 'moons2CardDeck'),
-      await GameCards.readJSONFile(`/match/moons3deck.json`, 'moons3CardDeck'),
       await GameCards.readJSONFile(`/match/mascotsdeck.json`, 'mascotsCardDeck')
     ]);
 
@@ -41,9 +38,6 @@ export default class GameCards {
     deck.forEach(card => allCards[card.id] = card);
 
     deck = this.getCardDeck('moons2');
-    deck.forEach(card => allCards[card.id] = card);
-
-    deck = this.getCardDeck('moons3');
     deck.forEach(card => allCards[card.id] = card);
 
     deck = this.getCardDeck('mascots');

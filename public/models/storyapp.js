@@ -105,12 +105,7 @@ export class StoryApp extends BaseApp {
       if (this.allCards[card.id].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
-    deck = GameCards.getCardDeck('moons3');
-    deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, staticWrapper));
-      if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(card.id));
-    });
+
     await Promise.all(promises);
     /*
         promises = [];
@@ -550,9 +545,12 @@ export class StoryApp extends BaseApp {
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+    let img = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';
 
     this.addLineToLoading(`<img src="${symbolPath}" class="symbol_image"> ${meta.name}:
         <a href="${meta.url}" target="_blank">wikipedia</a> <a href="${path}" target="_blank">model</a>
+        <br>
+        <img src="${img}" style="max-height: 100px">
       `);
 
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
