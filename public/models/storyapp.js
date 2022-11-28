@@ -359,7 +359,8 @@ export class StoryApp extends BaseApp {
       }, this.scene);
 
       let m = new BABYLON.StandardMaterial('symbolshowmatasteroid', this.scene);
-      let t = new BABYLON.Texture('/symbol/asteroid.png', this.scene);
+      let file1 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent('/symbol/asteroid.png') + '?alt=media';
+      let t = new BABYLON.Texture(file1, this.scene);
       t.vScale = 1;
       t.uScale = 1;
       t.hasAlpha = true;
@@ -434,7 +435,9 @@ export class StoryApp extends BaseApp {
       }, this.scene);
 
       let m = new BABYLON.StandardMaterial('symbolshowmatasteroid2', this.scene);
-      let t = new BABYLON.Texture('/symbol/asteroid2.png', this.scene);
+      let file1 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent('/symbol/asteroid2.png') + '?alt=media';
+      let t = new BABYLON.Texture(file1, this.scene);
+
       t.vScale = 1;
       t.uScale = 1;
       t.hasAlpha = true;
