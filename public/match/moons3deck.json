@@ -195,7 +195,7 @@
     "type": "3dmodel",
     "id": "moon_miranda",
     "description": "Jupiters 2nd largest moon.",
-    "image": "/cardimages/phobos.jpg",
+    "image": "/cardimages/moonmiranda.jpg",
     "symbol": "/symbol/miranda.png",
     "solarPosition": "U2",
     "showSymbol": true,
