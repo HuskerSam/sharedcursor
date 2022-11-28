@@ -369,7 +369,6 @@ export class GamesApp extends BaseApp {
     let messageLevel = document.querySelector('.message_level_select').value;
     let seatsPerUser = document.querySelector('.seats_per_user_select').value;
     let cardDeck = document.querySelector('.card_deck_select').value;
-    let rover_status = document.querySelector('.rover_status').value;
     let particles_status = document.querySelector('.particles_status').value;
     let bones_status = document.querySelector('.bones_status').value;
     let shadow_status = document.querySelector('.shadow_status').value;
@@ -381,6 +380,7 @@ export class GamesApp extends BaseApp {
     let skyboxrotation_status = document.querySelector('.skyboxrotation_status').value;
     let hugemodel_status = document.querySelector('.hugemodel_status').value;
     let moonlevel_status = document.querySelector('.moonlevel_status').value;
+    let extras_status = document.querySelector('.extras_status').value;
 
     let body = {
       gameType,
@@ -391,7 +391,6 @@ export class GamesApp extends BaseApp {
       cardDeck,
       scoringSystem,
       performanceFlags: [
-        rover_status,
         particles_status,
         bones_status,
         shadow_status,
@@ -401,6 +400,7 @@ export class GamesApp extends BaseApp {
         skybox_status,
         skyboxrotation_status,
         hugemodel_status,
+        extras_status,
         moonlevel_status
       ]
     };

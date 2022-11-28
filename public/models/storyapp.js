@@ -107,16 +107,15 @@ export class StoryApp extends BaseApp {
     });
 
     await Promise.all(promises);
-    /*
-        promises = [];
-        deck = GameCards.getCardDeck('mascots');
-        deck.forEach(card => {
-          promises.push(this.loadStaticAsset(card.id, staticWrapper));
-          if (this.allCards[card.id].noNavMesh !== true)
-            navMeshes.push(this.loadStaticNavMesh(card.id));
-        });
-        await Promise.all(promises);
-    */
+    promises = [];
+    deck = GameCards.getCardDeck('mascots');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      if (this.allCards[card.id].noNavMesh !== true)
+        navMeshes.push(this.loadStaticNavMesh(card.id));
+    });
+    await Promise.all(promises);
+
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
 
@@ -531,8 +530,9 @@ export class StoryApp extends BaseApp {
     if (this.minMoonsLoad && meta.moonType === 5)
       return;
 
-    if (meta.performanceFlagEnabled && this.gameData.performanceFlags.indexOf(name) === -1)
+    if (meta.optionalLoad && this.gameData.performanceFlags.indexOf(meta.optionalFlags) === -1) {
       return;
+    }
 
     let rawPath = meta.glbpath;
     let scale = meta.glbscale;
@@ -545,14 +545,14 @@ export class StoryApp extends BaseApp {
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-    let img = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';
+    //let img = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';
 
     this.addLineToLoading(`<img src="${symbolPath}" class="symbol_image"> ${meta.name}:
         <a href="${meta.url}" target="_blank">wikipedia</a> <a href="${path}" target="_blank">model</a>
         <br>
-        <img src="${img}" style="max-height: 100px">
       `);
 
+      //<img src="${img}" style="max-height: 100px">
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
       height: .01,

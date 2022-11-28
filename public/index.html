@@ -204,15 +204,6 @@
 
               <div class="story_additional_options">
                 <div style="display:inline-block;">
-                  <label class="form-label">Mars</label>
-                  <select class="rover_status form-select form-select-lg">
-                    <option value="rover_none">No Rover</option>
-                    <option value="rover_perseverance">Perseverance</option>
-                    <option value="rover_curiosity">Curiosity</option>
-                    <option value="probe_radiodish">Radio Dish</option>
-                  </select>
-                </div>
-                <div style="display:inline-block;">
                   <label class="form-label">Particles</label>
                   <select class="particles_status form-select form-select-lg">
                     <option value="particles_rockets">Rockets Only</option>
@@ -253,7 +244,7 @@
                   <label class="form-label">Asteroids</label>
                   <select class="asteroid_status form-select form-select-lg">
                     <option value="asteroids_20">20</option>
-                    <option value="asteroids_50">50</option>
+                    <option value="asteroids_50" selected>50</option>
                     <option value="asteroids_100">100</option>
                     <option value="asteroids_150">150</option>
                     <option value="asteroids_all">all</option>
@@ -295,6 +286,16 @@
                   <select class="moonlevel_status form-select form-select-lg">
                     <option value="moonlevel_all">All</option>
                     <option value="moonlevel_5">5</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Extras</label>
+                  <select class="extras_status form-select form-select-lg">
+                    <option value="extras_none">None</option>
+                    <option value="optional_mascots">Mascots</option>
+                    <option value="optional_probes">Probes</option>
+                    <option value="optional_mars">Mars</option>
+                    <option value="optional_rockets">Rockets</option>
                   </select>
                 </div>
               </div>
