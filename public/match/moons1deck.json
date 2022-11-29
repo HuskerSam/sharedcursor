@@ -32,9 +32,7 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "spintime": 10000,
-    "parent": "earth",
-    "clickToPause": true
-  },
+    "parent": "earth"  },
   {
     "type": "3dmodel",
     "id": "moon_phobos",
@@ -67,8 +65,8 @@
     "spintime": 35000,
     "startRatio": 0.5,
     "parent": "mars",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -100,8 +98,8 @@
     "noNavMesh": true,
     "spintime": 25000,
     "parent": "mars",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -133,8 +131,8 @@
     "spintime": 25000,
     "parent": "jupiter",
     "spindirection": -1,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -167,8 +165,8 @@
     "spintime": 25000,
     "startRatio": 0.2,
     "parent": "jupiter",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -201,8 +199,8 @@
     "spintime": 25000,
     "startRatio": 0.4,
     "parent": "jupiter",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -235,8 +233,8 @@
     "spintime": 25000,
     "startRatio": 0.6,
     "parent": "jupiter",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -271,7 +269,6 @@
     "noNavMesh": true,
     "spintime": 48000,
     "parent": "jupiter",
-    "clickToPause": true,
     "startRatio": 0.5
   },
   {
@@ -302,8 +299,7 @@
     "diameter": 0.65,
     "noNavMesh": true,
     "spintime": 25000,
-    "parent": "jupiter",
-    "clickToPause": true
+    "parent": "jupiter"
   },
   {
     "type": "3dmodel",
@@ -333,8 +329,7 @@
     "noNavMesh": true,
     "spintime": 90000,
     "parent": "jupiter",
-    "startRatio": 0.25,
-    "clickToPause": true
+    "startRatio": 0.25
   },
   {
     "type": "3dmodel",
@@ -365,8 +360,7 @@
     "noNavMesh": true,
     "spintime": 68000,
     "parent": "jupiter",
-    "startRatio": 0.75,
-    "clickToPause": true
+    "startRatio": 0.75
   },
   {
     "type": "3dmodel",
@@ -398,8 +392,7 @@
     "startRatio": 0.9,
     "parent": "uranus",
     "moon90orbit": true,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -431,8 +424,7 @@
     "moon90orbit": true,
     "startRatio": 0.3,
     "parent": "uranus",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -464,8 +456,7 @@
     "startRatio": 0.5,
     "parent": "uranus",
     "moon90orbit": true,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -496,8 +487,7 @@
     "spintime": 33000,
     "parent": "uranus",
     "moon90orbit": true,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -529,8 +519,7 @@
     "startRatio": 0.6,
     "parent": "uranus",
     "moon90orbit": true,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -560,8 +549,7 @@
     "noNavMesh": true,
     "spintime": 19000,
     "parent": "neptune",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -591,8 +579,7 @@
     "noNavMesh": true,
     "spintime": 19000,
     "parent": "neptune",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -622,8 +609,7 @@
     "noNavMesh": true,
     "spintime": 19000,
     "parent": "neptune",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -651,7 +637,6 @@
     "diameter": 0.35,
     "noNavMesh": true,
     "spintime": 10000,
-    "parent": "pluto",
-    "clickToPause": true
+    "parent": "pluto"
   }
 ]

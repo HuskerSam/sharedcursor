@@ -1,5 +1,4 @@
-[
-  {
+[{
     "type": "3dmodel",
     "id": "s2_pan",
     "description": "Jupiters 2nd largest moon.",
@@ -28,8 +27,8 @@
     "spintime": 36000,
     "startRatio": 0.65,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -60,8 +59,8 @@
     "spintime": 36000,
     "startRatio": 0.25,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
+
   },
   {
     "type": "3dmodel",
@@ -92,8 +91,7 @@
     "spintime": 36000,
     "startRatio": 0.45,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -124,8 +122,7 @@
     "spintime": 36000,
     "startRatio": 0.45,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -156,8 +153,7 @@
     "spintime": 36000,
     "startRatio": 0.75,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -188,8 +184,7 @@
     "spintime": 36000,
     "startRatio": 0.5,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -220,8 +215,7 @@
     "spintime": 39000,
     "startRatio": 0.95,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -252,8 +246,7 @@
     "spintime": 36000,
     "startRatio": 0.65,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -284,8 +277,7 @@
     "spintime": 72000,
     "startRatio": 0.75,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -316,8 +308,7 @@
     "spintime": 40000,
     "parent": "saturn",
     "startRatio": 0.5,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -348,8 +339,7 @@
     "spintime": 39000,
     "startRatio": 0.45,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -379,8 +369,7 @@
     "noNavMesh": true,
     "spintime": 39000,
     "startRatio": 0.85,
-    "parent": "saturn",
-    "clickToPause": true
+    "parent": "saturn"
   },
   {
     "type": "3dmodel",
@@ -409,8 +398,7 @@
     "diameter": 0.35,
     "noNavMesh": true,
     "spintime": 19000,
-    "parent": "saturn",
-    "clickToPause": true
+    "parent": "saturn"
   },
   {
     "type": "3dmodel",
@@ -441,8 +429,7 @@
     "spintime": 39000,
     "startRatio": 0.55,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -472,8 +459,7 @@
     "noNavMesh": true,
     "spintime": 200000,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -503,8 +489,7 @@
     "noNavMesh": true,
     "spintime": 42000,
     "parent": "saturn",
-    "startRatio": 0.25,
-    "clickToPause": true
+    "startRatio": 0.25
   },
   {
     "type": "3dmodel",
@@ -535,8 +520,7 @@
     "spintime": 39000,
     "parent": "saturn",
     "startRatio": 0.41,
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -567,8 +551,7 @@
     "spintime": 45000,
     "startRatio": 0.9,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   },
   {
     "type": "3dmodel",
@@ -602,7 +585,6 @@
     "spintime": 36000,
     "startRatio": 0.25,
     "parent": "saturn",
-    "moonType": 5,
-    "clickToPause": true
+    "moonType": 5
   }
 ]
