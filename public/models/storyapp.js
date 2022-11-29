@@ -81,7 +81,7 @@ export class StoryApp extends BaseApp {
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(card.id));
+        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.allCards[card.id], this.scene));
     });
     await Promise.all(promises);
 
@@ -92,13 +92,13 @@ export class StoryApp extends BaseApp {
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(card.id));
+        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
     });
     deck = GameCards.getCardDeck('moons2');
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(card.id));
+        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
     });
 
     await Promise.all(promises);
@@ -107,7 +107,7 @@ export class StoryApp extends BaseApp {
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(this.loadStaticNavMesh(card.id));
+        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
     });
     await Promise.all(promises);
 
@@ -187,14 +187,9 @@ export class StoryApp extends BaseApp {
     this.asteroidMaterial = mats.material;
     this.selectedAsteroidMaterial = mats.selectedMaterial;
 
-    let size = 1;
-    let meshes = Utility3D.generateNameMesh(this.scene, 'asteroidsymbolwrapper', 'asteroid');
-    this.asteroidSymbolMeshName = meshes.asteroidNameMesh;
-    this.asteroidSymbolMesh1 = meshes.symbolWrapper;
-
-    meshes = Utility3D.generateNameMesh(this.scene, 'asteroidsymbolwrapper2', 'asteroid2');
-    this.asteroidSymbolMeshName2 = meshes.asteroidNameMesh;
-    this.asteroidSymbolMesh2 = meshes.symbolWrapper;
+    this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
+    this.asteroidSymbolMesh1 = Utility3D.generateSymbolMesh(this.scene, 'asteroidsymbolwrapper', 'asteroid');
+    this.asteroidSymbolMesh2 = Utility3D.generateSymbolMesh(this.scene, 'asteroidsymbolwrapper2', 'asteroid2');
 
     for (let c = 0; c < count; c++)
       this._loadAsteroid(asteroids[randomArray[c]], c, count);
@@ -321,18 +316,6 @@ export class StoryApp extends BaseApp {
     asteroidSymbol.setEnabled(true);
 
     return asteroidSymbol;
-  }
-
-  loadStaticNavMesh(name) {
-    let meta = this.allCards[name];
-
-    let mercurysphere = BABYLON.MeshBuilder.CreateSphere(name + "navmeshsphere", {
-      diameter: meta.diameter,
-      segments: 16
-    }, this.scene);
-    mercurysphere.position.x = meta.x;
-    mercurysphere.position.z = meta.z;
-    return mercurysphere;
   }
 
   async loadStaticAsset(name, parent) {
@@ -501,7 +484,10 @@ export class StoryApp extends BaseApp {
   _renderSymbolInfoPanel(name, meta, wrapper, parent, extendedMetaData) {
     let size = 1;
 
-    let symbolWrapper = new BABYLON.TransformNode('symbolpopupwrapper' + name, this.scene);
+    let symbolWrapper = BABYLON.Mesh.CreateBox('symbolpopupwrapper' + name, 0.001, this.scene);
+    let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, this.scene);
+    symbolMat.alpha = 0;
+    symbolWrapper.material = symbolMat;
     symbolWrapper.parent = wrapper;
     parent.symbolWrapper = symbolWrapper;
     if (meta.moon90orbit) {
@@ -763,7 +749,7 @@ export class StoryApp extends BaseApp {
   }
   asteroidPtrDown(mesh, up = false) {
     if (!up) {
-      mesh.asteroidMesh.material = this.asteroidSelectedMaterial;
+      mesh.asteroidMesh.material = this.selectedAsteroidMaterial;
       mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx * 1.25;
       mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy * 1.25;
       mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz * 1.25;
@@ -773,7 +759,7 @@ export class StoryApp extends BaseApp {
       this.asteroidSymbolMeshName.parent = mesh.asteroidMesh;
 
       let text = mesh.asteroidMesh.asteroidName.replace('.obj', '');
-      Utility3D.setTextMaterial(this.asteroidSymbolMeshName.nameMaterial, text, this.scene);
+      Utility3D.setTextMaterial(this.scene, this.asteroidSymbolMeshName.nameMaterial, text);
 
       setTimeout(() => {
         mesh.asteroidMesh.material = this.asteroidMaterial;

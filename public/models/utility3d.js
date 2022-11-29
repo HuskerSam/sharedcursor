@@ -375,7 +375,7 @@ export default class Utility3D {
 
     return textWrapperMesh;
   }
-  static setTextMaterial(mat, text, rgbColor = 'rgb(255,0,0)', scene) {
+  static setTextMaterial(scene, mat, text, rgbColor = 'rgb(255,0,0)') {
     let nameTexture = Utility3D.__texture2DText(scene, text, rgbColor);
     nameTexture.vScale = 1;
     nameTexture.uScale = 1;
@@ -403,7 +403,7 @@ export default class Utility3D {
       material
     }
   }
-  static generateNameMesh(scene, name = 'asteroidsymbolwrapper', texturePrefix = 'asteroid') {
+  static generateSymbolMesh(scene, name = 'asteroidsymbolwrapper', texturePrefix = 'asteroid') {
     let size = 1;
 
     let alphaMat = new BABYLON.StandardMaterial(name + 'mat1alpha', scene);
@@ -447,15 +447,18 @@ export default class Utility3D {
     symbolMesh3.position.y = extraY;
     symbolMesh3.scaling.x = -1;
 
-    let asteroidNameMesh = BABYLON.MeshBuilder.CreateBox(name + 'wrapper', {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, scene);
+    return symbolWrapper;
+  }
+  static generateNameMesh(scene, name = 'asteroidnamemesh') {
+    let alphaMat = new BABYLON.StandardMaterial(name + 'mat1alpha', scene);
+    alphaMat.alpha = 0;
+
+    let asteroidNameMesh = BABYLON.Mesh.CreateBox(name + 'wrapper', 0.001, scene);
     asteroidNameMesh.position.y = 1;
     asteroidNameMesh.material = alphaMat;
     asteroidNameMesh.setEnabled(false);
 
+    let size = 1;
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane(name + 'show1asteroid', {
       height: size * 5,
       width: size * 5
@@ -466,23 +469,27 @@ export default class Utility3D {
     }, scene);
 
     let nameMat = new BABYLON.StandardMaterial(name + 'showmatasteroid', scene);
-    Utility3D.setTextMaterial(nameMat, texturePrefix, scene);
     asteroidNameMesh.nameMaterial = nameMat;
-
     nameMesh1.material = nameMat;
     nameMesh1.parent = asteroidNameMesh;
     nameMesh2.material = nameMat;
     nameMesh2.parent = asteroidNameMesh;
     nameMesh2.scaling.x = -1;
 
-    let factor = -1.8;
-    nameMesh1.position.y = symbolMesh1.position.y + factor;
-    nameMesh2.position.y = symbolMesh1.position.y + factor;
+    let factor = -2.25;
+    nameMesh1.position.y = factor;
+    nameMesh2.position.y = factor;
     nameMesh2.rotation.y = Math.PI;
 
-    return {
-      asteroidNameMesh,
-      symbolWrapper
-    };
+    return asteroidNameMesh;
+  }
+  static loadStaticNavMesh(name, meta, scene) {
+    let mercurysphere = BABYLON.MeshBuilder.CreateSphere(name + "navmeshsphere", {
+      diameter: meta.diameter,
+      segments: 16
+    }, scene);
+    mercurysphere.position.x = meta.x;
+    mercurysphere.position.z = meta.z;
+    return mercurysphere;
   }
 }
