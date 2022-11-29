@@ -64,6 +64,7 @@ export class StoryApp extends BaseApp {
   }
   async loadStaticScene() {
     this.hugeAssets = this.gameData.performanceFlags.indexOf('hugemodel_all') !== -1;
+    this.smallAssets = this.gameData.performanceFlags.indexOf('hugemodel_small') !== -1;
 
     this.minMoonsLoad = this.gameData.performanceFlags.indexOf('moonlevel_5') !== -1;
 
@@ -524,6 +525,51 @@ export class StoryApp extends BaseApp {
     mercurysphere.position.z = meta.z;
     return mercurysphere;
   }
+  processStaticAssetMeta(meta) {
+    let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
+    let smallGlbPath = '';
+    if (meta.smallglbpath)
+      smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
+    let largeGlbPath = '';
+    if (meta.largeglbpath)
+      largeGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.largeglbpath) + '?alt=media';
+    let normalScale = meta.glbscale;
+    let largeScale = normalScale;
+    if (meta.largeglbscale !== undefined)
+      largeScale = meta.largeglbscale;
+    let smallScale = normalScale;
+    if (meta.smallglbscale !== undefined)
+      smallScale = meta.smallglbscale;
+
+    let scale = normalScale;
+    let glbPath = normalGlbPath;
+
+    if (this.hugeAssets) {
+      scale = largeScale;
+      if (largeGlbPath)
+        glbPath = largeGlbPath;
+    }
+
+    if (this.smallAssets) {
+      scale = smallScale;
+      if (smallGlbPath)
+        glbPath = smallGlbPath;
+    }
+
+    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+
+    return {
+      symbolPath,
+      normalGlbPath,
+      smallGlbPath,
+      largeGlbPath,
+      normalScale,
+      smallScale,
+      largeScale,
+      glbPath,
+      scale
+    };
+  }
   async loadStaticAsset(name, parent) {
     let meta = this.allCards[name];
 
@@ -534,25 +580,30 @@ export class StoryApp extends BaseApp {
       return;
     }
 
-    let rawPath = meta.glbpath;
-    let scale = meta.glbscale;
-    if (this.hugeAssets && meta.largeglbpath) {
-      rawPath = meta.largeglbpath;
-      if (meta.largeglbscale !== undefined)
-        scale = meta.largeglbscale
-    }
+    let extendedMetaData = this.processStaticAssetMeta(meta);
 
-    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(rawPath) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', scale, 0, 0, 0);
-    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-    //let img = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';
+    let mesh = await this.loadStaticMesh(extendedMetaData.glbPath, '', extendedMetaData.scale, 0, 0, 0);
 
-    this.addLineToLoading(`<img src="${symbolPath}" class="symbol_image"> ${meta.name}:
-        <a href="${meta.url}" target="_blank">wikipedia</a> <a href="${path}" target="_blank">model</a>
+    let normalLink = `<a href="${extendedMetaData.glbPath}" target="_blank">Normal</a>&nbsp;`;
+    let smallLink = '';
+    let largeLink = '';
+    if (meta.largeglbpath)
+      largeLink = `<a href="${extendedMetaData.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
+    if (meta.smallglbpath)
+      smallLink = `<a href="${extendedMetaData.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
+
+    this.addLineToLoading(`<img src="${extendedMetaData.symbolPath}" class="symbol_image">
+        <a href="${meta.url}" target="_blank"><img class="symbol_image" src="/images/wikilogo.png"></a>
+        &nbsp;
+        ${meta.name}:
+        &nbsp;
+        ${smallLink}
+        ${normalLink}
+        ${largeLink}
         <br>
       `);
 
-      //<img src="${img}" style="max-height: 100px">
+    //<img src="${img}" style="max-height: 100px">
     let outer_wrapper = BABYLON.MeshBuilder.CreateBox('outerassetwrapper' + name, {
       width: .01,
       height: .01,
@@ -679,9 +730,7 @@ export class StoryApp extends BaseApp {
     clickParent.wrapperName = name;
     clickParent.rawMeshWrapper = wrapper;
 
-    if (meta.showSymbol) {
-      this._renderSymbolInfoPanel(name, meta, wrapper, clickParent);
-    }
+    if (meta.showSymbol) this._renderSymbolInfoPanel(name, meta, wrapper, clickParent, extendedMetaData);
 
     if (meta.freeOrbit) {
       let orbit_wrapper = BABYLON.MeshBuilder.CreateBox('orbitassetwrapper' + name, {
@@ -810,8 +859,7 @@ export class StoryApp extends BaseApp {
 
     this.staticAssetMeshes[name] = outer_wrapper;
 
-    if (this.shadowGenerator)
-      this.shadowGenerator.addShadowCaster(mesh, true);
+    if (this.shadowGenerator) this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.mp3file && this.gameData.performanceFlags.indexOf('sound_all') !== -1) {
       this._loadMeshMusic(meta, mesh, name);
@@ -908,7 +956,7 @@ export class StoryApp extends BaseApp {
       this.musicMeshes[name] = music;
     }, 10000);
   }
-  _renderSymbolInfoPanel(name, meta, wrapper, parent) {
+  _renderSymbolInfoPanel(name, meta, wrapper, parent, extendedMetaData) {
     let size = 1;
 
     let symbolWrapper = BABYLON.MeshBuilder.CreateBox('symbolpopupwrapper' + name, {
@@ -933,8 +981,7 @@ export class StoryApp extends BaseApp {
     }, this.scene);
 
     let m = new BABYLON.StandardMaterial('symbolshowmat' + name, this.scene);
-    let symbol = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-    let t = new BABYLON.Texture(symbol, this.scene);
+    let t = new BABYLON.Texture(extendedMetaData.symbolPath, this.scene);
     t.vScale = 1;
     t.uScale = 1;
     t.hasAlpha = true;

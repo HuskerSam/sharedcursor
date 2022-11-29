@@ -240,7 +240,7 @@
     "spintime": 10500,
     "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "optional_radiodish"
+    "optionalFlags": "optional_mascots"
   },
   {
     "type": "3dmodel",

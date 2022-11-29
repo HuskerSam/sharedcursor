@@ -45,9 +45,13 @@ body {
 
 .hide_loading_screen {
   display: none;
+  position: absolute;
+  z-index: 10000;
+  top: 10px;
+  left: 15px;
 }
 
-.avatars_loaded .hide_loading_screen {
+.avatars_loaded.show_loading_banner .hide_loading_screen {
   display: inline-block;
 }
 
@@ -93,4 +97,8 @@ body {
 
 .symbol_image {
   height: 32px;
+}
+
+.selected_link_bold {
+  font-style: italic;
 }
