@@ -37,6 +37,7 @@ body {
   max-height: 90%;
   overflow: auto;
   line-height: 2.5em;
+  padding-bottom: 1.5em;
 }
 
 .avatars_loaded .loading_banner {
