@@ -150,11 +150,19 @@ export class BaseApp {
       });
   }
   async _authCreateDefaultProfile() {
+    await this.readJSONFile(`/profile/logos.json`, 'profileLogos');
+    let displayImage = '';
+    if (window.profileLogos) {
+      let keys = Object.keys(window.profileLogos);
+      let index = Math.floor(Math.random() * keys.length);
+      let key = keys[index];
+      displayImage = window.profileLogos[key];
+    }
     this.profile = {
       points: 0,
       locationTrack: false,
       displayName: Utility.generateName(),
-      displayImage: '',
+      displayImage,
       displayAvatar: Utility.generateAvatarName()
     };
 
@@ -1377,6 +1385,7 @@ export class BaseApp {
   }
   pointerUp() {
   }
+  pointerDown() {}
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult && this.testPerformanceFlags('animation_full')) {
       let bonesPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent("/solar/avatar-walk.glb") + '?alt=media';

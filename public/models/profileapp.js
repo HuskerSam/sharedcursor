@@ -177,8 +177,21 @@ export class ProfileApp extends BaseApp {
 
     let prefix = this.profile_display_avatar_preset.value;
     this.modal.show();
+    let avatarMesh = await this.loadAvatarMesh(`/avatars/${prefix}.glb`, "", 2, 0, 0, -4);
+    this.engine.resize();
+
+    this.currentLoadedAvatar = new BABYLON.TransformNode("avatarwrapper", this.scene);
+    avatarMesh.parent = this.currentLoadedAvatar;
+    this.currentLoadedAvatar.rotation.y -= 2;
     this.runRender = true;
-    this.currentLoadedAvatar = await this.loadAvatarMesh(`/avatars/${prefix}.glb`, "", 2, 0, 0, -4);
+    avatarMesh.modelAnimationGroup.play();
+    this.scene.activeCamera.setPosition(new BABYLON.Vector3(7, 4, 3.2));
+  }
+  testPerformanceFlags(flag) {
+    if (flag === 'animation_full')
+      return true;
+
+    return super.testPerformanceFlags(flag);
   }
   async load() {
     await GameCards.loadDecks();
@@ -323,7 +336,7 @@ export class ProfileApp extends BaseApp {
     let cardDeck = GameCards.getCardDeck(deck);
     let meta = cardDeck[cardDom.dataset.index];
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
-  //  this.loadMesh(meta.glbpath, '', meta.glbscale);
+    //  this.loadMesh(meta.glbpath, '', meta.glbscale);
   }
   uploadProfileImage() {
     this.file_upload_input.click();
