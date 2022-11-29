@@ -476,7 +476,7 @@ export default class Utility3D {
     nameMesh2.parent = asteroidNameMesh;
     nameMesh2.scaling.x = -1;
 
-    let factor = -2.25;
+    let factor = -1.25;
     nameMesh1.position.y = factor;
     nameMesh2.position.y = factor;
     nameMesh2.rotation.y = Math.PI;

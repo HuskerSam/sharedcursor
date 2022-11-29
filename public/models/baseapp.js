@@ -1213,6 +1213,36 @@ export class BaseApp {
       this.engine.resize();
     });
   }
+  testPerformanceFlags(flag) {
+    if (!this.gameData)
+      return false;
+
+    if (!this.gameData.performanceFlags)
+      return false;
+
+
+    if (this.gameData.performanceFlags.indexOf(flag) !== -1)
+      return true;
+
+    return false;
+  }
+  searchPerformanceFlags(start, prefix) {
+    let max = start;
+
+    if (!this.gameData)
+      return max;
+
+    if (!this.gameData.performanceFlags)
+      return max;
+
+
+    this.gameData.performanceFlags.forEach(flag => {
+      if (flag.indexOf(prefix) !== -1) {
+        max = flag.replace(prefix, '');
+      }
+    });
+    return max;
+  }
   async createScene() {
     let scene = new BABYLON.Scene(this.engine);
 
@@ -1229,10 +1259,7 @@ export class BaseApp {
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
     light2.intensity = .6;
 
-    let enableGroundShadow = false;
-    if (this.gameData && this.gameData.performanceFlags.indexOf('render_shadows') !== -1) {
-      enableGroundShadow = true;
-    }
+    let enableGroundShadow = this.testPerformanceFlags('render_shadows');
 
     var environment = scene.createDefaultEnvironment({
       enableGroundShadow,
@@ -1293,12 +1320,7 @@ export class BaseApp {
     this.skyBox = skybox;
     skybox.isPickable = false;
 
-    let skyboxname = 'nebula_orange_blue';
-    this.gameData.performanceFlags.forEach(flag => {
-      if (flag.indexOf('skybox_') !== -1) {
-        skyboxname = flag.replace('skybox_', '');
-      }
-    });
+    let skyboxname = this.searchPerformanceFlags('nebula_orange_blue', 'skybox_');
 
     let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
     let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
@@ -1311,12 +1333,12 @@ export class BaseApp {
     skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;
 
-    if (this.gameData.performanceFlags.indexOf('skyboxrotation_none') !== -1)
+    if (this.testPerformanceFlags('skyboxrotation_none'))
       return;
 
     let endFrame = 3000 * 30;
-    if (this.gameData.performanceFlags.indexOf('skyboxrotation_') !== -1)
-      endFrame += 10;
+    if (this.testPerformanceFlags('skyboxrotation_slow'))
+      endFrame *= 10;
 
     let orbitAnimation = new BABYLON.Animation(
       "staticorbitmeshrotation" + name,
@@ -1348,7 +1370,7 @@ export class BaseApp {
   pointerUp() {
   }
   async loadAvatarMesh(path, file, scale, x, y, z) {
-    if (!this.animationResult && this.gameData.performanceFlags.indexOf('animation_full') !== -1) {
+    if (!this.animationResult && this.testPerformanceFlags('animation_full')) {
       let bonesPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent("/solar/avatar-walk.glb") + '?alt=media';
 
       this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, bonesPath, null, this.scene);
