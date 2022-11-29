@@ -80,7 +80,6 @@ export class ProfileApp extends BaseApp {
     this.delete_profile_button.addEventListener('click', e => this.deleteAccount());
 
     this.card_select_list = document.querySelector('.card_select_list');
-    this.card_select_viewer = document.querySelector('.card_select_viewer');
 
     this.initPresetLogos();
 
@@ -95,7 +94,6 @@ export class ProfileApp extends BaseApp {
     this.sign_out_all_button = document.querySelector('.sign_out_all_button');
     this.sign_out_all_button.addEventListener('click', e => this.signOutAll());
 
-    this.card_select_viewer = document.querySelector('.card_select_viewer');
 
     this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
     this.view_avatar_btn = document.querySelector('.view_avatar_btn');
@@ -105,8 +103,8 @@ export class ProfileApp extends BaseApp {
     this.profile_display_avatar_preset.addEventListener('input', e => this.updateAvatarPreset());
 
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
-    this.initBabylonEngine();
 
+    this.initGraphics();
     this.create_login_code_button = document.querySelector('.create_login_code_button');
     this.create_login_code_button.addEventListener('click', e => this.createLoginCode());
 
@@ -179,7 +177,8 @@ export class ProfileApp extends BaseApp {
 
     let prefix = this.profile_display_avatar_preset.value;
     this.modal.show();
-    this.currentLoadedAvatar = await this.loadAvatarMesh("/avatars/", prefix + ".glb", 2, 0, 0, -4);
+    this.runRender = true;
+    this.currentLoadedAvatar = await this.loadAvatarMesh(`/avatars/${prefix}.glb`, "", 2, 0, 0, -4);
   }
   async load() {
     await GameCards.loadDecks();
@@ -320,12 +319,11 @@ export class ProfileApp extends BaseApp {
     this.cardWrappers.forEach(cardDom => cardDom.addEventListener('click', e => this.selectCard(cardDom)));
   }
   selectCard(cardDom) {
-    this.card_select_viewer.style.display = '';
     let deck = cardDom.dataset.deck;
     let cardDeck = GameCards.getCardDeck(deck);
     let meta = cardDeck[cardDom.dataset.index];
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
-    this.loadMesh(meta.glbpath, '', meta.glbscale);
+  //  this.loadMesh(meta.glbpath, '', meta.glbscale);
   }
   uploadProfileImage() {
     this.file_upload_input.click();
