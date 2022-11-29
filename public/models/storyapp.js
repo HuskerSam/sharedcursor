@@ -69,14 +69,7 @@ export class StoryApp extends BaseApp {
 
     this.minMoonsLoad = this.gameData.performanceFlags.indexOf('moonlevel_5') !== -1;
 
-    let staticWrapper = BABYLON.MeshBuilder.CreateBox('staticwrapper', {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    staticWrapper.material = this.mat1alpha;
-    staticWrapper.visibility = 0;
-
+    this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
     let mat1 = new BABYLON.StandardMaterial('mat1alpha', this.scene);
     mat1.alpha = 0;
     this.mat1alpha = mat1;
@@ -86,7 +79,7 @@ export class StoryApp extends BaseApp {
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
@@ -97,13 +90,13 @@ export class StoryApp extends BaseApp {
     promises = [];
     deck = GameCards.getCardDeck('moons1');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
     deck = GameCards.getCardDeck('moons2');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
@@ -112,7 +105,7 @@ export class StoryApp extends BaseApp {
     promises = [];
     deck = GameCards.getCardDeck('mascots');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, staticWrapper));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
       if (this.allCards[card.id].noNavMesh !== true)
         navMeshes.push(this.loadStaticNavMesh(card.id));
     });
@@ -227,14 +220,9 @@ export class StoryApp extends BaseApp {
     orbitWrapper.position.z = 9;
 
     mesh.parent = orbitWrapper;
-    /*
-    let shakeWrapper = BABYLON.MeshBuilder.CreateBox('assetshakewrapper' + asteroid, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    shakeWrapper.visibility = 0;
-    shakeWrapper.material = this.mat1alpha;
+
+/*
+    let shakeWrapper = new BABYLON.TransformNode('assetshakewrapper' + asteroid, this.scene);
     shakeWrapper.parent = orbitWrapper;
     mesh.parent = shakeWrapper;
 
@@ -250,7 +238,7 @@ export class StoryApp extends BaseApp {
     let position2factor = index % 2 === 1 ? -1 : 1;
     let position3factor = index % 3 === 1 ? -1 : 1;
     let position4factor = index % 4 === 1 ? 1 : -1;
-    let wobbleEndFrame = 5 * 30;
+    let wobbleEndFrame = 15 * 30;
     positionKeys.push({
       frame: wobbleEndFrame / 2,
       value: new BABYLON.Vector3(px + position4factor, py + position2factor, pz + position3factor + position2factor)
@@ -269,13 +257,15 @@ export class StoryApp extends BaseApp {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
     positionAnim.setKeys(positionKeys);
+    let easingFunction = new BABYLON.CircleEase();
+    easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+    positionAnim.setEasingFunction(easingFunction);
 
     if (!shakeWrapper.animations)
       shakeWrapper.animations = [];
     shakeWrapper.animations.push(positionAnim);
-    //    shakeWrapper.spinAnimation = this.scene.beginAnimation(shakeWrapper, 0, wobbleEndFrame, true);
-    */
-
+    shakeWrapper.spinAnimation = this.scene.beginAnimation(shakeWrapper, 0, wobbleEndFrame, true);
+*/
     let orbitAnim = new BABYLON.Animation(
       "asteroidorbit" + asteroid,
       "rotation",
@@ -369,13 +359,8 @@ export class StoryApp extends BaseApp {
     let size = 1;
 
     if (!this.asteroidSymbolMesh1) {
-      let symbolWrapper = BABYLON.MeshBuilder.CreateBox('asteroidsymbolwrapper', {
-        width: .01,
-        height: .01,
-        depth: .01
-      }, this.scene);
+      let symbolWrapper = new BABYLON.TransformNode('asteroidsymbolwrapper', this.scene);
       symbolWrapper.parent = parent;
-      symbolWrapper.material = this.mat1alpha;
       this.asteroidSymbolMesh1 = symbolWrapper;
 
       let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
@@ -408,14 +393,8 @@ export class StoryApp extends BaseApp {
       symbolMesh3.position.y = extraY;
       symbolMesh3.scaling.x = -1;
 
-      this.asteroidSymbolMeshName = BABYLON.MeshBuilder.CreateBox('asteroidnamewrapper', {
-        width: .01,
-        height: .01,
-        depth: .01
-      }, this.scene);
+      this.asteroidSymbolMeshName = new BABYLON.TransformNode('asteroidnamewrapper', this.scene);
       this.asteroidSymbolMeshName.position.y = 1;
-      this.asteroidSymbolMeshName.visibility = 0;
-      this.asteroidSymbolMeshName.material = this.mat1alpha;
       this.asteroidSymbolMeshName.setEnabled(false);
 
       let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1asteroid', {
@@ -428,7 +407,7 @@ export class StoryApp extends BaseApp {
       }, this.scene);
 
       let nameMat = new BABYLON.StandardMaterial('nameshowmatasteroid', this.scene);
-      this.__setTextMaterial(nameMat, 'asteroid');
+      this.__setTextMaterial(nameMat, 'asteroid', this.scene);
       this.asteroidSymbolMeshName.nameMaterial = nameMat;
 
       nameMesh1.material = nameMat;
@@ -445,13 +424,8 @@ export class StoryApp extends BaseApp {
       nameMesh2.rotation.y = Math.PI;
     }
     if (!this.asteroidSymbolMesh2) {
-      let symbolWrapper = BABYLON.MeshBuilder.CreateBox('asteroidsymbolwrapper2', {
-        width: .01,
-        height: .01,
-        depth: .01
-      }, this.scene);
+      let symbolWrapper = new BABYLON.TransformNode('asteroidsymbolwrapper2', this.scene);
       symbolWrapper.parent = parent;
-      symbolWrapper.material = this.mat1alpha;
       this.asteroidSymbolMesh2 = symbolWrapper;
 
       let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid2', {
@@ -497,16 +471,6 @@ export class StoryApp extends BaseApp {
     }
 
     return asteroidSymbol;
-  }
-
-  __setTextMaterial(mat, text, rgbColor = 'rgb(255,0,0)') {
-    let nameTexture = Utility3D.__texture2DText(this.scene, text, rgbColor);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    mat.diffuseTexture = nameTexture;
-    mat.emissiveTexture = nameTexture;
-    mat.ambientTexture = nameTexture;
   }
 
   loadStaticNavMesh(name) {
@@ -653,13 +617,12 @@ export class StoryApp extends BaseApp {
   }
   _addParticlesStaticMesh(meta, wrapper, name) {
     if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
-      let particlePivot = BABYLON.Mesh.CreateBox("staticpivotparticle" + name, .001, this.scene);
+      let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, this.scene);
       particlePivot.position.x = meta.px;
       particlePivot.position.y = meta.py;
       particlePivot.position.z = meta.pz;
       //particlePivot.rotation.x = -1 * Math.PI / 2;
       particlePivot.rotation.z = Math.PI;
-      particlePivot.material = this.mat1alpha;
       particlePivot.parent = wrapper;
 
       wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
@@ -688,12 +651,7 @@ export class StoryApp extends BaseApp {
   _renderSymbolInfoPanel(name, meta, wrapper, parent, extendedMetaData) {
     let size = 1;
 
-    let symbolWrapper = BABYLON.MeshBuilder.CreateBox('symbolpopupwrapper' + name, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    symbolWrapper.visibility = 0;
+    let symbolWrapper = new BABYLON.TransformNode('symbolpopupwrapper' + name, this.scene);
     symbolWrapper.parent = wrapper;
     parent.symbolWrapper = symbolWrapper;
     if (meta.moon90orbit) {
@@ -731,12 +689,7 @@ export class StoryApp extends BaseApp {
     symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
     symbolMesh3.scaling.x = -1;
 
-    let boardWrapper = BABYLON.MeshBuilder.CreateBox('boardpopupwrapper' + name, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    boardWrapper.visibility = 0;
+    let boardWrapper = new BABYLON.TransformNode('boardpopupwrapper' + name, this.scene);
     boardWrapper.parent = wrapper;
     if (meta.moon90orbit) {
       boardWrapper.rotation.x -= 1.57;
@@ -970,7 +923,7 @@ export class StoryApp extends BaseApp {
       this.asteroidSymbolMeshName.parent = mesh.asteroidMesh;
 
       let text = mesh.asteroidMesh.asteroidName.replace('.obj', '');
-      this.__setTextMaterial(this.asteroidSymbolMeshName.nameMaterial, text);
+      this.__setTextMaterial(this.asteroidSymbolMeshName.nameMaterial, text, this.scene);
 
       setTimeout(() => {
         mesh.asteroidMesh.material = this.asteroidMaterial;
@@ -1176,12 +1129,12 @@ export class StoryApp extends BaseApp {
     let name = seatData.name;
     let colors = this.get3DColors(index);
 
-    let name3d = this.__createTextMesh('seattext' + index, {
+    let name3d = Utility3D.__createTextMesh('seattext' + index, {
       text: name,
       fontFamily: 'Arial',
       size: 100,
       depth: .1
-    });
+    }, this.scene);
     name3d.scaling.x = .15;
     name3d.scaling.y = .15;
     name3d.scaling.z = .15;
@@ -1228,12 +1181,12 @@ export class StoryApp extends BaseApp {
         intensity = 0;
         text = 'X';
       }
-      let x3d = this.__createTextMesh('seattextX' + index, {
+      let x3d = Utility3D.__createTextMesh('seattextX' + index, {
         text,
         fontFamily: 'monospace',
         size: 100,
         depth: .25
-      });
+      }, this.scene);
       x3d.scaling.x = .2;
       x3d.scaling.y = .2;
       x3d.scaling.z = .2;
@@ -1297,19 +1250,9 @@ export class StoryApp extends BaseApp {
     }
   }
   async renderSeat(index) {
-    let wrapper = BABYLON.MeshBuilder.CreateBox('seatwrapper' + index, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    wrapper.visibility = 0;
+    let wrapper = new BABYLON.TransformNode('seatwrapper' + index, this.scene);
 
-    let avatarWrapper = BABYLON.MeshBuilder.CreateBox('seatavatarwrapper' + index, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, this.scene);
-    avatarWrapper.visibility = 0;
+    let avatarWrapper = new BABYLON.TransformNode('seatavatarwrapper' + index, this.scene);
     avatarWrapper.rotation.y = Math.PI;
     avatarWrapper.parent = wrapper;
     wrapper.avatarWrapper = avatarWrapper;
@@ -1372,99 +1315,6 @@ export class StoryApp extends BaseApp {
     let baseCircle = BABYLON.Mesh.CreateLines("qbezier2", points, this.scene);
 
     return baseCircle;
-  }
-  __createTextMesh(name, options) {
-    let canvas = document.getElementById("highresolutionhiddencanvas");
-    if (!canvas) {
-      let cWrapper = document.createElement('div');
-      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" width="4500" height="1500" style="display:none"></canvas>`;
-      canvas = cWrapper.firstChild;
-      document.body.appendChild(canvas);
-    }
-    let context2D = canvas.getContext("2d", {
-      willReadFrequently: true
-    });
-    let size = 100;
-    let vectorOptions = {
-      polygons: true,
-      textBaseline: "top",
-      fontStyle: 'normal',
-      fontWeight: 'normal',
-      fontFamily: 'Georgia',
-      size: size,
-      stroke: false
-    };
-    for (let i in vectorOptions)
-      if (options[i])
-        vectorOptions[i] = options[i];
-    if (options['size'])
-      size = Number(options['size']);
-
-    let vectorData = vectorizeText(options['text'], canvas, context2D, vectorOptions);
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    let thick = 10;
-    if (options['depth'])
-      thick = Number(options['depth']);
-    let scale = size / 100;
-    let lenX = 0;
-    let lenY = 0;
-    let polies = [];
-
-    for (var i = 0; i < vectorData.length; i++) {
-      var letter = vectorData[i];
-      var conners = [];
-      for (var k = 0; k < letter[0].length; k++) {
-        conners[k] = new BABYLON.Vector2(scale * letter[0][k][1], scale * letter[0][k][0]);
-        if (lenX < conners[k].x) lenX = conners[k].x;
-        if (lenY < conners[k].y) lenY = conners[k].y;
-      }
-      var polyBuilder = new BABYLON.PolygonMeshBuilder("pBuilder" + i, conners, this.scene);
-
-      for (var j = 1; j < letter.length; j++) {
-        var hole = [];
-        for (var k = 0; k < letter[j].length; k++) {
-          hole[k] = new BABYLON.Vector2(scale * letter[j][k][1], scale * letter[j][k][0]);
-        }
-        hole.reverse();
-        polyBuilder.addHole(hole);
-      }
-
-      try {
-        var polygon = polyBuilder.build(false, thick);
-        //polygon.receiveShadows = true;
-
-        polies.push(polygon);
-      } catch (e) {
-        console.log('text 3d render polygon error', e);
-      }
-    }
-
-    //if (lenY < .001 && lenX < .001)
-    //  this.context.logError('Zero Length result for text shape ' + this.__getParentRoute());
-    if (lenY === 0)
-      lenY = 0.001;
-    if (lenX === 0)
-      lenX = 0.001;
-    let deltaY = thick / 2.0;
-    let deltaX = lenX / 2.0;
-    let deltaZ = lenY / 2.0;
-
-    let textWrapperMesh = BABYLON.MeshBuilder.CreateBox(this._blockKey + 'textdetailswrapper', {
-      width: lenX,
-      height: thick,
-      depth: lenY
-    }, this.scene);
-    textWrapperMesh.material = this.mat1alpha;
-    for (let i = 0, l = polies.length; i < l; i++) {
-      polies[i].position.x -= deltaX;
-      polies[i].position.y += deltaY;
-      polies[i].position.z -= deltaZ;
-      polies[i].setParent(textWrapperMesh);
-    }
-
-    return textWrapperMesh;
   }
 
   async setupAgents() {

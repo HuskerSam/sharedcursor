@@ -283,5 +283,107 @@ export default class Utility3D {
 
     return 'rgb(' + (bC.r * 255.0).toFixed(0) + ',' + (bC.g * 255.0).toFixed(0) + ',' + (bC.b * 255.0).toFixed(0) + ')'
   }
+  static __createTextMesh(name, options, scene) {
+    let canvas = document.getElementById("highresolutionhiddencanvas");
+    if (!canvas) {
+      let cWrapper = document.createElement('div');
+      cWrapper.innerHTML = `<canvas id="highresolutionhiddencanvas" width="4500" height="1500" style="display:none"></canvas>`;
+      canvas = cWrapper.firstChild;
+      document.body.appendChild(canvas);
+    }
+    let context2D = canvas.getContext("2d", {
+      willReadFrequently: true
+    });
+    let size = 100;
+    let vectorOptions = {
+      polygons: true,
+      textBaseline: "top",
+      fontStyle: 'normal',
+      fontWeight: 'normal',
+      fontFamily: 'Georgia',
+      size: size,
+      stroke: false
+    };
+    for (let i in vectorOptions)
+      if (options[i])
+        vectorOptions[i] = options[i];
+    if (options['size'])
+      size = Number(options['size']);
 
+    let vectorData = vectorizeText(options['text'], canvas, context2D, vectorOptions);
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let thick = 10;
+    if (options['depth'])
+      thick = Number(options['depth']);
+    let scale = size / 100;
+    let lenX = 0;
+    let lenY = 0;
+    let polies = [];
+
+    for (var i = 0; i < vectorData.length; i++) {
+      var letter = vectorData[i];
+      var conners = [];
+      for (var k = 0; k < letter[0].length; k++) {
+        conners[k] = new BABYLON.Vector2(scale * letter[0][k][1], scale * letter[0][k][0]);
+        if (lenX < conners[k].x) lenX = conners[k].x;
+        if (lenY < conners[k].y) lenY = conners[k].y;
+      }
+      var polyBuilder = new BABYLON.PolygonMeshBuilder("pBuilder" + i, conners, scene);
+
+      for (var j = 1; j < letter.length; j++) {
+        var hole = [];
+        for (var k = 0; k < letter[j].length; k++) {
+          hole[k] = new BABYLON.Vector2(scale * letter[j][k][1], scale * letter[j][k][0]);
+        }
+        hole.reverse();
+        polyBuilder.addHole(hole);
+      }
+
+      try {
+        var polygon = polyBuilder.build(false, thick);
+        //polygon.receiveShadows = true;
+
+        polies.push(polygon);
+      } catch (e) {
+        console.log('text 3d render polygon error', e);
+      }
+    }
+
+    //if (lenY < .001 && lenX < .001)
+    //  this.context.logError('Zero Length result for text shape ' + this.__getParentRoute());
+    if (lenY === 0)
+      lenY = 0.001;
+    if (lenX === 0)
+      lenX = 0.001;
+    let deltaY = thick / 2.0;
+    let deltaX = lenX / 2.0;
+    let deltaZ = lenY / 2.0;
+
+    //keep this for bounds box? (vs TransformNode)
+    let textWrapperMesh = BABYLON.MeshBuilder.CreateBox('textdetailswrapper' + name, {
+      width: lenX,
+      height: thick,
+      depth: lenY
+    }, scene);
+    textWrapperMesh.isVisible = false;
+    for (let i = 0, l = polies.length; i < l; i++) {
+      polies[i].position.x -= deltaX;
+      polies[i].position.y += deltaY;
+      polies[i].position.z -= deltaZ;
+      polies[i].setParent(textWrapperMesh);
+    }
+
+    return textWrapperMesh;
+  }
+  static setTextMaterial(mat, text, rgbColor = 'rgb(255,0,0)', scene) {
+    let nameTexture = Utility3D.__texture2DText(scene, text, rgbColor);
+    nameTexture.vScale = 1;
+    nameTexture.uScale = 1;
+    nameTexture.hasAlpha = true;
+    mat.diffuseTexture = nameTexture;
+    mat.emissiveTexture = nameTexture;
+    mat.ambientTexture = nameTexture;
+  }
 }
