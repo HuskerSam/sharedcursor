@@ -278,7 +278,7 @@
   background: rgb(255, 0, 0);
 }
 
-#renderCanvas {
+.popup-canvas {
   max-width: 100%;
   max-height: 100%;
   width: 100%;

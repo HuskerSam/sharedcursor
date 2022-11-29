@@ -403,51 +403,6 @@ export class StoryApp extends BaseApp {
     if (meta.mp3file) this._loadMeshMusic(meta, mesh, name);
     if (meta.spintime) Utility3D.addSpinAnimation(name, meta, outer_wrapper, wrapper, this.scene);
   }
-  processStaticAssetMeta(meta) {
-    let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
-    let smallGlbPath = '';
-    if (meta.smallglbpath)
-      smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
-    let largeGlbPath = '';
-    if (meta.largeglbpath)
-      largeGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.largeglbpath) + '?alt=media';
-    let normalScale = meta.glbscale;
-    let largeScale = normalScale;
-    if (meta.largeglbscale !== undefined)
-      largeScale = meta.largeglbscale;
-    let smallScale = normalScale;
-    if (meta.smallglbscale !== undefined)
-      smallScale = meta.smallglbscale;
-
-    let scale = normalScale;
-    let glbPath = normalGlbPath;
-
-    if (this.hugeAssets) {
-      scale = largeScale;
-      if (largeGlbPath)
-        glbPath = largeGlbPath;
-    }
-
-    if (this.smallAssets) {
-      scale = smallScale;
-      if (smallGlbPath)
-        glbPath = smallGlbPath;
-    }
-
-    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-
-    return {
-      symbolPath,
-      normalGlbPath,
-      smallGlbPath,
-      largeGlbPath,
-      normalScale,
-      smallScale,
-      largeScale,
-      glbPath,
-      scale
-    };
-  }
   _addParticlesStaticMesh(meta, wrapper, name) {
     if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
       let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, this.scene);
@@ -774,21 +729,6 @@ export class StoryApp extends BaseApp {
       this.asteroidSymbolMeshName.setEnabled(false);
     }
   }
-  async loadStaticMesh(path, file, scale = 1, x = 0, y = 0, z = 0) {
-    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
-
-    let mesh = result.meshes[0];
-
-    mesh.scaling.x = -1 * scale;
-    mesh.scaling.y = scale;
-    mesh.scaling.z = scale;
-
-    mesh.position.x = x;
-    mesh.position.y = y;
-    mesh.position.z = z;
-
-    return mesh;
-  }
   debounce() {
     return false;
 
@@ -823,12 +763,6 @@ export class StoryApp extends BaseApp {
     this.allCards = await GameCards.loadDecks();
     await super.load();
   }
-
-  async initGraphics() {
-    await this.initBabylonEngine(".popup-canvas", true);
-    if (this.loadStaticScene)
-      await this.loadStaticScene();
-  }
   paintDock() {
     super.paintDock();
 
@@ -841,9 +775,7 @@ export class StoryApp extends BaseApp {
     if (!this.gameData)
       return;
 
-    if (!this.engine) {
-      await this.initGraphics();
-    }
+    await this.initGraphics();
 
     this.initGameMessageFeed();
 

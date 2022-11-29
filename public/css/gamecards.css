@@ -32,6 +32,7 @@
 
 .card_inner .symbol {
   height: 32px;
+  width: 32px;
   margin: 2px;
 }
 

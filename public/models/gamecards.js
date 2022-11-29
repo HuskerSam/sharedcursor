@@ -57,7 +57,7 @@ export default class GameCards {
     }
   }
   static _cardFilling(meta, includeWrapper = false) {
-    let invert = meta.invert ? ' invert' : '';
+    let invert = '';// meta.invert ? ' invert ' : '';
 
     let symbol = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
     let image = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.image) + '?alt=media';

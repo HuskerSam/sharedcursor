@@ -1196,7 +1196,7 @@ export class BaseApp {
     }
     this.matchBoardRendered = false;
   }
-  async initBabylonEngine(canvasQuery = "#renderCanvas", initVR = false) {
+  async initBabylonEngine(canvasQuery = ".popup-canvas", initVR = false) {
     this.canvas = document.querySelector(canvasQuery);
     this.engine = new BABYLON.Engine(this.canvas, true);
     BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
@@ -1212,6 +1212,14 @@ export class BaseApp {
     window.addEventListener("resize", () => {
       this.engine.resize();
     });
+  }
+  async initGraphics() {
+    if (this.engine)
+      return;
+
+    await this.initBabylonEngine(".popup-canvas", true);
+    if (this.loadStaticScene)
+      await this.loadStaticScene();
   }
   testPerformanceFlags(flag) {
     if (!this.gameData)
@@ -1410,6 +1418,67 @@ export class BaseApp {
   }
   groundClick(pointerInfo) {
       return;
+  }
+  async loadStaticMesh(path, file, scale = 1, x = 0, y = 0, z = 0) {
+    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
+
+    let mesh = result.meshes[0];
+
+    mesh.scaling.x = -1 * scale;
+    mesh.scaling.y = scale;
+    mesh.scaling.z = scale;
+
+    mesh.position.x = x;
+    mesh.position.y = y;
+    mesh.position.z = z;
+
+    return mesh;
+  }
+
+  processStaticAssetMeta(meta) {
+    let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
+    let smallGlbPath = '';
+    if (meta.smallglbpath)
+      smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
+    let largeGlbPath = '';
+    if (meta.largeglbpath)
+      largeGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.largeglbpath) + '?alt=media';
+    let normalScale = meta.glbscale;
+    let largeScale = normalScale;
+    if (meta.largeglbscale !== undefined)
+      largeScale = meta.largeglbscale;
+    let smallScale = normalScale;
+    if (meta.smallglbscale !== undefined)
+      smallScale = meta.smallglbscale;
+
+    let scale = normalScale;
+    let glbPath = normalGlbPath;
+
+    if (this.hugeAssets) {
+      scale = largeScale;
+      if (largeGlbPath)
+        glbPath = largeGlbPath;
+    }
+
+    if (this.smallAssets) {
+      scale = smallScale;
+      if (smallGlbPath)
+        glbPath = smallGlbPath;
+    }
+
+    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+
+    return {
+      symbolPath,
+      normalGlbPath,
+      smallGlbPath,
+      largeGlbPath,
+      normalScale,
+      smallScale,
+      largeScale,
+      glbPath,
+      scale
+    };
   }
 }
 

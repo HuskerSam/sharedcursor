@@ -32,8 +32,7 @@ export class MatchApp extends BaseApp {
 
     this.alertErrors = false;
     this.debounceBusy = false;
-
-    this.initBabylonEngine();
+    this.initGraphics();
   }
   debounce() {
     return false;
@@ -160,7 +159,7 @@ export class MatchApp extends BaseApp {
     this.updateUserPresence();
   }
 
-  _updateFinishStatus() {
+  async _updateFinishStatus() {
     document.querySelector('.dock_pos_0').classList.remove('winner');
     document.querySelector('.dock_pos_1').classList.remove('winner');
     document.querySelector('.dock_pos_2').classList.remove('winner');
@@ -193,11 +192,13 @@ export class MatchApp extends BaseApp {
       deckIndex = this.gameData.lastMatchIndex;
     let cardMeta = GameCards.getCardMeta(deckIndex, this.gameData);
 
-
     //store the card in the winning user profile (if this user)
 
-//set model for 3d here
-  this.loadMesh(cardMeta.glbpath, cardMeta.glbfile, cardMeta.glbscale);
+    //set model for 3d here
+    let extendedMetaData = this.processStaticAssetMeta(cardMeta);
+    this.runRender = true;
+
+    this.loadStaticMesh(extendedMetaData.glbPath, '', extendedMetaData.scale * 1.25, 0, 2, 0);
 
     this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.name;
     this.match_end_display_promo.querySelector('.beer_name_anchor').setAttribute('href', cardMeta.url);
@@ -236,7 +237,7 @@ export class MatchApp extends BaseApp {
       let filling = GameCards._cardFilling(cardInfo.meta);
       if (span.innerHTML !== filling)
         span.innerHTML = filling;
-      span.style.background = cardInfo.meta.color;
+      span.style.background = 'rgb(250, 250, 250)'; // cardInfo.meta.color;
     }
     if (this.gameData.previousCard1 > -1) {
       let card = this.matchCards[this.gameData.previousCard1];
@@ -247,7 +248,7 @@ export class MatchApp extends BaseApp {
       let filling = GameCards._cardFilling(cardInfo.meta);
       if (span.innerHTML !== filling)
         span.innerHTML = filling;
-      span.style.background = cardInfo.meta.color;
+      span.style.background = 'rgb(250, 250, 250)'; // cardInfo.meta.color;
     }
 
     if (!this.zoom_out_beer_cards)
@@ -512,7 +513,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.upperLeftDisplayCard.innerHTML)
           this.upperLeftDisplayCard.innerHTML = filling;
-        this.upperLeftDisplayCard.style.background = card0Meta.meta.color;
+        this.upperLeftDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;
 
         if (q0 === 1) {
           this.upperLeftDisplayCard.style.top = '10%';
@@ -528,7 +529,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.upperRightDisplayCard.innerHTML)
           this.upperRightDisplayCard.innerHTML = filling;
-        this.upperRightDisplayCard.style.background = card0Meta.meta.color;
+        this.upperRightDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;
 
         if (q0 === 0) {
           this.upperRightDisplayCard.style.top = '10%';
@@ -544,7 +545,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.lowerLeftDisplayCard.innerHTML)
           this.lowerLeftDisplayCard.innerHTML = filling;
-        this.lowerLeftDisplayCard.style.background = card0Meta.meta.color;
+        this.lowerLeftDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;
 
         if (q0 === 0) {
           this.lowerLeftDisplayCard.style.top = '-5%';
@@ -560,7 +561,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card0Meta.meta, true);
         if (filling !== this.lowerRightDisplayCard.innerHTML)
           this.lowerRightDisplayCard.innerHTML = filling;
-        this.lowerRightDisplayCard.style.background = card0Meta.meta.color;
+        this.lowerRightDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;;
 
         if (q0 === 1) {
           this.lowerRightDisplayCard.style.top = '-5%';
@@ -579,7 +580,7 @@ export class MatchApp extends BaseApp {
         if (filling !== this.upperLeftDisplayCard.innerHTML)
           this.upperLeftDisplayCard.innerHTML = filling;
 
-        this.upperLeftDisplayCard.style.background = card1Meta.meta.color;
+        this.upperLeftDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card1Meta.meta.color;;
 
         if (q1 === 1) {
           this.upperLeftDisplayCard.style.top = '10%';
@@ -595,7 +596,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.upperRightDisplayCard.innerHTML)
           this.upperRightDisplayCard.innerHTML = filling;
-        this.upperRightDisplayCard.style.background = card1Meta.meta.color;
+        this.upperRightDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;
 
         if (q1 === 0) {
           this.upperRightDisplayCard.style.top = '10%';
@@ -611,7 +612,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.lowerLeftDisplayCard.innerHTML)
           this.lowerLeftDisplayCard.innerHTML = filling;
-        this.lowerLeftDisplayCard.style.background = card1Meta.meta.color;
+        this.lowerLeftDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;
 
         if (q1 === 0) {
           this.lowerLeftDisplayCard.style.top = '-5%';
@@ -627,7 +628,7 @@ export class MatchApp extends BaseApp {
         let filling = GameCards._cardFilling(card1Meta.meta, true);
         if (filling !== this.lowerRightDisplayCard.innerHTML)
           this.lowerRightDisplayCard.innerHTML = filling;
-        this.lowerRightDisplayCard.style.background = card1Meta.meta.color;
+        this.lowerRightDisplayCard.style.background = 'rgb(250, 250, 250)'; //  card0Meta.meta.color;
 
         if (q1 === 1) {
           this.lowerRightDisplayCard.style.top = '-5%';
