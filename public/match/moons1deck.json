@@ -30,7 +30,7 @@
     "radius": 1.5,
     "diameter": 0.75,
     "noNavMesh": true,
-    "spintime": 10000,
+    "orbitTime": 10000,
     "parent": "earth"  },
   {
     "type": "3dmodel",
@@ -60,7 +60,7 @@
     "radius": 1.75,
     "diameter": 0.75,
     "noNavMesh": true,
-    "spintime": 35000,
+    "orbitTime": 35000,
     "startRatio": 0.5,
     "parent": "mars",
     "moonType": 5
@@ -93,7 +93,7 @@
     "radius": 1.1,
     "diameter": 0.75,
     "noNavMesh": true,
-    "spintime": 25000,
+    "orbitTime": 25000,
     "parent": "mars",
     "moonType": 5
 
@@ -124,7 +124,7 @@
     "radius": 1.75,
     "diameter": 0.65,
     "noNavMesh": true,
-    "spintime": 25000,
+    "orbitTime": 25000,
     "parent": "jupiter",
     "moonType": 5
   },
@@ -154,7 +154,7 @@
     "radius": 1.75,
     "diameter": 0.65,
     "noNavMesh": true,
-    "spintime": 25000,
+    "orbitTime": 25000,
     "startRatio": 0.2,
     "parent": "jupiter",
     "moonType": 5
@@ -186,7 +186,7 @@
     "radius": 1.75,
     "diameter": 0.65,
     "noNavMesh": true,
-    "spintime": 25000,
+    "orbitTime": 25000,
     "startRatio": 0.4,
     "parent": "jupiter",
     "moonType": 5
@@ -218,7 +218,7 @@
     "radius": 1.75,
     "diameter": 0.65,
     "noNavMesh": true,
-    "spintime": 25000,
+    "orbitTime": 25000,
     "startRatio": 0.6,
     "parent": "jupiter",
     "moonType": 5
@@ -254,7 +254,7 @@
     "radius": 1.75,
     "diameter": 0.65,
     "noNavMesh": true,
-    "spintime": 48000,
+    "orbitTime": 48000,
     "parent": "jupiter",
     "startRatio": 0.5
   },
@@ -284,7 +284,7 @@
     "radius": 1.75,
     "diameter": 0.65,
     "noNavMesh": true,
-    "spintime": 25000,
+    "orbitTime": 25000,
     "parent": "jupiter"
   },
   {
@@ -312,7 +312,7 @@
     "radius": 1,
     "diameter": 0.45,
     "noNavMesh": true,
-    "spintime": 90000,
+    "orbitTime": 90000,
     "parent": "jupiter",
     "startRatio": 0.25
   },
@@ -342,7 +342,7 @@
     "radius": 0.35,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 68000,
+    "orbitTime": 68000,
     "parent": "jupiter",
     "startRatio": 0.75
   },
@@ -371,7 +371,7 @@
     "radius": 1.75,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 33000,
+    "orbitTime": 33000,
     "startRatio": 0.9,
     "parent": "uranus",
     "uranusOrbit": true,
@@ -402,7 +402,7 @@
     "radius": 1.5,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 33000,
+    "orbitTime": 33000,
     "uranusOrbit": true,
     "startRatio": 0.3,
     "parent": "uranus",
@@ -433,7 +433,7 @@
     "radius": 1.5,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 33000,
+    "orbitTime": 33000,
     "startRatio": 0.5,
     "parent": "uranus",
     "uranusOrbit": true,
@@ -464,7 +464,7 @@
     "radius": 1.5,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 33000,
+    "orbitTime": 33000,
     "parent": "uranus",
     "uranusOrbit": true,
     "moonType": 5
@@ -494,7 +494,7 @@
     "radius": 1.5,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 33000,
+    "orbitTime": 33000,
     "startRatio": 0.6,
     "parent": "uranus",
     "uranusOrbit": true,
@@ -525,7 +525,7 @@
     "radius": 1.75,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 19000,
+    "orbitTime": 19000,
     "parent": "neptune",
     "moonType": 5
   },
@@ -554,7 +554,7 @@
     "radius": 1.75,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 19000,
+    "orbitTime": 19000,
     "parent": "neptune",
     "moonType": 5
   },
@@ -583,7 +583,7 @@
     "radius": 1.75,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 19000,
+    "orbitTime": 19000,
     "parent": "neptune",
     "moonType": 5
   },
@@ -611,7 +611,7 @@
     "radius": 2.25,
     "diameter": 0.35,
     "noNavMesh": true,
-    "spintime": 10000,
+    "orbitTime": 10000,
     "parent": "pluto"
   }
 ]

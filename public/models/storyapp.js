@@ -85,31 +85,31 @@ export class StoryApp extends BaseApp {
     await Promise.all(promises);
 
     this.addLineToLoading('Moons<br>');
+    /*
+        promises = [];
+        deck = GameCards.getCardDeck('moons1');
+        deck.forEach(card => {
+          promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+          if (this.allCards[card.id].noNavMesh !== true)
+            navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
+        });
+        deck = GameCards.getCardDeck('moons2');
+        deck.forEach(card => {
+          promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+          if (this.allCards[card.id].noNavMesh !== true)
+            navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
+        });
 
-    promises = [];
-    deck = GameCards.getCardDeck('moons1');
-    deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-      if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
-    });
-    deck = GameCards.getCardDeck('moons2');
-    deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-      if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
-    });
-
-    await Promise.all(promises);
-    promises = [];
-    deck = GameCards.getCardDeck('mascots');
-    deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-      if (this.allCards[card.id].noNavMesh !== true)
-        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
-    });
-    await Promise.all(promises);
-
+        await Promise.all(promises);
+        promises = [];
+        deck = GameCards.getCardDeck('mascots');
+        deck.forEach(card => {
+          promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+          if (this.allCards[card.id].noNavMesh !== true)
+            navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
+        });
+        await Promise.all(promises);
+    */
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
 
@@ -320,7 +320,7 @@ export class StoryApp extends BaseApp {
   }
 
   async loadStaticAsset(name, parent) {
-    let meta = this.allCards[name];
+    let meta = Object.assign({}, this.allCards[name]);
 
     if (this.smallAssets && meta.moonType === 5)
       return;
@@ -329,19 +329,19 @@ export class StoryApp extends BaseApp {
       return;
     }
 
-    let extendedMetaData = this.processStaticAssetMeta(meta);
+    meta.extended = this.processStaticAssetMeta(meta);
 
-    let mesh = await this.loadStaticMesh(extendedMetaData.glbPath, '', extendedMetaData.scale, 0, 0, 0);
+    let mesh = await this.loadStaticMesh(meta.extended.glbPath, '', meta.extended.scale, 0, 0, 0);
 
-    let normalLink = `<a href="${extendedMetaData.glbPath}" target="_blank">Normal</a>&nbsp;`;
+    let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
     let smallLink = '';
     let largeLink = '';
     if (meta.largeglbpath)
-      largeLink = `<a href="${extendedMetaData.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
+      largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
     if (meta.smallglbpath)
-      smallLink = `<a href="${extendedMetaData.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
+      smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
 
-    this.addLineToLoading(`<img src="${extendedMetaData.symbolPath}" class="symbol_image">
+    this.addLineToLoading(`<img src="${meta.extended.symbolPath}" class="symbol_image">
         <a href="${meta.url}" target="_blank"><img class="symbol_image" src="/images/wikilogo.png"></a>
         &nbsp;
         ${meta.name}:
@@ -352,59 +352,55 @@ export class StoryApp extends BaseApp {
         <br>
       `);
 
-    let outer_wrapper = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
+    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
     let wrapper = new BABYLON.TransformNode('assetwrapper' + name, this.scene);
-    wrapper.parent = outer_wrapper;
+    wrapper.parent = meshPivot;
     mesh.parent = wrapper;
-
-    outer_wrapper.position.x = meta.x;
-    outer_wrapper.position.y = meta.y;
-    outer_wrapper.position.z = meta.z;
 
     this._addParticlesStaticMesh(meta, wrapper, name);
 
     if (meta.noOrbit) {
-      outer_wrapper.parent = this.staticAssetMeshes[meta.parent];
-
-      if (meta.rx !== undefined)
-        wrapper.rotation.x = meta.rx;
-      if (meta.ry !== undefined)
-        wrapper.rotation.y = meta.ry;
-      if (meta.rz !== undefined)
-        wrapper.rotation.z = meta.rz;
+      meshPivot.parent = this.staticAssetMeshes[meta.parent];
     }
     if (meta.uranusOrbit) {
       wrapper.rotation.x += Math.PI / 2;
     }
 
-    let clickWrapper = outer_wrapper;
-    if (meta.parent && meta.noOrbit !== true) {
-      let orbitMesh = Utility3D._addOrbitWrapper(name, meta, outer_wrapper, this.scene);
-      orbitMesh.parent = this.staticAssetMeshes[meta.parent];
-      clickWrapper = orbitMesh;
-    }
+    /*
+        if (meta.parent && meta.noOrbit !== true) {
+          let orbitMesh = Utility3D._addOrbitWrapper(name, meta, meshPivot, this.scene);
+          orbitMesh.parent = this.staticAssetMeshes[meta.parent];
+        }
+    */
+    if (this.shadowGenerator)
+      this.shadowGenerator.addShadowCaster(mesh, true);
 
-    if (meta.noClick !== true) {
-      clickWrapper.appClickable = true;
-      clickWrapper.masterid = name;
-      clickWrapper.clickToPause = true;
-      clickWrapper.clickCommand = 'pauseSpin';
+    if (meta.mp3file)
+      this._loadMeshMusic(meta, mesh, name);
 
-      if (meta.seatIndex !== undefined)
-        this.seatMeshes[meta.seatIndex] = clickWrapper;
-      clickWrapper.wrapperName = name;
-      clickWrapper.rawMeshWrapper = wrapper;
-    }
-
-    this.staticAssetMeshes[name] = outer_wrapper;
 
     if (meta.symbol)
-      this._renderSymbolInfoPanel(name, meta, wrapper, clickWrapper, extendedMetaData);
+      meshPivot = this.infoPanel(name, meta, meshPivot, this.scene);
 
-    if (meta.freeOrbit) Utility3D._addFreeOrbitWrapper(outer_wrapper, meta, name, wrapper, this.scene);
-    if (this.shadowGenerator) this.shadowGenerator.addShadowCaster(mesh, true);
-    if (meta.mp3file) this._loadMeshMusic(meta, mesh, name);
-    if (meta.spintime) Utility3D.addSpinAnimation(name, meta, outer_wrapper, wrapper, this.scene);
+    if (meta.rotationTime)
+      meshPivot = Utility3D.rotationAnimation(name, meta, meshPivot, this.scene);
+    if (meta.orbitTime)
+      meshPivot = Utility3D.orbitAnimation(name, meta, meshPivot, this.scene);
+
+    meshPivot = Utility3D.positionPivot(name, meta, meshPivot, this.scene);
+
+    meshPivot.assetMeta = meta;
+    this.staticAssetMeshes[name] = meshPivot;
+
+    if (meta.noClick !== true) {
+      meta.appClickable = true;
+      meta.masterid = name;
+      meta.clickToPause = true;
+      meta.clickCommand = 'pauseSpin';
+    }
+
+    if (meta.seatIndex !== undefined)
+      this.seatMeshes[meta.seatIndex] = meshPivot;
   }
 
   _addParticlesStaticMesh(meta, wrapper, name) {
@@ -439,31 +435,33 @@ export class StoryApp extends BaseApp {
     this.musicMeshes[name] = music;
   }
 
-  _renderSymbolInfoPanel(name, meta, wrapper, parent, extendedMetaData) {
+  infoPanel(name, meta, pivotMesh, scene) {
     let size = 1;
 
-    let symbolWrapper = new BABYLON.TransformNode('symbolpopupwrapper' + name, this.scene);
-    let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, this.scene);
-    symbolWrapper.parent = wrapper;
-    parent.symbolWrapper = symbolWrapper;
+    let symbolPivot = new BABYLON.TransformNode('symbolpopupwrapper' + name, scene);
+    let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, scene);
+    symbolPivot.parent = pivotMesh.parent;
+    pivotMesh.parent = symbolPivot;
 
-    symbolWrapper.meta = meta;
-    symbolWrapper.extendedMetaData = extendedMetaData;
+    let textPivot = new BABYLON.TransformNode('textsymbolpopupwrapper' + name, scene);
+    textPivot.parent = symbolPivot;
+    meta.textPivot = textPivot;
+
     if (meta.uranusOrbit) {
-      symbolWrapper.rotation.x -= 1.57;
+      textPivot.rotation.x -= 1.57;
     }
 
     let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
       height: size,
       width: size
-    }, this.scene);
+    }, scene);
     let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3' + name, {
       height: size,
       width: size
-    }, this.scene);
+    }, scene);
 
-    let m = new BABYLON.StandardMaterial('symbolshowmat' + name, this.scene);
-    let t = new BABYLON.Texture(extendedMetaData.symbolPath, this.scene);
+    let m = new BABYLON.StandardMaterial('symbolshowmat' + name, scene);
+    let t = new BABYLON.Texture(meta.extended.symbolPath, scene);
     t.vScale = 1;
     t.uScale = 1;
     t.hasAlpha = true;
@@ -475,26 +473,21 @@ export class StoryApp extends BaseApp {
     if (meta.symbolY)
       extraY = meta.symbolY;
 
-    symbolWrapper.yOffset = meta.diameter / 1.25 + extraY;
+    meta.yOffset = meta.diameter / 1.25 + extraY;
     symbolMesh1.material = m;
-    symbolMesh1.parent = symbolWrapper;
+    symbolMesh1.parent = textPivot;
     symbolMesh1.rotation.y = 0;
-    symbolMesh1.position.y = symbolWrapper.yOffset;
+    symbolMesh1.position.y = meta.yOffset;
     symbolMesh3.material = m;
-    symbolMesh3.parent = symbolWrapper;
+    symbolMesh3.parent = textPivot;
     symbolMesh3.rotation.y = Math.PI;
-    symbolMesh3.position.y = symbolWrapper.yOffset;
+    symbolMesh3.position.y = meta.yOffset;
     symbolMesh3.scaling.x = -1;
+
+    return symbolPivot;
   }
 
-  showItemNamePanel(meta, parent) {
-    /*
-    if (meta.uranusOrbit) {
-      this.boardWrapper.rotation.x -= 1.57;
-    }
-    */
-    this.boardWrapper.parent = parent;
-
+  showItemNamePanel(meta) {
     let nameDesc = meta.name;
     if (meta.solarPosition)
       nameDesc += ` (${meta.solarPosition})`
@@ -540,20 +533,20 @@ export class StoryApp extends BaseApp {
     this.boardWrapper.nameMesh2 = nameMesh2;
   }
 
-  showBoardWrapper(mesh) {
-    if (!mesh.symbolWrapper)
+  showBoardWrapper(meta) {
+    if (!meta.textPivot)
       return;
-    this.showItemNamePanel(mesh.symbolWrapper.meta, mesh)
-    this.boardWrapper.position.y = mesh.symbolWrapper.yOffset;
-    this.boardWrapper.parent = mesh.symbolWrapper.parent;
-    mesh.symbolWrapper.position.y = -1000;
+    this.showItemNamePanel(meta)
+    this.boardWrapper.position.y = meta.yOffset;
+    this.boardWrapper.parent = meta.textPivot.parent;
+    meta.textPivot.position.y = -1000;
   }
-  hideBoardWrapper(mesh) {
-    if (!mesh.symbolWrapper)
+  hideBoardWrapper(meta) {
+    if (!meta.textPivot)
       return;
-    this.boardWrapper.position.y = - 1000;
+    this.boardWrapper.position.y = -1000;
     this.boardWrapper.parent = null;
-    mesh.symbolWrapper.position.y = 0; //mesh.symbolWrapper.yOffset;
+    meta.textPivot.position.y = 0;
   }
   createParticleSystem(mesh, prefix = "static") {
     let useGPUVersion = true;
@@ -667,53 +660,66 @@ export class StoryApp extends BaseApp {
     this.avatarsLoaded = true;
   }
   pointerUp(mesh, pointerInfo) {
-    if (!mesh)
+    if (!mesh || !mesh.assetMeta)
       return;
 
-    if (mesh.clickCommand === 'pauseSpin') {
-      this.hideBoardWrapper(mesh);
+    let meta = mesh.assetMeta;
 
-      if (mesh.spinAnimation._paused)
-        mesh.spinAnimation.restart();
+    if (meta.clickCommand === 'pauseSpin') {
+      this.hideBoardWrapper(meta);
 
-      if (mesh.asteroidType)
+      if (meta.asteroidType)
         this.asteroidPtrDown(mesh, true);
 
       if (this.currentSeatMesh !== mesh) {
         if (mesh.masterid && this.musicMeshes[mesh.masterid])
           this.musicMeshes[mesh.masterid].stop();
       }
+
+      if (meta.rotationAnimation && meta.rotationAnimation._paused)
+        meta.rotationAnimation.restart();
+
+      if (meta.orbitAnimation && meta.orbitAnimation._paused)
+        meta.orbitAnimation.restart();
+
     }
   }
   pointerDown(mesh) {
-    while (mesh && !mesh.appClickable) {
+    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
       mesh = mesh.parent;
     }
 
-    if (!mesh || !mesh.appClickable)
+    if (!mesh || !mesh.assetMeta.appClickable)
       return;
 
-    if (mesh.emptySeat) {
+    let meta = mesh.assetMeta;
+
+    if (meta.emptySeat) {
       this.dockSit(mesh.seatIndex);
     }
 
-    if (mesh.clickCommand === 'stand') {
+    if (meta.clickCommand === 'stand') {
       this._gameAPIStand(mesh.seatIndex);
     }
 
-    if (mesh.clickCommand === 'pauseSpin') {
-      this.showBoardWrapper(mesh);
+    if (meta.clickCommand === 'pauseSpin') {
+      this.showBoardWrapper(meta);
 
       this.lastMesh = mesh;
-      mesh.spinAnimation.pause();
-
-      if (mesh.asteroidType)
+      if (meta.asteroidType)
         this.asteroidPtrDown(mesh);
 
       if (this.currentSeatMesh !== mesh) {
-        if (mesh.masterid && this.musicMeshes[mesh.masterid])
-          this.musicMeshes[mesh.masterid].play();
+        if (meta.masterid && this.musicMeshes[meta.masterid])
+          this.musicMeshes[meta.masterid].play();
       }
+
+      if (meta.rotationAnimation)
+        meta.rotationAnimation.pause();
+
+      if (meta.orbitAnimation)
+        meta.orbitAnimation.pause();
+
     }
 
     if (mesh.wrapperName === 'sun')

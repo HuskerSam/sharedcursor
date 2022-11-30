@@ -1,6 +1,34 @@
 export default class Utility3D {
-  static addSpinAnimation(name, meta, normalParent, parent, scene) {
-    let spinAnimation = new BABYLON.Animation(
+  static positionPivot(name, meta, meshPivot, scene) {
+    let positionPivot = new BABYLON.TransformNode("transformposition" + name, scene);
+    positionPivot.parent = meshPivot.parent;
+    meshPivot.parent = positionPivot;
+
+    if (meta.x !== undefined)
+      positionPivot.position.x = meta.x;
+    if (meta.y !== undefined)
+      positionPivot.position.y = meta.y;
+    if (meta.z !== undefined)
+      positionPivot.position.z = meta.z;
+
+    if (meta.rx !== undefined)
+      positionPivot.rotation.x = meta.rx;
+    if (meta.ry !== undefined)
+      positionPivot.rotation.y = meta.ry;
+    if (meta.rz !== undefined)
+      positionPivot.rotation.z = meta.rz;
+
+    return positionPivot;
+  }
+  static orbitAnimation(name, meta, meshPivot, scene) {
+    let orbitPivot = new BABYLON.TransformNode("transformorbit" + name, scene);
+    orbitPivot.parent = meshPivot.parent;
+    meshPivot.parent = orbitPivot;
+
+    if (meta.orbitRadius)
+      meshPivot.position.x = meta.orbitRadius;
+
+    let orbitAnimation = new BABYLON.Animation(
       "staticmeshrotation" + name,
       "rotation",
       30,
@@ -8,54 +36,80 @@ export default class Utility3D {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    //At the animation key 0, the value of scaling is "1"
-    let x = parent.rotation.x;
-    let y = parent.rotation.y;
-    let z = parent.rotation.z;
+    let x = 0;
+    let y = 0;
+    let z = 0;
     let keys = [];
-    let endFrame = meta.spintime / 1000 * 30;
-    let spindirection = meta.spindirection === -1 ? 2 : -2;
-    if (meta.parent) {
-      parent.rotation.y = meta.ry;
-    }
-    if (name === 'uranus') {
-      z = z + Math.PI / -2;
-      y += Math.PI + 1.15;
-      keys.push({
-        frame: 0,
-        value: new BABYLON.Vector3(x, y, z)
-      });
+    let endFrame = meta.orbitTime / 1000 * 30;
 
-      keys.push({
-        frame: endFrame,
-        value: new BABYLON.Vector3(x + spindirection * Math.PI, y, z)
-      });
+    let orbitDirection = meta.orbitDirection === -1 ? 2 : -2;
 
-    } else {
-      keys.push({
-        frame: 0,
-        value: new BABYLON.Vector3(x, y, z)
-      });
+    keys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
 
-      keys.push({
-        frame: endFrame,
-        value: new BABYLON.Vector3(x, y + spindirection * Math.PI, z)
-      });
-    }
+    keys.push({
+      frame: endFrame,
+      value: new BABYLON.Vector3(x, y + orbitDirection * Math.PI, z)
+    });
 
-    if (!meta.parent && meta.noDaySpin !== true) {
-      spinAnimation.setKeys(keys);
-      if (!parent.animations)
-        parent.animations = [];
-      parent.animations.push(spinAnimation);
-      let anim = scene.beginAnimation(parent, 0, endFrame, true);
-      if (!meta.freeOrbit)
-        normalParent.spinAnimation = anim;
+    orbitAnimation.setKeys(keys);
+    if (!orbitPivot.animations)
+      orbitPivot.animations = [];
+    orbitPivot.animations.push(orbitAnimation);
+    let anim = scene.beginAnimation(orbitPivot, 0, endFrame, true);
 
-      if (meta.startRatio !== undefined)
-        anim.goToFrame(Math.floor(endFrame * meta.startRatio));
-    }
+    if (meta.startRatio !== undefined)
+      anim.goToFrame(Math.floor(endFrame * meta.startRatio));
+
+    meta.orbitAnimation = anim;
+
+    return orbitPivot;
   }
+  static rotationAnimation(name, meta, meshPivot, scene) {
+    let rotationPivot = new BABYLON.TransformNode("transformrotation" + name, scene);
+    rotationPivot.parent = meshPivot.parent;
+    meshPivot.parent = rotationPivot;
+
+    let rotationAnimation = new BABYLON.Animation(
+      "rotationanimationrotation" + name,
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let keys = [];
+    let x = 0;
+    let y = 0;
+    let z = 0;
+
+    let endFrame = meta.rotationTime / 1000 * 30;
+    let rotationDirection = meta.rotationDirection === -1 ? 2 : -2;
+
+    keys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
+
+    keys.push({
+      frame: endFrame,
+      value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
+    });
+
+    rotationAnimation.setKeys(keys);
+    if (!rotationPivot.animations)
+      rotationPivot.animations = [];
+    rotationPivot.animations.push(rotationAnimation);
+    let anim = scene.beginAnimation(rotationPivot, 0, endFrame, true);
+    if (rotationPivot.rotateStartRatio !== undefined)
+      anim.goToFrame(Math.floor(endFrame * meta.rotateStartRatio));
+    meta.rotationAnimation = anim;
+
+    return rotationPivot;
+  }
+
   static _addFreeOrbitWrapper(targetNode, meta, name, parent, scene) {
     let orbitTransformNode = new BABYLON.TransformNode('orbitassetwrapper' + name, scene);
     targetNode.parent = orbitTransformNode;
@@ -133,7 +187,7 @@ export default class Utility3D {
     let y = targetNode.rotation.y;
     let z = targetNode.rotation.z;
     let orbitkeys = [];
-    let endFrame = meta.spintime / 1000 * 30;
+    let endFrame = meta.orbitTime / 1000 * 30;
 
     orbitkeys.push({
       frame: 0,
@@ -141,8 +195,6 @@ export default class Utility3D {
     });
 
     let factor = -2;
-    if (meta.spindirection === -1)
-      factor = 2;
 
     orbitkeys.push({
       frame: endFrame,
@@ -158,15 +210,15 @@ export default class Utility3D {
 
     if (meta.startRatio !== undefined)
       targetNode.spinAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
-
-    if (meta.noDaySpin) {
-      orbitTransformNode.appClickable = true;
-      orbitTransformNode.masterid = name;
-      orbitTransformNode.clickToPause = true;
-      orbitTransformNode.clickCommand = 'pauseSpin';
-      orbitTransformNode.spinAnimation = targetNode.spinAnimation;
-    }
-
+    /*
+        if (meta.noDaySpin) {
+          orbitTransformNode.appClickable = true;
+          orbitTransformNode.masterid = name;
+          orbitTransformNode.clickToPause = true;
+          orbitTransformNode.clickCommand = 'pauseSpin';
+          orbitTransformNode.spinAnimation = targetNode.spinAnimation;
+        }
+    */
     return orbitTransformNode;
   }
   static _addOrbitWrapper(name, meta, model, scene) {
@@ -205,7 +257,7 @@ export default class Utility3D {
     }
 
     let orbitkeys = [];
-    let endFrame = meta.spintime / 1000 * 30;
+    let endFrame = meta.orbitTime / 1000 * 30;
     orbitkeys.push({
       frame: 0,
       value: new BABYLON.Vector3(x, y, z)

@@ -20,7 +20,7 @@
     "y": 5,
     "z": 4,
     "diameter": 3.5,
-    "spintime": 1000,
+    "rotationTime": 1000,
     "noNavMesh": true
   },
   {
@@ -43,7 +43,7 @@
     "y": 1,
     "z": 0,
     "diameter": 1.5,
-    "spintime": 50000
+    "rotationTime": 50000
   },
   {
     "type": "3dmodel",
@@ -65,8 +65,8 @@
     "y": 1.1,
     "z": -1,
     "diameter": 2,
-    "spintime": 100000,
-    "spindirection": -1
+    "rotationTime": 100000,
+    "rotationDirection": -1
   },
   {
     "type": "3dmodel",
@@ -88,7 +88,7 @@
     "y": 1.1,
     "z": 1,
     "diameter": 2,
-    "spintime": 10000
+    "rotationTime": 10000
   },
   {
     "type": "3dmodel",
@@ -110,7 +110,7 @@
     "y": 1,
     "z": 12,
     "diameter": 1.9,
-    "spintime": 10500
+    "rotationTime": 10500
   },
   {
     "type": "3dmodel",
@@ -133,7 +133,7 @@
     "y": 2.25,
     "z": 35,
     "diameter": 2,
-    "spintime": 4166
+    "rotationTime": 4166
   },
   {
     "type": "3dmodel",
@@ -156,7 +156,7 @@
     "y": 1.6,
     "z": -5,
     "diameter": 2.5,
-    "spintime": 12000
+    "rotationTime": 12000
   },
   {
     "type": "3dmodel",
@@ -178,8 +178,10 @@
     "x": -16,
     "y": 5.5,
     "z": -32,
+    "rx": 1.57,
+    "ry": 0.3,
     "diameter": 1.2,
-    "spintime": 8000
+    "rotationTime": 8000
   },
   {
     "type": "3dmodel",
@@ -202,7 +204,7 @@
     "y": 3,
     "z": -40,
     "diameter": 1.2,
-    "spintime": 7000
+    "rotationTime": 7000
   },
   {
     "type": "3dmodel",
@@ -228,8 +230,7 @@
     "startRatio": 0.4,
     "diameter": 2,
     "noNavMesh": true,
-    "spintime": 120000,
-    "freeOrbit": true,
+    "orbitTime": 120000,
     "binaryOrbit": true
   },
   {
@@ -257,7 +258,7 @@
     "orbitRadius": 25,
     "diameter": 2,
     "noNavMesh": true,
-    "spintime": 45000,
+    "orbitTime": 45000,
     "startRatio": 0.4,
     "freeOrbit": true
   },
@@ -287,7 +288,7 @@
     "orbitRadius": 60,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 150000,
+    "orbitTime": 150000,
     "startRatio": 0.33,
     "freeOrbit": true
   },
@@ -315,7 +316,7 @@
     "startRatio": 0.82,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 250000,
+    "orbitTime": 250000,
     "freeOrbit": true
   },
   {
@@ -341,7 +342,7 @@
     "orbitRadius": 61,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 200000,
+    "orbitTime": 200000,
     "startRatio": 0.45,
     "freeOrbit": true
   },
@@ -368,7 +369,7 @@
     "orbitRadius": 60,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 124000,
+    "orbitTime": 124000,
     "startRatio": 0.75,
     "freeOrbit": true
   },
@@ -395,7 +396,7 @@
     "z": 8,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 45000,
+    "orbitTime": 45000,
     "freeOrbit": true
   },
   {
@@ -424,7 +425,7 @@
     "z": 13,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 44000,
+    "orbitTime": 44000,
     "freeOrbit": true
   },
   {
@@ -451,7 +452,7 @@
     "startRatio": 0.8,
     "diameter": 1,
     "noNavMesh": true,
-    "spintime": 19000,
+    "orbitTime": 19000,
     "freeOrbit": true
   }
 ]

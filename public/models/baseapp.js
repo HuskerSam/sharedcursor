@@ -1279,7 +1279,7 @@ export class BaseApp {
     var environment = scene.createDefaultEnvironment({
       enableGroundShadow,
       createSkybox: false,
-      groundSize: 100
+      groundSize: 150
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#2222ff"))
     environment.ground.parent.position.y = 0;
