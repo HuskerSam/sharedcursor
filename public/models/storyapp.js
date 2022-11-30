@@ -373,7 +373,7 @@ export class StoryApp extends BaseApp {
       if (meta.rz !== undefined)
         wrapper.rotation.z = meta.rz;
     }
-    if (meta.moon90orbit) {
+    if (meta.uranusOrbit) {
       wrapper.rotation.x += Math.PI / 2;
     }
 
@@ -438,9 +438,11 @@ export class StoryApp extends BaseApp {
     this.musicMeshes[name] = music;
   }
   showItemNamePanel(meta, parent) {
-    if (meta.moon90orbit) {
+    /*
+    if (meta.uranusOrbit) {
       this.boardWrapper.rotation.x -= 1.57;
     }
+    */
     this.boardWrapper.parent = parent;
 
     let nameDesc = meta.name;
@@ -496,7 +498,7 @@ export class StoryApp extends BaseApp {
 
     symbolWrapper.meta = meta;
     symbolWrapper.extendedMetaData = extendedMetaData;
-    if (meta.moon90orbit) {
+    if (meta.uranusOrbit) {
       symbolWrapper.rotation.x -= 1.57;
     }
 

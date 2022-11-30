@@ -198,7 +198,7 @@ export default class Utility3D {
 
     let y_factor = -2 * Math.PI;
     let x_factor = 0;
-    if (meta.moon90orbit) {
+    if (meta.uranusOrbit) {
       x_factor = y_factor;
       y_factor = 0;
       y += 1.2;
