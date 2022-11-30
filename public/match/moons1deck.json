@@ -126,9 +126,7 @@
     "noNavMesh": true,
     "spintime": 25000,
     "parent": "jupiter",
-    "spindirection": -1,
     "moonType": 5
-
   },
   {
     "type": "3dmodel",
@@ -139,7 +137,6 @@
     "solarPosition": "J2",
     "glbpath": "/solar/j2_adrastea.glb",
     "glbfile": "",
-    "spindirection": -1,
     "glbscale": 0.1,
     "symbolY": 0.75,
     "enableMusic": true,
@@ -172,7 +169,6 @@
     "solarPosition": "J3",
     "glbpath": "/solar/j3_amalthea.glb",
     "glbfile": "",
-    "spindirection": -1,
     "glbscale": 0.004,
     "symbolY": 0.75,
     "enableMusic": true,
@@ -205,7 +201,6 @@
     "solarPosition": "J4",
     "glbpath": "/solar/j4_thebe.glb",
     "glbfile": "",
-    "spindirection": -1,
     "glbscale": 0.004,
     "symbolY": 0.75,
     "enableMusic": true,
