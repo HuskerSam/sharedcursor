@@ -1274,7 +1274,7 @@ export class BaseApp {
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
     light2.intensity = .6;
 
-    let enableGroundShadow = this.testPerformanceFlags('render_shadows');
+    let enableGroundShadow = this.hugeAssets;
 
     var environment = scene.createDefaultEnvironment({
       enableGroundShadow,

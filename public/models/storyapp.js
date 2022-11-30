@@ -67,7 +67,6 @@ export class StoryApp extends BaseApp {
     this.hugeAssets = this.testPerformanceFlags('hugemodel_all');
     this.smallAssets = this.testPerformanceFlags('hugemodel_small');
 
-    this.minMoonsLoad = this.testPerformanceFlags('moonlevel_5');
 
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
     let mat1 = new BABYLON.StandardMaterial('mat1alpha', this.scene);
@@ -323,7 +322,7 @@ export class StoryApp extends BaseApp {
   async loadStaticAsset(name, parent) {
     let meta = this.allCards[name];
 
-    if (this.minMoonsLoad && meta.moonType === 5)
+    if (this.smallAssets && meta.moonType === 5)
       return;
 
     if (meta.optionalLoad && !this.testPerformanceFlags(meta.optionalFlags)) {
@@ -1007,7 +1006,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (seatData.seated) {
-      if (this.testPerformanceFlags('text3d_names'))
+      if (this.hugeAssets)
         this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
