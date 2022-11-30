@@ -67,51 +67,44 @@ export class StoryApp extends BaseApp {
     this.hugeAssets = this.testPerformanceFlags('hugemodel_all');
     this.smallAssets = this.testPerformanceFlags('hugemodel_small');
 
-
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
-    let mat1 = new BABYLON.StandardMaterial('mat1alpha', this.scene);
-    mat1.alpha = 0;
-    this.mat1alpha = mat1;
 
     this.addLineToLoading('Solar System Objects<br>');
     let navMeshes = [];
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
+
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-      if (this.allCards[card.id].noNavMesh !== true)
+      if (this.allCards[card.id].navDiameter !== undefined)
         navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.allCards[card.id], this.scene));
     });
     await Promise.all(promises);
 
     this.addLineToLoading('Moons<br>');
-    /*
-        promises = [];
-        deck = GameCards.getCardDeck('moons1');
-        deck.forEach(card => {
-          promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-          if (this.allCards[card.id].noNavMesh !== true)
-            navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
-        });
-        deck = GameCards.getCardDeck('moons2');
-        deck.forEach(card => {
-          promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-          if (this.allCards[card.id].noNavMesh !== true)
-            navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
-        });
+    promises = [];
+    deck = GameCards.getCardDeck('moons1');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+    });
 
-        await Promise.all(promises);
-        promises = [];
-        deck = GameCards.getCardDeck('mascots');
-        deck.forEach(card => {
-          promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-          if (this.allCards[card.id].noNavMesh !== true)
-            navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.scene));
-        });
-        await Promise.all(promises);
-    */
+    await Promise.all(promises);
+    promises = [];
+    deck = GameCards.getCardDeck('moons2');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+    });
+    await Promise.all(promises);
+
+    promises = [];
+    deck = GameCards.getCardDeck('mascots');
+    deck.forEach(card => {
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+    });
+    await Promise.all(promises);
+
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
-    this.navMesh.material = this.mat1alpha;
+    this.navMesh.setEnabled(false);
 
     this.initItemNamePanel(this.scene);
 
@@ -191,6 +184,9 @@ export class StoryApp extends BaseApp {
     this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
     this.asteroidSymbolMesh1 = Utility3D.generateSymbolMesh(this.scene, 'asteroidsymbolwrapper', 'asteroid');
     this.asteroidSymbolMesh2 = Utility3D.generateSymbolMesh(this.scene, 'asteroidsymbolwrapper2', 'asteroid2');
+
+    this.asteroidSymbolMesh1.setEnabled(false);
+    this.asteroidSymbolMesh2.setEnabled(false);
 
     for (let c = 0; c < count; c++)
       this._loadAsteroid(asteroids[randomArray[c]], c, count);
@@ -325,9 +321,8 @@ export class StoryApp extends BaseApp {
     if (this.smallAssets && meta.moonType === 5)
       return;
 
-    if (meta.optionalLoad && !this.testPerformanceFlags(meta.optionalFlags)) {
+    if (meta.optionalLoad && !this.testPerformanceFlags(meta.optionalFlags))
       return;
-    }
 
     meta.extended = this.processStaticAssetMeta(meta);
 
@@ -353,31 +348,15 @@ export class StoryApp extends BaseApp {
       `);
 
     let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
-    let wrapper = new BABYLON.TransformNode('assetwrapper' + name, this.scene);
-    wrapper.parent = meshPivot;
-    mesh.parent = wrapper;
+    mesh.parent = meshPivot;
 
-    this._addParticlesStaticMesh(meta, wrapper, name);
-
-    if (meta.noOrbit) {
-      meshPivot.parent = this.staticAssetMeshes[meta.parent];
-    }
-    if (meta.uranusOrbit) {
-      wrapper.rotation.x += Math.PI / 2;
-    }
-
-    /*
-        if (meta.parent && meta.noOrbit !== true) {
-          let orbitMesh = Utility3D._addOrbitWrapper(name, meta, meshPivot, this.scene);
-          orbitMesh.parent = this.staticAssetMeshes[meta.parent];
-        }
-    */
     if (this.shadowGenerator)
       this.shadowGenerator.addShadowCaster(mesh, true);
 
     if (meta.mp3file)
       this._loadMeshMusic(meta, mesh, name);
 
+    meta.basePivot = meshPivot;
 
     if (meta.symbol)
       meshPivot = this.infoPanel(name, meta, meshPivot, this.scene);
@@ -391,6 +370,11 @@ export class StoryApp extends BaseApp {
 
     meshPivot.assetMeta = meta;
     this.staticAssetMeshes[name] = meshPivot;
+
+    if (meta.parent)
+      meshPivot.parent = this.staticAssetMeshes[meta.parent];
+    else
+      meshPivot.parent = this.sceneTransformNode;
 
     if (meta.noClick !== true) {
       meta.appClickable = true;
@@ -438,6 +422,9 @@ export class StoryApp extends BaseApp {
   infoPanel(name, meta, pivotMesh, scene) {
     let size = 1;
 
+    if (meta.parent)
+      size = 1;
+
     let symbolPivot = new BABYLON.TransformNode('symbolpopupwrapper' + name, scene);
     let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, scene);
     symbolPivot.parent = pivotMesh.parent;
@@ -447,7 +434,7 @@ export class StoryApp extends BaseApp {
     textPivot.parent = symbolPivot;
     meta.textPivot = textPivot;
 
-    if (meta.uranusOrbit) {
+    if (meta.parent === 'uranus') {
       textPivot.rotation.x -= 1.57;
     }
 
@@ -473,7 +460,7 @@ export class StoryApp extends BaseApp {
     if (meta.symbolY)
       extraY = meta.symbolY;
 
-    meta.yOffset = meta.diameter / 1.25 + extraY;
+    meta.yOffset = 0.5 + extraY;
     symbolMesh1.material = m;
     symbolMesh1.parent = textPivot;
     symbolMesh1.rotation.y = 0;
@@ -900,11 +887,11 @@ export class StoryApp extends BaseApp {
 
     let seatMesh = this.seatMeshes[seatIndex];
     this.currentSeatMesh = seatMesh;
-    if (seatMesh.masterid && this.musicMeshes[seatMesh.masterid] && !this.musicMeshes[seatMesh.masterid].isPlaying)
-      this.musicMeshes[seatMesh.masterid].play();
+    if (seatMesh.assetMeta.masterid && this.musicMeshes[seatMesh.assetMeta.masterid] && !this.musicMeshes[seatMesh.assetMeta.masterid].isPlaying)
+      this.musicMeshes[seatMesh.assetMeta.masterid].play();
 
     this.selectedPlayerPanel.parent = seatWrapperMesh;
-    this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].rawMeshWrapper;
+    this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].assetMeta.basePivot;
     this.selectedPlayerPanel.position.y = 4;
     this.selectedMoonPanel.position.y = 3;
 
