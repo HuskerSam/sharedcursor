@@ -114,6 +114,8 @@ export class StoryApp extends BaseApp {
     this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
     this.navMesh.material = this.mat1alpha;
 
+    this.initItemNamePanel(this.scene);
+
     this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
       width: 1,
       height: 1,
@@ -301,7 +303,7 @@ export class StoryApp extends BaseApp {
     mesh.origsy = mesh.scaling.y;
     mesh.origsz = mesh.scaling.z;
 
-    orbitWrapper.symbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid, index);
+    orbitWrapper.asteroidSymbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid, index);
   }
   loadSymbolForAsteroid(parent, name, index) {
     let asteroidSymbol;
@@ -436,15 +438,65 @@ export class StoryApp extends BaseApp {
 
     this.musicMeshes[name] = music;
   }
+  showItemNamePanel(meta, parent) {
+    if (meta.moon90orbit) {
+      this.boardWrapper.rotation.x -= 1.57;
+    }
+    this.boardWrapper.parent = parent;
+
+    let nameDesc = meta.name;
+    if (meta.solarPosition)
+      nameDesc += ` (${meta.solarPosition})`
+
+    let nameTexture = Utility3D.__texture2DText(this.scene, nameDesc, meta.color);
+    nameTexture.vScale = 1;
+    nameTexture.uScale = 1;
+    nameTexture.hasAlpha = true;
+    this.boardWrapper.nameMat.diffuseTexture = nameTexture;
+    this.boardWrapper.nameMat.emissiveTexture = nameTexture;
+    this.boardWrapper.nameMat.ambientTexture = nameTexture;
+  }
+  initItemNamePanel(scene) {
+    let size = 1;
+    let name = 'one';
+    this.boardWrapper = new BABYLON.TransformNode('boardpopupwrapper' + name, scene);
+    this.boardWrapper.position.y = -1000;
+
+    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
+      height: size * 5,
+      width: size * 5
+    }, scene);
+    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2' + name, {
+      height: size * 5,
+      width: size * 5
+    }, scene);
+
+    let factor = -1.8;
+    nameMesh1.position.y = factor;
+    nameMesh2.position.y = factor;
+    nameMesh2.rotation.y = Math.PI;
+
+    let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
+    nameMesh1.material = nameMat;
+    nameMesh1.parent = this.boardWrapper;
+    nameMesh2.material = nameMat;
+    nameMesh2.parent = this.boardWrapper;
+    nameMesh2.scaling.x = -1;
+
+    this.boardWrapper.nameMat = nameMat;
+    this.boardWrapper.nameMesh1 = nameMesh1;
+    this.boardWrapper.nameMesh2 = nameMesh2;
+  }
   _renderSymbolInfoPanel(name, meta, wrapper, parent, extendedMetaData) {
     let size = 1;
 
-    let symbolWrapper = BABYLON.Mesh.CreateBox('symbolpopupwrapper' + name, 0.001, this.scene);
+    let symbolWrapper = new BABYLON.TransformNode('symbolpopupwrapper' + name, this.scene);
     let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, this.scene);
-    symbolMat.alpha = 0;
-    symbolWrapper.material = symbolMat;
     symbolWrapper.parent = wrapper;
     parent.symbolWrapper = symbolWrapper;
+
+    symbolWrapper.meta = meta;
+    symbolWrapper.extendedMetaData = extendedMetaData;
     if (meta.moon90orbit) {
       symbolWrapper.rotation.x -= 1.57;
     }
@@ -470,73 +522,33 @@ export class StoryApp extends BaseApp {
     let extraY = 0;
     if (meta.symbolY)
       extraY = meta.symbolY;
+
+    symbolWrapper.yOffset = meta.diameter / 1.25 + extraY;
     symbolMesh1.material = m;
     symbolMesh1.parent = symbolWrapper;
     symbolMesh1.rotation.y = 0;
-    symbolMesh1.position.y = meta.diameter / 1.25 + extraY;
+    symbolMesh1.position.y = symbolWrapper.yOffset;
     symbolMesh3.material = m;
     symbolMesh3.parent = symbolWrapper;
     symbolMesh3.rotation.y = Math.PI;
-    symbolMesh3.position.y = meta.diameter / 1.25 + extraY;
+    symbolMesh3.position.y = symbolWrapper.yOffset;
     symbolMesh3.scaling.x = -1;
-
-    let boardWrapper = new BABYLON.TransformNode('boardpopupwrapper' + name, this.scene);
-    boardWrapper.parent = wrapper;
-    if (meta.moon90orbit) {
-      boardWrapper.rotation.x -= 1.57;
-    }
-
-
-    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
-      height: size * 5,
-      width: size * 5
-    }, this.scene);
-    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2' + name, {
-      height: size * 5,
-      width: size * 5
-    }, this.scene);
-
-    let factor = -1.8;
-    //    if (meta.symbolY < -0.99)
-    //    factor = -2.75;
-    nameMesh1.position.y = symbolMesh1.position.y + factor;
-    nameMesh2.position.y = symbolMesh1.position.y + factor;
-    nameMesh2.rotation.y = Math.PI;
-
-    let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
-    let nameDesc = meta.name;
-    if (meta.solarPosition)
-      nameDesc += ` (${meta.solarPosition})`
-    let nameTexture = Utility3D.__texture2DText(this.scene, nameDesc, meta.color);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    nameMat.diffuseTexture = nameTexture;
-    nameMat.emissiveTexture = nameTexture;
-    nameMat.ambientTexture = nameTexture;
-    nameMesh1.material = nameMat;
-    nameMesh1.parent = boardWrapper;
-    nameMesh2.material = nameMat;
-    nameMesh2.parent = boardWrapper;
-    nameMesh2.scaling.x = -1;
-
-    boardWrapper.parent = wrapper;
-    parent.boardWrapper = boardWrapper;
-
-    this.hideBoardWrapper(parent);
   }
 
   showBoardWrapper(mesh) {
-    if (!mesh.boardWrapper)
+    if (!mesh.symbolWrapper)
       return;
-    mesh.boardWrapper.setEnabled(true);
-    mesh.symbolWrapper.setEnabled(false);
+    this.showItemNamePanel(mesh.symbolWrapper.meta, mesh)
+    this.boardWrapper.position.y = mesh.symbolWrapper.yOffset;
+    this.boardWrapper.parent = mesh.symbolWrapper.parent;
+    mesh.symbolWrapper.position.y = -1000;
   }
   hideBoardWrapper(mesh) {
-    if (!mesh.boardWrapper)
+    if (!mesh.symbolWrapper)
       return;
-    mesh.boardWrapper.setEnabled(false);
-    mesh.symbolWrapper.setEnabled(true);
+    this.boardWrapper.position.y = - 1000;
+    this.boardWrapper.parent = null;
+    mesh.symbolWrapper.position.y = mesh.symbolWrapper.yOffset;
   }
   createParticleSystem(mesh, prefix = "static") {
     let useGPUVersion = true;
@@ -709,7 +721,7 @@ export class StoryApp extends BaseApp {
       mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy * 1.25;
       mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz * 1.25;
 
-      mesh.symbolWrapper.setEnabled(false);
+      mesh.asteroidSymbolWrapper.setEnabled(false);
       this.asteroidSymbolMeshName.setEnabled(true);
       this.asteroidSymbolMeshName.parent = mesh.asteroidMesh;
 
@@ -725,7 +737,7 @@ export class StoryApp extends BaseApp {
       mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy;
       mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz;
 
-      mesh.symbolWrapper.setEnabled(true);
+      mesh.asteroidSymbolWrapper.setEnabled(true);
       this.asteroidSymbolMeshName.setEnabled(false);
     }
   }
