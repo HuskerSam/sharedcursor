@@ -422,7 +422,7 @@ export class StoryApp extends BaseApp {
     wrapper.particleSystem.start();
   }
   _loadMeshMusic(meta, mesh, name) {
-    if (!this.testPerformanceFlags('sound_all'))
+    if (!this.hugeAssets)
       return;
 
     let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +

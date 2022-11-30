@@ -188,9 +188,6 @@ export class ProfileApp extends BaseApp {
     this.scene.activeCamera.setPosition(new BABYLON.Vector3(7, 4, 3.2));
   }
   testPerformanceFlags(flag) {
-    if (flag === 'animation_full')
-      return true;
-
     return super.testPerformanceFlags(flag);
   }
   async load() {
