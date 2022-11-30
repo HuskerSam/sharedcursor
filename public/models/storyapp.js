@@ -1065,8 +1065,8 @@ export class StoryApp extends BaseApp {
   }
   get3DPosition(index) {
     let x = 5,
-      y = .1,
-      z = (index * 1.25) - 2;
+      y = 0.01,
+      z = (index * 2) + 5;
     return new BABYLON.Vector3(x, y, z);
   }
   meshSetVerticeColors(mesh, r, g, b, a = 1) {
@@ -1330,7 +1330,7 @@ export class StoryApp extends BaseApp {
       return;
     }
   }
-  createGuides(size = 200) {
+  createGuides(size = 50) {
     let wrapper = null;
     let sObjects = [];
     let axisX = BABYLON.Mesh.CreateLines("axisX", [
