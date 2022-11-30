@@ -129,7 +129,7 @@
         <div class=" public_game_view row" style="flex:1;overflow:auto;"></div>
       </div>
       <div class="tab-pane fade row new_game_view" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-        <div class="item_card_shadow col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
           <div style="display:flex;flex-direction:row;margin-bottom:10px;">
             <button class="new_game_type_wrapper selected btn btn-primary" value="match">
               <div class="new_game_type_image" style="background-image:url(/images/logo_match.png)"></div>
@@ -148,18 +148,21 @@
               <br>
             </div>
           </div>
+          <div style="text-align:center;padding: 1em">
+            <button class="create_new_game_btn btn btn-primary">Create Game</button>
+          </div>
           <div class="basic_options">
             <div style="text-align:left">
               <div style="display:inline-block;">
                 <label class="form-label">Visibility</label>
-                <select class="visibility_select form-select form-select-lg">
-                  <option selected>public</option>
-                  <option>private</option>
+                <select class="visibility_select form-select ">
+                  <option>public</option>
+                  <option selected>private</option>
                 </select>
               </div>
               <div style="display:inline-block;">
                 <label class="form-label">Seats</label>
-                <select class="seat_count_select form-select form-select-lg">
+                <select class="seat_count_select form-select ">
                   <option value="1">1 seat</option>
                   <option selected value="2">2 seats</option>
                   <option value="3">3 seats</option>
@@ -169,51 +172,46 @@
               <br>
               <div style="display:inline-block;">
                 <label class="form-label">Messaging</label>
-                <select class="message_level_select form-select form-select-lg">
+                <select class="message_level_select form-select ">
                   <option value="seated">Seated</option>
                   <option value="all">All</option>
                 </select>
               </div>
               <div style="display:inline-block;">
                 <label class="form-label">Seat Limit</label>
-                <select class="seats_per_user_select form-select form-select-lg">
+                <select class="seats_per_user_select form-select ">
                   <option value="one">One</option>
                   <option value="none">None</option>
                 </select>
               </div>
-
-
               <div class="match_additional_options">
                 <div style="display:inline-block;">
                   <label class="form-label">Card Deck</label>
-                  <select class="card_deck_select form-select form-select-lg">
+                  <select class="card_deck_select form-select ">
                     <option value="solarsystem">Solar System</option>
                   </select>
                 </div>
-
                 <div style="display:inline-block;">
                   <label class="form-label">Scoring</label>
-                  <select class="scoring_system_select form-select form-select-lg">
+                  <select class="scoring_system_select form-select ">
                     <option value="simple">Simple</option>
                     <option value="stable">Stable</option>
                     <option value="regular" selected>Regular</option>
                   </select>
                 </div>
               </div>
-
               <div class="story_additional_options">
                 <div style="display:inline-block;">
-                  <label class="form-label">Model Size</label>
-                  <select class="hugemodel_status form-select form-select-lg">
+                  <label class="form-label">Asset Size</label>
+                  <select class="hugemodel_status form-select ">
                     <option value="hugemodel_none">Normal</option>
                     <option value="hugemodel_all">Large</option>
                     <option value="hugemodel_small">Small</option>
                   </select>
                 </div>
-
                 <div style="display:inline-block;">
                   <label class="form-label">Asteroids</label>
-                  <select class="asteroid_status form-select form-select-lg">
+                  <select class="asteroid_status form-select ">
                     <option value="asteroids_20">20</option>
                     <option value="asteroids_50">50</option>
                     <option value="asteroids_100">100</option>
@@ -222,8 +220,26 @@
                   </select>
                 </div>
                 <div style="display:inline-block;">
+                  <label class="form-label">Skybox Rotation</label>
+                  <select class="skyboxrotation_status form-select ">
+                    <option value="skyboxrotation_normal">Normal</option>
+                    <option value="skyboxrotation_slow">Slow</option>
+                    <option value="skyboxrotation_none">None</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Extras</label>
+                  <select class="extras_status form-select ">
+                    <option value="extras_none">None</option>
+                    <option value="optional_mascots">Mascots</option>
+                    <option value="optional_probes">Probes</option>
+                    <option value="optional_mars">Mars</option>
+                    <option value="optional_rockets">Rockets</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
                   <label class="form-label">Skybox</label>
-                  <select class="skybox_status form-select form-select-lg">
+                  <select class="skybox_status form-select ">
                     <option value="skybox_nebula_orange_blue">nebula_orange_blue</option>
                     <option value="skybox_moon_high_clear">moon_high_clear</option>
                     <option value="skybox_moonless_2">moonless_2</option>
@@ -237,28 +253,7 @@
                     <option value="skybox_vortex_starless">vortex_starless</option>
                   </select>
                 </div>
-                <div style="display:inline-block;">
-                  <label class="form-label">Skybox Rotation</label>
-                  <select class="skyboxrotation_status form-select form-select-lg">
-                    <option value="skyboxrotation_normal">Normal</option>
-                    <option value="skyboxrotation_slow">Slow</option>
-                    <option value="skyboxrotation_none">None</option>
-                  </select>
-                </div>
-                <div style="display:inline-block;">
-                  <label class="form-label">Extras</label>
-                  <select class="extras_status form-select form-select-lg">
-                    <option value="extras_none">None</option>
-                    <option value="optional_mascots">Mascots</option>
-                    <option value="optional_probes">Probes</option>
-                    <option value="optional_mars">Mars</option>
-                    <option value="optional_rockets">Rockets</option>
-                  </select>
-                </div>
               </div>
-            </div>
-            <div style="text-align:center;padding: 1em">
-              <button class="create_new_game_btn btn btn-primary">Create Game</button>
             </div>
           </div>
         </div>

@@ -140,6 +140,8 @@ export class StoryApp extends BaseApp {
     this.sceneInited = true;
     this.loadAvatars();
     this.loadAsteroids();
+
+    this.paintGameData();
   }
 
   async loadAsteroids() {
@@ -159,9 +161,7 @@ export class StoryApp extends BaseApp {
       }
     });
 
-    this.addLineToLoading(`Loading Asteroids
-      <a href="https://3d-asteroids.space/asteroids" target="_blank">radar based  data</a>`);
-    this.addLineToLoading(`Picking ${count} from ${max} available`);
+    this.addLineToLoading(`Asteroids - ${count} from ${max} available`);
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {

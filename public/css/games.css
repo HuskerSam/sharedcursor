@@ -383,6 +383,8 @@ button.code_link {
 
 .basic_options {
   flex-direction: column;
+  position: relative;
+  padding: 4px;
 }
 
 .static_menu a.logo {
@@ -409,4 +411,8 @@ button.code_link {
 
 .gameplayer_cell_next {
   background: rgba(0, 255, 0, .25);
+}
+
+.form-label {
+  display: block;
 }

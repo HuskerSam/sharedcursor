@@ -917,10 +917,6 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
   opacity: .5;
 }
 
-.basic_options {
-  position: relative;
-}
-
 .tab_buttons {
   padding-top: 8px;
 }
