@@ -64,10 +64,10 @@ export class StoryApp extends BaseApp {
     this.loading_dynamic_area.scrollIntoView(false);
   }
   async loadStaticScene() {
-    this.hugeAssets = this.gameData.performanceFlags.indexOf('hugemodel_all') !== -1;
-    this.smallAssets = this.gameData.performanceFlags.indexOf('hugemodel_small') !== -1;
+    this.hugeAssets = this.testPerformanceFlags('hugemodel_all');
+    this.smallAssets = this.testPerformanceFlags('hugemodel_small');
 
-    this.minMoonsLoad = this.gameData.performanceFlags.indexOf('moonlevel_5') !== -1;
+    this.minMoonsLoad = this.testPerformanceFlags('moonlevel_5');
 
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
     let mat1 = new BABYLON.StandardMaterial('mat1alpha', this.scene);
@@ -324,7 +324,7 @@ export class StoryApp extends BaseApp {
     if (this.minMoonsLoad && meta.moonType === 5)
       return;
 
-    if (meta.optionalLoad && this.gameData.performanceFlags.indexOf(meta.optionalFlags) === -1) {
+    if (meta.optionalLoad && !this.testPerformanceFlags(meta.optionalFlags)) {
       return;
     }
 
@@ -397,44 +397,44 @@ export class StoryApp extends BaseApp {
 
     this.staticAssetMeshes[name] = outer_wrapper;
 
-    if (meta.showSymbol) this._renderSymbolInfoPanel(name, meta, wrapper, clickWrapper, extendedMetaData);
+    if (meta.symbol)
+      this._renderSymbolInfoPanel(name, meta, wrapper, clickWrapper, extendedMetaData);
+
     if (meta.freeOrbit) Utility3D._addFreeOrbitWrapper(outer_wrapper, meta, name, wrapper, this.scene);
     if (this.shadowGenerator) this.shadowGenerator.addShadowCaster(mesh, true);
     if (meta.mp3file) this._loadMeshMusic(meta, mesh, name);
     if (meta.spintime) Utility3D.addSpinAnimation(name, meta, outer_wrapper, wrapper, this.scene);
   }
   _addParticlesStaticMesh(meta, wrapper, name) {
-    if (meta.particlesEnabled && this.gameData.performanceFlags.indexOf('particles_none') === -1) {
-      let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, this.scene);
-      particlePivot.position.x = meta.px;
-      particlePivot.position.y = meta.py;
-      particlePivot.position.z = meta.pz;
-      //particlePivot.rotation.x = -1 * Math.PI / 2;
-      particlePivot.rotation.z = Math.PI;
-      particlePivot.parent = wrapper;
+    if (!meta.particlesEnabled)
+      return;
+    let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, this.scene);
+    particlePivot.position.x = meta.px;
+    particlePivot.position.y = meta.py;
+    particlePivot.position.z = meta.pz;
+    //particlePivot.rotation.x = -1 * Math.PI / 2;
+    particlePivot.rotation.z = Math.PI;
+    particlePivot.parent = wrapper;
 
-      wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
-      wrapper.particleSystem.start();
-    }
+    wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
+    wrapper.particleSystem.start();
   }
   _loadMeshMusic(meta, mesh, name) {
-    if (this.gameData.performanceFlags.indexOf('sound_all') === -1)
+    if (!this.testPerformanceFlags('sound_all'))
       return;
 
-    setTimeout(() => {
-      let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
-        encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
+    let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
+      encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
 
-      let music = new BABYLON.Sound("music", song, this.scene, null, {
-        loop: true,
-        spatialSound: true,
-        distanceModel: "exponential",
-        rolloffFactor: 2
-      });
-      music.attachToMesh(mesh);
+    let music = new BABYLON.Sound("music", song, this.scene, null, {
+      loop: true,
+      spatialSound: true,
+      distanceModel: "exponential",
+      rolloffFactor: 2
+    });
+    music.attachToMesh(mesh);
 
-      this.musicMeshes[name] = music;
-    }, 10000);
+    this.musicMeshes[name] = music;
   }
   _renderSymbolInfoPanel(name, meta, wrapper, parent, extendedMetaData) {
     let size = 1;
@@ -995,7 +995,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (seatData.seated) {
-      if (this.gameData.performanceFlags.indexOf('text3d_names') !== -1)
+      if (this.testPerformanceFlags('text3d_names'))
         this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {

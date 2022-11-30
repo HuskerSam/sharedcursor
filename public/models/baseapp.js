@@ -1236,7 +1236,6 @@ export class BaseApp {
     if (!this.gameData.performanceFlags)
       return false;
 
-
     if (this.gameData.performanceFlags.indexOf(flag) !== -1)
       return true;
 

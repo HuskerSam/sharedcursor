@@ -369,7 +369,6 @@ export class GamesApp extends BaseApp {
     let messageLevel = document.querySelector('.message_level_select').value;
     let seatsPerUser = document.querySelector('.seats_per_user_select').value;
     let cardDeck = document.querySelector('.card_deck_select').value;
-    let particles_status = document.querySelector('.particles_status').value;
     let bones_status = document.querySelector('.bones_status').value;
     let shadow_status = document.querySelector('.shadow_status').value;
     let sound_status = document.querySelector('.sound_status').value;
@@ -391,7 +390,6 @@ export class GamesApp extends BaseApp {
       cardDeck,
       scoringSystem,
       performanceFlags: [
-        particles_status,
         bones_status,
         shadow_status,
         sound_status,
