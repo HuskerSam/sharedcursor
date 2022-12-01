@@ -7,13 +7,13 @@
     "mp3file": "/songs/nebraska.mp3",
     "image": "/cardimages/moon.jpg",
     "symbol": "/symbol/luna.png",
-    "glbpath": "/solar/e1_lunablue.glb",
-    "largeglbpath": "/solar/e1_luna.glb",
+    "glbpath": "/solar/e1_luna.glb",
+    "largeglbpath": "/solar/e1_lunahuge.glb",
     "largeglbscale": 0.035,
-    "smallglbpath": "/solar/e1_lunabluesmall.glb",
-    "verysmallglb": "/solar/e1_lunaorig.glb",
+    "smallglbpath": "/solar/e1_lunasmall.glb",
     "solarPosition": "E1",
     "glbscale": 0.35,
+    "smallglbscale": 0.001,
     "symbolY": 0.5,
     "url": "https://en.wikipedia.org/wiki/Moon",
     "color": "rgb(255, 200, 63)",
@@ -40,8 +40,7 @@
     "orbitRadius": 2.5,
     "orbitTime": 35000,
     "startRatio": 0.5,
-    "parent": "mars",
-    "moonType": 5
+    "parent": "mars"
   },
   {
     "id": "m2_deimos",
@@ -60,8 +59,7 @@
     "symbolY": 0.5,
     "orbitRadius": 4,
     "orbitTime": 25000,
-    "parent": "mars",
-    "moonType": 5
+    "parent": "mars"
   },
   {
     "id": "j1_metis",
@@ -79,8 +77,7 @@
     "y": 1,
     "orbitRadius": 3.5,
     "orbitTime": 25000,
-    "parent": "jupiter",
-    "moonType": 5
+    "parent": "jupiter"
   },
   {
     "id": "j2_adrastea",
@@ -99,8 +96,7 @@
     "orbitRadius": 4.5,
     "orbitTime": 25000,
     "startRatio": 0.2,
-    "parent": "jupiter",
-    "moonType": 5
+    "parent": "jupiter"
   },
   {
     "id": "j3_amalthea",
@@ -119,8 +115,7 @@
     "orbitRadius": 5.5,
     "orbitTime": 25000,
     "startRatio": 0.4,
-    "parent": "jupiter",
-    "moonType": 5
+    "parent": "jupiter"
   },
   {
     "id": "j4_thebe",
@@ -139,8 +134,7 @@
     "orbitRadius": 6.5,
     "orbitTime": 25000,
     "startRatio": 0.6,
-    "parent": "jupiter",
-    "moonType": 5
+    "parent": "jupiter"
   },
   {
     "id": "j5_io",
@@ -238,8 +232,7 @@
     "orbitRadius": 4,
     "orbitTime": 33000,
     "startRatio": 0.9,
-    "parent": "uranus",
-    "moonType": 5
+    "parent": "uranus"
   },
   {
     "id": "u3_ariel",
@@ -258,8 +251,7 @@
     "orbitRadius": 4,
     "orbitTime": 33000,
     "startRatio": 0.3,
-    "parent": "uranus",
-    "moonType": 5
+    "parent": "uranus"
   },
   {
     "id": "u4_umbriel",
@@ -278,8 +270,7 @@
     "orbitRadius": 4,
     "orbitTime": 33000,
     "startRatio": 0.5,
-    "parent": "uranus",
-    "moonType": 5
+    "parent": "uranus"
   },
   {
     "id": "u5_titania",
@@ -297,8 +288,7 @@
     "y": 1,
     "orbitRadius": 4,
     "orbitTime": 33000,
-    "parent": "uranus",
-    "moonType": 5
+    "parent": "uranus"
   },
   {
     "id": "u6_oberon",
@@ -317,8 +307,7 @@
     "orbitRadius": 4,
     "orbitTime": 33000,
     "startRatio": 0.6,
-    "parent": "uranus",
-    "moonType": 5
+    "parent": "uranus"
   },
   {
     "id": "n5_larissa",
@@ -335,8 +324,7 @@
     "color": "rgb(255, 200, 63)",
     "orbitRadius": 6,
     "orbitTime": 19000,
-    "parent": "neptune",
-    "moonType": 5
+    "parent": "neptune"
   },
   {
     "id": "n7_proteus",
@@ -353,8 +341,7 @@
     "color": "rgb(255, 200, 63)",
     "orbitRadius": 8,
     "orbitTime": 19000,
-    "parent": "neptune",
-    "moonType": 5
+    "parent": "neptune"
   },
   {
     "id": "n8_triton",
@@ -371,8 +358,7 @@
     "color": "rgb(255, 200, 63)",
     "orbitRadius": 10,
     "orbitTime": 19000,
-    "parent": "neptune",
-    "moonType": 5
+    "parent": "neptune"
   },
   {
     "id": "p1_charon",

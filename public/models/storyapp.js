@@ -367,9 +367,6 @@ export class StoryApp extends BaseApp {
   async loadStaticAsset(name, parent) {
     let meta = Object.assign({}, this.allCards[name]);
 
-    if (this.smallAssets && meta.moonType === 5)
-      return;
-
     if (meta.optionalLoad && !this.testPerformanceFlags(meta.optionalFlags))
       return;
 

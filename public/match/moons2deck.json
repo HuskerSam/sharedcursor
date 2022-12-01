@@ -15,8 +15,7 @@
     "orbitRadius": 4,
     "orbitTime": 36000,
     "startRatio": 0.65,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s3_daphnis",
@@ -35,8 +34,7 @@
     "orbitRadius": 5,
     "orbitTime": 36000,
     "startRatio": 0.25,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s4_atlas",
@@ -55,8 +53,7 @@
     "orbitRadius": 5.5,
     "orbitTime": 36000,
     "startRatio": 0.45,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s5_prometheus",
@@ -75,8 +72,7 @@
     "orbitRadius": 6,
     "orbitTime": 36000,
     "startRatio": 0.45,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s6_pandora",
@@ -95,8 +91,7 @@
     "orbitRadius": 7,
     "orbitTime": 36000,
     "startRatio": 0.75,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s7_epimetheus",
@@ -106,7 +101,8 @@
     "image": "/cardimages/moonepimetheus.jpg",
     "symbol": "/symbol/epimetheus.png",
     "solarPosition": "S7",
-    "glbpath": "/solar/s7_epimetheus.glb",
+    "glbpath": "/solar/s7_epimetheus.obj",
+    "smallglbpath": "/solar/s7_epimetheussmall.obj",
     "glbscale": 0.01,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Epimetheus_(moon)",
@@ -115,8 +111,7 @@
     "orbitRadius": 8,
     "orbitTime": 36000,
     "startRatio": 0.5,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s8_janus",
@@ -135,8 +130,7 @@
     "orbitRadius": 8.5,
     "orbitTime": 39000,
     "startRatio": 0.95,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s10_mimas",
@@ -155,8 +149,7 @@
     "orbitRadius": 8,
     "orbitTime": 36000,
     "startRatio": 0.65,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s14_enceladus",
@@ -167,6 +160,7 @@
     "symbol": "/symbol/enceladus.png",
     "solarPosition": "S14",
     "glbpath": "/solar/s14_enceladus.glb",
+    "smallglbpath": "/solar/s14_enceladussmall.glb",
     "glbscale": 0.001,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Enceladus",
@@ -175,8 +169,7 @@
     "orbitRadius": 9,
     "orbitTime": 72000,
     "startRatio": 0.75,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s15_tethys",
@@ -187,6 +180,7 @@
     "symbol": "/symbol/tethys.png",
     "solarPosition": "S15",
     "glbpath": "/solar/s15_tethys.glb",
+    "smallglbpath": "/solar/s15_tethyssmall.glb",
     "glbscale": 0.0012,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Tethys_(moon)",
@@ -195,8 +189,7 @@
     "orbitRadius": 7,
     "orbitTime": 40000,
     "parent": "saturn",
-    "startRatio": 0.5,
-    "moonType": 5
+    "startRatio": 0.5
   },
   {
     "id": "s16_telesto",
@@ -215,8 +208,7 @@
     "orbitRadius": 6.5,
     "orbitTime": 39000,
     "startRatio": 0.45,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s17_calypso",
@@ -226,8 +218,9 @@
     "image": "/cardimages/mooncalypso.jpg",
     "symbol": "/symbol/calypso.png",
     "solarPosition": "S17",
-    "glbpath": "/solar/s17_calypso.glb",
-    "glbscale": 0.002,
+    "glbpath": "/solar/s17_calypso.obj",
+    "smallglbpath": "/solar/s17_calypsosmall.obj",
+    "glbscale": 0.05,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Calypso_(moon)",
     "color": "rgb(255, 200, 63)",
@@ -246,6 +239,7 @@
     "symbol": "/symbol/dione.png",
     "solarPosition": "S18",
     "glbpath": "/solar/s18_dione.glb",
+    "smallglbpath": "/solar/s18_dionesmall.glb",
     "glbscale": 0.0015,
     "symbolY": 1.35,
     "url": "https://en.wikipedia.org/wiki/Dione_(moon)",
@@ -272,8 +266,7 @@
     "orbitRadius": 4.5,
     "orbitTime": 39000,
     "startRatio": 0.55,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s21_rhea",
@@ -284,14 +277,14 @@
     "symbol": "/symbol/rhea.png",
     "solarPosition": "S21",
     "glbpath": "/solar/s21_rhea.glb",
+    "smallglbpath": "/solar/s21_rheasmall.glb",
     "glbscale": 0.0015,
     "symbolY": 1.35,
     "url": "https://en.wikipedia.org/wiki/Rhea_(moon)",
     "color": "rgb(255, 200, 63)",
     "orbitRadius": 11,
     "orbitTime": 200000,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s22_titan",
@@ -301,6 +294,7 @@
     "image": "/cardimages/moontitan.jpg",
     "symbol": "/symbol/titan.png",
     "glbpath": "/solar/s22_titan.glb",
+    "largeglbpath": "/solar/s22_titanhuge.glb",
     "solarPosition": "S22",
     "glbscale": 0.002,
     "symbolY": 1.5,
@@ -329,8 +323,7 @@
     "orbitRadius": 7,
     "orbitTime": 39000,
     "parent": "saturn",
-    "startRatio": 0.41,
-    "moonType": 5
+    "startRatio": 0.41
   },
   {
     "id": "s24_iapetus",
@@ -341,6 +334,7 @@
     "symbol": "/symbol/iapetus.png",
     "solarPosition": "S24",
     "glbpath": "/solar/s24_iapetus.glb",
+    "smallglbpath": "/solar/s24_iapetussmall.glb",
     "glbscale": 0.001,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Iapetus_(moon)",
@@ -349,8 +343,7 @@
     "orbitRadius": 9,
     "orbitTime": 45000,
     "startRatio": 0.9,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   },
   {
     "id": "s28_phoebe",
@@ -372,7 +365,6 @@
     "orbitRadius": 10,
     "orbitTime": 36000,
     "startRatio": 0.25,
-    "parent": "saturn",
-    "moonType": 5
+    "parent": "saturn"
   }
 ]
