@@ -38,6 +38,7 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
+    this.asteroidOrbitTime = 60000;
     this.dockDiscRadius = .6;
 
     this.settings_button = document.querySelector('.settings_button');
@@ -248,7 +249,7 @@ export class StoryApp extends BaseApp {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    let orbitEndFrame = 60 * 30;
+    let orbitEndFrame = this.asteroidOrbitTime / 1000 * 30;
     let orbitkeys = [];
     orbitkeys.push({
       frame: 0,
