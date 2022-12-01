@@ -1293,7 +1293,7 @@ export class BaseApp {
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
-    scene.activeCamera.setPosition(new BABYLON.Vector3(3, 4, 2));
+    scene.activeCamera.setPosition(new BABYLON.Vector3(-3, 4, -4));
     scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
     this.initSkybox();
@@ -1315,11 +1315,11 @@ export class BaseApp {
             break;
           }
           if (pointerInfo.pickInfo.hit) {
-            this.pointerDown(pointerInfo.pickInfo.pickedMesh)
+            this.pointerDown(pointerInfo)
           }
           break;
         case BABYLON.PointerEventTypes.POINTERUP:
-          this.pointerUp(this.lastMesh, pointerInfo);
+          this.pointerUp(pointerInfo);
           break;
         case BABYLON.PointerEventTypes.POINTERMOVE:
           //this.pointerMove();

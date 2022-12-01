@@ -455,6 +455,7 @@
     "color": "rgb(255, 200, 63)",
     "orbitRadius": 3,
     "orbitTime": 10000,
-    "parent": "pluto"
+    "parent": "pluto",
+    "parentType": "basePivot"
   }
 ]

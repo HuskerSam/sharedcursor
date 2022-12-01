@@ -264,10 +264,10 @@ export class StoryApp extends BaseApp {
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];
     orbitWrapper.animations.push(orbitAnim);
-    orbitWrapper.spinAnimation = this.scene.beginAnimation(orbitWrapper, 0, orbitEndFrame, true);
+    let orbitAnimation = this.scene.beginAnimation(orbitWrapper, 0, orbitEndFrame, true);
 
     if (startRatio !== 0.0)
-      orbitWrapper.spinAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
+      orbitAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
 
     let anim = new BABYLON.Animation(
       "asteroidspiny" + asteroid,
@@ -311,23 +311,27 @@ export class StoryApp extends BaseApp {
     anim.setKeys(spinkeys);
     if (!mesh.animations)
       mesh.animations = [];
-
     mesh.animations.push(anim);
-    orbitWrapper.localAnimation = this.scene.beginAnimation(mesh, 0, spinEndFrame, true);
 
-    orbitWrapper.appClickable = true;
-    orbitWrapper.clickToPause = true;
-    orbitWrapper.clickCommand = 'pauseSpin';
-    orbitWrapper.asteroidMesh = mesh;
-    mesh.asteroidName = asteroid;
-    orbitWrapper.asteroidType = true;
-    orbitWrapper.asteroidName = asteroid;
+    let animR = this.scene.beginAnimation(mesh, 0, spinEndFrame, true);
 
+    let asteroidSymbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid, index);
+
+    orbitWrapper.assetMeta = {
+      appClickable: true,
+      clickToPause: true,
+      clickCommand: 'pauseSpin',
+      name: asteroid,
+      asteroidType: true,
+      asteroidName: asteroid,
+      asteroidMesh: mesh,
+      asteroidSymbolWrapper,
+      orbitAnimation
+    };
     mesh.origsx = mesh.scaling.x;
     mesh.origsy = mesh.scaling.y;
     mesh.origsz = mesh.scaling.z;
 
-    orbitWrapper.asteroidSymbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid, index);
   }
   loadSymbolForAsteroid(parent, name, index) {
     let asteroidSymbol;
@@ -400,9 +404,12 @@ export class StoryApp extends BaseApp {
     meshPivot.assetMeta = meta;
     this.staticAssetMeshes[name] = meshPivot;
 
-    if (meta.parent)
-      meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
-    else
+    if (meta.parent) {
+      if (meta.parentType === 'basePivot')
+        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+      else
+        meshPivot.parent = this.staticAssetMeshes[meta.parent];
+    } else
       meshPivot.parent = this.sceneTransformNode;
 
     if (meta.noClick !== true) {
@@ -672,32 +679,31 @@ export class StoryApp extends BaseApp {
 
     this.avatarsLoaded = true;
   }
-  pointerUp(mesh, pointerInfo) {
+
+  pointerUp(pointerInfo) {
+
+    if (this.lastClickMeta) {
+      this.meshToggleAnimation(this.lastClickMeta, true, null);
+      this.lastClickMeta = null;
+      return;
+    }
+    /*
+    let mesh = pointerInfo.pickInfo.pickedMesh;
+    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
+    mesh = mesh.parent;
+  }
+
     if (!mesh || !mesh.assetMeta)
       return;
 
     let meta = mesh.assetMeta;
 
-    if (meta.clickCommand === 'pauseSpin') {
-      this.hideBoardWrapper(meta);
-
-      if (meta.asteroidType)
-        this.asteroidPtrDown(mesh, true);
-
-      if (this.currentSeatMesh !== mesh) {
-        if (mesh.masterid && this.musicMeshes[mesh.masterid])
-          this.musicMeshes[mesh.masterid].stop();
-      }
-
-      if (meta.rotationAnimation && meta.rotationAnimation._paused)
-        meta.rotationAnimation.restart();
-
-      if (meta.orbitAnimation && meta.orbitAnimation._paused)
-        meta.orbitAnimation.restart();
-
-    }
+    if (meta.clickCommand === 'pauseSpin')
+      this.meshToggleAnimation(meta, true, mesh);
+      */
   }
-  pointerDown(mesh) {
+  pointerDown(pointerInfo) {
+    let mesh = pointerInfo.pickInfo.pickedMesh;
     while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
       mesh = mesh.parent;
     }
@@ -708,60 +714,84 @@ export class StoryApp extends BaseApp {
     let meta = mesh.assetMeta;
 
     if (meta.emptySeat) {
-      this.dockSit(mesh.seatIndex);
+      this.dockSit(meta.seatIndex);
     }
 
     if (meta.clickCommand === 'stand') {
-      this._gameAPIStand(mesh.seatIndex);
+      this._gameAPIStand(meta.seatIndex);
     }
 
     if (meta.clickCommand === 'pauseSpin') {
+      this.lastClickMeta = meta;
+      this.meshToggleAnimation(meta, false, mesh);
+    }
+
+    if (meta.masterid === 'sun')
+      this._endTurn();
+  }
+  meshToggleAnimation(meta, stop = false, mesh) {
+    if (!stop) {
       this.showBoardWrapper(meta);
 
-      this.lastMesh = mesh;
       if (meta.asteroidType)
-        this.asteroidPtrDown(mesh);
+        this.asteroidPtrDown(meta);
 
-      if (this.currentSeatMesh !== mesh) {
-        if (meta.masterid && this.musicMeshes[meta.masterid])
-          this.musicMeshes[meta.masterid].play();
-      }
+      //if (this.currentSeatMesh !== mesh) {
+      if (meta.masterid && this.musicMeshes[meta.masterid])
+        this.musicMeshes[meta.masterid].play();
+      //}
 
       if (meta.rotationAnimation)
         meta.rotationAnimation.pause();
 
       if (meta.orbitAnimation)
         meta.orbitAnimation.pause();
+    } else {
+      this.hideBoardWrapper(meta);
 
+      if (meta.asteroidType)
+        this.asteroidPtrDown(meta, true);
+
+      //  if (this.currentSeatMesh !== mesh) {
+      if (meta.masterid && this.musicMeshes[meta.masterid])
+        this.musicMeshes[meta.masterid].stop();
+      //  }
+
+      if (meta.rotationAnimation && meta.rotationAnimation._paused)
+        meta.rotationAnimation.restart();
+
+      if (meta.orbitAnimation && meta.orbitAnimation._paused)
+        meta.orbitAnimation.restart();
     }
 
-    if (mesh.wrapperName === 'sun')
-      this._endTurn();
+    //if (meta.parent)
+    //  this.meshToggleAnimation(this.staticAssetMeshes[meta.parent].assetMeta, stop);
   }
-  asteroidPtrDown(mesh, up = false) {
+
+  asteroidPtrDown(meta, up = false) {
     if (!up) {
-      mesh.asteroidMesh.material = this.selectedAsteroidMaterial;
-      mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx * 1.25;
-      mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy * 1.25;
-      mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz * 1.25;
+      meta.asteroidMesh.material = this.selectedAsteroidMaterial;
+      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origsx * 1.25;
+      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origsy * 1.25;
+      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origsz * 1.25;
 
-      mesh.asteroidSymbolWrapper.setEnabled(false);
+      meta.asteroidSymbolWrapper.setEnabled(false);
       this.asteroidSymbolMeshName.setEnabled(true);
-      this.asteroidSymbolMeshName.parent = mesh.asteroidMesh;
+      this.asteroidSymbolMeshName.parent = meta.asteroidMesh;
 
-      let text = mesh.asteroidMesh.asteroidName.replace('.obj', '');
+      let text = meta.asteroidName.replace('.obj', '');
       Utility3D.setTextMaterial(this.scene, this.asteroidSymbolMeshName.nameMaterial, text);
 
       setTimeout(() => {
-        mesh.asteroidMesh.material = this.asteroidMaterial;
+        meta.asteroidMesh.material = this.asteroidMaterial;
       }, 3000);
     } else {
-      mesh.asteroidMesh.material = this.asteroidMaterial;
-      mesh.asteroidMesh.scaling.x = mesh.asteroidMesh.origsx;
-      mesh.asteroidMesh.scaling.y = mesh.asteroidMesh.origsy;
-      mesh.asteroidMesh.scaling.z = mesh.asteroidMesh.origsz;
+      meta.asteroidMesh.material = this.asteroidMaterial;
+      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origsx;
+      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origsy;
+      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origsz;
 
-      mesh.asteroidSymbolWrapper.setEnabled(true);
+      meta.asteroidSymbolWrapper.setEnabled(true);
       this.asteroidSymbolMeshName.setEnabled(false);
     }
   }
@@ -1005,9 +1035,11 @@ export class StoryApp extends BaseApp {
 
       this.meshSetVerticeColors(x3d, intensity, intensity, intensity);
       x3d.parent = mesh;
-      x3d.appClickable = true;
-      x3d.clickCommand = 'stand';
-      x3d.seatIndex = index;
+      x3d.assetMeta = {
+        appClickable: true,
+        clickCommand: 'stand',
+        seatIndex: index
+      }
     }
   }
   async _updateSeat(index) {
@@ -1042,13 +1074,15 @@ export class StoryApp extends BaseApp {
       }, this.scene);
 
       baseDisc.rotation.x = Math.PI / 2;
-      baseDisc.emptySeat = true;
-      baseDisc.seatIndex = index;
+      baseDisc.assetMeta = {
+        emptySeat: true,
+        seatIndex: index,
+        appClickable: true
+      };
 
       let colors = this.get3DColors(index);
       this.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
       baseDisc.parent = seat;
-      baseDisc.appClickable = true;
 
       seat.baseDisc = baseDisc;
     }
