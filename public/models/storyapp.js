@@ -423,20 +423,6 @@ export class StoryApp extends BaseApp {
       this.seatMeshes[meta.seatIndex] = meshPivot;
   }
 
-  _addParticlesStaticMesh(meta, wrapper, name) {
-    if (!meta.particlesEnabled)
-      return;
-    let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, this.scene);
-    particlePivot.position.x = meta.px;
-    particlePivot.position.y = meta.py;
-    particlePivot.position.z = meta.pz;
-    //particlePivot.rotation.x = -1 * Math.PI / 2;
-    particlePivot.rotation.z = Math.PI;
-    particlePivot.parent = wrapper;
-
-    wrapper.particleSystem = this.createParticleSystem(particlePivot, 'particlesstatic' + name);
-    wrapper.particleSystem.start();
-  }
   _loadMeshMusic(meta, mesh, name) {
     if (!this.hugeAssets)
       return;
@@ -567,59 +553,6 @@ export class StoryApp extends BaseApp {
     this.boardWrapper.position.y = -1000;
     this.boardWrapper.parent = null;
     meta.textPivot.position.y = 0;
-  }
-  createParticleSystem(mesh, prefix = "static") {
-    let useGPUVersion = true;
-    if (this[prefix + 'particleSystem']) {
-      this[prefix + 'particleSystem'].dispose();
-    }
-
-    if (useGPUVersion && BABYLON.GPUParticleSystem.IsSupported) {
-      this[prefix + 'particleSystem'] = new BABYLON.GPUParticleSystem("particles", {
-        capacity: 1000000
-      }, this.scene);
-      this[prefix + 'particleSystem'].activeParticleCount = 100000;
-    } else {
-      this[prefix + 'particleSystem'] = new BABYLON.ParticleSystem("particles", 25000, this.scene);
-    }
-
-    this[prefix + 'particleSystem'].emitRate = 500;
-    // this[prefix + 'particleSystem'].particleEmitterType = new BABYLON.BoxParticleEmitter(1);
-    this[prefix + 'particleSystem'].particleTexture = new BABYLON.Texture("/images/flare.png", this.scene);
-
-    this[prefix + 'particleSystem'].gravity = new BABYLON.Vector3(0, 0, 0);
-
-    // how long before the particles dispose?
-    this[prefix + 'particleSystem'].minLifeTime = 2;
-    this[prefix + 'particleSystem'].maxLifeTime = 2;
-
-    // how much "push" from the back of the rocket.
-    // Rocket forward movement also (seemingly) effects "push", but not really.
-    this[prefix + 'particleSystem'].minEmitPower = 5;
-    this[prefix + 'particleSystem'].maxEmitPower = 5;
-
-    this[prefix + 'particleSystem'].minSize = 0.01;
-    this[prefix + 'particleSystem'].maxSize = 0.1;
-
-    // adjust diections to aim out fat-bottom end of rocket, with slight spread.
-    this[prefix + 'particleSystem'].direction1 = new BABYLON.Vector3(-.2, 1, -.2);
-    this[prefix + 'particleSystem'].direction2 = new BABYLON.Vector3(.2, 1, .2);
-
-    this[prefix + 'particleSystem'].emitter = mesh;
-
-    // rocket length 4, so move emission point... 2 units toward wide end of rocket.
-    this[prefix + 'particleSystem'].minEmitBox = new BABYLON.Vector3(0, 2, 0)
-    this[prefix + 'particleSystem'].maxEmitBox = new BABYLON.Vector3(0, 2, 0)
-
-
-    // a few colors, based on age/lifetime.  Yellow to red, generally speaking.
-    this[prefix + 'particleSystem'].color1 = new BABYLON.Color3(1, 1, 0);
-    this[prefix + 'particleSystem'].color2 = new BABYLON.Color3(1, .5, 0);
-    this[prefix + 'particleSystem'].colorDead = new BABYLON.Color3(1, 0, 0);
-
-    //this[prefix + 'particleSystem'].start();
-
-    return this[prefix + 'particleSystem'];
   }
   viewSettings() {
     this.modal.show();
@@ -999,6 +932,7 @@ export class StoryApp extends BaseApp {
     mesh.position.z = 0;
     mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;
+    seatData.avatarMesh = mesh;
     if (this.shadowGenerator)
       this.shadowGenerator.addShadowCaster(wrapper.avatarMesh, true);
 
@@ -1047,6 +981,7 @@ export class StoryApp extends BaseApp {
     let colors = this.get3DColors(index);
 
     let seat = this['dockSeatMesh' + index];
+    let meta = seat.assetMeta;
     if (seat.avatarMesh) {
       seat.avatarMesh.dispose();
       seat.avatarMesh = null;

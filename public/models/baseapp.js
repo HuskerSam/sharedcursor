@@ -1408,7 +1408,7 @@ export class BaseApp {
 
       this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, bonesPath, null, this.scene);
       this.animationGLB = this.animationResult.meshes[0];
-      this.animationGLB.position.y = -1000;
+      this.animationGLB.setEnabled(false);
       this.animationResult.animationGroups[0].stop();
     }
 
@@ -1437,7 +1437,6 @@ export class BaseApp {
       modelAnimationGroup.goToFrame(Math.floor(Math.random() * modelAnimationGroup.to));
       modelAnimationGroup.loopAnimation = true;
     }
-
 
     return mesh;
   }
