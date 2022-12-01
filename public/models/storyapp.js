@@ -53,6 +53,23 @@ export class StoryApp extends BaseApp {
     this.end_turn_button.addEventListener('click', e => this._endTurn());
 
   }
+  initCameraToolbar() {
+    this.buttonOneRed = document.querySelector('.choice-button-one');
+    this.buttonOneRed.addEventListener('click', e => {
+      this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+      this.camera.setPosition(new BABYLON.Vector3(10, 5, 10));
+    })
+    this.buttonTwo = document.querySelector('.choice-button-two');
+    this.buttonTwo.addEventListener('click', e => {
+      this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+      this.camera.setPosition(new BABYLON.Vector3(-10, 5, -10));
+    })
+    this.buttonThree = document.querySelector('.choice-button-three');
+    this.buttonThree.addEventListener('click', e => {
+      this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+      this.camera.setPosition(new BABYLON.Vector3(-10, 5, 10));
+    })
+  }
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
   }
@@ -135,6 +152,8 @@ export class StoryApp extends BaseApp {
     this.loadAsteroids();
 
     this.paintGameData();
+
+    this.initCameraToolbar();
   }
 
   async loadAsteroids() {
@@ -372,7 +391,7 @@ export class StoryApp extends BaseApp {
     this.staticAssetMeshes[name] = meshPivot;
 
     if (meta.parent)
-      meshPivot.parent = this.staticAssetMeshes[meta.parent];
+      meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
     else
       meshPivot.parent = this.sceneTransformNode;
 
@@ -421,9 +440,6 @@ export class StoryApp extends BaseApp {
 
   infoPanel(name, meta, pivotMesh, scene) {
     let size = 1;
-
-    if (meta.parent)
-      size = 1;
 
     let symbolPivot = new BABYLON.TransformNode('symbolpopupwrapper' + name, scene);
     let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, scene);
