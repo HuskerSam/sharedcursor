@@ -83,9 +83,9 @@
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Mars",
     "color": "rgb(63, 63, 255)",
-    "x": 7,
+    "x": 9,
     "y": 1,
-    "z": 20,
+    "z": 18,
     "navDiameter": 2.1,
     "rotationTime": 10500
   },

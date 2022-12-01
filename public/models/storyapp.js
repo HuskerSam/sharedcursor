@@ -53,6 +53,14 @@ export class StoryApp extends BaseApp {
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
 
+    this.cameraMetaX = {
+      position: new BABYLON.Vector3(-10, 5, 10),
+      target: new BABYLON.Vector3(10, 1, 10)
+    };
+    this.cameraMetaY = {
+      position: new BABYLON.Vector3(10, 5, 10),
+      target: new BABYLON.Vector3(-10, 1, 10)
+    };
   }
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
@@ -65,21 +73,27 @@ export class StoryApp extends BaseApp {
     this.buttonFour.addEventListener('click', e => this.yButtonPress());
 
   }
+
+  aimCamera(locationMeta) {
+    if (this.xr.baseExperience.state === 2) {
+      this.xr.baseExperience.camera.setTarget(locationMeta.target);
+      this.xr.baseExperience.camera.postion = locationMeta.position;
+    } else {
+      this.camera.setTarget(locationMeta.target);
+      this.camera.setPosition(locationMeta.position);
+    }
+  }
   xButtonPress() {
-    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-    this.camera.setPosition(new BABYLON.Vector3(-10, 5, 10));
+    this.aimCamera(this.cameraMetaX);
   }
   yButtonPress() {
-    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-    this.camera.setPosition(new BABYLON.Vector3(-10, 5, -10));
+    this.aimCamera(this.cameraMetaY);
   }
   aButtonPress() {
-    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-    this.camera.setPosition(new BABYLON.Vector3(10, 5, -10));
+    this.followMeta = this.lastClickMeta;
   }
   bButtonPress() {
-    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-    this.camera.setPosition(new BABYLON.Vector3(10, 5, 10));
+    this.followMeta = null;
   }
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
@@ -327,7 +341,8 @@ export class StoryApp extends BaseApp {
       asteroidName: asteroid,
       asteroidMesh: mesh,
       asteroidSymbolWrapper,
-      orbitAnimation
+      orbitAnimation,
+      basePivot: mesh
     };
     mesh.origsx = mesh.scaling.x;
     mesh.origsy = mesh.scaling.y;

@@ -1301,11 +1301,6 @@ export class BaseApp {
     this.xr = await scene.createDefaultXRExperienceAsync({
       floorMeshes: [environment.ground]
     });
-    this.xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-      //xrCamera.position.x = 0;
-      //  xrCamera.position.y = 0;
-      //  xrCamera.position.z = 0;
-    });
 
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
@@ -1327,20 +1322,56 @@ export class BaseApp {
       }
     });
 
-    this.xr.input.onControllerAddedObservable.add((motionController) => {
-      if (motionController.handness === 'left') {
-        let xbuttonComponent = motionController.getComponent(xr_ids[3]); //x-button
-        xbuttonComponent.onButtonStateChangedObservable.add(() => {
-          if (xbuttonComponent.pressed)
-            this.xButtonPress();
-        });
-        let ybuttonComponent = motionController.getComponent(xr_ids[4]); //y-button
-        ybuttonComponent.onButtonStateChangedObservable.add(() => {
-          if (ybuttonComponent.pressed)
-            this.yButtonPress();
-        });
-      }
+    this.xr.input.onControllerAddedObservable.add((controller) => {
+      controller.onMotionControllerInitObservable.add((motionController) => {
+        let yComponent = motionController.getComponent('y-button');
+        if (yComponent)
+          yComponent.onButtonStateChangedObservable.add(btn => {
+            if (btn.pressed) {
+              this.yButtonPress();
+            }
+          });
+        let xComponent = motionController.getComponent('x-button');
+        if (xComponent)
+          xComponent.onButtonStateChangedObservable.add(btn => {
+            if (btn.pressed) {
+              this.xButtonPress();
+            }
+          });
+        let aComponent = motionController.getComponent('a-button');
+        if (aComponent)
+          aComponent.onButtonStateChangedObservable.add(btn => {
+            if (btn.pressed) {
+              this.aButtonPress();
+            }
+          });
+        let bComponent = motionController.getComponent('b-button');
+        if (bComponent)
+          bComponent.onButtonStateChangedObservable.add(btn => {
+            if (btn.pressed) {
+              this.bButtonPress();
+            }
+          });
+      });
     });
+
+
+    this.xr.baseExperience.onInitialXRPoseSetObservable.add(()=>{
+    // append the initial position of the camera to the parent node
+      //childForCamera.position.addInPlace(xr.baseExperience.camera.position);
+    this.xr.baseExperience.sessionManager.onXRFrameObservable.add(()=>{
+
+      if (this.followMeta) {
+        let pluto = this.followMeta.basePivot;
+        //  sphere.position.y += 0.01
+        let position = new BABYLON.Vector3(0, 0, 0);
+        position.copyFrom(pluto.getAbsolutePosition());
+        position.y += 4;
+        this.xr.baseExperience.camera.position.copyFrom(position);
+      }
+    })
+})
+
 
     return scene;
   }

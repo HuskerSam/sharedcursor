@@ -34,7 +34,7 @@ body {
   z-index: 10;
   background: rgb(230, 240, 230);
   color: black;
-  max-height: 90%;
+  max-height: 50%;
   overflow: auto;
   line-height: 2.5em;
   padding-bottom: 1.5em;
@@ -104,17 +104,12 @@ body {
   font-style: italic;
 }
 
-
-
-
-
-
 .bottom_options_panel {
   position: absolute;
   bottom: 0;
   z-index: 1000;
   pointer-events: none;
-  right: 0;
+  left: 0;
   bottom: 0;
 }
 
