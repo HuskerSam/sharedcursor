@@ -1266,7 +1266,6 @@ export class BaseApp {
     this.scene.autoClear = false; // Color buffer
     this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
 
-
     let light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
     light.position = new BABYLON.Vector3(10, 15, -15);
     light.intensity = 1.5;
@@ -1303,9 +1302,9 @@ export class BaseApp {
       floorMeshes: [environment.ground]
     });
     this.xr.baseExperience.onInitialXRPoseSetObservable.add((xrCamera) => {
-      xrCamera.position.x = 0;
-      xrCamera.position.y = 0;
-      xrCamera.position.z = 0;
+      //xrCamera.position.x = 0;
+      //  xrCamera.position.y = 0;
+      //  xrCamera.position.z = 0;
     });
 
     this.scene.onPointerObservable.add((pointerInfo) => {
@@ -1328,8 +1327,27 @@ export class BaseApp {
       }
     });
 
+    this.xr.input.onControllerAddedObservable.add((motionController) => {
+      if (motionController.handness === 'left') {
+        let xbuttonComponent = motionController.getComponent(xr_ids[3]); //x-button
+        xbuttonComponent.onButtonStateChangedObservable.add(() => {
+          if (xbuttonComponent.pressed)
+            this.xButtonPress();
+        });
+        let ybuttonComponent = motionController.getComponent(xr_ids[4]); //y-button
+        ybuttonComponent.onButtonStateChangedObservable.add(() => {
+          if (ybuttonComponent.pressed)
+            this.yButtonPress();
+        });
+      }
+    });
+
     return scene;
   }
+  xButtonPress() {}
+  yButtonPress() {}
+  aButtonPress() {}
+  bButtonPress() {}
   initSkybox() {
     let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
     this.skyBox = skybox;
@@ -1372,7 +1390,7 @@ export class BaseApp {
 
     orbitkeys.push({
       frame: endFrame,
-      value: new BABYLON.Vector3(- 6 * Math.PI, 2 * Math.PI, 4 * Math.PI)
+      value: new BABYLON.Vector3(-6 * Math.PI, 2 * Math.PI, 4 * Math.PI)
     });
 
     orbitAnimation.setKeys(orbitkeys);
@@ -1382,8 +1400,7 @@ export class BaseApp {
 
     this.skyBox.spinAnimation = this.scene.beginAnimation(this.skyBox, 0, endFrame, true);
   }
-  pointerUp() {
-  }
+  pointerUp() {}
   pointerDown() {}
   async loadAvatarMesh(path, file, scale, x, y, z) {
     if (!this.animationResult && this.hugeAssets) {
@@ -1425,7 +1442,7 @@ export class BaseApp {
     return mesh;
   }
   groundClick(pointerInfo) {
-      return;
+    return;
   }
   async loadStaticMesh(path, file, scale = 1, x = 0, y = 0, z = 0) {
     let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);

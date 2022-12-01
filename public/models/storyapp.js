@@ -55,20 +55,30 @@ export class StoryApp extends BaseApp {
   }
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
-    this.buttonOneRed.addEventListener('click', e => {
-      this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-      this.camera.setPosition(new BABYLON.Vector3(10, 5, 10));
-    })
+    this.buttonOneRed.addEventListener('click', e => this.aButtonPress());
     this.buttonTwo = document.querySelector('.choice-button-two');
-    this.buttonTwo.addEventListener('click', e => {
-      this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-      this.camera.setPosition(new BABYLON.Vector3(-10, 5, -10));
-    })
+    this.buttonTwo.addEventListener('click', e => this.bButtonPress());
     this.buttonThree = document.querySelector('.choice-button-three');
-    this.buttonThree.addEventListener('click', e => {
-      this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-      this.camera.setPosition(new BABYLON.Vector3(-10, 5, 10));
-    })
+    this.buttonThree.addEventListener('click', e => this.xButtonPress());
+    this.buttonFour = document.querySelector('.choice-button-four');
+    this.buttonFour.addEventListener('click', e => this.yButtonPress());
+
+  }
+  xButtonPress() {
+    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+    this.camera.setPosition(new BABYLON.Vector3(-10, 5, 10));
+  }
+  yButtonPress() {
+    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+    this.camera.setPosition(new BABYLON.Vector3(-10, 5, -10));
+  }
+  aButtonPress() {
+    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+    this.camera.setPosition(new BABYLON.Vector3(10, 5, -10));
+  }
+  bButtonPress() {
+    this.camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+    this.camera.setPosition(new BABYLON.Vector3(10, 5, 10));
   }
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');

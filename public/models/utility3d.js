@@ -423,7 +423,7 @@ export default class Utility3D {
   }
   static loadStaticNavMesh(name, meta, scene) {
     let mercurysphere = BABYLON.MeshBuilder.CreateSphere(name + "navmeshsphere", {
-      diameter: meta.diameter,
+      diameter: meta.navDiameter,
       segments: 16
     }, scene);
     if (meta.x)
