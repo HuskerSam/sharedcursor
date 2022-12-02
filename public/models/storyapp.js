@@ -1066,7 +1066,7 @@ export class StoryApp extends BaseApp {
       },
       this.scene);
     plane.parent = mesh;
-    plane.position.y = 1.5;
+    plane.position.y = 1;
 
     let m = new BABYLON.StandardMaterial('avatarshowmat' + name, this.scene);
     let t = new BABYLON.Texture(seatData.image, this.scene);

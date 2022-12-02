@@ -32,7 +32,7 @@
     "glbpath": "/solar/m1_phobos.glb",
     "smallglbpath": "/solar/m1_phobossmall.glb",
     "largeglbpath": "/solar/m1_phoboshuge.glb",
-    "glbscale": 5,
+    "glbscale": 0.05,
     "smallglbscale": 0.05,
     "symbolY": 0.5,
     "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
