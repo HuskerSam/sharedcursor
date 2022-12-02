@@ -54,7 +54,7 @@ export class StoryApp extends BaseApp {
     this.end_turn_button.addEventListener('click', e => this._endTurn());
 
     this.cameraMetaX = {
-      position: new BABYLON.Vector3(-3, 4, -4),
+      position: new BABYLON.Vector3(-4, 8, -5),
       target: new BABYLON.Vector3(0, 1, 0)
     };
     this.cameraMetaY = {
@@ -140,7 +140,7 @@ export class StoryApp extends BaseApp {
     }
   }
   aButtonPress() {
-    if (!this.attachControl) {      
+    if (!this.attachControl) {
       this.scene.activeCamera.attachControl(this.canvas, true);
       this.attachControl = true;
     }

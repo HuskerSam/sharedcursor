@@ -1327,7 +1327,7 @@ export class BaseApp {
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
-    scene.activeCamera.setPosition(new BABYLON.Vector3(-3, 6, -4));
+    scene.activeCamera.setPosition(new BABYLON.Vector3(-4, 8, -5));
     scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
     this.initSkybox();
