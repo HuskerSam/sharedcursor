@@ -146,6 +146,7 @@
     "symbol": "/symbol/mimas.png",
     "solarPosition": "S10",
     "glbpath": "/solar/s10_mimas.glb",
+    "smallglbpath": "/solar/s10_mimassmall.glb",
     "glbscale": 0.002,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Mimas_(moon)",
