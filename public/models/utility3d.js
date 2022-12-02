@@ -357,11 +357,8 @@ export default class Utility3D {
 
     let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane(name + 'symbolshow1', {
       height: size,
-      width: size
-    }, scene);
-    let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane(name + 'symbolshow3', {
-      height: size,
-      width: size
+      width: size,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
 
     let m = new BABYLON.StandardMaterial(name + 'mat', scene);
@@ -379,11 +376,6 @@ export default class Utility3D {
     symbolMesh1.parent = symbolWrapper;
     symbolMesh1.rotation.y = 0;
     symbolMesh1.position.y = extraY;
-    symbolMesh3.material = m;
-    symbolMesh3.parent = symbolWrapper;
-    symbolMesh3.rotation.y = Math.PI;
-    symbolMesh3.position.y = extraY;
-    symbolMesh3.scaling.x = -1;
 
     return symbolWrapper;
   }
@@ -399,25 +391,17 @@ export default class Utility3D {
     let size = 1;
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane(name + 'show1asteroid', {
       height: size * 5,
-      width: size * 5
-    }, scene);
-    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane(name + 'show2asteroid', {
-      height: size * 5,
-      width: size * 5
+      width: size * 5,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
 
     let nameMat = new BABYLON.StandardMaterial(name + 'showmatasteroid', scene);
     asteroidNameMesh.nameMaterial = nameMat;
     nameMesh1.material = nameMat;
     nameMesh1.parent = asteroidNameMesh;
-    nameMesh2.material = nameMat;
-    nameMesh2.parent = asteroidNameMesh;
-    nameMesh2.scaling.x = -1;
 
     let factor = -1.25;
     nameMesh1.position.y = factor;
-    nameMesh2.position.y = factor;
-    nameMesh2.rotation.y = Math.PI;
 
     return asteroidNameMesh;
   }

@@ -140,7 +140,7 @@ export class StoryApp extends BaseApp {
     this.followMeta = null;
   }
   setFollowMeta() {
-  //  this.aimCamera();
+    //  this.aimCamera();
     this.followMeta = this.lastClickMetaButtonCache;
     if (!this.attachControl) {
       this.scene.activeCamera.attachControl(this.canvas, true);
@@ -150,18 +150,18 @@ export class StoryApp extends BaseApp {
     v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
     v.y += 4;
     this.camera.position.copyFrom(v);
-      this.camera.alpha += Math.PI;
+    this.camera.alpha += Math.PI;
 
     if (this.xr.baseExperience.state === 2) {
       this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
-//      this.xr.baseExperience.camera.rotation.y = 0.2;
-/*
-    const rotation = 3.14;
-    BABYLON.Quaternion.FromEulerAngles(0, rotation, 0).multiplyToRef(
-        this.xr.baseExperience.camera.rotationQuaternion,
-        this.xr.baseExperience.camera.rotationQuaternion
-    );
-*/
+      //      this.xr.baseExperience.camera.rotation.y = 0.2;
+      /*
+          const rotation = 3.14;
+          BABYLON.Quaternion.FromEulerAngles(0, rotation, 0).multiplyToRef(
+              this.xr.baseExperience.camera.rotationQuaternion,
+              this.xr.baseExperience.camera.rotationQuaternion
+          );
+      */
     }
     this.buttonOneRed.innerHTML = 'A';
     this.buttonTwo.innerHTML = 'B Stop follow';
@@ -560,11 +560,8 @@ export class StoryApp extends BaseApp {
 
     let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
       height: size,
-      width: size
-    }, scene);
-    let symbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow3' + name, {
-      height: size,
-      width: size
+      width: size,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
 
     let m = new BABYLON.StandardMaterial('symbolshowmat' + name, scene);
@@ -585,11 +582,6 @@ export class StoryApp extends BaseApp {
     symbolMesh1.parent = textPivot;
     symbolMesh1.rotation.y = 0;
     symbolMesh1.position.y = meta.yOffset;
-    symbolMesh3.material = m;
-    symbolMesh3.parent = textPivot;
-    symbolMesh3.rotation.y = Math.PI;
-    symbolMesh3.position.y = meta.yOffset;
-    symbolMesh3.scaling.x = -1;
 
     return symbolPivot;
   }
@@ -616,28 +608,19 @@ export class StoryApp extends BaseApp {
 
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
       height: size * 5,
-      width: size * 5
-    }, scene);
-    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('nameshow2' + name, {
-      height: size * 5,
-      width: size * 5
+      width: size * 5,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
 
     let factor = -1.8;
     nameMesh1.position.y = factor;
-    nameMesh2.position.y = factor;
-    nameMesh2.rotation.y = Math.PI;
 
     let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
     nameMesh1.material = nameMat;
     nameMesh1.parent = this.boardWrapper;
-    nameMesh2.material = nameMat;
-    nameMesh2.parent = this.boardWrapper;
-    nameMesh2.scaling.x = -1;
 
     this.boardWrapper.nameMat = nameMat;
     this.boardWrapper.nameMesh1 = nameMesh1;
-    this.boardWrapper.nameMesh2 = nameMesh2;
   }
 
   showBoardWrapper(meta) {
@@ -663,12 +646,15 @@ export class StoryApp extends BaseApp {
     let name = '';
     let avatar = '';
     let uid = '';
+    let image = '';
     let seated = false;
     if (this.gameData[key]) {
       name = this.gameData.memberNames[this.gameData[key]];
       if (!name) name = "Anonymous";
       avatar = this.gameData.memberAvatars[this.gameData[key]];
       if (!avatar) avatar = "male1";
+      image = this.gameData.memberImages[this.gameData[key]];
+      if (!image) image = "";
 
       uid = this.gameData[key];
       seated = true;
@@ -679,12 +665,11 @@ export class StoryApp extends BaseApp {
       name,
       key,
       avatar,
+      image,
       uid: this.gameData[key]
     };
   }
   async loadAvatars() {
-    if (!this.sceneInited)
-      return;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
         let data = this.getSeatData(seatIndex);
@@ -693,11 +678,11 @@ export class StoryApp extends BaseApp {
           let mesh = await this.renderSeat(seatIndex);
 
           this['dockSeatMesh' + seatIndex] = mesh;
-          this['dockSeatCache' + seatIndex] = cacheValue;
-          await this._updateSeat(seatIndex);
         } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
-          await this._updateSeat(seatIndex);
-          this['dockSeatCache' + seatIndex] = cacheValue;
+          if (this.sceneInited) {
+            await this._updateSeat(seatIndex);
+            this['dockSeatCache' + seatIndex] = cacheValue;
+          }
         }
       } else {
         if (this['dockSeatMesh' + seatIndex]) {
@@ -707,11 +692,14 @@ export class StoryApp extends BaseApp {
         }
       }
     }
-    this.updateAgents();
-    this.updateUserPresence();
-    this.__updateSelectedSeatMesh();
 
-    this.avatarsLoaded = true;
+    if (this.sceneInited) {
+      this.updateAgents();
+      this.updateUserPresence();
+      this.__updateSelectedSeatMesh();
+
+      this.avatarsLoaded = true;
+    }
   }
 
   pointerUp(pointerInfo) {
@@ -1027,6 +1015,72 @@ export class StoryApp extends BaseApp {
     return name3d;
   }
   async renderSeatAvatar(wrapper, avatarWrapper, index) {
+    if (this.smallAssets) {
+      return this.renderSmallSeatAvatar(wrapper, avatarWrapper, index);
+    }
+    return await this.renederNormalSeatAvatar(wrapper, avatarWrapper, index);
+  }
+  async renderSmallSeatAvatar(wrapper, avatarWrapper, index) {
+    let seatData = this.getSeatData(index);
+    let colors = this.get3DColors(index);
+    let avatar = seatData.avatar;
+    let uid = seatData.uid;
+
+    let mesh = new BABYLON.TransformNode("seatmeshtn" + index, this.scene);
+    mesh.position.x = 0;
+    mesh.position.y = 0;
+    mesh.position.z = 0;
+    mesh.parent = avatarWrapper;
+    wrapper.avatarMesh = mesh;
+    seatData.avatarMesh = mesh;
+
+    let circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = 0;
+    circle.parent = mesh;
+
+    circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = 0.25;
+    circle.parent = mesh;
+
+    circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = 0.5;
+    circle.parent = mesh;
+
+    circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = 0.75;
+    circle.parent = mesh;
+
+    circle = this.createCircle();
+    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
+    circle.position.y = 1;
+    circle.parent = mesh;
+
+    const plane = BABYLON.MeshBuilder.CreatePlane("avatarimage" + index, {
+        height: 2,
+        width: 1,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      },
+      this.scene);
+    plane.parent = mesh;
+    plane.position.y = 1.5;
+
+    let m = new BABYLON.StandardMaterial('avatarshowmat' + name, this.scene);
+    let t = new BABYLON.Texture(seatData.image, this.scene);
+    t.vScale = 1;
+    t.uScale = 1;
+    t.hasAlpha = true;
+
+    m.diffuseTexture = t;
+    m.emissiveTexture = t;
+    m.ambientTexture = t;
+
+    plane.material = m;
+  }
+  async renderNormalSeatAvatar(wrapper, avatarWrapper, index) {
     let seatData = this.getSeatData(index);
     let avatar = seatData.avatar;
     let uid = seatData.uid;
