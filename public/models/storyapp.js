@@ -72,6 +72,47 @@ export class StoryApp extends BaseApp {
     this.buttonFour = document.querySelector('.choice-button-four');
     this.buttonFour.addEventListener('click', e => this.yButtonPress());
 
+
+    this.startCameraAlpha = this.scene.activeCamera.alpha;
+    this.scene.onPointerObservable.add((eventData) => {
+      if (this.xr.baseExperience.state !== 3) {
+        return
+      }
+      if (this.attachControl !== false) {
+        return
+      }
+
+      if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN) {
+        this.pointerActive = true;
+      } else if (eventData.type === BABYLON.PointerEventTypes.POINTERUP) {
+        this.pointerActive = false;
+      } else if (this.pointerActive && eventData.type === BABYLON.PointerEventTypes.POINTERMOVE) {
+        let evt = eventData.event;
+        let mX, mY
+        if (evt.movementX != 0) {
+          mX = evt.movementX / -20
+        } else mX = evt.movementX
+        if (evt.movementY != 0) {
+          mY = evt.movementY / 20
+        } else mY = evt.movementY;
+//        console.log("evt.movementX", mX)
+//        console.log("evt.movementY", mY)
+        // Take delta of mouse movement from last event and create movement vector
+        // You may want to factor in some kind of speed factor into this as well
+        let movementVector = new BABYLON.Vector3(mX, 0, mY);
+
+        // rotate movementVector about the y-axis
+        let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
+        movementVector.set(
+          movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
+          0,
+          movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
+        );
+
+        this.scene.activeCamera.position.addInPlace(movementVector);
+        this.scene.activeCamera.target.addInPlace(movementVector);
+      }
+    });
   }
 
   aimCamera(locationMeta) {
@@ -87,7 +128,17 @@ export class StoryApp extends BaseApp {
     this.aimCamera(this.cameraMetaX);
   }
   yButtonPress() {
-    this.aimCamera(this.cameraMetaY);
+    if (this.xr.baseExperience.state === 2) {
+      this.aimCamera(this.cameraMetaY);
+    } else {
+      if (this.attachControl !== false) {
+        this.scene.activeCamera.detachControl();
+        this.attachControl = false;
+      } else {
+        this.scene.activeCamera.attachControl(this.canvas, true);
+        this.attachControl = true;
+      }
+    }
   }
   aButtonPress() {
     this.followMeta = this.lastClickMeta;
