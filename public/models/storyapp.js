@@ -53,14 +53,10 @@ export class StoryApp extends BaseApp {
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
 
-    this.cameraMetaX = {
-      position: new BABYLON.Vector3(-4, 8, -5),
-      target: new BABYLON.Vector3(0, 1, 0)
-    };
-    this.cameraMetaY = {
-      position: new BABYLON.Vector3(10, 5, 10),
-      target: new BABYLON.Vector3(-10, 1, 10)
-    };
+
+    this.camera_switch = document.querySelector('.camera_switch');
+    this.camera_switch.addEventListener('click', e => this.cameraOptionSwitch());
+
   }
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
@@ -111,40 +107,76 @@ export class StoryApp extends BaseApp {
     });
   }
 
+  cameraOptionSwitch() {
+    this.followMeta = null;
+    if (this.attachControl !== false) {
+      this.scene.activeCamera.detachControl();
+      this.attachControl = false;
+      this.camera_switch.innerHTML = 'Switch to rotating';
+    } else {
+      this.scene.activeCamera.attachControl(this.canvas, true);
+      this.attachControl = true;
+      this.camera_switch.innerHTML = 'Switch to panning';
+    }
+  }
   aimCamera(locationMeta) {
+
+
     if (this.xr.baseExperience.state === 2) {
       this.xr.baseExperience.camera.setTarget(locationMeta.target);
       this.xr.baseExperience.camera.postion = locationMeta.position;
+      //    this.xr.baseExperience.camera.alpha = this.startCameraAlpha;
     } else {
       this.camera.setTarget(locationMeta.target);
-      this.camera.setPosition(locationMeta.position);
-    }
-  }
-  xButtonPress() {
-    this.followMeta = null;
-    this.aimCamera(this.cameraMetaX);
-  }
-  yButtonPress() {
-    if (this.xr.baseExperience.state === 2) {
+      this.camera.radius = this.cameraStartRadius;
+      this.camera.alpha = this.cameraStartAlpha;
+      this.camera.beta = this.cameraStartBeta;
+      this.camera.cameraDirection.copyFrom(this.cameraStartDirection);
 
-      this.followMeta = null;
-    } else {
-      this.followMeta = null;
-      if (this.attachControl !== false) {
-        this.scene.activeCamera.detachControl();
-        this.attachControl = false;
-      } else {
-        this.scene.activeCamera.attachControl(this.canvas, true);
-        this.attachControl = true;
-      }
+      this.camera.setPosition(locationMeta.position);
+      //    this.camera.alpha = this.startCameraAlpha;
     }
   }
-  aButtonPress() {
+  clearFollowMeta() {
+    this.buttonOneRed.innerHTML = 'A';
+    this.buttonTwo.innerHTML = 'B';
+    this.followMeta = null;
+  }
+  setFollowMeta() {
+    this.aimCamera(this.cameraMetaX);
+    this.followMeta = this.lastClickMetaButtonCache;
     if (!this.attachControl) {
       this.scene.activeCamera.attachControl(this.canvas, true);
       this.attachControl = true;
     }
-    this.followMeta = this.lastClickMetaButtonCache;
+    if (this.xr.baseExperience.state === 3) {
+      //      this.scene.activeCamera.alpha += 3.14;
+      let v = new BABYLON.Vector3(0, 0, 0);
+      v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+      v.y += 4;
+      this.scene.activeCamera.position.copyFrom(v);
+    } else {
+      //  this.xr.baseExperience.camera.alpha = this.followMeta.basePivot.getAbsolutePosition().y + 4;
+      //      this.xr.baseExperience.camera.alpha += 3.14;
+      let v = new BABYLON.Vector3(0, 0, 0);
+      v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+      v.y += 4;
+      this.xr.baseExperience.camera.position.copyFrom(v);
+
+    }
+    this.buttonOneRed.innerHTML = 'A';
+    this.buttonTwo.innerHTML = 'B Stop follow';
+  }
+  xButtonPress() {
+    this.clearFollowMeta();
+    this.aimCamera(this.cameraMetaX);
+  }
+  yButtonPress() {
+    this.clearFollowMeta();
+    this.aimCamera(this.cameraMetaY);
+  }
+  aButtonPress() {
+    this.setFollowMeta();
   }
   bButtonPress() {
     this.followMeta = null;
@@ -436,14 +468,15 @@ export class StoryApp extends BaseApp {
     if (meta.smallglbpath)
       smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
 
-    this.addLineToLoading(`<img src="${meta.extended.symbolPath}" class="symbol_image">
-        <a href="${meta.url}" target="_blank"><img class="symbol_image" src="/images/wikilogo.png"></a>
-        &nbsp;
+    this.addLineToLoading(`
         ${meta.name}:
         &nbsp;
         ${smallLink}
         ${normalLink}
         ${largeLink}
+        <br>
+        <a href="${meta.url}" target="_blank">wiki</a>
+        &nbsp; <img src="${meta.extended.symbolPath}" class="symbol_image">
         <br>
       `);
 
@@ -723,6 +756,9 @@ export class StoryApp extends BaseApp {
 
     if (meta.clickCommand === 'pauseSpin') {
       this.lastClickMeta = meta;
+      this.buttonOneRed.innerHTML = 'A Follow ' + this.lastClickMeta.name;
+      this.buttonTwo.innerHTML = 'B';
+
       this.lastClickMetaButtonCache = this.lastClickMeta;
 
       this.meshToggleAnimation(meta, false, mesh);

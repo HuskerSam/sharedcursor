@@ -1217,37 +1217,25 @@ export class BaseApp {
         this.scene.render();
 
       if (this.followMeta && this.xr.baseExperience.state === 3) {
-        let pluto = this.followMeta.basePivot;
-        //  sphere.position.y += 0.01
         let position = new BABYLON.Vector3(0, 0, 0);
         position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
         position.y += 4;
 
-
         let mX = position.x - this.scene.activeCamera.position.x;
         let mZ = position.z - this.scene.activeCamera.position.z;
 
-/*
-        let mX, mY
-        if (evt.movementX != 0) {
-          mX = evt.movementX / -20
-        } else mX = evt.movementX
-        if (evt.movementY != 0) {
-          mY = evt.movementY / 20
-        } else mY = evt.movementY;
-*/
         let movementVector = new BABYLON.Vector3(mX, 0, mZ);
-/*
-        let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
+        //let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
+        /*
+        let angle = this.scene.activeCamera.alpha;
         movementVector.set(
           movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
           0,
           movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
         );
-*/
+        */
         this.scene.activeCamera.position.addInPlace(movementVector);
         this.scene.activeCamera.target.addInPlace(movementVector);
-
       }
     });
 
@@ -1258,6 +1246,16 @@ export class BaseApp {
   async initGraphics() {
     if (this.engine)
       return;
+
+    this.startCameraAlpha = 0;
+    this.cameraMetaX = {
+      position: new BABYLON.Vector3(15, 6, 15),
+      target: new BABYLON.Vector3(10, 1, 10)
+    };
+    this.cameraMetaY = {
+      position: new BABYLON.Vector3(30, 40, 30),
+      target: new BABYLON.Vector3(-10, 1, -10)
+    };
 
     await this.initBabylonEngine(".popup-canvas", true);
     if (this.loadStaticScene)
@@ -1327,8 +1325,15 @@ export class BaseApp {
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
-    scene.activeCamera.setPosition(new BABYLON.Vector3(-4, 8, -5));
-    scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
+    scene.activeCamera.setPosition(this.cameraMetaX.position);
+    scene.activeCamera.setTarget(this.cameraMetaX.target);
+    this.startCameraAlpha = scene.activeCamera.alpha;
+    scene.activeCamera.panningSensibility = 300;
+
+    this.cameraStartAlpha = scene.activeCamera.alpha;
+    this.cameraStartBeta = scene.activeCamera.beta;
+    this.cameraStartRadius = scene.activeCamera.radius;
+    this.cameraStartDirection = new BABYLON.Vector3().copyFrom(scene.activeCamera.cameraDirection);
 
     this.initSkybox();
 
@@ -1396,11 +1401,31 @@ export class BaseApp {
       this.xr.baseExperience.sessionManager.onXRFrameObservable.add(() => {
 
         if (this.followMeta) {
-          let pluto = this.followMeta.basePivot;
-          //  sphere.position.y += 0.01
           let position = new BABYLON.Vector3(0, 0, 0);
-          position.copyFrom(pluto.getAbsolutePosition());
+          position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
           position.y += 4;
+
+          let mX = position.x - this.scene.activeCamera.position.x;
+          let mZ = position.z - this.scene.activeCamera.position.z;
+
+          /*
+                  let mX, mY
+                  if (evt.movementX != 0) {
+                    mX = evt.movementX / -20
+                  } else mX = evt.movementX
+                  if (evt.movementY != 0) {
+                    mY = evt.movementY / 20
+                  } else mY = evt.movementY;
+          */
+          let movementVector = new BABYLON.Vector3(mX, 0, mZ);
+          /*
+          let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
+          movementVector.set(
+            movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
+            0,
+            movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
+          );
+          */
 
           this.xr.baseExperience.camera.position.copyFrom(position);
         }

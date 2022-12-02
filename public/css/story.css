@@ -187,3 +187,7 @@ button.choice-button-four {
 button.choice-button-four span {
   color: black;
 }
+
+button.camera_switch {
+  font-size: 18px;
+}
