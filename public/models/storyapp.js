@@ -140,28 +140,28 @@ export class StoryApp extends BaseApp {
     this.followMeta = null;
   }
   setFollowMeta() {
-    this.aimCamera();
+  //  this.aimCamera();
     this.followMeta = this.lastClickMetaButtonCache;
     if (!this.attachControl) {
       this.scene.activeCamera.attachControl(this.canvas, true);
       this.attachControl = true;
     }
-    if (this.xr.baseExperience.state === 3) {
-      //      this.scene.activeCamera.alpha += 3.14;
-      let v = new BABYLON.Vector3(0, 0, 0);
-      v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
-      v.y += 4;
-      this.scene.activeCamera.position.copyFrom(v);
+    let v = new BABYLON.Vector3(0, 0, 0);
+    v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+    v.y += 4;
+    this.camera.position.copyFrom(v);
+      this.camera.alpha += Math.PI;
 
-    } else {
-      //  this.xr.baseExperience.camera.alpha = this.followMeta.basePivot.getAbsolutePosition().y + 4;
-      //      this.xr.baseExperience.camera.alpha += 3.14;
-      let v = new BABYLON.Vector3(0, 0, 0);
-      v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
-      v.y += 4;
-      this.xr.baseExperience.camera.position.copyFrom(v);
-
-      //this.xr.baseExperience.camera.cameraDirection += 3.14;
+    if (this.xr.baseExperience.state === 2) {
+      this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
+//      this.xr.baseExperience.camera.rotation.y = 0.2;
+/*
+    const rotation = 3.14;
+    BABYLON.Quaternion.FromEulerAngles(0, rotation, 0).multiplyToRef(
+        this.xr.baseExperience.camera.rotationQuaternion,
+        this.xr.baseExperience.camera.rotationQuaternion
+    );
+*/
     }
     this.buttonOneRed.innerHTML = 'A';
     this.buttonTwo.innerHTML = 'B Stop follow';
