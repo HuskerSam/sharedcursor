@@ -54,8 +54,8 @@ export class StoryApp extends BaseApp {
     this.end_turn_button.addEventListener('click', e => this._endTurn());
 
     this.cameraMetaX = {
-      position: new BABYLON.Vector3(-10, 5, 10),
-      target: new BABYLON.Vector3(10, 1, 10)
+      position: new BABYLON.Vector3(-3, 4, -4),
+      target: new BABYLON.Vector3(0, 1, 0)
     };
     this.cameraMetaY = {
       position: new BABYLON.Vector3(10, 5, 10),
@@ -95,13 +95,9 @@ export class StoryApp extends BaseApp {
         if (evt.movementY != 0) {
           mY = evt.movementY / 20
         } else mY = evt.movementY;
-//        console.log("evt.movementX", mX)
-//        console.log("evt.movementY", mY)
-        // Take delta of mouse movement from last event and create movement vector
-        // You may want to factor in some kind of speed factor into this as well
+
         let movementVector = new BABYLON.Vector3(mX, 0, mY);
 
-        // rotate movementVector about the y-axis
         let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
         movementVector.set(
           movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
@@ -125,12 +121,15 @@ export class StoryApp extends BaseApp {
     }
   }
   xButtonPress() {
+    this.followMeta = null;
     this.aimCamera(this.cameraMetaX);
   }
   yButtonPress() {
     if (this.xr.baseExperience.state === 2) {
-      this.aimCamera(this.cameraMetaY);
+
+      this.followMeta = null;
     } else {
+      this.followMeta = null;
       if (this.attachControl !== false) {
         this.scene.activeCamera.detachControl();
         this.attachControl = false;
@@ -141,7 +140,11 @@ export class StoryApp extends BaseApp {
     }
   }
   aButtonPress() {
-    this.followMeta = this.lastClickMeta;
+    if (!this.attachControl) {      
+      this.scene.activeCamera.attachControl(this.canvas, true);
+      this.attachControl = true;
+    }
+    this.followMeta = this.lastClickMetaButtonCache;
   }
   bButtonPress() {
     this.followMeta = null;
@@ -720,6 +723,8 @@ export class StoryApp extends BaseApp {
 
     if (meta.clickCommand === 'pauseSpin') {
       this.lastClickMeta = meta;
+      this.lastClickMetaButtonCache = this.lastClickMeta;
+
       this.meshToggleAnimation(meta, false, mesh);
     }
 

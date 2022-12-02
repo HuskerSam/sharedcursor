@@ -1215,6 +1215,40 @@ export class BaseApp {
     this.engine.runRenderLoop(() => {
       if (this.runRender)
         this.scene.render();
+
+      if (this.followMeta && this.xr.baseExperience.state === 3) {
+        let pluto = this.followMeta.basePivot;
+        //  sphere.position.y += 0.01
+        let position = new BABYLON.Vector3(0, 0, 0);
+        position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+        position.y += 4;
+
+
+        let mX = position.x - this.scene.activeCamera.position.x;
+        let mZ = position.z - this.scene.activeCamera.position.z;
+
+/*
+        let mX, mY
+        if (evt.movementX != 0) {
+          mX = evt.movementX / -20
+        } else mX = evt.movementX
+        if (evt.movementY != 0) {
+          mY = evt.movementY / 20
+        } else mY = evt.movementY;
+*/
+        let movementVector = new BABYLON.Vector3(mX, 0, mZ);
+/*
+        let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
+        movementVector.set(
+          movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
+          0,
+          movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
+        );
+*/
+        this.scene.activeCamera.position.addInPlace(movementVector);
+        this.scene.activeCamera.target.addInPlace(movementVector);
+
+      }
     });
 
     window.addEventListener("resize", () => {
@@ -1293,7 +1327,7 @@ export class BaseApp {
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
-    scene.activeCamera.setPosition(new BABYLON.Vector3(-3, 4, -4));
+    scene.activeCamera.setPosition(new BABYLON.Vector3(-3, 6, -4));
     scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
 
     this.initSkybox();
@@ -1356,21 +1390,22 @@ export class BaseApp {
     });
 
 
-    this.xr.baseExperience.onInitialXRPoseSetObservable.add(()=>{
-    // append the initial position of the camera to the parent node
+    this.xr.baseExperience.onInitialXRPoseSetObservable.add(() => {
+      // append the initial position of the camera to the parent node
       //childForCamera.position.addInPlace(xr.baseExperience.camera.position);
-    this.xr.baseExperience.sessionManager.onXRFrameObservable.add(()=>{
+      this.xr.baseExperience.sessionManager.onXRFrameObservable.add(() => {
 
-      if (this.followMeta) {
-        let pluto = this.followMeta.basePivot;
-        //  sphere.position.y += 0.01
-        let position = new BABYLON.Vector3(0, 0, 0);
-        position.copyFrom(pluto.getAbsolutePosition());
-        position.y += 4;
-        this.xr.baseExperience.camera.position.copyFrom(position);
-      }
+        if (this.followMeta) {
+          let pluto = this.followMeta.basePivot;
+          //  sphere.position.y += 0.01
+          let position = new BABYLON.Vector3(0, 0, 0);
+          position.copyFrom(pluto.getAbsolutePosition());
+          position.y += 4;
+
+          this.xr.baseExperience.camera.position.copyFrom(position);
+        }
+      })
     })
-})
 
 
     return scene;

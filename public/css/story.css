@@ -111,6 +111,7 @@ body {
   pointer-events: none;
   left: 0;
   bottom: 0;
+  width: 10em;
 }
 
 .bottom_options_panel * {
