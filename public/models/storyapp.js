@@ -71,7 +71,7 @@ export class StoryApp extends BaseApp {
 
     this.startCameraAlpha = this.scene.activeCamera.alpha;
     this.scene.onPointerObservable.add((eventData) => {
-      if (this.xr.baseExperience.state !== 3) {
+      if (this.xr.baseExperience.state !== 3) { //inxr is 2
         return
       }
       if (this.attachControl !== false) {
@@ -105,36 +105,33 @@ export class StoryApp extends BaseApp {
         this.scene.activeCamera.target.addInPlace(movementVector);
       }
     });
+
+    this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
+      this.clearFollowMeta();
+    });
   }
 
   cameraOptionSwitch() {
-    this.followMeta = null;
+    this.clearFollowMeta();
     if (this.attachControl !== false) {
       this.scene.activeCamera.detachControl();
       this.attachControl = false;
-      this.camera_switch.innerHTML = 'Switch to rotating';
+      this.camera_switch.innerHTML = 'Rotate';
     } else {
       this.scene.activeCamera.attachControl(this.canvas, true);
       this.attachControl = true;
-      this.camera_switch.innerHTML = 'Switch to panning';
+      this.camera_switch.innerHTML = 'Pan';
     }
   }
   aimCamera(locationMeta) {
-
-
-    if (this.xr.baseExperience.state === 2) {
-      this.xr.baseExperience.camera.setTarget(locationMeta.target);
-      this.xr.baseExperience.camera.postion = locationMeta.position;
-      //    this.xr.baseExperience.camera.alpha = this.startCameraAlpha;
-    } else {
-      this.camera.setTarget(locationMeta.target);
-      this.camera.radius = this.cameraStartRadius;
-      this.camera.alpha = this.cameraStartAlpha;
-      this.camera.beta = this.cameraStartBeta;
-      this.camera.cameraDirection.copyFrom(this.cameraStartDirection);
-
+    this.camera.restoreState();
+    if (locationMeta) {
       this.camera.setPosition(locationMeta.position);
-      //    this.camera.alpha = this.startCameraAlpha;
+      this.camera.setTarget(locationMeta.target);
+    }
+
+    if (this.xr.baseExperience.state === 2) { //inxr = 2
+      this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
     }
   }
   clearFollowMeta() {
@@ -143,7 +140,7 @@ export class StoryApp extends BaseApp {
     this.followMeta = null;
   }
   setFollowMeta() {
-    this.aimCamera(this.cameraMetaX);
+    this.aimCamera();
     this.followMeta = this.lastClickMetaButtonCache;
     if (!this.attachControl) {
       this.scene.activeCamera.attachControl(this.canvas, true);
@@ -155,6 +152,7 @@ export class StoryApp extends BaseApp {
       v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
       v.y += 4;
       this.scene.activeCamera.position.copyFrom(v);
+
     } else {
       //  this.xr.baseExperience.camera.alpha = this.followMeta.basePivot.getAbsolutePosition().y + 4;
       //      this.xr.baseExperience.camera.alpha += 3.14;
@@ -163,6 +161,7 @@ export class StoryApp extends BaseApp {
       v.y += 4;
       this.xr.baseExperience.camera.position.copyFrom(v);
 
+      //this.xr.baseExperience.camera.cameraDirection += 3.14;
     }
     this.buttonOneRed.innerHTML = 'A';
     this.buttonTwo.innerHTML = 'B Stop follow';
@@ -174,12 +173,14 @@ export class StoryApp extends BaseApp {
   yButtonPress() {
     this.clearFollowMeta();
     this.aimCamera(this.cameraMetaY);
+    if (this.xr.baseExperience.state === 2)
+      this.scene.activeCamera.position.y += 10;
   }
   aButtonPress() {
     this.setFollowMeta();
   }
   bButtonPress() {
-    this.followMeta = null;
+    this.clearFollowMeta();
   }
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
@@ -1043,7 +1044,7 @@ export class StoryApp extends BaseApp {
 
     let circle = this.createCircle();
     circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = .1;
+    circle.position.y = 0;
     circle.parent = mesh;
 
     let isOwner = this.uid === this.gameData.createUser;

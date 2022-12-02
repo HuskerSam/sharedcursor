@@ -1247,7 +1247,6 @@ export class BaseApp {
     if (this.engine)
       return;
 
-    this.startCameraAlpha = 0;
     this.cameraMetaX = {
       position: new BABYLON.Vector3(15, 6, 15),
       target: new BABYLON.Vector3(10, 1, 10)
@@ -1256,6 +1255,7 @@ export class BaseApp {
       position: new BABYLON.Vector3(30, 40, 30),
       target: new BABYLON.Vector3(-10, 1, -10)
     };
+
 
     await this.initBabylonEngine(".popup-canvas", true);
     if (this.loadStaticScene)
@@ -1327,13 +1327,10 @@ export class BaseApp {
     this.camera = scene.activeCamera;
     scene.activeCamera.setPosition(this.cameraMetaX.position);
     scene.activeCamera.setTarget(this.cameraMetaX.target);
-    this.startCameraAlpha = scene.activeCamera.alpha;
     scene.activeCamera.panningSensibility = 300;
 
-    this.cameraStartAlpha = scene.activeCamera.alpha;
-    this.cameraStartBeta = scene.activeCamera.beta;
-    this.cameraStartRadius = scene.activeCamera.radius;
-    this.cameraStartDirection = new BABYLON.Vector3().copyFrom(scene.activeCamera.cameraDirection);
+
+    scene.activeCamera.storeState();
 
     this.initSkybox();
 
@@ -1393,7 +1390,6 @@ export class BaseApp {
           });
       });
     });
-
 
     this.xr.baseExperience.onInitialXRPoseSetObservable.add(() => {
       // append the initial position of the camera to the parent node
