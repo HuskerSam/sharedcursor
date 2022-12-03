@@ -4,8 +4,11 @@ export class GamesApp extends BaseApp {
   constructor() {
     super();
 
-    this.create_new_game_btn = document.querySelector('.create_new_game_btn');
-    this.create_new_game_btn.addEventListener('click', e => this.createNewGame());
+    this.create_new_match_btn = document.querySelector('.create_new_match_btn');
+    this.create_new_match_btn.addEventListener('click', e => this.createNewGame('match'));
+
+    this.create_new_solar_btn = document.querySelector('.create_new_solar_btn');
+    this.create_new_solar_btn.addEventListener('click', e => this.createNewGame('story'));
 
     this.game_history_view = document.querySelector('.game_history_view');
     this.public_game_view = document.querySelector('.public_game_view');
@@ -19,9 +22,6 @@ export class GamesApp extends BaseApp {
         this.joinGame();
     });
 
-    this.gametype_select = document.querySelector('.gametype_select');
-    this.gametype_select.addEventListener('input', e => this.updateNewGameType());
-
     let gameId = this.urlParams.get('game');
     if (gameId) {
       let terminatePage = this._handlePassedInGameID(gameId);
@@ -34,8 +34,6 @@ export class GamesApp extends BaseApp {
     this.new_game_type_wrappers.forEach(btn => btn.addEventListener('click', e => this.handleGameTypeClick(btn)));
 
     this.basic_options = document.querySelector('.basic_options');
-
-    this.updateNewGameType();
 
     this.initRTDBPresence();
 
@@ -56,12 +54,6 @@ export class GamesApp extends BaseApp {
       this.tab_panes[i].classList.add('show');
       btn.classList.add('active');
     }
-  }
-  handleGameTypeClick(btn) {
-    this.new_game_type_wrappers.forEach(b => b.classList.remove('selected'));
-    this.gametype_select.value = btn.value;
-    this.updateNewGameType();
-    btn.classList.add('selected');
   }
   toggleTabView() {
     if (document.body.classList.contains('show_games_view')) {
@@ -90,22 +82,6 @@ export class GamesApp extends BaseApp {
     return false;
   }
 
-  updateNewGameType() {
-    document.body.classList.remove('newgametype_guess');
-    document.body.classList.remove('newgametype_match');
-    document.body.classList.remove('newgametype_story');
-
-    let gameType = this.gametype_select.value;
-    document.body.classList.add('newgametype_' + gameType);
-
-    this.basic_options.classList.remove('gametype_guess');
-    this.basic_options.classList.remove('gametype_match');
-    this.basic_options.classList.remove('gametype_story');
-    this.basic_options.classList.add('gametype_' + gameType);
-
-    let gameMeta = this.gameTypeMetaData()[gameType];
-    this.create_new_game_btn.innerHTML = "Create " + gameMeta.name;
-  }
   async _handlePassedInGameID(gameId) {
     let gameQuery = await firebase.firestore().doc(`Games/${gameId}`).get();
     let gameData = gameQuery.data();
@@ -356,14 +332,13 @@ export class GamesApp extends BaseApp {
     a.click();
     document.body.removeChild(a);
   }
-  async createNewGame() {
+  async createNewGame(gameType) {
     if (!this.profile)
       return;
 
     this.create_new_game_btn.setAttribute('disabled', true);
     this.create_new_game_btn.innerHTML = 'Creating...';
 
-    let gameType = document.querySelector('.gametype_select').value;
     let visibility = document.querySelector('.visibility_select').value;
     let numberOfSeats = Number(document.querySelector('.seat_count_select').value);
     let messageLevel = document.querySelector('.message_level_select').value;

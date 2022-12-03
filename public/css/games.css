@@ -90,10 +90,6 @@ button.logout_game {
   clear: both;
 }
 
-button.create_new_game_btn {
-  font-size: 32px;
-}
-
 .gamefeed_item_header {
   display: flex;
   flex-direction: row;
@@ -124,7 +120,6 @@ button.create_new_game_btn {
 .newgametype_match .match_additional_options {
   display: block;
 }
-
 
 .story_additional_options {
   display: none;
@@ -168,9 +163,7 @@ a.game_number_open {
   text-align: center;
 }
 
-.gamefeed_members_list, .gamefeed_owners_panel {
-
-}
+.gamefeed_members_list, .gamefeed_owners_panel {}
 
 .gamefeed_owners_panel {
   line-height: 90px;
@@ -299,30 +292,6 @@ button.round_wrapper {
   background: rgba(127, 127, 127, .5);
 }
 
-button.new_game_type_wrapper {
-  margin: 4px;
-  background: none;
-  color: inherit;
-}
-
-.new_game_type_image {
-  height: 50px;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-  width: 100%;
-}
-
-.new_game_type_name {
-  width: 100%;
-  text-align: center;
-}
-
-button.new_game_type_wrapper.selected {
-  border-color: rgb(0, 255, 0);
-  background: rgba(0, 255, 0, .5);
-}
-
 button.code_link {
   border-color: transparent;
 }
@@ -415,4 +384,28 @@ button.code_link {
 
 .form-label {
   display: block;
+}
+
+.left_block {
+  text-align: left;
+  clear: both;
+  margin: 4px;
+}
+
+.left_block img {
+  height: 150px;
+  margin: 4px;
+  float: left;
+}
+
+.right_block {
+  text-align: right;
+  clear: both;
+  margin: 4px;
+}
+
+.right_block img {
+  height: 150px;
+  margin: 4px;
+  float: right;
 }
