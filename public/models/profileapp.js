@@ -104,7 +104,6 @@ export class ProfileApp extends BaseApp {
 
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
 
-    this.initGraphics();
     this.create_login_code_button = document.querySelector('.create_login_code_button');
     this.create_login_code_button.addEventListener('click', e => this.createLoginCode());
 
@@ -177,18 +176,17 @@ export class ProfileApp extends BaseApp {
 
     let prefix = this.profile_display_avatar_preset.value;
     this.modal.show();
-    let avatarMesh = await this.loadAvatarMesh(`/avatars/${prefix}.glb`, "", 2, 0, 0, -4);
+    let avatarMesh = await this.loadAvatarMesh(`/avatars/${prefix}.glb`, "", 2, 0, 0, -4, true);
     this.engine.resize();
 
     this.currentLoadedAvatar = new BABYLON.TransformNode("avatarwrapper", this.scene);
     avatarMesh.parent = this.currentLoadedAvatar;
     this.currentLoadedAvatar.rotation.y -= 2;
     this.runRender = true;
-    avatarMesh.modelAnimationGroup.play();
+    if (avatarMesh.modelAnimationGroup)
+      avatarMesh.modelAnimationGroup.play();
     this.scene.activeCamera.setPosition(new BABYLON.Vector3(7, 4, 3.2));
-  }
-  testPerformanceFlags(flag) {
-    return super.testPerformanceFlags(flag);
+    this.scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
   }
   async load() {
     await GameCards.loadDecks();
@@ -295,6 +293,8 @@ export class ProfileApp extends BaseApp {
         this.profile.muteState = true;
         this.audio_mode_select.selectedIndex = 1;
       }
+
+      this.initGraphics();
 
       this.updateMatchedCards();
     }

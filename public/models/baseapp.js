@@ -1464,8 +1464,8 @@ export class BaseApp {
   }
   pointerUp() {}
   pointerDown() {}
-  async loadAvatarMesh(path, file, scale, x, y, z) {
-    if (!this.animationResult && this.hugeAssets) {
+  async loadAvatarMesh(path, file, scale, x, y, z, noLoadWalk = false) {
+    if (!this.animationResult && this.hugeAssets && !noLoadWalk) {
       let bonesPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent("/solar/avatar-walk.glb") + '?alt=media';
 
       this.animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, bonesPath, null, this.scene);
