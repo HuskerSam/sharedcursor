@@ -16,7 +16,7 @@
     "ry": -1,
     "parent": "e1_luna",
     "optionalLoad": true,
-    "optionalFlags": "optional_mascots"
+    "optionalFlags": "mascots"
   },
   {
     "id": "probe_radiodish",
@@ -40,7 +40,7 @@
     "orbitTime": 10500,
     "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "optional_mascots"
+    "optionalFlags": "mascots"
   },
   {
     "id": "moon_lander",
@@ -64,7 +64,7 @@
     "orbitTime": 10000,
     "parent": "ceres",
     "optionalLoad": true,
-    "optionalFlags": "optional_mascots",
+    "optionalFlags": "mascots",
     "noOrbit": true
   },
   {
@@ -90,7 +90,7 @@
     "orbitTime": 10000,
     "parent": "eris",
     "optionalLoad": true,
-    "optionalFlags": "optional_mascots",
+    "optionalFlags": "mascots",
     "noOrbit": true
   },
   {
@@ -115,7 +115,7 @@
     "orbitTime": 30000,
     "noOrbit": true,
     "optionalLoad": true,
-    "optionalFlags": "optional_probes",
+    "optionalFlags": "probes",
     "parent": "moon_io"
   },
   {
@@ -140,7 +140,7 @@
     "orbitTime": 30000,
     "noOrbit": true,
     "optionalLoad": true,
-    "optionalFlags": "optional_probes",
+    "optionalFlags": "probes",
     "parent": "s22_titan"
   },
   {
@@ -166,7 +166,7 @@
     "noOrbit": true,
     "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "optional_mars"
+    "optionalFlags": "mars"
   },
   {
     "id": "rover_curiosity",
@@ -191,7 +191,7 @@
     "noOrbit": true,
     "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "optional_mars"
+    "optionalFlags": "mars"
   },
   {
     "id": "rocket_atlasv",
@@ -219,7 +219,7 @@
     "py": -1,
     "pz": 0,
     "optionalLoad": true,
-    "optionalFlags": "optional_rockets"
+    "optionalFlags": "rockets"
   },
   {
     "id": "probe_tgo",
@@ -243,7 +243,7 @@
     "orbitTime": 30000,
     "noOrbit": true,
    "optionalLoad": true,
-    "optionalFlags": "optional_mars",
+    "optionalFlags": "mars",
     "parent": "mars"
   },
   {
@@ -272,7 +272,7 @@
     "py": -2,
     "pz": 0,
     "optionalLoad": true,
-    "optionalFlags": "optional_rockets"
+    "optionalFlags": "rockets"
   },
   {
     "id": "probe_voyager",
@@ -296,7 +296,7 @@
     "orbitTime": 30000,
     "noOrbit": true,
     "optionalLoad": true,
-    "optionalFlags": "optional_mars",
+    "optionalFlags": "mars",
     "parent": "mars"
   },
   {
@@ -322,7 +322,7 @@
     "orbitTime": 30000,
     "noOrbit": true,
     "optionalLoad": true,
-    "optionalFlags": "optional_probes",
+    "optionalFlags": "probes",
     "parent": "sun"
   },
   {
@@ -348,7 +348,7 @@
     "orbitTime": 30000,
     "noOrbit": true,
     "optionalLoad": true,
-    "optionalFlags": "optional_probes",
+    "optionalFlags": "probes",
     "parent": "arrokoth"
   }
 ]

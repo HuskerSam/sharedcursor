@@ -370,11 +370,6 @@ export class GamesApp extends BaseApp {
     let seatsPerUser = document.querySelector('.seats_per_user_select').value;
     let cardDeck = document.querySelector('.card_deck_select').value;
     let scoringSystem = document.querySelector('.scoring_system_select').value;
-    let asteroid_status = document.querySelector('.asteroid_status').value;
-    let skybox_status = document.querySelector('.skybox_status').value;
-    let skyboxrotation_status = document.querySelector('.skyboxrotation_status').value;
-    let hugemodel_status = document.querySelector('.hugemodel_status').value;
-    let extras_status = document.querySelector('.extras_status').value;
 
     let body = {
       gameType,
@@ -385,11 +380,6 @@ export class GamesApp extends BaseApp {
       cardDeck,
       scoringSystem,
       performanceFlags: [
-        asteroid_status,
-        skybox_status,
-        skyboxrotation_status,
-        hugemodel_status,
-        extras_status
       ]
     };
 

@@ -57,6 +57,66 @@ export class StoryApp extends BaseApp {
     this.camera_switch = document.querySelector('.camera_switch');
     this.camera_switch.addEventListener('click', e => this.cameraOptionSwitch());
 
+    this.profile_webglLevel = document.querySelector('.profile_webglLevel');
+    this.profile_webglLevel.addEventListener('input', async e => {
+      let updatePacket = {
+        webGLLevel: this.profile_webglLevel.value
+      };
+      if (this.fireToken)
+        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+      alert('reload needed to see changes');
+    });
+
+    this.profile_skybox_status = document.querySelector('.profile_skybox_status');
+    this.profile_skybox_status.addEventListener('input', async e => {
+      let updatePacket = {
+        skyboxPath: this.profile_skybox_status.value
+      };
+      if (this.fireToken)
+        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+      this.profile.skyboxPath = updatePacket.skyboxPath;
+      this.initSkybox();
+    });
+
+    this.profile_skyboxrotation = document.querySelector('.profile_skyboxrotation');
+    this.profile_skyboxrotation.addEventListener('input', async e => {
+      let updatePacket = {
+        skyboxRotation: this.profile_skyboxrotation.value
+      };
+      if (this.fireToken)
+        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+      this.profile.skyboxRotation = updatePacket.skyboxRotation;
+      this.initSkybox();
+    });
+
+    this.profile_asteroid_count = document.querySelector('.profile_asteroid_count');
+    this.profile_asteroid_count.addEventListener('input', async e => {
+      let updatePacket = {
+        asteroidCount: this.profile_asteroid_count.value
+      };
+      if (this.fireToken)
+        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+      this.profile.asteroidCount = updatePacket.asteroidCount;
+
+      alert('reload needed to see changes');
+    });
+
+    this.optional_extras = document.querySelector('.optional_extras');
+    this.optional_extras.addEventListener('input', async e => {
+      let updatePacket = {
+        optionalExtras: this.optional_extras.value
+      };
+      if (this.fireToken)
+        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+      this.profile.optionalExtras = updatePacket.optionalExtras;
+
+      alert('reload needed to see changes');
+    });
   }
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
@@ -110,7 +170,6 @@ export class StoryApp extends BaseApp {
       this.clearFollowMeta();
     });
   }
-
   cameraOptionSwitch() {
     this.clearFollowMeta();
     if (this.attachControl !== false) {
@@ -193,8 +252,13 @@ export class StoryApp extends BaseApp {
     this.loading_dynamic_area.scrollIntoView(false);
   }
   async loadStaticScene() {
-    this.hugeAssets = this.testPerformanceFlags('hugemodel_all');
-    this.smallAssets = this.testPerformanceFlags('hugemodel_small');
+    if (this.profile.webGLLevel === "3") {
+      this.hugeAssets = true;
+    } else if (this.profile.webGLLevel === "2") {
+      this.normalAssets = true;
+    } else {
+      this.smallAssets = true;
+    }
 
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
@@ -267,7 +331,6 @@ export class StoryApp extends BaseApp {
 
     this.initCameraToolbar();
   }
-
   async loadAsteroids() {
     let asteroids = this.getAsteroids();
 
@@ -275,15 +338,8 @@ export class StoryApp extends BaseApp {
     let max = asteroids.length;
 
     let count = 20;
-    this.gameData.performanceFlags.forEach(flag => {
-      if (flag.indexOf('asteroids_') !== -1) {
-        let ct = flag.replace('asteroids_', '');
-        if (ct === 'all')
-          count = asteroids.length;
-        else
-          count = Number(ct);
-      }
-    });
+    if (this.profile.asteroidCount)
+      count = Number(this.profile.asteroidCount);
 
     this.addLineToLoading(`Asteroids - ${count} from ${max} available`);
 
@@ -454,7 +510,7 @@ export class StoryApp extends BaseApp {
   async loadStaticAsset(name, parent) {
     let meta = Object.assign({}, this.allCards[name]);
 
-    if (meta.optionalLoad && !this.testPerformanceFlags(meta.optionalFlags))
+    if (meta.optionalLoad && this.profile.optionalExtras !== meta.optionalFlags)
       return;
 
     meta.extended = this.processStaticAssetMeta(meta);
@@ -670,6 +726,8 @@ export class StoryApp extends BaseApp {
     };
   }
   async loadAvatars() {
+    if (!this.crowd)
+      return;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
         let data = this.getSeatData(seatIndex);
@@ -839,6 +897,21 @@ export class StoryApp extends BaseApp {
 
     this.currentGame = null;
     this.initRTDBPresence();
+
+    if (this.profile.webGLLevel)
+      this.profile_webglLevel.value = this.profile.webGLLevel;
+
+    if (this.profile.skyboxPath)
+      this.profile_skybox_status.value = this.profile.skyboxPath;
+
+    if (this.profile.skyboxRotation)
+      this.profile_skyboxrotation.value = this.profile.skyboxRotation;
+
+    if (this.profile.asteroidCount)
+      this.profile_asteroid_count.value = this.profile.asteroidCount;
+
+    if (this.profile.optionalExtras)
+      this.optional_extras.value = this.profile.optionalExtras;
 
     let gameId = this.urlParams.get('game');
     if (gameId) {
@@ -1018,7 +1091,7 @@ export class StoryApp extends BaseApp {
     if (this.smallAssets) {
       return this.renderSmallSeatAvatar(wrapper, avatarWrapper, index);
     }
-    return await this.renederNormalSeatAvatar(wrapper, avatarWrapper, index);
+    return await this.renderNormalSeatAvatar(wrapper, avatarWrapper, index);
   }
   async renderSmallSeatAvatar(wrapper, avatarWrapper, index) {
     let seatData = this.getSeatData(index);

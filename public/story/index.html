@@ -39,7 +39,6 @@
   <link rel="stylesheet" href="/css/gamecards.css" />
   <link rel="stylesheet" href="/css/story.css" />
 
-  <!--script src="https://unpkg.com/earcut@2.1.1/dist/earcut.min.js"></script-->
   <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
   <script src="https://cdn.babylonjs.com/recast.js"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
@@ -98,7 +97,6 @@
 
     <button class="camera_switch btn btn-secondary">Pan</button>
   </div>
-
   <div class="modal fade" id="canvasDisplayModal" tabindex="-1" role="dialog" aria-labelledby="canvasDisplayModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content app_panel">
@@ -112,7 +110,6 @@
             &nbsp;
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
           </div>
-
           <div class="tab-content game_options_panel_wrapper">
             <div class="tab-pane fade show active" role="tabpanel">
               <div class="address_bar">
@@ -173,53 +170,107 @@
               <div class="members_list"></div>
               <div class="messages_list"></div>
             </div>
-            <div class="tab-pane fade basic_options" role="tabpanel">
-              <div class="gameid_span"></div>
+            <div class="tab-pane fade" role="tabpanel">
+              <div class="basic_options">
+                <div class="gameid_span"></div>
+                <div>
+                  <button class="show_loading_screen btn btn-primary">Show Loading Screen</button>
+                </div>
+                <div class="options_edit_block">
+                  <label class="form-label">Visibility</label>
+                  <select class="visibility_select form-select form-select-lg">
+                    <option selected>public</option>
+                    <option>private</option>
+                  </select>
+                  <div class="visibility_display"></div>
+                </div>
+                <div class="options_edit_block">
+                  <label class="form-label">Seats</label>
+                  <select class="seat_count_select form-select form-select-lg">
+                    <option value="1">1 seat</option>
+                    <option selected value="2">2 seats</option>
+                    <option value="3">3 seats</option>
+                    <option value="4">4 seats</option>
+                  </select>
+                  <div class="seat_count_display"></div>
+                </div>
+                <div class="options_edit_block">
+                  <label class="form-label">Messaging</label>
+                  <select class="message_level_select form-select form-select-lg">
+                    <option value="seated">Seated</option>
+                    <option value="all">All</option>
+                  </select>
+                  <div class="message_level_display"></div>
+                </div>
+                <div class="options_edit_block">
+                  <label class="form-label">Seat Limit</label>
+                  <select class="seats_per_user_select form-select form-select-lg">
+                    <option value="one">One</option>
+                    <option value="none">None</option>
+                  </select>
+                  <div class="seats_per_user_display"></div>
+                </div>
+              </div>
               <div>
-                <button class="show_loading_screen btn btn-primary">Show Loading Screen</button>
-              </div>
-              <div class="options_edit_block">
-                <label class="form-label">Visibility</label>
-                <select class="visibility_select form-select form-select-lg">
-                  <option selected>public</option>
-                  <option>private</option>
-                </select>
-                <div class="visibility_display"></div>
-              </div>
-              <div class="options_edit_block">
-                <label class="form-label">Seats</label>
-                <select class="seat_count_select form-select form-select-lg">
-                  <option value="1">1 seat</option>
-                  <option selected value="2">2 seats</option>
-                  <option value="3">3 seats</option>
-                  <option value="4">4 seats</option>
-                </select>
-                <div class="seat_count_display"></div>
-              </div>
-              <div class="options_edit_block">
-                <label class="form-label">Messaging</label>
-                <select class="message_level_select form-select form-select-lg">
-                  <option value="seated">Seated</option>
-                  <option value="all">All</option>
-                </select>
-                <div class="message_level_display"></div>
-              </div>
-              <div class="options_edit_block">
-                <label class="form-label">Seat Limit</label>
-                <select class="seats_per_user_select form-select form-select-lg">
-                  <option value="one">One</option>
-                  <option value="none">None</option>
-                </select>
-                <div class="seats_per_user_display"></div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Asset Size</label>
+                  <select class="profile_webglLevel form-select form-select-lg">
+                    <option value="1">Small</option>
+                    <option value="2">Normal</option>
+                    <option value="3">Large</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Skybox</label>
+                  <select class="profile_skybox_status form-select ">
+                    <option value="nebula_orange_blue">nebula_orange_blue</option>
+                    <option value="moon_high_clear">moon_high_clear</option>
+                    <option value="moonless_2">moonless_2</option>
+                    <option value="nebula_black">nebula_black</option>
+                    <option value="nebula_blue_red">nebula_blue_red</option>
+                    <option value="nebula_cold">nebula_cold</option>
+                    <option value="nebula_glow">nebula_glow</option>
+                    <option value="nebula_green">nebula_green</option>
+                    <option value="nebula_red">nebula_red</option>
+                    <option value="neon_starless">neon_starless</option>
+                    <option value="vortex_starless">vortex_starless</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Skybox Rotation</label>
+                  <select class="profile_skyboxrotation form-select ">
+                    <option value="3000">Normal</option>
+                    <option value="30000">Slow</option>
+                    <option value="">None</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Asteroids</label>
+                  <select class="profile_asteroid_count form-select ">
+                    <option value="">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="all">all</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Extras</label>
+                  <select class="optional_extras form-select ">
+                    <option value="">None</option>
+                    <option value="mascots">Mascots</option>
+                    <option value="probes">Probes</option>
+                    <option value="mars">Mars</option>
+                    <option value="rockets">Rockets</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
-
   <canvas class="popup-canvas" touch-action="none"></canvas>
   <div style="position:absolute;top:0;right:0;z-index:100" class="app_panel">
     <div class="container static_menu" style="display:inline-flex;width:300px;padding:0;flex-direction:row">
@@ -311,6 +362,8 @@
         <a class="send_message_list_button" style="padding:16px;"><i class="material-icons" style="font-size:44px">send</i></a>
       </div>
     </div>
+
+
 
     <div id="chat_snackbar"></div>
   </div>

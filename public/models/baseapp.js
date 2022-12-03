@@ -1261,35 +1261,6 @@ export class BaseApp {
     if (this.loadStaticScene)
       await this.loadStaticScene();
   }
-  testPerformanceFlags(flag) {
-    if (!this.gameData)
-      return false;
-
-    if (!this.gameData.performanceFlags)
-      return false;
-
-    if (this.gameData.performanceFlags.indexOf(flag) !== -1)
-      return true;
-
-    return false;
-  }
-  searchPerformanceFlags(start, prefix) {
-    let max = start;
-
-    if (!this.gameData)
-      return max;
-
-    if (!this.gameData.performanceFlags)
-      return max;
-
-
-    this.gameData.performanceFlags.forEach(flag => {
-      if (flag.indexOf(prefix) !== -1) {
-        max = flag.replace(prefix, '');
-      }
-    });
-    return max;
-  }
   async createScene() {
     let scene = new BABYLON.Scene(this.engine);
 
@@ -1436,11 +1407,15 @@ export class BaseApp {
   aButtonPress() {}
   bButtonPress() {}
   initSkybox() {
+    if (this.skyBox)
+      this.skyBox.dispose();
     let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
     this.skyBox = skybox;
     skybox.isPickable = false;
 
-    let skyboxname = this.searchPerformanceFlags('nebula_orange_blue', 'skybox_');
+    let skyboxname = 'nebula_orange_blue';
+    if (this.profile.skyboxPath)
+      skyboxname = this.profile.skyboxPath;
 
     let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
     let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
@@ -1453,12 +1428,12 @@ export class BaseApp {
     skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;
 
-    if (this.testPerformanceFlags('skyboxrotation_none'))
+    if (!this.profile.skyboxRotation)
       return;
 
-    let endFrame = 3000 * 30;
-    if (this.testPerformanceFlags('skyboxrotation_slow'))
-      endFrame *= 10;
+    let rotationTime = Number(this.profile.skyboxRotation);
+    console.log(this.profile.skyboxRotation);
+    let endFrame = rotationTime * 30;
 
     let orbitAnimation = new BABYLON.Animation(
       "staticorbitmeshrotation" + name,
