@@ -19,6 +19,63 @@
     "optionalFlags": "mascots"
   },
   {
+    "id": "mascot_ceres",
+    "name": "Sooner Martain",
+    "objectType": "mascot",
+    "description": "Herbie Husker v3.",
+    "image": "/match/deckmedia/phobos.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/mascots/ceresalien.glb",
+    "glbscale": 1.5,
+    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "color": "rgb(255, 0, 0)",
+    "x": 3,
+    "y": -4,
+    "z": 3,
+    "ry": -1,
+    "parent": "sun",
+    "optionalLoad": true,
+    "optionalFlags": "mascots"
+  },
+  {
+    "id": "mascot_io",
+    "name": "Dino Hawkeye",
+    "objectType": "mascot",
+    "description": "Herbie Husker v3.",
+    "image": "/match/deckmedia/phobos.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/mascots/dino_hawkeye.glb",
+    "glbscale": 0.01,
+    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "color": "rgb(255, 0, 0)",
+    "x": -3,
+    "y": -5,
+    "z": 3,
+    "ry": -1,
+    "parent": "sun",
+    "optionalLoad": true,
+    "optionalFlags": "mascots"
+  },
+  {
+    "id": "mascot_apollo",
+    "name": "Apollo 11 suit",
+    "objectType": "mascot",
+    "description": "Herbie Husker v3.",
+    "image": "/match/deckmedia/phobos.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/mascots/apollosuit.glb",
+    "glbscale": 1,
+    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "color": "rgb(255, 0, 0)",
+    "x": -3,
+    "y": -5,
+    "z": -3,
+    "ry": -1,
+    "parent": "sun",
+    "optionalLoad": true,
+    "optionalFlags": "mascots"
+  },
+  {
     "id": "probe_radiodish",
     "name": "Radio Dish",
     "objectType": "mascot",
@@ -54,7 +111,7 @@
     "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
     "color": "rgb(255, 127, 255)",
     "x": 0.5,
-    "y": 0,
+    "y": -4,
     "z": -0.9,
     "ry": 1.2,
     "rz": -1.57,
@@ -62,10 +119,9 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 10000,
-    "parent": "ceres",
+    "parent": "sun",
     "optionalLoad": true,
-    "optionalFlags": "mascots",
-    "noOrbit": true
+    "optionalFlags": "mascots"
   },
   {
     "id": "moon_buggy",
@@ -88,10 +144,9 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 10000,
-    "parent": "eris",
+    "parent": "sun",
     "optionalLoad": true,
-    "optionalFlags": "mascots",
-    "noOrbit": true
+    "optionalFlags": "mascots"
   },
   {
     "id": "mascot_juno",
@@ -113,7 +168,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "optionalLoad": true,
     "optionalFlags": "probes",
     "parent": "moon_io"
@@ -138,7 +192,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "optionalLoad": true,
     "optionalFlags": "probes",
     "parent": "s22_titan"
@@ -163,7 +216,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "parent": "mars",
     "optionalLoad": true,
     "optionalFlags": "mars"
@@ -188,7 +240,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "parent": "mars",
     "optionalLoad": true,
     "optionalFlags": "mars"
@@ -241,8 +292,7 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
-   "optionalLoad": true,
+    "optionalLoad": true,
     "optionalFlags": "mars",
     "parent": "mars"
   },
@@ -294,7 +344,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "optionalLoad": true,
     "optionalFlags": "mars",
     "parent": "mars"
@@ -320,7 +369,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "optionalLoad": true,
     "optionalFlags": "probes",
     "parent": "sun"
@@ -346,7 +394,6 @@
     "diameter": 0.75,
     "noNavMesh": true,
     "orbitTime": 30000,
-    "noOrbit": true,
     "optionalLoad": true,
     "optionalFlags": "probes",
     "parent": "arrokoth"
