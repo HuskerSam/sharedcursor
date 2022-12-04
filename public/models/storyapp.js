@@ -1870,6 +1870,35 @@ export class StoryApp extends BaseApp {
 
     this.scoreboardInited = true;
 
-    
+    let scoreboardWrapper = new BABYLON.TransformNode('scoreboardwrapper', this.scene);
+    scoreboardWrapper.position.y = 1;
+
+    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelX', {
+      height: 2,
+      width: 4
+    }, this.scene);
+
+    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelZ', {
+      height: 2,
+      width: 4
+    }, this.scene);
+    nameMesh2.rotation.y = Math.PI;
+
+    this.scoreboardNameMaterial = new BABYLON.StandardMaterial('showmatasteroid', this.scene);
+    nameMesh1.material = this.scoreboardNameMaterial;
+    nameMesh1.parent = scoreboardWrapper;
+    nameMesh2.material = this.scoreboardNameMaterial;
+    nameMesh2.parent = scoreboardWrapper;
+
+
+    let nameTexture = Utility3D.__texture2DText(this.scene, "Scoreboard Status", "red", "rgb(200, 200, 240)", 50);
+    nameTexture.vScale = 1;
+    nameTexture.uScale = 1;
+    nameTexture.hasAlpha = true;
+    this.scoreboardNameMaterial.diffuseTexture = nameTexture;
+    this.scoreboardNameMaterial.ambientTexture = nameTexture;
+    this.scoreboardNameMaterial.emissiveTexture = nameTexture;
+
+    return scoreboardWrapper;
   }
 }
