@@ -266,7 +266,7 @@
     "y": 0,
     "z": 0,
     "orbitRadius": 50,
-    "startRatio": 0,
+    "startRatio": 0.6,
     "orbitTime": 50000
   },
   {

@@ -1023,6 +1023,8 @@ export class StoryApp extends BaseApp {
     this.runRender = true;
     document.body.classList.add('avatars_loaded');
     this.__updateSelectedSeatMesh();
+
+    this.updateScoreboard();
   }
   __updateSelectedSeatMesh() {
     let seatIndex = this.gameData.currentSeat;
@@ -1856,5 +1858,18 @@ export class StoryApp extends BaseApp {
     ];
 
     return fullList;
+  }
+
+  updateScoreboard() {
+    this.initScoreboard();
+
+  }
+  initScoreboard() {
+    if (this.scoreboardInited)
+      return;
+
+    this.scoreboardInited = true;
+
+    
   }
 }

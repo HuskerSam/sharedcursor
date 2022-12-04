@@ -437,3 +437,7 @@ button.code_link {
 .left_block .sub_text .author {
   text-align: left;
 }
+
+.night_mode input.game_code_start {
+  color: white;
+}
