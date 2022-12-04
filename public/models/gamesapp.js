@@ -5,10 +5,10 @@ export class GamesApp extends BaseApp {
     super();
 
     this.create_new_match_btn = document.querySelector('.create_new_match_btn');
-    this.create_new_match_btn.addEventListener('click', e => this.createNewGame('match'));
+    this.create_new_match_btn.addEventListener('click', e => this.createNewGame('match', this.create_new_match_btn));
 
     this.create_new_solar_btn = document.querySelector('.create_new_solar_btn');
-    this.create_new_solar_btn.addEventListener('click', e => this.createNewGame('story'));
+    this.create_new_solar_btn.addEventListener('click', e => this.createNewGame('story', this.create_new_solar_btn));
 
     this.game_history_view = document.querySelector('.game_history_view');
     this.public_game_view = document.querySelector('.public_game_view');
@@ -332,12 +332,12 @@ export class GamesApp extends BaseApp {
     a.click();
     document.body.removeChild(a);
   }
-  async createNewGame(gameType) {
+  async createNewGame(gameType, btn) {
     if (!this.profile)
       return;
 
-    this.create_new_game_btn.setAttribute('disabled', true);
-    this.create_new_game_btn.innerHTML = 'Creating...';
+    btn.setAttribute('disabled', true);
+    btn.innerHTML = 'Creating...';
 
     let visibility = document.querySelector('.visibility_select').value;
     let numberOfSeats = Number(document.querySelector('.seat_count_select').value);

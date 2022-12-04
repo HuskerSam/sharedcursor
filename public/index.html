@@ -48,9 +48,9 @@
 
   <script>
     window.addEventListener('load', async (event) => {
-      let module = await import('/models/gamesapp.js');
+      let module = await import('/models/baseapp.js');
 
-      window.GamesApp = new module.GamesApp();
+      window.BaseApp = new module.BaseApp();
     });
   </script>
 </head>
@@ -84,9 +84,6 @@
             <i class="material-icons mode_day">light_mode</i>
             <i class="material-icons mode_night smallerby4">mode_night</i>
           </a>
-          <a class="mute_button">
-            <i class="material-icons">volume_up</i>
-          </a>
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -103,195 +100,127 @@
         </div>
       </div>
     </nav>
-
-    <div class="signed_in_options" style="text-align:left;padding-left:16px;padding-bottom: 8px;">
-      <div class="btn-group tab_buttons" role="group">
-        <button class="btn btn-primary active" value="new">New</button>
-        <button class="btn btn-primary" value="recent">Current</button>
-        <button class="btn btn-primary" value="find">Join</button>
-      </div>
-    </div>
-
-    <div class="tab-content signed_in_flex body_wrapper" id="nav-tabContent">
-      <div class="tab-pane fade row new_game_view active show" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-        <div style="line-height:4em;">
-          <button class="create_new_solar_btn btn btn-primary">Play Moon Fights</button>
-          &nbsp;
-          <button class="create_new_match_btn btn btn-primary">Match Moon Cards</button>
-        </div>
-        <div style="text-align:center">
-          <div style="max-width: 800px;display:inline-block;">
-            <h1>The Solarverse</h1>
-
-            <div class="left_block">
-              <img src="/images/protoplanetdisc.png">
-              Stars emit a sphere of matter that quickly morphs into a disc shape. When planets are freshly accreted the minerals are spread evenly thru the crust.
-              Planets without recent moons tidally lock (i.e. Mercury) with the Sun - resulting in hot and cold sides of the planet. ?The inner planets retain almost no light elements.?
-            </div>
-
-            <div class="right_block">
-              <h2>It's a special time of the <a href="https://en.wikipedia.org/wiki/Galactic_year" target="_blank">galactic year</a>!</h2>
-              <img src="/images/milkyway.svg">
-              Galatic years last about 225 million Earth years - considering the ellipitical orbit of the Sun around the Milky Way
-              Earth is in the same position as when Permian–Triassic extinction event hit 200 million years ago killing 57% of biological life,
-              the cause being carbon dioxide emissions - Earth must once again prepare for new moons. This means ramping up rocket fuel production
-              and advancing AI to track space objects.
-              <br>
-              Once a galactic year the Copinerican System (our solar system) passes closest to the Milky Way black hole.
-              This it the best time to drop off moons and pick up new ones.
-            </div>
-
-            <div class="left_block">
-              <h2><a href="https://en.wikipedia.org/wiki/Van_Allen_radiation_belt" target="_blank">Force fields</a> and <a href="https://en.wikipedia.org/wiki/Volcanism" target="_blank">volcanos</a> required.</h2>
-              <img src="/images/vanallen3rdring.webp">
-              Once a solar system body begins orbiting a planet the tidal lock is broken. A magnetosphere forms providing protection from solar winds and
-              helping the planet retain small elements. The moons orbit causes the planet to contort and remix it's elements
-              - creating veins - and concentrations of the heaviest metals at the core.
-            </div>
-
-            <div class="right_block">
-              <h2>The <a href="https://en.wikipedia.org/wiki/Orbit_of_the_Moon" target="_blank">orbiting moon</a> manages the <a href="https://en.wikipedia.org/wiki/North_magnetic_pole">magnetic north pole</a>.</h2>
-              <img src="/images/moonorbit.jpg">
-              <img src="/images/northpolepositions.svg">
-              The moon provides days and nights, tides and daily planet contortion.
-            </div>
-
-            <div class="left_block">
-              <h2><a href="https://en.wikipedia.org/wiki/Abiogenic_petroleum_origin" target="_blank">Abiogenic petroleum</a> fuels life.</h2>
-              <img src="/images/ammonia.webp">
-              The heat generating core enables the planet to produce abiogenic petroleum -> fueling ammonia production and extremophiles. The more
-              hydrocarbons the core can generate, the more life it can support.
-            </div>
-
-            <div class="right_block">
-              <h2>
-                <a href="https://en.wikipedia.org/wiki/Natural_nuclear_fission_reactor" target="_blank">Natural reactors</a>
-                function under
-                <a href="https://en.wikipedia.org/wiki/Fine-structure_constant" target="_blank">different conditions</a> in a planet core.
-              </h2>
-
-              <img src="/images/u235.svg">
-              The core is a natural uranium reactor that runs until the U235 is exhausted. The fine-structure constant is effected in the dense core to
-              to use only the amount of U235 needed. U235 half is greatly increased when not in veins due to the nucleus with of 585 barns.
-            </div>
-
-            <div class="left_block">
-
-            Solar wind provides backpressure makes it possible for atmospheres much more dense than planetational gravity can support. The planets grow slowly
-            by accretion leading to a net gain in mass over time.
-
-          </div>
-
-            <br>
-            consider "wind up" reverse force - such as releasing the core's inertia allowing it to build up massively in the opposite direction to all at once stop the planets rotation
-            <br>
-            consider a small body orbiting a large body - both travelling - any incoming fragments would hit the big body via gravity
-            <br>
-            <br>
-            <img src="/images/noahs_moon.png" style="height:150px;float:left;height: 250px;background:rgba(255, 255, 255, .5);padding:4px;">
-            Moon is a spaceship and temporary mini planet used for intra and inter solar system travel
-            <br>
-            Moon is a planet engineering tool that spins the planet causing night/day cycles, warms the core causing the planet materials to mix, once the core becomes molten it tried to tidally local with the sun in the planets orbit, where the
-            planet is spinning due to the pull of the orbiting moon creating a protective magnetic field (known as the Van Allen Belt on Earth). The dust emitted from the star the planet is orbiting creates back pressure allowing much greater
-            atmospheric pressure then otherwise gravity would allow.
-
-            The inner most planet of a solar system is consumed first, once it’s core is heated and used up, each successive planet further out in the solar system is consumed. Many moons are used to convert gaseous planets into more solid forms
-            that
-            can be used, small moon are used to hibernate ready to use planets (Mars moons list here).
-
-            When needed a moon is placed in orbit around the moon to create a mini planet, including a magnetic field so it can travel intra planet to planet in the solar system. Inter solar system travel is more fuzzy … moon absorbs particle
-            collisions in open space (versus a small craft with shielding - the moon is many times bigger then small particles that are hard to see - so the life forms would ride on “back” of the moon)
-
-
-            Mercury was used first, venus second - the planet still is rotating backwards from sling shotting the moon to earth. Mars is ready with 2 small moons keeping it warmed up (making hydrocarbons and water) - venus and mercury have none as
-            they’re dead and used up planets.
-
-            750 million years ago venus green house ran away (planets ability to make more hydrocarbons was exhausted)
-
-            Ratio for uranium 235/238 tells the age of a planets usefulness (are all planets of this ratio)
-
-            Sun creates uranium and heavy elements and feeds them to planets - moon concentrates and activates the core - using them up - planet is burned until solar system collapses
-
-
-            A planets core creates and cycles u235 at a very slow rate - scattered evening through out the crust - mixing and churning a planets matter generates veins of like material, enabling natural reactors (3 bill years ago on earth)
-
-          </div>
-        </div>
-        <div class="basic_options" style="display:none;">
-          <div style="text-align:left">
-            <div style="display:inline-block;">
-              <label class="form-label">Visibility</label>
-              <select class="visibility_select form-select ">
-                <option>public</option>
-                <option selected>private</option>
-              </select>
-            </div>
-            <div style="display:inline-block;">
-              <label class="form-label">Seats</label>
-              <select class="seat_count_select form-select ">
-                <option value="1">1 seat</option>
-                <option selected value="2">2 seats</option>
-                <option value="3">3 seats</option>
-                <option value="4">4 seats</option>
-              </select>
-            </div>
-            <br>
-            <div style="display:inline-block;">
-              <label class="form-label">Messaging</label>
-              <select class="message_level_select form-select ">
-                <option value="seated">Seated</option>
-                <option value="all">All</option>
-              </select>
-            </div>
-            <div style="display:inline-block;">
-              <label class="form-label">Seat Limit</label>
-              <select class="seats_per_user_select form-select ">
-                <option value="one">One</option>
-                <option value="none">None</option>
-              </select>
-            </div>
-            <div class="match_additional_options">
-              <div style="display:inline-block;">
-                <label class="form-label">Card Deck</label>
-                <select class="card_deck_select form-select ">
-                  <option value="solarsystem">Solar System</option>
-                </select>
-              </div>
-              <div style="display:inline-block;">
-                <label class="form-label">Scoring</label>
-                <select class="scoring_system_select form-select ">
-                  <option value="simple">Simple</option>
-                  <option value="stable">Stable</option>
-                  <option value="regular" selected>Regular</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tab-pane fade game_history_view row" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
-      </div>
-      <div class="tab-pane fade" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab" style="flex-direction:column;overflow:hidden;">
-        <div class="join_game_view">
-          <div style="float:left;">
-            <div class="form-floating">
-              <input type="text" class="form-control game_code_start" name="gamecode" placeholder="Code">
-              <label>Code</label>
-            </div>
-          </div>
-          &nbsp;
-          <button class="join_game_btn btn btn-secondary">Join</button>
-        </div>
-        <div class=" public_game_view row" style="flex:1;overflow:auto;"></div>
-      </div>
-    </div>
-
     <div class="app_signed_out_panel">
       <h3>Please <a href="/profile">Sign In</a> to play</h3>
+      <br>
     </div>
-  </div>
 
-  <style id="laststyleblock"></style>
+    <div class="app_signed_in_panel">
+      <h3><a href="/dashboard">Game Lobby</a></h3>
+      <br>
+    </div>
+
+    <div style="text-align:center;flex:1;overflow:auto">
+      <div style="max-width: 800px;display:inline-block;">
+        <h1>The Solarverse</h1>
+
+        <div class="left_block">
+          <img src="/images/protoplanetdisc.png">
+          Stars emit a sphere of matter that quickly morphs into a disc shape. When planets are freshly accreted the minerals are spread evenly thru the crust.
+          Planets without recent moons tidally lock (i.e. Mercury) with the Sun - resulting in hot and cold sides of the planet. ?The inner planets retain almost no light elements.?
+        </div>
+
+        <div class="right_block">
+          <h2>It's a special time of the <a href="https://en.wikipedia.org/wiki/Galactic_year" target="_blank">galactic year</a>!</h2>
+          <img src="/images/milkyway.svg">
+          Galatic years last about 225 million Earth years - considering the ellipitical orbit of the Sun around the Milky Way
+          Earth is in the same position as when Permian–Triassic extinction event hit 200 million years ago killing 57% of biological life,
+          the cause being carbon dioxide emissions - Earth must once again prepare for new moons. This means ramping up rocket fuel production
+          and advancing AI to track space objects.
+          <br>
+          Once a galactic year the Copinerican System (our solar system) passes closest to the Milky Way black hole.
+          This it the best time to drop off moons and pick up new ones.
+        </div>
+
+        <div class="left_block">
+          <h2><a href="https://en.wikipedia.org/wiki/Van_Allen_radiation_belt" target="_blank">Force fields</a> and <a href="https://en.wikipedia.org/wiki/Volcanism" target="_blank">volcanos</a> required.</h2>
+          <img src="/images/vanallen3rdring.webp">
+          Once a solar system body begins orbiting a planet the tidal lock is broken. A magnetosphere forms providing protection from solar winds and
+          helping the planet retain small elements. The moons orbit causes the planet to contort and remix it's elements
+          - creating veins - and concentrations of the heaviest metals at the core.
+        </div>
+
+        <div class="right_block">
+          <h2>The <a href="https://en.wikipedia.org/wiki/Orbit_of_the_Moon" target="_blank">orbiting moon</a> manages the <a href="https://en.wikipedia.org/wiki/North_magnetic_pole">magnetic north pole</a>.</h2>
+          <img src="/images/moonorbit.jpg">
+          <img src="/images/northpolepositions.svg">
+          The moon provides days and nights, tides and daily planet contortion.
+          Luna <a href="https://en.wikipedia.org/wiki/Geomagnetic_reversal" target="_blank">reverses</a> Earth's matgnetic field
+          when deorbiting is required.
+          notes https://en.wikipedia.org/wiki/Solar_maximum (11 years - reverses sun's magnetic field)
+          <br>
+          sun storms - 3rd belt on van allen belt
+        </div>
+
+        <div class="left_block">
+          <h2><a href="https://en.wikipedia.org/wiki/Abiogenic_petroleum_origin" target="_blank">Abiogenic petroleum</a> fuels life.</h2>
+          <img src="/images/ammonia.webp">
+          The heat generating core enables the planet to produce abiogenic petroleum -> fueling ammonia production and extremophiles. The more
+          hydrocarbons the core can generate, the more life it can support.
+        </div>
+
+        <div class="right_block">
+          <h2>
+            <a href="https://en.wikipedia.org/wiki/Natural_nuclear_fission_reactor" target="_blank">Natural reactors</a>
+            function under
+            <a href="https://en.wikipedia.org/wiki/Fine-structure_constant" target="_blank">different conditions</a> in a planet core.
+          </h2>
+
+          <img src="/images/u235.svg">
+          The core is a natural uranium reactor that runs until the U235 is exhausted. The fine-structure constant is effected in the dense core to
+          to use only the amount of U235 needed. U235 half is greatly increased when not in veins due to the nucleus with of 585 barns.
+        </div>
+
+        <div class="left_block">
+          <h2>
+            <a href="https://en.wikipedia.org/wiki/Solar_wind" target="_blank">Solar wind</a>
+            provides backpressure and continually adds mass to the planets.
+          </h2>
+
+          <img src="/images/solardustcloud.jpg">
+
+          The solar wind makes it possible for atmospheres much more dense than planetational gravity can support. The planets grow slowly
+          by accretion leading to a net gain in mass over time.
+
+        </div>
+
+        <br>
+        consider "wind up" reverse force - such as releasing the core's inertia allowing it to build up massively in the opposite direction to all at once stop the planets rotation
+        <br>
+        consider a small body orbiting a large body - both travelling - any incoming fragments would hit the big body via gravity
+        <br>
+        <br>
+        <img src="/images/noahs_moon.png" style="height:150px;float:left;height: 250px;background:rgba(255, 255, 255, .5);padding:4px;">
+        Moon is a spaceship and temporary mini planet used for intra and inter solar system travel
+        <br>
+        Moon is a planet engineering tool that spins the planet causing night/day cycles, warms the core causing the planet materials to mix, once the core becomes molten it tried to tidally local with the sun in the planets orbit, where the
+        planet is spinning due to the pull of the orbiting moon creating a protective magnetic field (known as the Van Allen Belt on Earth). The dust emitted from the star the planet is orbiting creates back pressure allowing much greater
+        atmospheric pressure then otherwise gravity would allow.
+
+        The inner most planet of a solar system is consumed first, once it’s core is heated and used up, each successive planet further out in the solar system is consumed. Many moons are used to convert gaseous planets into more solid forms
+        that
+        can be used, small moon are used to hibernate ready to use planets (Mars moons list here).
+
+        When needed a moon is placed in orbit around the moon to create a mini planet, including a magnetic field so it can travel intra planet to planet in the solar system. Inter solar system travel is more fuzzy … moon absorbs particle
+        collisions in open space (versus a small craft with shielding - the moon is many times bigger then small particles that are hard to see - so the life forms would ride on “back” of the moon)
+
+
+        Mercury was used first, venus second - the planet still is rotating backwards from sling shotting the moon to earth. Mars is ready with 2 small moons keeping it warmed up (making hydrocarbons and water) - venus and mercury have none as
+        they’re dead and used up planets.
+
+        750 million years ago venus green house ran away (planets ability to make more hydrocarbons was exhausted)
+
+        Ratio for uranium 235/238 tells the age of a planets usefulness (are all planets of this ratio)
+
+        Sun creates uranium and heavy elements and feeds them to planets - moon concentrates and activates the core - using them up - planet is burned until solar system collapses
+
+
+        A planets core creates and cycles u235 at a very slow rate - scattered evening through out the crust - mixing and churning a planets matter generates veins of like material, enabling natural reactors (3 bill years ago on earth)
+
+      </div>
+    </div>
+
+    <style id="laststyleblock"></style>
 </body>
 
 </html>
