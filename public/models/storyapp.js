@@ -1871,10 +1871,10 @@ export class StoryApp extends BaseApp {
     this.scoreboardInited = true;
 
     let scoreboardWrapper = new BABYLON.TransformNode('scoreboardwrapper', this.scene);
-    scoreboardWrapper.position.y = 1;
+    scoreboardWrapper.position.y = 2.5;
 
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelX', {
-      height: 2,
+      height: 1.5,
       width: 4
     }, this.scene);
 
