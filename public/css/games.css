@@ -393,7 +393,8 @@ button.code_link {
 }
 
 .left_block img {
-  height: 150px;
+  max-height: 150px;
+  max-width: 150px;
   margin: 4px;
   float: left;
 }
@@ -405,14 +406,19 @@ button.code_link {
 }
 
 .right_block img {
-  height: 150px;
+  max-height: 150px;
+  max-width: 150px;
   margin: 4px;
   float: right;
 }
 
 .right_block .sub_text {
   text-align: left;
-  clear:both;
+  clear: both;
+  padding: 10px;
+  margin: 10px;
+  border: solid 1px silver;
+  border-radius: 10px;
 }
 
 .right_block .sub_text .author {
@@ -421,7 +427,11 @@ button.code_link {
 
 .left_block .sub_text {
   text-align: right;
-  clear:both;
+  clear: both;
+  padding: 10px;
+  margin: 10px;
+  border: solid 1px silver;
+  border-radius: 10px;
 }
 
 .left_block .sub_text .author {
