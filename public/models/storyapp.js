@@ -915,10 +915,16 @@ export class StoryApp extends BaseApp {
       this.scoreboardWrapper.scaling.x = 0.001;
       this.scoreboardWrapper.scaling.y = 0.001;
       this.scoreboardWrapper.scaling.z = 0.001;
+
+    //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(false));
+
       return;
     }
+    if (!this.scoreboardShowing) {
+    //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(true));
+      this.scoreboardShowing = true;
+    }
 
-    this.scoreboardShowing = true;
 
     this.scoreboardWrapper.position.y = this.scoreboardWrapper.origY;
     this.scoreboardWrapper.scaling.x = 1;
@@ -2032,7 +2038,7 @@ export class StoryApp extends BaseApp {
 
     let scoreboardWrapper = new BABYLON.TransformNode('scoreboardWrapper', this.scene);
     this.scoreboardWrapper = scoreboardWrapper;
-    //  this.scoreboardWrapper.position.y = 1;
+    scoreboardWrapper.meshesEnableToggle = [];
 
     let scoreboardTransform = new BABYLON.TransformNode('scoreboardTransform', this.scene);
     scoreboardTransform.parent = this.scoreboardWrapper;
@@ -2192,45 +2198,80 @@ export class StoryApp extends BaseApp {
       this.playerRightPanelTransform.rotation.y = Math.PI / 4;
 
       this.playerMoonNavs = [];
-      this.playerAvatarNavs = [];
-      for (let c = 0; c < 4; c++) {
-        let moonNav = Utility3D.__createTextMesh('mymoonnavigate' + c.toString(), {
-          text: "M" + (c + 1).toString(),
-          fontFamily: 'Impact',
-          size: 100,
-          depth: .25
-        }, this.scene)
-
-        moonNav.scaling.x = .5;
-        moonNav.scaling.y = .5;
-        moonNav.scaling.z = .5;
-        moonNav.position.y = 1;
-        moonNav.position.x = 2 - c;
+      let loadMoonButton = async (index) => {
+        let moonNav = await this.loadStaticMesh(this.seatMeshes[index].assetMeta.extended.glbPath, '', this.seatMeshes[index].assetMeta.extended.scale, 0, 0, 0);
+        moonNav.scaling.x = .001;
+        moonNav.scaling.y = .001;
+        moonNav.scaling.z = .001;
+        moonNav.position.y = 1.5;
+        moonNav.position.x = 2 - (index * 1.5);
         moonNav.position.z = 0;
         moonNav.rotation.z = -Math.PI / 2;
         moonNav.rotation.y = -Math.PI / 2;
         moonNav.assetMeta = {
           appClickable: true,
           clickCommand: 'playerMoon',
-          seatIndex: c
+          seatIndex: index
         };
-        moonNav.parent = this.playerRightPanelTransform;
-        let colors = this.get3DColors(c);
-        this.__setTextMeshColor(moonNav, colors.r, colors.g, colors.b);
-        this.playerMoonNavs.push(c);
+
+        let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
+        rotationTransform.parent = this.playerRightPanelTransform;
+        moonNav.parent = rotationTransform;
+
+        let rotationAnim = new BABYLON.Animation(
+          rotationTransform.id + 'anim',
+          "rotation",
+          30,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        let keys = [];
+        let endFrame = 20 * 30;
+
+        let rotationDirection = index % 2 === 0 ? 2 : -2;
+
+        keys.push({
+          frame: 0,
+          value: new BABYLON.Vector3(x, y, z)
+        });
+
+        keys.push({
+          frame: endFrame,
+          value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
+        });
+
+        rotationAnim.setKeys(keys);
+        if (!moonNav.animations)
+          moonNav.animations = [];
+        moonNav.animations.push(rotationAnim);
+        this.scene.beginAnimation(moonNav, 0, endFrame, true);
+
+        this.playerMoonNavs.push(moonNav);
+        this.scoreboardWrapper.meshesEnableToggle.push(moonNav);
+      };
+      for (let d = 0; d < 4; d++) {
+        loadMoonButton(d);
+      }
+
+      this.playerAvatarNavs = [];
+      for (let c = 0; c < 4; c++) {
 
         let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
-          text: "P" + (c + 1).toString(),
-          fontFamily: 'Impact',
+          text: this.seatMeshes[c].assetMeta.name,
+          fontFamily: 'Tahoma',
+          fontWeight: 'bold',
           size: 100,
           depth: .25
         }, this.scene)
-
         avatarNav.scaling.x = .5;
         avatarNav.scaling.y = .5;
         avatarNav.scaling.z = .5;
-        avatarNav.position.y = 2;
-        avatarNav.position.x = 2 - c;
+        avatarNav.position.y = 3;
+        avatarNav.position.x = 2 - (c * 1.5);
         avatarNav.position.z = 0;
         avatarNav.rotation.z = -Math.PI / 2;
         avatarNav.rotation.y = -Math.PI / 2;
@@ -2240,9 +2281,13 @@ export class StoryApp extends BaseApp {
           seatIndex: c
         };
         avatarNav.parent = this.playerRightPanelTransform;
+        let colors = this.get3DColors(c);
         this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
         this.playerAvatarNavs.push(avatarNav);
       }
+
+      scoreboardWrapper.meshesEnableToggle.push(this.startGameButton);
+
     }
     return scoreboardWrapper;
   }
