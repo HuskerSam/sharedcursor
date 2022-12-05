@@ -327,6 +327,13 @@ export class StoryApp extends BaseApp {
     this.paintGameData();
 
     this.initCameraToolbar();
+
+    this.verifyLoaddingComplete = setInterval(() => {
+      if (!this.runRender)
+        this.paintGameData();
+      else
+        clearInterval(this.verifyLoaddingComplete);
+    }, 400);
   }
   async loadAsteroids() {
     let asteroids = this.getAsteroids();
@@ -892,14 +899,37 @@ export class StoryApp extends BaseApp {
     });
   }
   clickShowScoreboard() {
+
     if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.target);
+      if (!this.scene.activeCamera.positionTN) {
+        this.scene.activeCamera.positionTN = new BABYLON.TransformNode('camerapointerxr', this.scene);
+        this.scene.activeCamera.positionTN.parent = this.scene.activeCamera;
+        this.scene.activeCamera.positionTN.position.z += 5;
+      }
+
+
+
+      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.positionTN.getAbsolutePosition());
       this.scoreboardWrapper.position.y = 0;
-      this.scoreboardWrapper.lookAt(this.scene.activeCamera.position);
+
+      let targetPosition = new BABYLON.Vector3();
+      targetPosition.copyFrom(this.scene.activeCamera.position);
+      targetPosition.y = 0;
+      this.scoreboardWrapper.lookAt(targetPosition);
     } else {
-      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.target);
+      if (!this.scene.activeCamera.positionTN) {
+        this.scene.activeCamera.positionTN = new BABYLON.TransformNode('camerapointernonxr', this.scene);
+        this.scene.activeCamera.positionTN.parent = this.scene.activeCamera;
+        this.scene.activeCamera.positionTN.position.z += 10;
+      }
+
+      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.positionTN.getAbsolutePosition());
       this.scoreboardWrapper.position.y = 0;
-      this.scoreboardWrapper.lookAt(this.scene.activeCamera.position);
+
+      let targetPosition = new BABYLON.Vector3();
+      targetPosition.copyFrom(this.scene.activeCamera.position);
+      targetPosition.y = 0;
+      this.scoreboardWrapper.lookAt(targetPosition);
     }
   }
   clickZoomout() {
@@ -1979,7 +2009,7 @@ export class StoryApp extends BaseApp {
 
     let scoreboardWrapper = new BABYLON.TransformNode('scoreboardWrapper', this.scene);
     this.scoreboardWrapper = scoreboardWrapper;
-  //  this.scoreboardWrapper.position.y = 1;
+    //  this.scoreboardWrapper.position.y = 1;
 
     let scoreboardTransform = new BABYLON.TransformNode('scoreboardTransform', this.scene);
     scoreboardTransform.parent = this.scoreboardWrapper;
@@ -2061,122 +2091,134 @@ export class StoryApp extends BaseApp {
     };
     this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
 
-    this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
-      text: 'Active Moon',
-      fontFamily: 'Impact',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.activeMoonNav.scaling.x = .5;
-    this.activeMoonNav.scaling.y = .5;
-    this.activeMoonNav.scaling.z = .5;
-    this.activeMoonNav.position.y = 1;
-    this.activeMoonNav.position.x = 5;
-    this.activeMoonNav.position.z = 0;
-    this.activeMoonNav.rotation.z = -Math.PI / 2;
-    this.activeMoonNav.rotation.y = -Math.PI / 2;
-    this.activeMoonNav.assetMeta = {
-      appClickable: true,
-      clickCommand: 'activeMoon'
-    };
-    this.activeMoonNav.parent = scoreboardTransform;
-    this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
+    {
+      this.playerLeftPanelTransform = new BABYLON.TransformNode('playerLeftPanelTransform', this.scene);
+      this.playerLeftPanelTransform.parent = scoreboardTransform;
+      this.playerLeftPanelTransform.position.x = 5;
+      this.playerLeftPanelTransform.rotation.y = -Math.PI / 4;
 
-    this.activePlayerNav = Utility3D.__createTextMesh('activeplayernavigate', {
-      text: 'Active Avatar',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.activePlayerNav.scaling.x = .5;
-    this.activePlayerNav.scaling.y = .5;
-    this.activePlayerNav.scaling.z = .5;
-    this.activePlayerNav.position.y = 2;
-    this.activePlayerNav.position.x = 5;
-    this.activePlayerNav.position.z = 0;
-    this.activePlayerNav.rotation.z = -Math.PI / 2;
-    this.activePlayerNav.rotation.y = -Math.PI / 2;
-    this.activePlayerNav.assetMeta = {
-      appClickable: true,
-      clickCommand: 'activePlayer'
-    };
-    this.activePlayerNav.parent = scoreboardTransform;
-    this.__setTextMeshColor(this.activePlayerNav, 0, 0, 1);
-
-    this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
-      text: 'Zoom out',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.zoomoutViewMap.scaling.x = .5;
-    this.zoomoutViewMap.scaling.y = .5;
-    this.zoomoutViewMap.scaling.z = .5;
-    this.zoomoutViewMap.position.y = 3;
-    this.zoomoutViewMap.position.x = 5;
-    this.zoomoutViewMap.position.z = 0;
-    this.zoomoutViewMap.rotation.z = -Math.PI / 2;
-    this.zoomoutViewMap.rotation.y = -Math.PI / 2;
-    this.zoomoutViewMap.assetMeta = {
-      appClickable: true,
-      clickCommand: 'zoomOut'
-    };
-    this.zoomoutViewMap.parent = scoreboardTransform;
-    this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
-
-    this.playerMoonNavs = [];
-    this.playerAvatarNavs = [];
-    for (let c = 0; c < 4; c++) {
-      let moonNav = Utility3D.__createTextMesh('mymoonnavigate' + c.toString(), {
-        text: "M" + (c + 1).toString(),
+      this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
+        text: 'Active Moon',
         fontFamily: 'Impact',
         size: 100,
         depth: .25
-      }, this.scene)
-
-      moonNav.scaling.x = .5;
-      moonNav.scaling.y = .5;
-      moonNav.scaling.z = .5;
-      moonNav.position.y = 1;
-      moonNav.position.x = -3 - c;
-      moonNav.position.z = 0;
-      moonNav.rotation.z = -Math.PI / 2;
-      moonNav.rotation.y = -Math.PI / 2;
-      moonNav.assetMeta = {
+      }, this.scene);
+      this.activeMoonNav.scaling.x = .5;
+      this.activeMoonNav.scaling.y = .5;
+      this.activeMoonNav.scaling.z = .5;
+      this.activeMoonNav.position.y = 1;
+      this.activeMoonNav.position.z = 0;
+      this.activeMoonNav.rotation.z = -Math.PI / 2;
+      this.activeMoonNav.rotation.y = -Math.PI / 2;
+      this.activeMoonNav.assetMeta = {
         appClickable: true,
-        clickCommand: 'playerMoon',
-        seatIndex: c
+        clickCommand: 'activeMoon'
       };
-      moonNav.parent = scoreboardTransform;
-      let colors = this.get3DColors(c);
-      this.__setTextMeshColor(moonNav, colors.r, colors.g, colors.b);
-      this.playerMoonNavs.push(c);
+      this.activeMoonNav.parent = this.playerLeftPanelTransform;
+      this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
 
-      let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
-        text: "P" + (c + 1).toString(),
-        fontFamily: 'Impact',
+      this.activePlayerNav = Utility3D.__createTextMesh('activeplayernavigate', {
+        text: 'Active Avatar',
+        fontFamily: 'Arial',
         size: 100,
         depth: .25
-      }, this.scene)
-
-      avatarNav.scaling.x = .5;
-      avatarNav.scaling.y = .5;
-      avatarNav.scaling.z = .5;
-      avatarNav.position.y = 2;
-      avatarNav.position.x = -3 - c;
-      avatarNav.position.z = 0;
-      avatarNav.rotation.z = -Math.PI / 2;
-      avatarNav.rotation.y = -Math.PI / 2;
-      avatarNav.assetMeta = {
+      }, this.scene);
+      this.activePlayerNav.scaling.x = .5;
+      this.activePlayerNav.scaling.y = .5;
+      this.activePlayerNav.scaling.z = .5;
+      this.activePlayerNav.position.y = 2;
+      this.activePlayerNav.position.z = 0;
+      this.activePlayerNav.rotation.z = -Math.PI / 2;
+      this.activePlayerNav.rotation.y = -Math.PI / 2;
+      this.activePlayerNav.assetMeta = {
         appClickable: true,
-        clickCommand: 'playerAvatar',
-        seatIndex: c
+        clickCommand: 'activePlayer'
       };
-      avatarNav.parent = scoreboardTransform;
-      this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
-      this.playerAvatarNavs.push(avatarNav);
+      this.activePlayerNav.parent = this.playerLeftPanelTransform;
+      this.__setTextMeshColor(this.activePlayerNav, 0, 0, 1);
+
+      this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
+        text: 'Zoom out',
+        fontFamily: 'Arial',
+        size: 100,
+        depth: .25
+      }, this.scene);
+      this.zoomoutViewMap.scaling.x = .5;
+      this.zoomoutViewMap.scaling.y = .5;
+      this.zoomoutViewMap.scaling.z = .5;
+      this.zoomoutViewMap.position.y = 3;
+      this.zoomoutViewMap.position.x = 5;
+      this.zoomoutViewMap.position.z = 0;
+      this.zoomoutViewMap.rotation.z = -Math.PI / 2;
+      this.zoomoutViewMap.rotation.y = -Math.PI / 2;
+      this.zoomoutViewMap.assetMeta = {
+        appClickable: true,
+        clickCommand: 'zoomOut'
+      };
+      this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
+      this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
+    } {
+
+      this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
+      this.playerRightPanelTransform.parent = scoreboardTransform;
+      this.playerRightPanelTransform.position.x = -5;
+      this.playerRightPanelTransform.rotation.y = Math.PI / 4;
+
+
+
+      this.playerMoonNavs = [];
+      this.playerAvatarNavs = [];
+      for (let c = 0; c < 4; c++) {
+        let moonNav = Utility3D.__createTextMesh('mymoonnavigate' + c.toString(), {
+          text: "M" + (c + 1).toString(),
+          fontFamily: 'Impact',
+          size: 100,
+          depth: .25
+        }, this.scene)
+
+        moonNav.scaling.x = .5;
+        moonNav.scaling.y = .5;
+        moonNav.scaling.z = .5;
+        moonNav.position.y = 1;
+        moonNav.position.x = 2 - c;
+        moonNav.position.z = 0;
+        moonNav.rotation.z = -Math.PI / 2;
+        moonNav.rotation.y = -Math.PI / 2;
+        moonNav.assetMeta = {
+          appClickable: true,
+          clickCommand: 'playerMoon',
+          seatIndex: c
+        };
+        moonNav.parent = this.playerRightPanelTransform;
+        let colors = this.get3DColors(c);
+        this.__setTextMeshColor(moonNav, colors.r, colors.g, colors.b);
+        this.playerMoonNavs.push(c);
+
+        let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
+          text: "P" + (c + 1).toString(),
+          fontFamily: 'Impact',
+          size: 100,
+          depth: .25
+        }, this.scene)
+
+        avatarNav.scaling.x = .5;
+        avatarNav.scaling.y = .5;
+        avatarNav.scaling.z = .5;
+        avatarNav.position.y = 2;
+        avatarNav.position.x = 2 - c;
+        avatarNav.position.z = 0;
+        avatarNav.rotation.z = -Math.PI / 2;
+        avatarNav.rotation.y = -Math.PI / 2;
+        avatarNav.assetMeta = {
+          appClickable: true,
+          clickCommand: 'playerAvatar',
+          seatIndex: c
+        };
+        avatarNav.parent = this.playerRightPanelTransform;
+        this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
+        this.playerAvatarNavs.push(avatarNav);
+      }
     }
-
     return scoreboardWrapper;
   }
   __setTextMeshColor(mesh, r, g, b) {
