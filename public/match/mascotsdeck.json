@@ -67,8 +67,6 @@
     "x": -3,
     "y": -5,
     "z": -3,
-    "ry": -1,
-    "parent": "sun",
     "optionalLoad": true,
     "optionalFlags": "mascots"
   },

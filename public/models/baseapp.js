@@ -1312,12 +1312,15 @@ export class BaseApp {
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
+          if (pointerInfo.pickInfo.hit) {
+            if (this.pointerDown(pointerInfo))
+              break;
+          }
+          break;
+        case BABYLON.PointerEventTypes.POINTERDOUBLETAP:
           if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
             this.groundClick(pointerInfo);
             break;
-          }
-          if (pointerInfo.pickInfo.hit) {
-            this.pointerDown(pointerInfo)
           }
           break;
         case BABYLON.PointerEventTypes.POINTERUP:

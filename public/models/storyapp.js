@@ -477,7 +477,6 @@ export class StoryApp extends BaseApp {
 
     orbitWrapper.assetMeta = {
       appClickable: true,
-      clickToPause: true,
       clickCommand: 'pauseSpin',
       name: asteroid,
       asteroidType: true,
@@ -572,14 +571,12 @@ export class StoryApp extends BaseApp {
     if (meta.noClick !== true) {
       meta.appClickable = true;
       meta.masterid = name;
-      meta.clickToPause = true;
       meta.clickCommand = 'pauseSpin';
     }
 
     if (meta.seatIndex !== undefined)
       this.seatMeshes[meta.seatIndex] = meshPivot;
   }
-
   _loadMeshMusic(meta, mesh, name) {
     if (!this.hugeAssets)
       return;
@@ -597,7 +594,6 @@ export class StoryApp extends BaseApp {
 
     this.musicMeshes[name] = music;
   }
-
   infoPanel(name, meta, pivotMesh, scene) {
     let size = 1;
 
@@ -641,7 +637,6 @@ export class StoryApp extends BaseApp {
 
     return symbolPivot;
   }
-
   showItemNamePanel(meta) {
     let nameDesc = meta.name;
     if (meta.solarPosition)
@@ -789,7 +784,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (!mesh || !mesh.assetMeta.appClickable)
-      return;
+      return false;
 
     let meta = mesh.assetMeta;
 
@@ -811,8 +806,91 @@ export class StoryApp extends BaseApp {
       this.meshToggleAnimation(meta, false, mesh);
     }
 
-    if (meta.masterid === 'sun')
-      this._endTurn();
+    if (meta.clickCommand === 'endTurn')
+      this.clickEndTurn();
+    if (meta.clickCommand === 'startGame')
+      this.clickStartGame();
+    if (meta.clickCommand === 'endGame')
+      this.clickEndGame();
+    if (meta.clickCommand === 'activeMoon')
+      this.clickActiveMoonNavigate();
+    if (meta.clickCommand === 'activePlayer')
+      this.clickActivePlayerNavigate();
+    if (meta.clickCommand === 'playerMoon')
+      this.clickPlayerMoonNavigate(meta.seatIndex);
+    if (meta.clickCommand === 'playerAvatar')
+      this.clickPlayerAvatarNavigate(meta.seatIndex);
+
+    return true;
+  }
+  clickEndTurn() {
+    this._endTurn();
+  }
+  clickStartGame() {
+
+  }
+  clickEndGame() {
+
+  }
+  clickActiveMoonNavigate() {
+    let position = new BABYLON.Vector3(0, 0, 0);
+    let target = new BABYLON.Vector3(0, 0, 0);
+
+    target.copyFrom(this.seatMeshes[this.currentSeatIndex].assetMeta.basePivot.getAbsolutePosition());
+    position.copyFrom(target);
+
+    if (this.xr.baseExperience.state === 3)
+      position.y += 5;
+    else
+      position.y = 0;
+    position.x -= 8;
+    position.z -= 8;
+
+    this.aimCamera({
+      position,
+      target
+    });
+  }
+  clickPlayerMoonNavigate(index = 0) {
+    let position = new BABYLON.Vector3(0, 0, 0);
+    let target = new BABYLON.Vector3(0, 0, 0);
+
+    target.copyFrom(this.seatMeshes[index].assetMeta.basePivot.getAbsolutePosition());
+    position.copyFrom(target);
+
+    if (this.xr.baseExperience.state === 3)
+      position.y += 5;
+    else
+      position.y = 0;
+    position.x -= 8;
+    position.z -= 8;
+
+    this.aimCamera({
+      position,
+      target
+    });
+  }
+  clickPlayerAvatarNavigate(index) {
+
+  }
+  clickActivePlayerNavigate() {
+    let position = new BABYLON.Vector3(0, 0, 0);
+    let target = new BABYLON.Vector3(0, 0, 0);
+
+    target.copyFrom(this.seatMeshes[this.currentSeatIndex].getAbsolutePosition());
+    position.copyFrom(target);
+
+    if (this.xr.baseExperience.state === 3)
+      position.y += 5;
+    else
+      position.y = 0;
+    position.x -= 8;
+    position.z -= 8;
+
+    this.aimCamera({
+      position,
+      target
+    });
   }
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
@@ -988,6 +1066,7 @@ export class StoryApp extends BaseApp {
     let seatIndex = "0";
     if (this.gameData.currentSeat)
       seatIndex = this.gameData.currentSeat.toString();
+    this.currentSeatIndex = seatIndex;
 
     let displayTurnNumber = Math.floor(this.gameData.turnNumber / this.gameData.runningNumberOfSeats) + 1;
     this.turn_number_div.innerHTML = displayTurnNumber.toString();
@@ -1896,14 +1975,168 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     nameMesh2.rotation.y = Math.PI;
 
-    this.scoreboardNameMaterial = new BABYLON.StandardMaterial('showmatasteroid', this.scene);
+    this.scoreboardNameMaterial = new BABYLON.StandardMaterial('scoreboardmaterial', this.scene);
     nameMesh1.material = this.scoreboardNameMaterial;
     nameMesh1.parent = scoreboardWrapper;
     nameMesh2.material = this.scoreboardNameMaterial;
     nameMesh2.parent = scoreboardWrapper;
 
+    this.startGameButton = Utility3D.__createTextMesh('startgamebutton', {
+      text: 'Start Game',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .1
+    }, this.scene);
+    this.startGameButton.scaling.x = .5;
+    this.startGameButton.scaling.y = .5;
+    this.startGameButton.scaling.z = .5;
+    this.startGameButton.position.y = 2;
+    this.startGameButton.position.x = -5;
+    this.startGameButton.position.z = 0;
+    this.startGameButton.rotation.z = -Math.PI / 2;
+    this.startGameButton.rotation.y = -Math.PI / 2;
+    this.startGameButton.setEnabled(false);
+    this.__setTextMeshColor(this.startGameButton, 0, 1, 0);
 
+
+    this.endGameButton = Utility3D.__createTextMesh('endgamebutton', {
+      text: 'End Game',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .1
+    }, this.scene);
+    this.endGameButton.scaling.x = .5;
+    this.endGameButton.scaling.y = .5;
+    this.endGameButton.scaling.z = .5;
+    this.endGameButton.position.y = 4;
+    this.endGameButton.position.x = 0;
+    this.endGameButton.position.z = 0;
+    this.endGameButton.rotation.z = -Math.PI / 2;
+    this.endGameButton.rotation.y = -Math.PI / 2;
+    //    this.endGameButton.setEnabled(false);
+    this.__setTextMeshColor(this.endGameButton, 0, 1, 0);
+
+    this.endTurnButton = Utility3D.__createTextMesh('endturnbutton', {
+      text: 'End Turn',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .1
+    }, this.scene);
+    this.endTurnButton.scaling.x = .5;
+    this.endTurnButton.scaling.y = .5;
+    this.endTurnButton.scaling.z = .5;
+    this.endTurnButton.position.y = 1;
+    this.endTurnButton.position.x = 0;
+    this.endTurnButton.position.z = 0;
+    this.endTurnButton.rotation.z = -Math.PI / 2;
+    this.endTurnButton.rotation.y = -Math.PI / 2;
+    //    this.endTurnButton.setEnabled(false);
+    this.endTurnButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'endTurn'
+    };
+    this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
+
+    this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
+      text: 'Active Moon',
+      fontFamily: 'Impact',
+      size: 100,
+      depth: .1
+    }, this.scene);
+    this.activeMoonNav.scaling.x = .5;
+    this.activeMoonNav.scaling.y = .5;
+    this.activeMoonNav.scaling.z = .5;
+    this.activeMoonNav.position.y = 1;
+    this.activeMoonNav.position.x = 5;
+    this.activeMoonNav.position.z = 0;
+    this.activeMoonNav.rotation.z = -Math.PI / 2;
+    this.activeMoonNav.rotation.y = -Math.PI / 2;
+    this.activeMoonNav.assetMeta = {
+      appClickable: true,
+      clickCommand: 'activeMoon'
+    };
+    this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
+
+    this.activePlayerNav = Utility3D.__createTextMesh('activeplayernavigate', {
+      text: 'Active Avatar',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .1
+    }, this.scene);
+    this.activePlayerNav.scaling.x = .5;
+    this.activePlayerNav.scaling.y = .5;
+    this.activePlayerNav.scaling.z = .5;
+    this.activePlayerNav.position.y = 2;
+    this.activePlayerNav.position.x = 5;
+    this.activePlayerNav.position.z = 0;
+    this.activePlayerNav.rotation.z = -Math.PI / 2;
+    this.activePlayerNav.rotation.y = -Math.PI / 2;
+    this.activePlayerNav.assetMeta = {
+      appClickable: true,
+      clickCommand: 'activePlayer'
+    };
+    this.__setTextMeshColor(this.activePlayerNav, 0, 0, 1);
+
+    this.playerMoonNavs = [];
+    this.playerAvatarNavs = [];
+    for (let c = 0; c < 4; c++) {
+      let moonNav = Utility3D.__createTextMesh('mymoonnavigate' + c.toString(), {
+        text: "M" + (c + 1).toString(),
+        fontFamily: 'Impact',
+        size: 100,
+        depth: .1
+      }, this.scene)
+
+      moonNav.scaling.x = .5;
+      moonNav.scaling.y = .5;
+      moonNav.scaling.z = .5;
+      moonNav.position.y = 1;
+      moonNav.position.x = -3 - c;
+      moonNav.position.z = 0;
+      moonNav.rotation.z = -Math.PI / 2;
+      moonNav.rotation.y = -Math.PI / 2;
+      moonNav.assetMeta = {
+        appClickable: true,
+        clickCommand: 'playerMoon',
+        seatIndex: c
+      };
+      let colors = this.get3DColors(c);
+      this.__setTextMeshColor(moonNav, colors.r, colors.g, colors.b);
+      this.playerMoonNavs.push(c);
+
+      let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
+        text: "P" + (c + 1).toString(),
+        fontFamily: 'Impact',
+        size: 100,
+        depth: .1
+      }, this.scene)
+
+      avatarNav.scaling.x = .5;
+      avatarNav.scaling.y = .5;
+      avatarNav.scaling.z = .5;
+      avatarNav.position.y = 2;
+      avatarNav.position.x = -3 - c;
+      avatarNav.position.z = 0;
+      avatarNav.rotation.z = -Math.PI / 2;
+      avatarNav.rotation.y = -Math.PI / 2;
+      avatarNav.assetMeta = {
+        appClickable: true,
+        clickCommand: 'playerAvatar',
+        seatIndex: c
+      };
+      this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
+      this.playerAvatarNavs.push(avatarNav);
+
+    }
 
     return scoreboardWrapper;
+  }
+  __setTextMeshColor(mesh, r, g, b) {
+    for (let i in this.scene.meshes) {
+      if (this.scene.meshes[i].parent === mesh)
+        this.meshSetVerticeColors(this.scene.meshes[i], r, g, b);
+    }
+
+    this.meshSetVerticeColors(mesh, r, g, b);
   }
 }
