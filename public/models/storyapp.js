@@ -1862,7 +1862,19 @@ export class StoryApp extends BaseApp {
 
   updateScoreboard() {
     this.initScoreboard();
+    let seatIndex = this.gameData.currentSeat;
 
+    let rgb = this.get3DColors(seatIndex);
+    let str = rgb.r + ',' + rgb.g + "," + rgb.b;
+    let backColor = Utility3D.colorRGB255(str);
+    let color = seatIndex !== 3 ? "rgb(0,0,0)" : "rgb(255,255,255)";
+    let nameTexture = Utility3D.__texture2DText(this.scene, "Scoreboard Status", color, backColor, 50);
+    nameTexture.vScale = 1;
+    nameTexture.uScale = 1;
+    nameTexture.hasAlpha = true;
+    this.scoreboardNameMaterial.diffuseTexture = nameTexture;
+    this.scoreboardNameMaterial.ambientTexture = nameTexture;
+    this.scoreboardNameMaterial.emissiveTexture = nameTexture;
   }
   initScoreboard() {
     if (this.scoreboardInited)
@@ -1891,13 +1903,6 @@ export class StoryApp extends BaseApp {
     nameMesh2.parent = scoreboardWrapper;
 
 
-    let nameTexture = Utility3D.__texture2DText(this.scene, "Scoreboard Status", "red", "rgb(200, 200, 240)", 50);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    this.scoreboardNameMaterial.diffuseTexture = nameTexture;
-    this.scoreboardNameMaterial.ambientTexture = nameTexture;
-    this.scoreboardNameMaterial.emissiveTexture = nameTexture;
 
     return scoreboardWrapper;
   }
