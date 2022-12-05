@@ -899,6 +899,31 @@ export class StoryApp extends BaseApp {
     });
   }
   clickShowScoreboard() {
+    if (this.lastShowScoreboardTime === undefined)
+      this.lastShowScoreboardTime = 0;
+    if (this.scoreboardShowing === undefined)
+      this.scoreboardShowing = true;
+
+    let testTime = this.lastShowScoreboardTime + 2000;
+    let hideScoreboard = (new Date().getTime() < testTime) && this.scoreboardShowing;
+    this.lastShowScoreboardTime = new Date().getTime();
+
+    if (this.scoreboardShowing && hideScoreboard) {
+      this.scoreboardShowing = false;
+      this.scoreboardWrapper.origY = this.scoreboardWrapper.position.y;
+      this.scoreboardWrapper.position.y = -1000;
+      this.scoreboardWrapper.scaling.x = 0.001;
+      this.scoreboardWrapper.scaling.y = 0.001;
+      this.scoreboardWrapper.scaling.z = 0.001;
+      return;
+    }
+
+    this.scoreboardShowing = true;
+
+    this.scoreboardWrapper.position.y = this.scoreboardWrapper.origY;
+    this.scoreboardWrapper.scaling.x = 1;
+    this.scoreboardWrapper.scaling.y = 1;
+    this.scoreboardWrapper.scaling.z = 1;
 
     if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
       if (!this.scene.activeCamera.positionTN) {
@@ -906,8 +931,6 @@ export class StoryApp extends BaseApp {
         this.scene.activeCamera.positionTN.parent = this.scene.activeCamera;
         this.scene.activeCamera.positionTN.position.z += 5;
       }
-
-
 
       this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.positionTN.getAbsolutePosition());
       this.scoreboardWrapper.position.y = 0;
@@ -2091,10 +2114,12 @@ export class StoryApp extends BaseApp {
     };
     this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
 
+    //add left panel
     {
       this.playerLeftPanelTransform = new BABYLON.TransformNode('playerLeftPanelTransform', this.scene);
       this.playerLeftPanelTransform.parent = scoreboardTransform;
       this.playerLeftPanelTransform.position.x = 5;
+      this.playerLeftPanelTransform.position.z += 2;
       this.playerLeftPanelTransform.rotation.y = -Math.PI / 4;
 
       this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
@@ -2157,14 +2182,14 @@ export class StoryApp extends BaseApp {
       };
       this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
       this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
-    } {
-
+    }
+    //add right panel
+    {
       this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
       this.playerRightPanelTransform.parent = scoreboardTransform;
       this.playerRightPanelTransform.position.x = -5;
+      this.playerRightPanelTransform.position.z += 2;
       this.playerRightPanelTransform.rotation.y = Math.PI / 4;
-
-
 
       this.playerMoonNavs = [];
       this.playerAvatarNavs = [];
