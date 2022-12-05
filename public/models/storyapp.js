@@ -189,7 +189,7 @@ export class StoryApp extends BaseApp {
       this.camera.setTarget(locationMeta.target);
     }
 
-    if (this.xr.baseExperience.state === 2) { //inxr = 2
+    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) { //inxr = 2
       this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
     }
   }
@@ -230,10 +230,7 @@ export class StoryApp extends BaseApp {
     this.aimCamera(this.cameraMetaX);
   }
   yButtonPress() {
-    this.clearFollowMeta();
-    this.aimCamera(this.cameraMetaY);
-    if (this.xr.baseExperience.state === 2)
-      this.scene.activeCamera.position.y += 10;
+    this.clickShowScoreboard()
   }
   aButtonPress() {
     this.setFollowMeta();
@@ -820,6 +817,8 @@ export class StoryApp extends BaseApp {
       this.clickPlayerMoonNavigate(meta.seatIndex);
     if (meta.clickCommand === 'playerAvatar')
       this.clickPlayerAvatarNavigate(meta.seatIndex);
+    if (meta.clickCommand === 'zoomOut')
+      this.clickZoomout();
 
     return true;
   }
@@ -891,6 +890,23 @@ export class StoryApp extends BaseApp {
       position,
       target
     });
+  }
+  clickShowScoreboard() {
+    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.target);
+      this.scoreboardWrapper.position.y = 0;
+      this.scoreboardWrapper.lookAt(this.scene.activeCamera.position);
+    } else {
+      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.target);
+      this.scoreboardWrapper.position.y = 0;
+      this.scoreboardWrapper.lookAt(this.scene.activeCamera.position);
+    }
+  }
+  clickZoomout() {
+    this.clearFollowMeta();
+    this.aimCamera(this.cameraMetaY);
+    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR)
+      this.scene.activeCamera.position.y += 10;
   }
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
@@ -1148,7 +1164,7 @@ export class StoryApp extends BaseApp {
       text: name,
       fontFamily: 'Arial',
       size: 100,
-      depth: .1
+      depth: .25
     }, this.scene);
     name3d.scaling.x = .15;
     name3d.scaling.y = .15;
@@ -1961,31 +1977,39 @@ export class StoryApp extends BaseApp {
 
     this.scoreboardInited = true;
 
-    let scoreboardWrapper = new BABYLON.TransformNode('scoreboardwrapper', this.scene);
-    scoreboardWrapper.position.y = 2.5;
+    let scoreboardWrapper = new BABYLON.TransformNode('scoreboardWrapper', this.scene);
+    this.scoreboardWrapper = scoreboardWrapper;
+  //  this.scoreboardWrapper.position.y = 1;
+
+    let scoreboardTransform = new BABYLON.TransformNode('scoreboardTransform', this.scene);
+    scoreboardTransform.parent = this.scoreboardWrapper;
+    scoreboardTransform.position.z = 2;
+    scoreboardTransform.position.y = -0.5;
 
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelX', {
-      height: 1.5,
+      height: 2,
       width: 4
     }, this.scene);
+    nameMesh1.position.y = 2.5;
 
     let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelZ', {
       height: 2,
       width: 4
     }, this.scene);
+    nameMesh2.position.y = 2.5;
     nameMesh2.rotation.y = Math.PI;
 
     this.scoreboardNameMaterial = new BABYLON.StandardMaterial('scoreboardmaterial', this.scene);
     nameMesh1.material = this.scoreboardNameMaterial;
-    nameMesh1.parent = scoreboardWrapper;
+    nameMesh1.parent = scoreboardTransform;
     nameMesh2.material = this.scoreboardNameMaterial;
-    nameMesh2.parent = scoreboardWrapper;
+    nameMesh2.parent = scoreboardTransform;
 
     this.startGameButton = Utility3D.__createTextMesh('startgamebutton', {
       text: 'Start Game',
       fontFamily: 'Arial',
       size: 100,
-      depth: .1
+      depth: .25
     }, this.scene);
     this.startGameButton.scaling.x = .5;
     this.startGameButton.scaling.y = .5;
@@ -1996,14 +2020,14 @@ export class StoryApp extends BaseApp {
     this.startGameButton.rotation.z = -Math.PI / 2;
     this.startGameButton.rotation.y = -Math.PI / 2;
     this.startGameButton.setEnabled(false);
+    this.startGameButton.parent = scoreboardTransform;
     this.__setTextMeshColor(this.startGameButton, 0, 1, 0);
-
 
     this.endGameButton = Utility3D.__createTextMesh('endgamebutton', {
       text: 'End Game',
       fontFamily: 'Arial',
       size: 100,
-      depth: .1
+      depth: .25
     }, this.scene);
     this.endGameButton.scaling.x = .5;
     this.endGameButton.scaling.y = .5;
@@ -2013,14 +2037,14 @@ export class StoryApp extends BaseApp {
     this.endGameButton.position.z = 0;
     this.endGameButton.rotation.z = -Math.PI / 2;
     this.endGameButton.rotation.y = -Math.PI / 2;
-    //    this.endGameButton.setEnabled(false);
+    this.endGameButton.parent = scoreboardTransform;
     this.__setTextMeshColor(this.endGameButton, 0, 1, 0);
 
     this.endTurnButton = Utility3D.__createTextMesh('endturnbutton', {
       text: 'End Turn',
       fontFamily: 'Arial',
       size: 100,
-      depth: .1
+      depth: .25
     }, this.scene);
     this.endTurnButton.scaling.x = .5;
     this.endTurnButton.scaling.y = .5;
@@ -2030,7 +2054,7 @@ export class StoryApp extends BaseApp {
     this.endTurnButton.position.z = 0;
     this.endTurnButton.rotation.z = -Math.PI / 2;
     this.endTurnButton.rotation.y = -Math.PI / 2;
-    //    this.endTurnButton.setEnabled(false);
+    this.endTurnButton.parent = scoreboardTransform;
     this.endTurnButton.assetMeta = {
       appClickable: true,
       clickCommand: 'endTurn'
@@ -2041,7 +2065,7 @@ export class StoryApp extends BaseApp {
       text: 'Active Moon',
       fontFamily: 'Impact',
       size: 100,
-      depth: .1
+      depth: .25
     }, this.scene);
     this.activeMoonNav.scaling.x = .5;
     this.activeMoonNav.scaling.y = .5;
@@ -2055,13 +2079,14 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'activeMoon'
     };
+    this.activeMoonNav.parent = scoreboardTransform;
     this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
 
     this.activePlayerNav = Utility3D.__createTextMesh('activeplayernavigate', {
       text: 'Active Avatar',
       fontFamily: 'Arial',
       size: 100,
-      depth: .1
+      depth: .25
     }, this.scene);
     this.activePlayerNav.scaling.x = .5;
     this.activePlayerNav.scaling.y = .5;
@@ -2075,7 +2100,29 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'activePlayer'
     };
+    this.activePlayerNav.parent = scoreboardTransform;
     this.__setTextMeshColor(this.activePlayerNav, 0, 0, 1);
+
+    this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
+      text: 'Zoom out',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .25
+    }, this.scene);
+    this.zoomoutViewMap.scaling.x = .5;
+    this.zoomoutViewMap.scaling.y = .5;
+    this.zoomoutViewMap.scaling.z = .5;
+    this.zoomoutViewMap.position.y = 3;
+    this.zoomoutViewMap.position.x = 5;
+    this.zoomoutViewMap.position.z = 0;
+    this.zoomoutViewMap.rotation.z = -Math.PI / 2;
+    this.zoomoutViewMap.rotation.y = -Math.PI / 2;
+    this.zoomoutViewMap.assetMeta = {
+      appClickable: true,
+      clickCommand: 'zoomOut'
+    };
+    this.zoomoutViewMap.parent = scoreboardTransform;
+    this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
 
     this.playerMoonNavs = [];
     this.playerAvatarNavs = [];
@@ -2084,7 +2131,7 @@ export class StoryApp extends BaseApp {
         text: "M" + (c + 1).toString(),
         fontFamily: 'Impact',
         size: 100,
-        depth: .1
+        depth: .25
       }, this.scene)
 
       moonNav.scaling.x = .5;
@@ -2100,6 +2147,7 @@ export class StoryApp extends BaseApp {
         clickCommand: 'playerMoon',
         seatIndex: c
       };
+      moonNav.parent = scoreboardTransform;
       let colors = this.get3DColors(c);
       this.__setTextMeshColor(moonNav, colors.r, colors.g, colors.b);
       this.playerMoonNavs.push(c);
@@ -2108,7 +2156,7 @@ export class StoryApp extends BaseApp {
         text: "P" + (c + 1).toString(),
         fontFamily: 'Impact',
         size: 100,
-        depth: .1
+        depth: .25
       }, this.scene)
 
       avatarNav.scaling.x = .5;
@@ -2124,9 +2172,9 @@ export class StoryApp extends BaseApp {
         clickCommand: 'playerAvatar',
         seatIndex: c
       };
+      avatarNav.parent = scoreboardTransform;
       this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
       this.playerAvatarNavs.push(avatarNav);
-
     }
 
     return scoreboardWrapper;
