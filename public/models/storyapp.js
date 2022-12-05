@@ -562,6 +562,7 @@ export class StoryApp extends BaseApp {
     meshPivot = Utility3D.positionPivot(name, meta, meshPivot, this.scene);
 
     meshPivot.assetMeta = meta;
+    meshPivot.baseMesh = mesh;
     this.staticAssetMeshes[name] = meshPivot;
 
     if (meta.parent) {
@@ -1233,12 +1234,6 @@ export class StoryApp extends BaseApp {
     return name3d;
   }
   async renderSeatAvatar(wrapper, avatarWrapper, index) {
-    if (this.smallAssets) {
-      return this.renderSmallSeatAvatar(wrapper, avatarWrapper, index);
-    }
-    return await this.renderNormalSeatAvatar(wrapper, avatarWrapper, index);
-  }
-  async renderSmallSeatAvatar(wrapper, avatarWrapper, index) {
     let seatData = this.getSeatData(index);
     let colors = this.get3DColors(index);
     let avatar = seatData.avatar;
@@ -1298,62 +1293,7 @@ export class StoryApp extends BaseApp {
 
     plane.material = m;
   }
-  async renderNormalSeatAvatar(wrapper, avatarWrapper, index) {
-    let seatData = this.getSeatData(index);
-    let avatar = seatData.avatar;
-    let uid = seatData.uid;
 
-    let colors = this.get3DColors(index);
-    let mesh = await this.loadAvatarMesh(`/avatars/${avatar}.glb`, "", 1, 0, 0, 0);
-    mesh.position.x = 0;
-    mesh.position.y = 0;
-    mesh.position.z = 0;
-    mesh.parent = avatarWrapper;
-    wrapper.avatarMesh = mesh;
-    seatData.avatarMesh = mesh;
-    if (this.shadowGenerator)
-      this.shadowGenerator.addShadowCaster(wrapper.avatarMesh, true);
-
-    let circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = 0;
-    circle.parent = mesh;
-
-    let isOwner = this.uid === this.gameData.createUser;
-    if (this.uid === uid || isOwner) {
-      let text = 'X';
-      let intensity = 5;
-      if (this.uid !== uid && isOwner) {
-        intensity = 0;
-        text = 'X';
-      }
-      let x3d = Utility3D.__createTextMesh('seattextX' + index, {
-        text,
-        fontFamily: 'monospace',
-        size: 100,
-        depth: .25
-      }, this.scene);
-      x3d.scaling.x = .2;
-      x3d.scaling.y = .2;
-      x3d.scaling.z = .2;
-      x3d.position.y = 2.25;
-      x3d.rotation.z = -Math.PI / 2;
-      x3d.rotation.y = -Math.PI / 2;
-
-      for (let i in this.scene.meshes) {
-        if (this.scene.meshes[i].parent === x3d)
-          this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
-      }
-
-      this.meshSetVerticeColors(x3d, intensity, intensity, intensity);
-      x3d.parent = mesh;
-      x3d.assetMeta = {
-        appClickable: true,
-        clickCommand: 'stand',
-        seatIndex: index
-      }
-    }
-  }
   async _updateSeat(index) {
     let seatData = this.getSeatData(index);
     let colors = this.get3DColors(index);
@@ -1944,10 +1884,9 @@ export class StoryApp extends BaseApp {
       mesh = await this.loadStaticMesh(path, '', 1, 0, 0, 0);
       mesh.material = this.asteroidMaterial;
     } else {
-      mesh = await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
-      mesh.scaling.x = .0015;
-      mesh.scaling.y = .0015;
-      mesh.scaling.z = .0015;
+      mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone();
+
+//       await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
     }
 
     let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
