@@ -336,7 +336,7 @@ export class StoryApp extends BaseApp {
     }, 400);
   }
   async loadAsteroids() {
-    let asteroids = this.getAsteroids();
+    let asteroids = Utility3D.getAsteroids();
 
     let ratio = 0;
     let max = asteroids.length;
@@ -802,12 +802,10 @@ export class StoryApp extends BaseApp {
 
     if (meta.clickCommand === 'pauseSpin') {
       this.lastClickMeta = meta;
-      this.buttonOneRed.innerHTML = 'A Follow ' + this.lastClickMeta.name;
-      this.buttonTwo.innerHTML = 'B';
-
       this.lastClickMetaButtonCache = this.lastClickMeta;
-
       this.meshToggleAnimation(meta, false, mesh);
+
+      this._updateLastClickMeta(this.lastClickMetaButtonCache);
     }
 
     if (meta.clickCommand === 'endTurn')
@@ -818,8 +816,6 @@ export class StoryApp extends BaseApp {
       this.clickEndGame();
     if (meta.clickCommand === 'activeMoon')
       this.clickActiveMoonNavigate();
-    if (meta.clickCommand === 'activePlayer')
-      this.clickActivePlayerNavigate();
     if (meta.clickCommand === 'playerMoon')
       this.clickPlayerMoonNavigate(meta.seatIndex);
     if (meta.clickCommand === 'playerAvatar')
@@ -828,6 +824,18 @@ export class StoryApp extends BaseApp {
       this.clickZoomout();
 
     return true;
+  }
+  async _updateLastClickMeta(assetMeta) {
+    this.buttonOneRed.innerHTML = 'A Follow ' + assetMeta.name;
+    this.buttonTwo.innerHTML = 'B';
+
+    if (this.selectedMeshInstance) {
+      this.selectedMeshInstance.wrapper.dispose();
+    }
+
+    this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
+    this.selectedMeshInstance.wrapper.position.y = 2.5;
+    this.selectedMeshInstance.wrapper.parent = this.playerLeftPanelTransform;
   }
   clickEndTurn() {
     this._endTurn();
@@ -879,25 +887,6 @@ export class StoryApp extends BaseApp {
   clickPlayerAvatarNavigate(index) {
 
   }
-  clickActivePlayerNavigate() {
-    let position = new BABYLON.Vector3(0, 0, 0);
-    let target = new BABYLON.Vector3(0, 0, 0);
-
-    target.copyFrom(this.seatMeshes[this.currentSeatIndex].getAbsolutePosition());
-    position.copyFrom(target);
-
-    if (this.xr.baseExperience.state === 3)
-      position.y += 5;
-    else
-      position.y = 0;
-    position.x -= 8;
-    position.z -= 8;
-
-    this.aimCamera({
-      position,
-      target
-    });
-  }
   clickShowScoreboard() {
     if (this.lastShowScoreboardTime === undefined)
       this.lastShowScoreboardTime = 0;
@@ -916,12 +905,12 @@ export class StoryApp extends BaseApp {
       this.scoreboardWrapper.scaling.y = 0.001;
       this.scoreboardWrapper.scaling.z = 0.001;
 
-    //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(false));
+      //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(false));
 
       return;
     }
     if (!this.scoreboardShowing) {
-    //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(true));
+      //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(true));
       this.scoreboardShowing = true;
     }
 
@@ -1774,245 +1763,6 @@ export class StoryApp extends BaseApp {
 
     return wrapper;
   }
-  getAsteroids() {
-    const fullList = ["aruna.obj",
-      "asterope.obj",
-      "athene.obj",
-      "augusta.obj",
-      "aurelia.obj",
-      "azalea.obj",
-      "bacchus.obj",
-      "backlunda.obj",
-      "bali.obj",
-      "bambery.obj",
-      "barolo.obj",
-      "barringer.obj",
-      "bauschinger.obj",
-      "begonia.obj",
-      "bella.obj",
-      "bertha.obj",
-      "billboyle.obj",
-      "bodea.obj",
-      "borsenberger.obj",
-      "bressi.obj",
-      "bruna.obj",
-      "buda.obj",
-      "buzzi.obj",
-      "calvinia.obj",
-      "carandrews.obj",
-      "carlova.obj",
-      "castalia.obj",
-      "celsius.obj",
-      "celuta.obj",
-      "cerberus.obj",
-      "cevenola.obj",
-      "cheruskia.obj",
-      "choukyongchol.obj",
-      "claudia.obj",
-      "constantia.obj",
-      "cosima.obj",
-      "cuitlahuac.obj",
-      "cyane.obj",
-      "cybele.obj",
-      "dabu.obj",
-      "danzig.obj",
-      "datura.obj",
-      "davida.obj",
-      "dejanira.obj",
-      "denisyuk.obj",
-      "diebel.obj",
-      "dike.obj",
-      "doris.obj",
-      "dudu.obj",
-      "dysona.obj",
-      "echo.obj",
-      "einhardress.obj",
-      "einstein.obj",
-      "ella.obj",
-      "elly.obj",
-      "epyaxa.obj",
-      "erigone.obj",
-      "eryan.obj",
-      "euler.obj",
-      "faulkes.obj",
-      "feiyiou.obj",
-      "florentina.obj",
-      "fragaria.obj",
-      "fukuhara.obj",
-      "gaby.obj",
-      "gagarin.obj",
-      "gajdariya.obj",
-      "galinskij.obj",
-      "ganymed.obj",
-      "geographos.obj",
-      "glarona.obj",
-      "glasenappia.obj",
-      "godwin.obj",
-      "golevka.obj",
-      "golia.obj",
-      "gorgo.obj",
-      "hagar.obj",
-      "halawe.obj",
-      "hardersen.obj",
-      "hedera.obj",
-      "hektor.obj",
-      "hela.obj",
-      "hera.obj",
-      "herculina.obj",
-      "herge.obj",
-      "hermia.obj",
-      "hertzsprung.obj",
-      "hildrun.obj",
-      "hirosetamotsu.obj",
-      "hus.obj",
-      "jugurtha.obj",
-      "kaho.obj",
-      "kalm.obj",
-      "kani.obj",
-      "karin.obj",
-      "kate.obj",
-      "kitty.obj",
-      "klumpkea.obj",
-      "klytaemnestra.obj",
-      "kuritariku.obj",
-      "landi.obj",
-      "laputa.obj",
-      "lucifer.obj",
-      "ludmilla.obj",
-      "lundmarka.obj",
-      "magnitka.obj",
-      "maja.obj",
-      "maksutov.obj",
-      "malyshev.obj",
-      "malzovia.obj",
-      "manto.obj",
-      "manzano.obj",
-      "marceline.obj",
-      "margarita.obj",
-      "marilyn.obj",
-      "martir.obj",
-      "medea.obj",
-      "medusa.obj",
-      "meta.obj",
-      "mikejura.obj",
-      "millis.obj",
-      "mimi.obj",
-      "mitaka.obj",
-      "mutsumi.obj",
-      "myroncope.obj",
-      "naantali.obj",
-      "naef.obj",
-      "ndola.obj",
-      "neckar.obj",
-      "nele.obj",
-      "nereus.obj",
-      "nerthus.obj",
-      "ninian.obj",
-      "niobe.obj",
-      "nirenberg.obj",
-      "nonie.obj",
-      "nriag.obj",
-      "ohre.obj",
-      "oort.obj",
-      "otero.obj",
-      "paeonia.obj",
-      "paradise.obj",
-      "paulina.obj",
-      "pepita.obj",
-      "pia.obj",
-      "pire.obj",
-      "plato.obj",
-      "radegast.obj",
-      "rakhat.obj",
-      "reseda.obj",
-      "rohloff.obj",
-      "runcorn.obj",
-      "sabine.obj",
-      "safara.obj",
-      "sedov.obj",
-      "semiramis.obj",
-      "senta.obj",
-      "silver.obj",
-      "sobolev.obj",
-      "sphinx.obj",
-      "storeria.obj",
-      "svanberg.obj",
-      "tabora.obj",
-      "tacitus.obj",
-      "takuma.obj",
-      "takushi.obj",
-      "tama.obj",
-      "tanina.obj",
-      "tapio.obj",
-      "tarka.obj",
-      "tarry.obj",
-      "tatjana.obj",
-      "tatsuo.obj",
-      "taurinensis.obj",
-      "teller.obj",
-      "tempel.obj",
-      "thais.obj",
-      "thekla.obj",
-      "themis.obj",
-      "thernoe.obj",
-      "thomana.obj",
-      "thomsen.obj",
-      "tiflis.obj",
-      "tinchen.obj",
-      "tinette.obj",
-      "tirela.obj",
-      "titicaca.obj",
-      "tjilaki.obj",
-      "tolosa.obj",
-      "tombecka.obj",
-      "tooting.obj",
-      "trebon.obj",
-      "tsia.obj",
-      "tsoj.obj",
-      "tulipa.obj",
-      "turku.obj",
-      "tyche.obj",
-      "ucclia.obj",
-      "ueta.obj",
-      "uhland.obj",
-      "ukko.obj",
-      "ukraina.obj",
-      "ulrike.obj",
-      "ulula.obj",
-      "una.obj",
-      "ursa.obj",
-      "valyaev.obj",
-      "vasadze.obj",
-      "vassar.obj",
-      "veritas.obj",
-      "verne.obj",
-      "veveri.obj",
-      "vibilia.obj",
-      "vojno.obj",
-      "volodia.obj",
-      "wachmann.obj",
-      "walkure.obj",
-      "walraven.obj",
-      "waltraut.obj",
-      "wawel.obj",
-      "webern.obj",
-      "wempe.obj",
-      "wolpert.obj",
-      "wurm.obj",
-      "xenophanes.obj",
-      "xerxes.obj",
-      "yamada.obj",
-      "yorp.obj",
-      "yoshiro.obj",
-      "yrsa.obj",
-      "zanda.obj",
-      "zdenka.obj",
-      "zerlina.obj",
-      "zita.obj"
-    ];
-
-    return fullList;
-  }
 
   updateScoreboard() {
     this.initScoreboard();
@@ -2045,6 +1795,18 @@ export class StoryApp extends BaseApp {
     scoreboardTransform.position.z = 2;
     scoreboardTransform.position.y = -0.5;
 
+    this.__initMidPanel(scoreboardTransform);
+    this.__initLeftPanel(scoreboardTransform);
+    this.__initRightPanel(scoreboardTransform);
+    return scoreboardWrapper;
+  }
+  __initMidPanel(scoreboardTransform) {
+    this.playerMidPanelTransform = new BABYLON.TransformNode('playerMidPanelTransform', this.scene);
+    this.playerMidPanelTransform.parent = scoreboardTransform;
+    this.playerMidPanelTransform.position.x = 5;
+    this.playerMidPanelTransform.position.z += 2;
+    this.playerMidPanelTransform.rotation.y = -Math.PI / 4;
+
     let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelX', {
       height: 2,
       width: 4
@@ -2060,9 +1822,9 @@ export class StoryApp extends BaseApp {
 
     this.scoreboardNameMaterial = new BABYLON.StandardMaterial('scoreboardmaterial', this.scene);
     nameMesh1.material = this.scoreboardNameMaterial;
-    nameMesh1.parent = scoreboardTransform;
+    nameMesh1.parent = this.playerMidPanelTransform;
     nameMesh2.material = this.scoreboardNameMaterial;
-    nameMesh2.parent = scoreboardTransform;
+    nameMesh2.parent = this.playerMidPanelTransform;
 
     this.startGameButton = Utility3D.__createTextMesh('startgamebutton', {
       text: 'Start Game',
@@ -2079,7 +1841,7 @@ export class StoryApp extends BaseApp {
     this.startGameButton.rotation.z = -Math.PI / 2;
     this.startGameButton.rotation.y = -Math.PI / 2;
     this.startGameButton.setEnabled(false);
-    this.startGameButton.parent = scoreboardTransform;
+    this.startGameButton.parent = this.playerMidPanelTransform;
     this.__setTextMeshColor(this.startGameButton, 0, 1, 0);
 
     this.endGameButton = Utility3D.__createTextMesh('endgamebutton', {
@@ -2096,7 +1858,7 @@ export class StoryApp extends BaseApp {
     this.endGameButton.position.z = 0;
     this.endGameButton.rotation.z = -Math.PI / 2;
     this.endGameButton.rotation.y = -Math.PI / 2;
-    this.endGameButton.parent = scoreboardTransform;
+    this.endGameButton.parent = this.playerMidPanelTransform;
     this.__setTextMeshColor(this.endGameButton, 0, 1, 0);
 
     this.endTurnButton = Utility3D.__createTextMesh('endturnbutton', {
@@ -2113,183 +1875,218 @@ export class StoryApp extends BaseApp {
     this.endTurnButton.position.z = 0;
     this.endTurnButton.rotation.z = -Math.PI / 2;
     this.endTurnButton.rotation.y = -Math.PI / 2;
-    this.endTurnButton.parent = scoreboardTransform;
+    this.endTurnButton.parent = this.playerMidPanelTransform;
     this.endTurnButton.assetMeta = {
       appClickable: true,
       clickCommand: 'endTurn'
     };
     this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
 
-    //add left panel
-    {
-      this.playerLeftPanelTransform = new BABYLON.TransformNode('playerLeftPanelTransform', this.scene);
-      this.playerLeftPanelTransform.parent = scoreboardTransform;
-      this.playerLeftPanelTransform.position.x = 5;
-      this.playerLeftPanelTransform.position.z += 2;
-      this.playerLeftPanelTransform.rotation.y = -Math.PI / 4;
+  }
+  async __initLeftPanel(scoreboardTransform) {
+    this.playerLeftPanelTransform = new BABYLON.TransformNode('playerLeftPanelTransform', this.scene);
+    this.playerLeftPanelTransform.parent = scoreboardTransform;
 
-      this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
-        text: 'Active Moon',
-        fontFamily: 'Impact',
-        size: 100,
-        depth: .25
-      }, this.scene);
-      this.activeMoonNav.scaling.x = .5;
-      this.activeMoonNav.scaling.y = .5;
-      this.activeMoonNav.scaling.z = .5;
-      this.activeMoonNav.position.y = 1;
-      this.activeMoonNav.position.z = 0;
-      this.activeMoonNav.rotation.z = -Math.PI / 2;
-      this.activeMoonNav.rotation.y = -Math.PI / 2;
-      this.activeMoonNav.assetMeta = {
-        appClickable: true,
-        clickCommand: 'activeMoon'
-      };
-      this.activeMoonNav.parent = this.playerLeftPanelTransform;
-      this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
+    let meta = Object.assign({}, this.allCards['mercury']);
+    meta.extended = this.processStaticAssetMeta(meta);
+    this.selectedMeshInstance = await this.__loadRotatingAsset(meta);
+    this.selectedMeshInstance.wrapper.position.y = 2.5;
 
-      this.activePlayerNav = Utility3D.__createTextMesh('activeplayernavigate', {
-        text: 'Active Avatar',
-        fontFamily: 'Arial',
-        size: 100,
-        depth: .25
-      }, this.scene);
-      this.activePlayerNav.scaling.x = .5;
-      this.activePlayerNav.scaling.y = .5;
-      this.activePlayerNav.scaling.z = .5;
-      this.activePlayerNav.position.y = 2;
-      this.activePlayerNav.position.z = 0;
-      this.activePlayerNav.rotation.z = -Math.PI / 2;
-      this.activePlayerNav.rotation.y = -Math.PI / 2;
-      this.activePlayerNav.assetMeta = {
-        appClickable: true,
-        clickCommand: 'activePlayer'
-      };
-      this.activePlayerNav.parent = this.playerLeftPanelTransform;
-      this.__setTextMeshColor(this.activePlayerNav, 0, 0, 1);
+    this.selectedMeshInstance.wrapper.parent = this.playerLeftPanelTransform;
 
-      this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
-        text: 'Zoom out',
-        fontFamily: 'Arial',
-        size: 100,
-        depth: .25
-      }, this.scene);
-      this.zoomoutViewMap.scaling.x = .5;
-      this.zoomoutViewMap.scaling.y = .5;
-      this.zoomoutViewMap.scaling.z = .5;
-      this.zoomoutViewMap.position.y = 3;
-      this.zoomoutViewMap.position.x = 5;
-      this.zoomoutViewMap.position.z = 0;
-      this.zoomoutViewMap.rotation.z = -Math.PI / 2;
-      this.zoomoutViewMap.rotation.y = -Math.PI / 2;
-      this.zoomoutViewMap.assetMeta = {
-        appClickable: true,
-        clickCommand: 'zoomOut'
-      };
-      this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
-      this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
+    this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
+      text: 'A Follow',
+      fontFamily: 'Impact',
+      size: 100,
+      depth: .25
+    }, this.scene);
+    this.activeMoonNav.scaling.x = .5;
+    this.activeMoonNav.scaling.y = .5;
+    this.activeMoonNav.scaling.z = .5;
+    this.activeMoonNav.position.y = 1.25;
+    this.activeMoonNav.position.z = 0;
+    this.activeMoonNav.position.x = 2;
+    this.activeMoonNav.rotation.z = -Math.PI / 2;
+    this.activeMoonNav.rotation.y = -Math.PI / 2;
+    this.activeMoonNav.assetMeta = {
+      appClickable: true,
+      clickCommand: 'activeMoon'
+    };
+    this.activeMoonNav.parent = this.playerLeftPanelTransform;
+    this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
+
+    this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
+      text: 'Zoom out',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .25
+    }, this.scene);
+    this.zoomoutViewMap.scaling.x = .5;
+    this.zoomoutViewMap.scaling.y = .5;
+    this.zoomoutViewMap.scaling.z = .5;
+    this.zoomoutViewMap.position.y = 1.25;
+    this.zoomoutViewMap.position.x = -2;
+    this.zoomoutViewMap.position.z = 0;
+    this.zoomoutViewMap.rotation.z = -Math.PI / 2;
+    this.zoomoutViewMap.rotation.y = -Math.PI / 2;
+    this.zoomoutViewMap.assetMeta = {
+      appClickable: true,
+      clickCommand: 'zoomOut'
+    };
+    this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
+    this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
+  }
+  async __loadRotatingAsset(assetMeta, prefix = 'selected') {
+    let mesh;
+    if (assetMeta.asteroidType) {
+      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
+        encodeURIComponent(assetMeta.asteroidName) + '?alt=media';
+      mesh = await this.loadStaticMesh(path, '', 1, 0, 0, 0);
+      mesh.material = this.asteroidMaterial;
+    } else {
+      mesh = await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
+      mesh.scaling.x = .0015;
+      mesh.scaling.y = .0015;
+      mesh.scaling.z = .0015;
     }
-    //add right panel
-    {
-      this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
-      this.playerRightPanelTransform.parent = scoreboardTransform;
-      this.playerRightPanelTransform.position.x = -5;
-      this.playerRightPanelTransform.position.z += 2;
-      this.playerRightPanelTransform.rotation.y = Math.PI / 4;
 
-      this.playerMoonNavs = [];
-      let loadMoonButton = async (index) => {
-        let moonNav = await this.loadStaticMesh(this.seatMeshes[index].assetMeta.extended.glbPath, '', this.seatMeshes[index].assetMeta.extended.scale, 0, 0, 0);
-        moonNav.scaling.x = .001;
-        moonNav.scaling.y = .001;
-        moonNav.scaling.z = .001;
-        moonNav.position.y = 1.5;
-        moonNav.position.x = 2 - (index * 1.5);
-        moonNav.position.z = 0;
-        moonNav.rotation.z = -Math.PI / 2;
-        moonNav.rotation.y = -Math.PI / 2;
-        moonNav.assetMeta = {
-          appClickable: true,
-          clickCommand: 'playerMoon',
-          seatIndex: index
-        };
+    let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
+    mesh.parent = rotationTransform;
 
-        let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
-        rotationTransform.parent = this.playerRightPanelTransform;
-        moonNav.parent = rotationTransform;
+    let rotationAnim = new BABYLON.Animation(
+      rotationTransform.id + 'anim',
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
 
-        let rotationAnim = new BABYLON.Animation(
-          rotationTransform.id + 'anim',
-          "rotation",
-          30,
-          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-        );
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let keys = [];
+    let endFrame = 20 * 30;
 
-        let x = 0;
-        let y = 0;
-        let z = 0;
-        let keys = [];
-        let endFrame = 20 * 30;
+    let rotationDirection = -2;
 
-        let rotationDirection = index % 2 === 0 ? 2 : -2;
+    keys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
 
-        keys.push({
-          frame: 0,
-          value: new BABYLON.Vector3(x, y, z)
-        });
+    keys.push({
+      frame: endFrame,
+      value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
+    });
 
-        keys.push({
-          frame: endFrame,
-          value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
-        });
+    rotationAnim.setKeys(keys);
+    if (!mesh.animations)
+      mesh.animations = [];
+    mesh.animations.push(rotationAnim);
+    this.scene.beginAnimation(mesh, 0, endFrame, true);
 
-        rotationAnim.setKeys(keys);
-        if (!moonNav.animations)
-          moonNav.animations = [];
-        moonNav.animations.push(rotationAnim);
-        this.scene.beginAnimation(moonNav, 0, endFrame, true);
-
-        this.playerMoonNavs.push(moonNav);
-        this.scoreboardWrapper.meshesEnableToggle.push(moonNav);
-      };
-      for (let d = 0; d < 4; d++) {
-        loadMoonButton(d);
-      }
-
-      this.playerAvatarNavs = [];
-      for (let c = 0; c < 4; c++) {
-
-        let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
-          text: this.seatMeshes[c].assetMeta.name,
-          fontFamily: 'Tahoma',
-          fontWeight: 'bold',
-          size: 100,
-          depth: .25
-        }, this.scene)
-        avatarNav.scaling.x = .5;
-        avatarNav.scaling.y = .5;
-        avatarNav.scaling.z = .5;
-        avatarNav.position.y = 3;
-        avatarNav.position.x = 2 - (c * 1.5);
-        avatarNav.position.z = 0;
-        avatarNav.rotation.z = -Math.PI / 2;
-        avatarNav.rotation.y = -Math.PI / 2;
-        avatarNav.assetMeta = {
-          appClickable: true,
-          clickCommand: 'playerAvatar',
-          seatIndex: c
-        };
-        avatarNav.parent = this.playerRightPanelTransform;
-        let colors = this.get3DColors(c);
-        this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
-        this.playerAvatarNavs.push(avatarNav);
-      }
-
-      scoreboardWrapper.meshesEnableToggle.push(this.startGameButton);
-
+    return {
+      wrapper: rotationTransform,
+      mesh
     }
-    return scoreboardWrapper;
+  }
+  __initRightPanel(scoreboardTransform) {
+    this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
+    this.playerRightPanelTransform.parent = scoreboardTransform;
+    this.playerRightPanelTransform.position.x = -5;
+    this.playerRightPanelTransform.position.z += 2;
+    this.playerRightPanelTransform.rotation.y = Math.PI / 4;
+
+    this.playerMoonNavs = [];
+    let loadMoonButton = async (index) => {
+      let moonNav = await this.loadStaticMesh(this.seatMeshes[index].assetMeta.extended.glbPath, '', this.seatMeshes[index].assetMeta.extended.scale, 0, 0, 0);
+      moonNav.scaling.x = .001;
+      moonNav.scaling.y = .001;
+      moonNav.scaling.z = .001;
+      moonNav.position.y = 1.5;
+      moonNav.position.x = 2 - (index * 1.5);
+      moonNav.position.z = 0;
+      moonNav.rotation.z = -Math.PI / 2;
+      moonNav.rotation.y = -Math.PI / 2;
+      moonNav.assetMeta = {
+        appClickable: true,
+        clickCommand: 'playerMoon',
+        seatIndex: index
+      };
+
+      let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
+      rotationTransform.parent = this.playerRightPanelTransform;
+      moonNav.parent = rotationTransform;
+
+      let rotationAnim = new BABYLON.Animation(
+        rotationTransform.id + 'anim',
+        "rotation",
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+
+      let x = 0;
+      let y = 0;
+      let z = 0;
+      let keys = [];
+      let endFrame = 20 * 30;
+
+      let rotationDirection = index % 2 === 0 ? 2 : -2;
+
+      keys.push({
+        frame: 0,
+        value: new BABYLON.Vector3(x, y, z)
+      });
+
+      keys.push({
+        frame: endFrame,
+        value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
+      });
+
+      rotationAnim.setKeys(keys);
+      if (!moonNav.animations)
+        moonNav.animations = [];
+      moonNav.animations.push(rotationAnim);
+      this.scene.beginAnimation(moonNav, 0, endFrame, true);
+
+      this.playerMoonNavs.push(moonNav);
+      this.scoreboardWrapper.meshesEnableToggle.push(moonNav);
+    };
+    for (let d = 0; d < 4; d++) {
+      loadMoonButton(d);
+    }
+
+    this.playerAvatarNavs = [];
+    for (let c = 0; c < 4; c++) {
+
+      let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
+        text: this.seatMeshes[c].assetMeta.name,
+        fontFamily: 'Tahoma',
+        fontWeight: 'bold',
+        size: 100,
+        depth: .25
+      }, this.scene)
+      avatarNav.scaling.x = .5;
+      avatarNav.scaling.y = .5;
+      avatarNav.scaling.z = .5;
+      avatarNav.position.y = 3;
+      avatarNav.position.x = 2 - (c * 1.5);
+      avatarNav.position.z = 0;
+      avatarNav.rotation.z = -Math.PI / 2;
+      avatarNav.rotation.y = -Math.PI / 2;
+      avatarNav.assetMeta = {
+        appClickable: true,
+        clickCommand: 'playerAvatar',
+        seatIndex: c
+      };
+      avatarNav.parent = this.playerRightPanelTransform;
+      let colors = this.get3DColors(c);
+      this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
+      this.playerAvatarNavs.push(avatarNav);
+    }
+
+    this.scoreboardWrapper.meshesEnableToggle.push(this.startGameButton);
   }
   __setTextMeshColor(mesh, r, g, b) {
     for (let i in this.scene.meshes) {

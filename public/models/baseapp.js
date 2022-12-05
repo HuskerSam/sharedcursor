@@ -1316,8 +1316,6 @@ export class BaseApp {
             if (this.pointerDown(pointerInfo))
               break;
           }
-          break;
-        case BABYLON.PointerEventTypes.POINTERDOUBLETAP:
           if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
             this.groundClick(pointerInfo);
             break;
