@@ -1368,7 +1368,7 @@ export class BaseApp {
       //childForCamera.position.addInPlace(xr.baseExperience.camera.position);
       this.xr.baseExperience.sessionManager.onXRFrameObservable.add(() => {
 
-        if (this.followMeta) {
+        if (this.followMeta && this.followMeta.basePivot) {
           let position = new BABYLON.Vector3(0, 0, 0);
           position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
           position.y += 4;

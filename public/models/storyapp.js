@@ -317,6 +317,8 @@ export class StoryApp extends BaseApp {
       this.createGuides();
 
     this.sceneInited = true;
+    this.initScoreboard();
+
     this.loadAvatars();
     this.loadAsteroids();
 
@@ -1397,12 +1399,6 @@ export class StoryApp extends BaseApp {
 
     return new BABYLON.Color3(r, g, b);
   }
-  get3DPosition(index) {
-    let x = 5,
-      y = 0.01,
-      z = (index * 2) + 5;
-    return new BABYLON.Vector3(x, y, z);
-  }
   meshSetVerticeColors(mesh, r, g, b, a = 1) {
     let colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
     if (!colors) {
@@ -1417,20 +1413,6 @@ export class StoryApp extends BaseApp {
 
     mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
-  createCircle(color) {
-    let points = [];
-    let radius = this.dockDiscRadius;
-
-    for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 360) {
-      points.push(new BABYLON.Vector3(radius * Math.cos(i), 0, radius * Math.sin(i)));
-    }
-
-    let baseCircle = BABYLON.Mesh.CreateLines("qbezier2", points, this.scene);
-
-    return baseCircle;
-  }
-
-  groundClick(pointerInfo) {}
 
   updateUserPresence() {
     super.updateUserPresence();
@@ -1503,7 +1485,6 @@ export class StoryApp extends BaseApp {
   }
 
   updateScoreboard() {
-    this.initScoreboard();
     let seatIndex = this.gameData.currentSeat;
 
     let rgb = this.get3DColors(seatIndex);
