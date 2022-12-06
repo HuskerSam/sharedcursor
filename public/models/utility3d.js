@@ -405,18 +405,6 @@ export default class Utility3D {
 
     return asteroidNameMesh;
   }
-  static loadStaticNavMesh(name, meta, scene) {
-    let mercurysphere = BABYLON.MeshBuilder.CreateSphere(name + "navmeshsphere", {
-      diameter: meta.navDiameter,
-      segments: 16
-    }, scene);
-    if (meta.x)
-      mercurysphere.position.x = meta.x;
-    if (meta.z)
-      mercurysphere.position.z = meta.z;
-    return mercurysphere;
-  }
-
   static createFireParticles(meta, wrapper, name, scene) {
     if (!meta.particlesEnabled)
       return;

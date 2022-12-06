@@ -1216,7 +1216,7 @@ export class BaseApp {
       if (this.runRender)
         this.scene.render();
 
-      if (this.followMeta && this.xr.baseExperience.state === 3) {
+      if (this.followMeta && this.xr.baseExperience.state === 3 && this.followMeta.basePivot) {
         let position = new BABYLON.Vector3(0, 0, 0);
         position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
         position.y += 4;

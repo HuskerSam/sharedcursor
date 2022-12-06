@@ -206,7 +206,11 @@ export class StoryApp extends BaseApp {
       this.attachControl = true;
     }
     let v = new BABYLON.Vector3(0, 0, 0);
-    v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+
+    if (this.followMeta.basePivot)
+      v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+    else
+      v.copyFrom(this.staticAssetMeshes[this.followMeta.id].getAbsolutePosition());
     v.y += 4;
     this.camera.position.copyFrom(v);
     this.camera.alpha += Math.PI;
@@ -260,14 +264,11 @@ export class StoryApp extends BaseApp {
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
     this.addLineToLoading('Solar System Objects<br>');
-    let navMeshes = [];
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
 
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
-      if (this.allCards[card.id].navDiameter !== undefined)
-        navMeshes.push(Utility3D.loadStaticNavMesh(card.id, this.allCards[card.id], this.scene));
     });
     await Promise.all(promises);
 
@@ -293,9 +294,6 @@ export class StoryApp extends BaseApp {
     });
     await Promise.all(promises);
 
-    this.navMesh = BABYLON.Mesh.MergeMeshes(navMeshes);
-    this.navMesh.setEnabled(false);
-
     this.initItemNamePanel(this.scene);
 
     this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
@@ -317,8 +315,6 @@ export class StoryApp extends BaseApp {
 
     if (this.urlParams.get('showguides'))
       this.createGuides();
-
-    await this.setupAgents();
 
     this.sceneInited = true;
     this.loadAvatars();
@@ -726,14 +722,14 @@ export class StoryApp extends BaseApp {
     };
   }
   async loadAvatars() {
-    if (!this.crowd)
-      return;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
         let data = this.getSeatData(seatIndex);
-        let cacheValue = data.name + data.avatar + data.seated.toString();
+        let cacheValue = data.name + data.image + data.seated.toString();
         if (!this['dockSeatMesh' + seatIndex]) {
           let mesh = await this.renderSeat(seatIndex);
+
+          mesh.parent = this.playerRightPanelTransform;
 
           this['dockSeatMesh' + seatIndex] = mesh;
         } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
@@ -752,7 +748,6 @@ export class StoryApp extends BaseApp {
     }
 
     if (this.sceneInited) {
-      this.updateAgents();
       this.updateUserPresence();
       this.__updateSelectedSeatMesh();
 
@@ -792,6 +787,8 @@ export class StoryApp extends BaseApp {
       return false;
 
     let meta = mesh.assetMeta;
+
+    console.log(meta);
 
     if (meta.emptySeat) {
       this.dockSit(meta.seatIndex);
@@ -1171,7 +1168,6 @@ export class StoryApp extends BaseApp {
       return;
 
     this.updateUserPresence();
-    this.updateAgents();
 
     this.runRender = true;
     document.body.classList.add('avatars_loaded');
@@ -1245,7 +1241,6 @@ export class StoryApp extends BaseApp {
   async renderSeatAvatar(wrapper, avatarWrapper, index) {
     let seatData = this.getSeatData(index);
     let colors = this.get3DColors(index);
-    let avatar = seatData.avatar;
     let uid = seatData.uid;
 
     let mesh = new BABYLON.TransformNode("seatmeshtn" + index, this.scene);
@@ -1255,31 +1250,6 @@ export class StoryApp extends BaseApp {
     mesh.parent = avatarWrapper;
     wrapper.avatarMesh = mesh;
     seatData.avatarMesh = mesh;
-
-    let circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = 0;
-    circle.parent = mesh;
-
-    circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = 0.25;
-    circle.parent = mesh;
-
-    circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = 0.5;
-    circle.parent = mesh;
-
-    circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = 0.75;
-    circle.parent = mesh;
-
-    circle = this.createCircle();
-    circle.color = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    circle.position.y = 1;
-    circle.parent = mesh;
 
     const plane = BABYLON.MeshBuilder.CreatePlane("avatarimage" + index, {
         height: 2,
@@ -1301,6 +1271,44 @@ export class StoryApp extends BaseApp {
     m.ambientTexture = t;
 
     plane.material = m;
+
+    let isOwner = this.uid === this.gameData.createUser;
+    if (this.uid === uid || isOwner) {
+      let text = 'X';
+      let intensity = 5;
+      if (this.uid !== uid && isOwner) {
+        intensity = 0;
+        text = 'X';
+      }
+      let x3d = Utility3D.__createTextMesh('seattextX' + index, {
+        text,
+        fontFamily: 'monospace',
+        size: 100,
+        depth: .25
+      }, this.scene);
+      x3d.scaling.x = 0.5;
+      x3d.scaling.y = 0.5;
+      x3d.scaling.z = 0.5;
+
+      x3d.rotation.z = -Math.PI / 2;
+      x3d.rotation.y = -Math.PI / 2;
+
+      x3d.position.y = 1.9;
+      x3d.position.x = 0.4;
+
+      for (let i in this.scene.meshes) {
+        if (this.scene.meshes[i].parent === x3d)
+          this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
+      }
+
+      this.meshSetVerticeColors(x3d, intensity, intensity, intensity);
+      x3d.parent = mesh;
+      x3d.assetMeta = {
+        appClickable: true,
+        clickCommand: 'stand',
+        seatIndex: index
+      }
+    }
   }
 
   async _updateSeat(index) {
@@ -1336,6 +1344,7 @@ export class StoryApp extends BaseApp {
       }, this.scene);
 
       baseDisc.rotation.x = Math.PI / 2;
+      baseDisc.position.y = 0.65;
       baseDisc.assetMeta = {
         emptySeat: true,
         seatIndex: index,
@@ -1357,7 +1366,8 @@ export class StoryApp extends BaseApp {
     avatarWrapper.parent = wrapper;
     wrapper.avatarWrapper = avatarWrapper;
 
-    this.navigationAid(wrapper, index);
+
+    wrapper.position.x = 2 - (index * 1.5);
 
     return wrapper;
   }
@@ -1417,173 +1427,7 @@ export class StoryApp extends BaseApp {
     return baseCircle;
   }
 
-  async setupAgents() {
-    await Recast();
-    this.navigationPlugin = new BABYLON.RecastJSPlugin();
-    let navmeshParameters = {
-      cs: 0.2,
-      ch: 0.2,
-      walkableSlopeAngle: 90,
-      walkableHeight: 1.0,
-      walkableClimb: 1,
-      walkableRadius: 1,
-      maxEdgeLen: 12.,
-      maxSimplificationError: 1.3,
-      minRegionArea: 8,
-      mergeRegionArea: 20,
-      maxVertsPerPoly: 6,
-      detailSampleDist: 6,
-      detailSampleMaxError: 1,
-    };
-
-    this.navigationPlugin.createNavMesh([this.navMesh, this.env.ground], navmeshParameters);
-    this.crowd = this.navigationPlugin.createCrowd(6, .25, this.scene);
-
-    this.crowd.onReachTargetObservable.add((agentInfos) => {
-      let seat = this.agents[agentInfos.agentIndex].mesh;
-      if (seat.avatarMesh) {
-        seat.avatarMesh.localRunning = false;
-        if (seat.avatarMesh.modelAnimationGroup)
-          seat.avatarMesh.modelAnimationGroup.pause();
-        if (seat.particleSystem)
-          seat.particleSystem.stop();
-      }
-      this.agents[agentInfos.agentIndex].stopped = true;
-
-      this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
-    });
-
-    this.agentParams = {
-      radius: 0.1,
-      reachRadius: .5,
-      height: 0.2,
-      maxAcceleration: 4.0,
-      maxSpeed: 1.0,
-      collisionQueryRange: 0.5,
-      pathOptimizationRange: 0.0,
-      separationWeight: 1.0
-    };
-    this.agents = [];
-
-    this.scene.onBeforeRenderObservable.add(() => {
-      let agentCount = this.agents.length;
-      for (let i = 0; i < agentCount; i++) {
-        let ag = this.agents[i];
-        if (ag.stopped) {
-          continue;
-        }
-
-        ag.mesh.position = this.crowd.getAgentPosition(ag.idx);
-        let vel = this.crowd.getAgentVelocity(ag.idx);
-        this.crowd.getAgentNextTargetPathToRef(ag.idx, ag.target);
-        if (vel.length() > 0.2) {
-          vel.normalize();
-          let desiredRotation = Math.atan2(vel.x, vel.z);
-          ag.mesh.rotation.y = ag.mesh.rotation.y + (desiredRotation - ag.mesh.rotation.y) * 0.02;
-        }
-
-      }
-    });
-  }
-  navigationAid(mesh, index) {
-    let randomPos = this.get3DPosition(index);
-    let transform = new BABYLON.TransformNode();
-    let agentIndex = this.crowd.addAgent(randomPos, this.agentParams, transform);
-    this.agents.push({
-      idx: agentIndex,
-      trf: transform,
-      mesh,
-      target: new BABYLON.Vector3(0, 0, 0)
-    });
-  }
-  groundClick(pointerInfo) {
-    if (!this.crowd)
-      return;
-
-    let startingPoint = pointerInfo.pickInfo.pickedPoint;
-    if (startingPoint) {
-      let agents = this.crowd.getAgents();
-      let closest = this.navigationPlugin.getClosestPoint(startingPoint);
-
-      let key = 'seat' + this.currentSeatMeshIndex;
-      if (this.gameData[key] === this.uid) // || this.uid === this.gameData.createUser)
-        this.updateSeatPosition(this.currentSeatMeshIndex, closest);
-    }
-  }
-  async updateSeatPosition(seatIndex, position) {
-    let body = {
-      seatIndex,
-      gameNumber: this.currentGame,
-      x: position.x,
-      y: position.y,
-      z: position.z
-    };
-    let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'api/games/seat/position', {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-        token
-      },
-      body: JSON.stringify(body)
-    });
-    let json = await f_result.json();
-  }
-  updateAgents() {
-    if (!this.crowd)
-      return;
-
-    let agents = this.crowd.getAgents();
-
-    for (let i = 0; i < agents.length; i++) {
-      let key = 'seat' + i.toString();
-      let lastPosChange = this.gameData[key + '_pos_d'];
-      if (lastPosChange && lastPosChange !== this.cache[key + '_pos_d']) {
-        this.cache[key + '_pos_d'] = lastPosChange;
-        let x = Number(this.gameData[key + '_pos_x']);
-        let y = Number(this.gameData[key + '_pos_y']);
-        let z = Number(this.gameData[key + '_pos_z']);
-        let position = new BABYLON.Vector3(x, y, z);
-        this._sendAgentToTarget(i, position);
-      }
-    }
-  }
-  _sendAgentToTarget(i, position) {
-    let seat = this.agents[i].mesh;
-    if (this.gameData['seat' + i] && !seat.avatarMesh) {
-      return setTimeout(() => this._sendAgentToTarget(i, position), 50);
-    }
-
-    this.crowd.agentGoto(i, position);
-
-    if (seat.avatarMesh) {
-      seat.avatarMesh.localRunning = true;
-      if (seat.avatarMesh.modelAnimationGroup)
-        seat.avatarMesh.modelAnimationGroup.play();
-      if (seat.particleSystem)
-        seat.particleSystem.start();
-    }
-    this.agents[i].target.x = position.x;
-    this.agents[i].target.y = position.y;
-    this.agents[i].target.z = position.z;
-    this.agents[i].stopped = false;
-
-    let pathPoints = this.navigationPlugin.computePath(this.crowd.getAgentPosition(i), position);
-    let pathLine;
-    pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
-      points: pathPoints,
-      updatable: true,
-      instance: pathLine
-    }, this.scene);
-    let color = this.get3DColors(i);
-    this.meshSetVerticeColors(pathLine, color.r, color.g, color.b);
-
-    setTimeout(() => {
-      pathLine.dispose();
-    }, 1500);
-  }
+  groundClick(pointerInfo) {}
 
   updateUserPresence() {
     super.updateUserPresence();
@@ -1609,7 +1453,7 @@ export class StoryApp extends BaseApp {
           mat1.diffuseColor = color;
 
           let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + c, {
-            diameter: .1,
+            diameter: .25,
             segments: 16
           }, this.scene);
           sphere.position.y = 1.85;
@@ -1778,15 +1622,6 @@ export class StoryApp extends BaseApp {
     this.playerLeftPanelTransform = new BABYLON.TransformNode('playerLeftPanelTransform', this.scene);
     this.playerLeftPanelTransform.parent = scoreboardTransform;
 
-    let meta = Object.assign({}, this.allCards['mercury']);
-    meta.extended = this.processStaticAssetMeta(meta);
-    this.selectedMeshInstance = await this.__loadRotatingAsset(meta);
-    this.selectedMeshInstance.wrapper.position.y = 2.5;
-
-    this.selectedMeshInstance.wrapper.parent = this.playerLeftPanelTransform;
-
-    this._fitNodeToSize(this.selectedMeshInstance.wrapper, 2.5);
-
     this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
       text: 'A Follow',
       fontFamily: 'Impact',
@@ -1828,6 +1663,13 @@ export class StoryApp extends BaseApp {
     };
     this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
     this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
+
+    let meta = Object.assign({}, this.allCards['mercury']);
+    meta.extended = this.processStaticAssetMeta(meta);
+
+    this.lastClickMeta = meta;
+    this.lastClickMetaButtonCache = this.lastClickMeta;
+    this._updateLastClickMeta(this.lastClickMetaButtonCache);
   }
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
     let mesh;
@@ -1839,7 +1681,7 @@ export class StoryApp extends BaseApp {
     } else {
       mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone();
 
-//       await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
+      //       await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
     }
 
     let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
@@ -1892,14 +1734,13 @@ export class StoryApp extends BaseApp {
     this.playerMoonNavs = [];
     let loadMoonButton = async (index) => {
       let moonNav = await this.loadStaticMesh(this.seatMeshes[index].assetMeta.extended.glbPath, '', this.seatMeshes[index].assetMeta.extended.scale, 0, 0, 0);
-      moonNav.scaling.x = .001;
-      moonNav.scaling.y = .001;
-      moonNav.scaling.z = .001;
-      moonNav.position.y = 1.5;
+      moonNav.position.y = 2.75;
       moonNav.position.x = 2 - (index * 1.5);
       moonNav.position.z = 0;
       moonNav.rotation.z = -Math.PI / 2;
       moonNav.rotation.y = -Math.PI / 2;
+      this._fitNodeToSize(moonNav, 1.25);
+
       moonNav.assetMeta = {
         appClickable: true,
         clickCommand: 'playerMoon',
@@ -1962,7 +1803,7 @@ export class StoryApp extends BaseApp {
       avatarNav.scaling.x = .5;
       avatarNav.scaling.y = .5;
       avatarNav.scaling.z = .5;
-      avatarNav.position.y = 3;
+      avatarNav.position.y = 4;
       avatarNav.position.x = 2 - (c * 1.5);
       avatarNav.position.z = 0;
       avatarNav.rotation.z = -Math.PI / 2;
