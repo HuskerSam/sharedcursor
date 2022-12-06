@@ -379,6 +379,7 @@ export class StoryApp extends BaseApp {
     this.asteroidSymbolMesh1.setEnabled(false);
     this.asteroidSymbolMesh2.setEnabled(false);
 
+    this.loadedAsteroids = {};
     for (let c = 0; c < count; c++)
       this._loadAsteroid(asteroids[randomArray[c]], c, count);
   }
@@ -390,17 +391,20 @@ export class StoryApp extends BaseApp {
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', 1, 0, mainY, 0);
+    let mesh = await this.loadStaticMesh(path, '', 1, 0, 0, 0);
 
     mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, this.scene);
+    let positionTN = new BABYLON.TransformNode('asteroidpositionwrapper' + asteroid, this.scene);
 
-    mesh.position.x = 20;
+    positionTN.position.x = 20;
+    positionTN.position.y = mainY;
     orbitWrapper.position.x = 7;
     orbitWrapper.position.z = 9;
 
-    mesh.parent = orbitWrapper;
+    mesh.parent = positionTN;
+    positionTN.parent = orbitWrapper;
 
     let orbitAnim = new BABYLON.Animation(
       "asteroidorbit" + asteroid,
@@ -439,9 +443,9 @@ export class StoryApp extends BaseApp {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    let x = mesh.rotation.x;
-    let y = mesh.rotation.y;
-    let z = mesh.rotation.z;
+    let x = positionTN.rotation.x;
+    let y = positionTN.rotation.y;
+    let z = positionTN.rotation.z;
     let spinkeys = [];
 
     let extraFrames = 0;
@@ -471,13 +475,13 @@ export class StoryApp extends BaseApp {
     });
 
     anim.setKeys(spinkeys);
-    if (!mesh.animations)
-      mesh.animations = [];
-    mesh.animations.push(anim);
+    if (!positionTN.animations)
+      positionTN.animations = [];
+    positionTN.animations.push(anim);
 
-    let animR = this.scene.beginAnimation(mesh, 0, spinEndFrame, true);
+    let animR = this.scene.beginAnimation(positionTN, 0, spinEndFrame, true);
 
-    let asteroidSymbolWrapper = this.loadSymbolForAsteroid(mesh, asteroid, index);
+    let asteroidSymbolWrapper = this.loadSymbolForAsteroid(positionTN, asteroid, index);
 
     orbitWrapper.assetMeta = {
       appClickable: true,
@@ -485,15 +489,19 @@ export class StoryApp extends BaseApp {
       name: asteroid,
       asteroidType: true,
       asteroidName: asteroid,
-      asteroidMesh: mesh,
+      asteroidMesh: positionTN,
       asteroidSymbolWrapper,
       orbitAnimation,
       basePivot: mesh
     };
-    mesh.origsx = mesh.scaling.x;
-    mesh.origsy = mesh.scaling.y;
-    mesh.origsz = mesh.scaling.z;
+    positionTN.origsx = positionTN.scaling.x;
+    positionTN.origsy = positionTN.scaling.y;
+    positionTN.origsz = positionTN.scaling.z;
 
+    this.loadedAsteroids[asteroid] = {
+      orbitWrapper,
+      mesh
+    };
   }
   loadSymbolForAsteroid(parent, name, index) {
     let asteroidSymbol;
@@ -816,6 +824,9 @@ export class StoryApp extends BaseApp {
       this.clickStartGame();
     if (meta.clickCommand === 'endGame')
       this.clickEndGame();
+    if (meta.clickCommand === 'customClick') {
+      meta.handleClick(pointerInfo, mesh, meta);
+    }
     if (meta.clickCommand === 'activeMoon')
       this.clickActiveMoonNavigate();
     if (meta.clickCommand === 'playerMoon')
@@ -840,9 +851,14 @@ export class StoryApp extends BaseApp {
 
     this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
     this.selectedMeshInstance.wrapper.position.y = 2.5;
-    this.selectedMeshInstance.wrapper.parent = this.playerLeftPanelTransform;
+    this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
+    this._fitNodeToSize(mesh, 2.5);
 
-    this._fitNodeToSize(this.selectedMeshInstance.wrapper, 2.5);
+
+    this._updateAssetSizeButtons();
+  }
+  _updateAssetSizeButtons() {
+
   }
   _fitNodeToSize(node, size) {
     const boundingInfo = node.getHierarchyBoundingVectors(true);
@@ -911,17 +927,14 @@ export class StoryApp extends BaseApp {
     if (this.scoreboardShowing && hideScoreboard) {
       this.scoreboardShowing = false;
       this.scoreboardWrapper.origY = this.scoreboardWrapper.position.y;
-      this.scoreboardWrapper.position.y = -1000;
+      this.scoreboardWrapper.position.y = -100000;
       this.scoreboardWrapper.scaling.x = 0.001;
       this.scoreboardWrapper.scaling.y = 0.001;
       this.scoreboardWrapper.scaling.z = 0.001;
 
-      //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(false));
-
       return;
     }
     if (!this.scoreboardShowing) {
-      //  this.scoreboardWrapper.meshesEnableToggle.forEach(mesh => mesh.setEnabled(true));
       this.scoreboardShowing = true;
     }
 
@@ -966,6 +979,8 @@ export class StoryApp extends BaseApp {
     this.aimCamera(this.cameraMetaY);
     if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR)
       this.scene.activeCamera.position.y += 10;
+    else
+      this.scene.activeCamera.radius = 35;
   }
   selectMoonMesh(seatIndex) {
     if (seatIndex === 1)
@@ -1519,19 +1534,18 @@ export class StoryApp extends BaseApp {
 
     let scoreboardWrapper = new BABYLON.TransformNode('scoreboardWrapper', this.scene);
     this.scoreboardWrapper = scoreboardWrapper;
-    scoreboardWrapper.meshesEnableToggle = [];
 
     let scoreboardTransform = new BABYLON.TransformNode('scoreboardTransform', this.scene);
     scoreboardTransform.parent = this.scoreboardWrapper;
     scoreboardTransform.position.z = 2;
     scoreboardTransform.position.y = -0.5;
 
-    this.__initMidPanel(scoreboardTransform);
-    this.__initLeftPanel(scoreboardTransform);
+    this.__initScorePanel(scoreboardTransform);
+    this.__initFocusedAssetPanel(scoreboardTransform);
     this.__initDock3DPanel(scoreboardTransform);
     return scoreboardWrapper;
   }
-  __initMidPanel(scoreboardTransform) {
+  __initScorePanel(scoreboardTransform) {
     this.playerMidPanelTransform = new BABYLON.TransformNode('playerMidPanelTransform', this.scene);
     this.playerMidPanelTransform.parent = scoreboardTransform;
     this.playerMidPanelTransform.position.x = 5;
@@ -1614,9 +1628,9 @@ export class StoryApp extends BaseApp {
     this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
 
   }
-  async __initLeftPanel(scoreboardTransform) {
-    this.playerLeftPanelTransform = new BABYLON.TransformNode('playerLeftPanelTransform', this.scene);
-    this.playerLeftPanelTransform.parent = scoreboardTransform;
+  async __initFocusedAssetPanel(scoreboardTransform) {
+    this.assetFocusPanelTN = new BABYLON.TransformNode('assetFocusPanelTN', this.scene);
+    this.assetFocusPanelTN.parent = scoreboardTransform;
 
     this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
       text: 'A Follow',
@@ -1636,7 +1650,7 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'activeMoon'
     };
-    this.activeMoonNav.parent = this.playerLeftPanelTransform;
+    this.activeMoonNav.parent = this.assetFocusPanelTN;
     this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
 
     this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
@@ -1657,16 +1671,18 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'zoomOut'
     };
-    this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
+    this.zoomoutViewMap.parent = this.assetFocusPanelTN;
     this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
+
+    let buttonPanel = this._initSizePanel();
+    buttonPanel.position.y = 4;
+    buttonPanel.rotation.y = Math.PI;
+    buttonPanel.parent = this.assetFocusPanelTN;
   }
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
     let mesh;
     if (assetMeta.asteroidType) {
-      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
-        encodeURIComponent(assetMeta.asteroidName) + '?alt=media';
-      mesh = await this.loadStaticMesh(path, '', 1, 0, 0, 0);
-      mesh.material = this.asteroidMaterial;
+      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone();
     } else {
       mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone();
 
@@ -1782,7 +1798,6 @@ export class StoryApp extends BaseApp {
       this.scene.beginAnimation(moonNav, 0, endFrame, true);
 
       this.playerMoonNavs.push(moonNav);
-      this.scoreboardWrapper.meshesEnableToggle.push(moonNav);
     };
     for (let d = 0; d < 4; d++) {
       loadMoonButton(d);
@@ -1817,6 +1832,72 @@ export class StoryApp extends BaseApp {
       this.playerAvatarNavs.push(avatarNav);
     }
 
-    this.scoreboardWrapper.meshesEnableToggle.push(this.startGameButton);
+  }
+
+  _initSizePanel() {
+    let buttonBarTransform = new BABYLON.TransformNode('assetPanelButtonTN', this.scene);
+
+    let normalSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelNormalSizeButton', {
+      height: 0.25,
+      width: 1.65,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    normalSizeButton.material = new BABYLON.StandardMaterial('assetPanelNormalSizeButtonMat', this.scene);
+    Utility3D.setTextMaterial(this.scene, normalSizeButton.material, 'Normal', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
+    normalSizeButton.parent = buttonBarTransform;
+    this.assetPanelNormalButton = normalSizeButton;
+
+    let handleClick = async (pointerInfo, mesh, meta) => {
+      //      normalSizeButton.dispose();
+    };
+
+    normalSizeButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick
+    };
+
+    let hugeSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelHugeSizeButton', {
+      height: 0.25,
+      width: 1.65,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    hugeSizeButton.material = new BABYLON.StandardMaterial('assetPanelHugeSizeButtonMat', this.scene);
+    Utility3D.setTextMaterial(this.scene, hugeSizeButton.material, 'Huge', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
+    hugeSizeButton.parent = buttonBarTransform;
+    this.assetPanelHugeButton = hugeSizeButton;
+
+    hugeSizeButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        //      hugeSizeButton.dispose();
+      }
+    };
+
+    hugeSizeButton.position.x = 2;
+
+
+    let smallSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelSmallSizeButton', {
+      height: 0.25,
+      width: 1.65,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    smallSizeButton.material = new BABYLON.StandardMaterial('assetPanelSmallSizeButtonMat', this.scene);
+    Utility3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
+    smallSizeButton.parent = buttonBarTransform;
+    this.assetPanelSizeButton = smallSizeButton;
+
+    smallSizeButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        //            hugeSizeButton.dispose();
+      }
+    };
+
+    smallSizeButton.position.x = -2;
+
+    return buttonBarTransform;
   }
 }

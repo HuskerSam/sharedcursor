@@ -314,8 +314,8 @@ export default class Utility3D {
 
     return textWrapperMesh;
   }
-  static setTextMaterial(scene, mat, text, rgbColor = 'rgb(255,0,0)') {
-    let nameTexture = Utility3D.__texture2DText(scene, text, rgbColor);
+  static setTextMaterial(scene, mat, text, rgbColor = 'rgb(255,0,0)', cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
+    let nameTexture = Utility3D.__texture2DText(scene, text, rgbColor, cssClearColor, textFontSize, textFontFamily, fontWeight, renderSize);
     nameTexture.vScale = 1;
     nameTexture.uScale = 1;
     nameTexture.hasAlpha = true;

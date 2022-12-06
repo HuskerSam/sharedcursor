@@ -1252,7 +1252,7 @@ export class BaseApp {
       target: new BABYLON.Vector3(10, 1, 10)
     };
     this.cameraMetaY = {
-      position: new BABYLON.Vector3(30, 40, 30),
+      position: new BABYLON.Vector3(30, 6, 30),
       target: new BABYLON.Vector3(-10, 1, -10)
     };
 
@@ -1296,6 +1296,10 @@ export class BaseApp {
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
+    this.camera.wheelPrecision = 10;
+    this.camera.upperRadiusLimit = 25;
+    this.camera.allowUpsideDown = false;
+    this.camera.maxZ = 750;
     scene.activeCamera.setPosition(this.cameraMetaX.position);
     scene.activeCamera.setTarget(this.cameraMetaX.target);
     scene.activeCamera.panningSensibility = 300;
