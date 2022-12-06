@@ -152,7 +152,7 @@
     "orbitTime": 30000,
     "optionalLoad": true,
     "optionalFlags": "probes",
-    "parent": "moon_io"
+    "parent": "j5_io"
   },
   {
     "id": "mascot_cassini",

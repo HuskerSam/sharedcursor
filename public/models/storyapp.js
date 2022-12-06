@@ -316,15 +316,17 @@ export class StoryApp extends BaseApp {
     if (this.urlParams.get('showguides'))
       this.createGuides();
 
+    this.initCameraToolbar();
+
     this.sceneInited = true;
     this.initScoreboard();
+
+    this.selectMoonMesh();
 
     this.loadAvatars();
     this.loadAsteroids();
 
     this.paintGameData();
-
-    this.initCameraToolbar();
 
     this.verifyLoaddingComplete = setInterval(() => {
       if (!this.runRender)
@@ -818,14 +820,17 @@ export class StoryApp extends BaseApp {
       this.clickActiveMoonNavigate();
     if (meta.clickCommand === 'playerMoon')
       this.clickPlayerMoonNavigate(meta.seatIndex);
-    if (meta.clickCommand === 'playerAvatar')
-      this.clickPlayerAvatarNavigate(meta.seatIndex);
+    if (meta.clickCommand === 'selectMainMesh')
+      this.selectMoonMesh(meta.seatIndex);
     if (meta.clickCommand === 'zoomOut')
       this.clickZoomout();
 
     return true;
   }
   async _updateLastClickMeta(assetMeta) {
+    this.lastClickMeta = assetMeta;
+    this.lastClickMetaButtonCache = this.lastClickMeta;
+
     this.buttonOneRed.innerHTML = 'A Follow ' + assetMeta.name;
     this.buttonTwo.innerHTML = 'B';
 
@@ -892,9 +897,6 @@ export class StoryApp extends BaseApp {
       position,
       target
     });
-  }
-  clickPlayerAvatarNavigate(index) {
-
   }
   clickShowScoreboard() {
     if (this.lastShowScoreboardTime === undefined)
@@ -964,6 +966,16 @@ export class StoryApp extends BaseApp {
     this.aimCamera(this.cameraMetaY);
     if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR)
       this.scene.activeCamera.position.y += 10;
+  }
+  selectMoonMesh(seatIndex) {
+    if (seatIndex === 1)
+      this._updateLastClickMeta(this.staticAssetMeshes['ceres'].assetMeta);
+    else if (seatIndex === 2)
+      this._updateLastClickMeta(this.staticAssetMeshes['j5_io'].assetMeta);
+    else if (seatIndex === 3)
+      this._updateLastClickMeta(this.staticAssetMeshes['eris'].assetMeta);
+    else
+      this._updateLastClickMeta(this.staticAssetMeshes['e1_luna'].assetMeta);
   }
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
@@ -1346,10 +1358,10 @@ export class StoryApp extends BaseApp {
         depth: .25
       }, this.scene);
 
-    //  baseDisc.rotation.x = Math.PI / 2;
-    baseDisc.rotation.z = -Math.PI / 2;
-    baseDisc.rotation.y = -Math.PI / 2;
-    baseDisc.position.y = 1;
+      //  baseDisc.rotation.x = Math.PI / 2;
+      baseDisc.rotation.z = -Math.PI / 2;
+      baseDisc.rotation.y = -Math.PI / 2;
+      baseDisc.position.y = 1;
       baseDisc.assetMeta = {
         emptySeat: true,
         seatIndex: index,
@@ -1516,7 +1528,7 @@ export class StoryApp extends BaseApp {
 
     this.__initMidPanel(scoreboardTransform);
     this.__initLeftPanel(scoreboardTransform);
-    this.__initRightPanel(scoreboardTransform);
+    this.__initDock3DPanel(scoreboardTransform);
     return scoreboardWrapper;
   }
   __initMidPanel(scoreboardTransform) {
@@ -1647,13 +1659,6 @@ export class StoryApp extends BaseApp {
     };
     this.zoomoutViewMap.parent = this.playerLeftPanelTransform;
     this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
-
-    let meta = Object.assign({}, this.allCards['mercury']);
-    meta.extended = this.processStaticAssetMeta(meta);
-
-    this.lastClickMeta = meta;
-    this.lastClickMetaButtonCache = this.lastClickMeta;
-    this._updateLastClickMeta(this.lastClickMetaButtonCache);
   }
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
     let mesh;
@@ -1708,7 +1713,16 @@ export class StoryApp extends BaseApp {
       mesh
     }
   }
-  __initRightPanel(scoreboardTransform) {
+  __setTextMeshColor(mesh, r, g, b) {
+    for (let i in this.scene.meshes) {
+      if (this.scene.meshes[i].parent === mesh)
+        this.meshSetVerticeColors(this.scene.meshes[i], r, g, b);
+    }
+
+    this.meshSetVerticeColors(mesh, r, g, b);
+  }
+
+  __initDock3DPanel(scoreboardTransform) {
     this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
     this.playerRightPanelTransform.parent = scoreboardTransform;
     this.playerRightPanelTransform.position.x = -5;
@@ -1727,7 +1741,7 @@ export class StoryApp extends BaseApp {
 
       moonNav.assetMeta = {
         appClickable: true,
-        clickCommand: 'playerMoon',
+        clickCommand: 'selectMainMesh',
         seatIndex: index
       };
 
@@ -1794,7 +1808,7 @@ export class StoryApp extends BaseApp {
       avatarNav.rotation.y = -Math.PI / 2;
       avatarNav.assetMeta = {
         appClickable: true,
-        clickCommand: 'playerAvatar',
+        clickCommand: 'selectMainMesh',
         seatIndex: c
       };
       avatarNav.parent = this.playerRightPanelTransform;
@@ -1804,13 +1818,5 @@ export class StoryApp extends BaseApp {
     }
 
     this.scoreboardWrapper.meshesEnableToggle.push(this.startGameButton);
-  }
-  __setTextMeshColor(mesh, r, g, b) {
-    for (let i in this.scene.meshes) {
-      if (this.scene.meshes[i].parent === mesh)
-        this.meshSetVerticeColors(this.scene.meshes[i], r, g, b);
-    }
-
-    this.meshSetVerticeColors(mesh, r, g, b);
   }
 }
