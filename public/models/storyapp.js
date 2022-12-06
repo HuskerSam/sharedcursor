@@ -843,7 +843,8 @@ export class StoryApp extends BaseApp {
     this.lastClickMeta = assetMeta;
     this.lastClickMetaButtonCache = this.lastClickMeta;
 
-    this.buttonOneRed.innerHTML = 'A Follow ' + assetMeta.name;
+    let desc = assetMeta.name.replace('.obj', '');
+    this.buttonOneRed.innerHTML = 'A Follow ' + desc;
     this.buttonTwo.innerHTML = 'B';
 
     if (this.selectedMeshInstance) {
@@ -854,6 +855,8 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance.wrapper.position.y = 2.5;
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
     this._fitNodeToSize(this.selectedMeshInstance.mesh, 2.5);
+
+    Utility3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
 
     this._updateAssetSizeButtons();
   }
@@ -1695,6 +1698,100 @@ export class StoryApp extends BaseApp {
     buttonPanel.position.y = 4;
     buttonPanel.rotation.y = Math.PI;
     buttonPanel.parent = this.assetFocusPanelTN;
+
+    let size = 1;
+    this.selectedAssetNameMesh = BABYLON.MeshBuilder.CreatePlane('selectedAssetNameMesh', {
+      height: 1.5,
+      width: size * 5,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    this.selectedAssetNameMesh.position.y = 3;
+    this.selectedAssetNameMesh.rotation.y = Math.PI;
+    this.selectedAssetNameMesh.parent = this.assetFocusPanelTN;
+
+    this.selectedAssetNameMat = new BABYLON.StandardMaterial('selectedAssetNameMat', this.scene);
+    this.selectedAssetNameMesh.material = this.selectedAssetNameMat;
+
+    this.nextselectedassetmesh = Utility3D.__createTextMesh('nextselectedassetmesh', {
+      text: '>',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .5
+    }, this.scene);
+    this.nextselectedassetmesh.scaling.x = .5;
+    this.nextselectedassetmesh.scaling.y = .5;
+    this.nextselectedassetmesh.scaling.z = .5;
+    this.nextselectedassetmesh.position.y = 2.5;
+    this.nextselectedassetmesh.position.x = -2;
+    this.nextselectedassetmesh.rotation.z = -Math.PI / 2;
+    this.nextselectedassetmesh.rotation.y = -Math.PI / 2;
+    this.nextselectedassetmesh.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.nextSelectedObject();
+      }
+    };
+    this.nextselectedassetmesh.parent = this.assetFocusPanelTN;
+    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
+
+    this.previousselectedassetmesh = Utility3D.__createTextMesh('previousselectedassetmesh', {
+      text: '<',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .5
+    }, this.scene);
+    this.previousselectedassetmesh.scaling.x = .5;
+    this.previousselectedassetmesh.scaling.y = .5;
+    this.previousselectedassetmesh.scaling.z = .5;
+    this.previousselectedassetmesh.position.y = 2.5;
+    this.previousselectedassetmesh.position.x = 2;
+    this.previousselectedassetmesh.rotation.z = -Math.PI / 2;
+    this.previousselectedassetmesh.rotation.y = -Math.PI / 2;
+    this.previousselectedassetmesh.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.nextSelectedObject(true);
+      }
+    };
+    this.previousselectedassetmesh.parent = this.assetFocusPanelTN;
+    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
+  }
+  nextSelectedObject(previous = false) {
+    let meta = this.lastClickMetaButtonCache;
+    let id = meta.id;
+    let factor = previous ? -1 : 1;
+    if (meta.asteroidType) {
+      let keys = Object.keys(this.loadedAsteroids).sort();
+
+      let index = keys.indexOf(meta.name);
+      let nextIndex = index + factor;
+      if (nextIndex < 0)
+        nextIndex = keys.length - 1;
+      if (nextIndex > keys.length - 1)
+        nextIndex = 0;
+
+      let key = keys[nextIndex];
+      this._updateLastClickMeta(this.loadedAsteroids[key].orbitWrapper.assetMeta);
+    } else {
+      let keys = Object.keys(this.staticAssetMeshes).sort((a, b) => {
+        if (this.staticAssetMeshes[a].assetMeta.name > this.staticAssetMeshes[b].assetMeta.name)
+          return 1;
+        if (this.staticAssetMeshes[a].assetMeta.name < this.staticAssetMeshes[b].assetMeta.name)
+          return -1;
+        return 0;
+      });
+      let index = keys.indexOf(id);
+      let nextIndex = index + factor;
+      if (nextIndex < 0)
+        nextIndex = keys.length - 1;
+      if (nextIndex > keys.length - 1)
+        nextIndex = 0;
+
+      let key = keys[nextIndex];
+      this._updateLastClickMeta(this.staticAssetMeshes[key].assetMeta);
+    }
   }
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
     let mesh;
