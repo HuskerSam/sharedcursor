@@ -800,8 +800,6 @@ export class StoryApp extends BaseApp {
 
     let meta = mesh.assetMeta;
 
-    console.log(meta);
-
     if (meta.emptySeat) {
       this.dockSit(meta.seatIndex);
     }
@@ -854,12 +852,29 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
     this._fitNodeToSize(this.selectedMeshInstance.mesh, 2.5);
 
-
     this._updateAssetSizeButtons();
   }
   _updateAssetSizeButtons() {
+    if (this.lastClickMeta.asteroidType) {
+      this.assetPanelNormalButton.setEnabled(false);
+      this.assetSmallSizeButton.setEnabled(false);
+      this.assetPanelHugeButton.setEnabled(false);
 
+      return;
+    }
+
+    let smallSize = this.lastClickMeta.smallglbpath ? true : false;
+    let hugeSize = this.lastClickMeta.largeglbpath ? true : false;
+
+    let isSmallSize = this.lastClickMeta.extended.smallGlbPath === this.lastClickMeta.extended.glbPath;
+    let isHugeSize = this.lastClickMeta.extended.largeGlbPath === this.lastClickMeta.extended.glbPath;
+    let isNormalSize = this.lastClickMeta.extended.normalGlbPath === this.lastClickMeta.extended.glbPath;
+
+    this.assetPanelNormalButton.setEnabled(!isNormalSize);
+    this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
+    this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
   }
+
   _fitNodeToSize(node, size) {
     const boundingInfo = node.getHierarchyBoundingVectors(true);
     const currentLength = boundingInfo.max.subtract(boundingInfo.min);
@@ -867,6 +882,7 @@ export class StoryApp extends BaseApp {
     let scale = size / biggestSide;
     node.scaling.scaleInPlace(scale);
   }
+
   clickEndTurn() {
     this._endTurn();
   }
@@ -1026,9 +1042,6 @@ export class StoryApp extends BaseApp {
       if (meta.orbitAnimation && meta.orbitAnimation._paused)
         meta.orbitAnimation.restart();
     }
-
-    //if (meta.parent)
-    //  this.meshToggleAnimation(this.staticAssetMeshes[meta.parent].assetMeta, stop);
   }
 
   asteroidPtrDown(meta, up = false) {
@@ -1682,9 +1695,9 @@ export class StoryApp extends BaseApp {
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
     let mesh;
     if (assetMeta.asteroidType) {
-      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone();
+      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id);
     } else {
-      mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone();
+      mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + this.staticAssetMeshes[assetMeta.id].baseMesh.id);
 
       //       await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
     }
@@ -1738,6 +1751,63 @@ export class StoryApp extends BaseApp {
     this.meshSetVerticeColors(mesh, r, g, b);
   }
 
+  async loadMoonButton(index) {
+    if (this.playerMoonNavs[index.toString()])
+      this.playerMoonNavs[index.toString()].dispose();
+
+    let moonNav = this.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone('moonnavmesh' + index);
+    moonNav.position.y = 2.75;
+    moonNav.position.x = 2 - (index * 1.5);
+    moonNav.position.z = 0;
+    moonNav.rotation.z = -Math.PI / 2;
+    moonNav.rotation.y = -Math.PI / 2;
+
+    moonNav.assetMeta = {
+      appClickable: true,
+      clickCommand: 'selectMainMesh',
+      seatIndex: index
+    };
+
+    let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
+    rotationTransform.parent = this.playerRightPanelTransform;
+    moonNav.parent = rotationTransform;
+    this._fitNodeToSize(moonNav, 1.25);
+
+    let rotationAnim = new BABYLON.Animation(
+      rotationTransform.id + 'anim',
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let keys = [];
+    let endFrame = 20 * 30;
+
+    let rotationDirection = index % 2 === 0 ? 2 : -2;
+
+    keys.push({
+      frame: 0,
+      value: new BABYLON.Vector3(x, y, z)
+    });
+
+    keys.push({
+      frame: endFrame,
+      value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
+    });
+
+    rotationAnim.setKeys(keys);
+    if (!moonNav.animations)
+      moonNav.animations = [];
+    moonNav.animations.push(rotationAnim);
+    this.scene.beginAnimation(moonNav, 0, endFrame, true);
+
+    this.playerMoonNavs[index.toString()] = moonNav;
+  }
+
   __initDock3DPanel(scoreboardTransform) {
     this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
     this.playerRightPanelTransform.parent = scoreboardTransform;
@@ -1745,62 +1815,9 @@ export class StoryApp extends BaseApp {
     this.playerRightPanelTransform.position.z += 2;
     this.playerRightPanelTransform.rotation.y = Math.PI / 4;
 
-    this.playerMoonNavs = [];
-    let loadMoonButton = async (index) => {
-      let moonNav = this.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone();
-      moonNav.position.y = 2.75;
-      moonNav.position.x = 2 - (index * 1.5);
-      moonNav.position.z = 0;
-      moonNav.rotation.z = -Math.PI / 2;
-      moonNav.rotation.y = -Math.PI / 2;
-      this._fitNodeToSize(moonNav, 1.25);
-
-      moonNav.assetMeta = {
-        appClickable: true,
-        clickCommand: 'selectMainMesh',
-        seatIndex: index
-      };
-
-      let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
-      rotationTransform.parent = this.playerRightPanelTransform;
-      moonNav.parent = rotationTransform;
-
-      let rotationAnim = new BABYLON.Animation(
-        rotationTransform.id + 'anim',
-        "rotation",
-        30,
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-      );
-
-      let x = 0;
-      let y = 0;
-      let z = 0;
-      let keys = [];
-      let endFrame = 20 * 30;
-
-      let rotationDirection = index % 2 === 0 ? 2 : -2;
-
-      keys.push({
-        frame: 0,
-        value: new BABYLON.Vector3(x, y, z)
-      });
-
-      keys.push({
-        frame: endFrame,
-        value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
-      });
-
-      rotationAnim.setKeys(keys);
-      if (!moonNav.animations)
-        moonNav.animations = [];
-      moonNav.animations.push(rotationAnim);
-      this.scene.beginAnimation(moonNav, 0, endFrame, true);
-
-      this.playerMoonNavs.push(moonNav);
-    };
+    this.playerMoonNavs = {};
     for (let d = 0; d < 4; d++) {
-      loadMoonButton(d);
+      this.loadMoonButton(d);
     }
 
     this.playerAvatarNavs = [];
@@ -1848,7 +1865,8 @@ export class StoryApp extends BaseApp {
     this.assetPanelNormalButton = normalSizeButton;
 
     let handleClick = async (pointerInfo, mesh, meta) => {
-      //      normalSizeButton.dispose();
+      normalSizeButton.setEnabled(false);
+      this.updateAssetSize('normal', this.lastClickMetaButtonCache);
     };
 
     normalSizeButton.assetMeta = {
@@ -1871,7 +1889,8 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'customClick',
       handleClick: async (pointerInfo, mesh, meta) => {
-        //      hugeSizeButton.dispose();
+        hugeSizeButton.setEnabled(false);
+        this.updateAssetSize('huge', this.lastClickMetaButtonCache);
       }
     };
 
@@ -1886,18 +1905,67 @@ export class StoryApp extends BaseApp {
     smallSizeButton.material = new BABYLON.StandardMaterial('assetPanelSmallSizeButtonMat', this.scene);
     Utility3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
     smallSizeButton.parent = buttonBarTransform;
-    this.assetPanelSizeButton = smallSizeButton;
+    this.assetSmallSizeButton = smallSizeButton;
 
     smallSizeButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handleClick: async (pointerInfo, mesh, meta) => {
-        //            hugeSizeButton.dispose();
+        smallSizeButton.setEnabled(false);
+        this.updateAssetSize('small', this.lastClickMetaButtonCache);
       }
     };
 
     smallSizeButton.position.x = -2;
 
     return buttonBarTransform;
+  }
+  async updateProfileMeshOverride(id, size) {
+    if (!this.profile.assetSizeOverrides)
+      this.profile.assetSizeOverrides = {};
+
+    this.profile.assetSizeOverrides[id] = size;
+
+    let updatePacket = {
+      assetSizeOverrides: {
+        [id]: size
+      }
+    };
+    await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
+      merge: true
+    });
+  }
+  async updateAssetSize(size, meta) {
+    let id = meta.id;
+    if (this.staticAssetMeshes[id]) {
+      if (size === 'huge') {
+        let freshMesh = await this.loadStaticMesh(meta.extended.largeGlbPath, '', meta.extended.largeScale, 0, 0, 0);
+        freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
+        this.staticAssetMeshes[id].baseMesh.dispose();
+        this.staticAssetMeshes[id].baseMesh = freshMesh;
+      }
+      if (size === 'normal') {
+        let freshMesh = await this.loadStaticMesh(meta.extended.normalGlbPath, '', meta.extended.normalScale, 0, 0, 0);
+        freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
+        this.staticAssetMeshes[id].baseMesh.dispose();
+        this.staticAssetMeshes[id].baseMesh = freshMesh;
+      }
+      if (size === 'small') {
+        let freshMesh = await this.loadStaticMesh(meta.extended.smallGlbPath, '', meta.extended.smallScale, 0, 0, 0);
+        freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
+        this.staticAssetMeshes[id].baseMesh.dispose();
+        this.staticAssetMeshes[id].baseMesh = freshMesh;
+      }
+    }
+
+    let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
+    if (moonIndex !== -1) {
+      this.loadMoonButton(moonIndex);
+    }
+
+    await this.updateProfileMeshOverride(id, size);
+
+    this.staticAssetMeshes[id].assetMeta.extended = this.processStaticAssetMeta(this.staticAssetMeshes[id].assetMeta);
+    this._updateLastClickMeta(this.staticAssetMeshes[id].assetMeta);
   }
 }

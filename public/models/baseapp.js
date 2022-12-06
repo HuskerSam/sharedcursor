@@ -1527,6 +1527,11 @@ export class BaseApp {
   }
 
   processStaticAssetMeta(meta) {
+
+    let override = '';
+    if (this.profile.assetSizeOverrides && this.profile.assetSizeOverrides[meta.id])
+      override = this.profile.assetSizeOverrides[meta.id];
+
     let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
     let smallGlbPath = '';
     if (meta.smallglbpath)
@@ -1556,6 +1561,23 @@ export class BaseApp {
       if (smallGlbPath)
         glbPath = smallGlbPath;
     }
+
+    if (override === 'normal') {
+      scale = normalScale;
+      glbPath = normalGlbPath;
+    }
+    if (override === 'small') {
+      scale = smallScale;
+      if (smallGlbPath)
+        glbPath = smallGlbPath;
+    }
+    if (override === 'huge') {
+      scale = largeScale;
+      if (largeGlbPath)
+        glbPath = largeGlbPath;
+    }
+
+
 
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
 
