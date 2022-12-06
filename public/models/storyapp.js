@@ -734,6 +734,9 @@ export class StoryApp extends BaseApp {
     };
   }
   async loadAvatars() {
+    if (!this.playerDock3DPanel)
+      return;
+
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
         let data = this.getSeatData(seatIndex);
@@ -741,7 +744,7 @@ export class StoryApp extends BaseApp {
         if (!this['dockSeatMesh' + seatIndex]) {
           let mesh = await this.renderSeat(seatIndex);
 
-          mesh.parent = this.playerRightPanelTransform;
+          mesh.parent = this.playerDock3DPanel;
 
           this['dockSeatMesh' + seatIndex] = mesh;
         } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
@@ -954,6 +957,7 @@ export class StoryApp extends BaseApp {
       this.scoreboardShowing = true;
     }
 
+    this._updateLastClickMeta(this.lastClickMetaButtonCache);
 
     this.scoreboardWrapper.position.y = this.scoreboardWrapper.origY;
     this.scoreboardWrapper.scaling.x = 1;
@@ -1769,7 +1773,7 @@ export class StoryApp extends BaseApp {
     };
 
     let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
-    rotationTransform.parent = this.playerRightPanelTransform;
+    rotationTransform.parent = this.playerDock3DPanel;
     moonNav.parent = rotationTransform;
     this._fitNodeToSize(moonNav, 1.25);
 
@@ -1809,11 +1813,11 @@ export class StoryApp extends BaseApp {
   }
 
   __initDock3DPanel(scoreboardTransform) {
-    this.playerRightPanelTransform = new BABYLON.TransformNode('playerRightPanelTransform', this.scene);
-    this.playerRightPanelTransform.parent = scoreboardTransform;
-    this.playerRightPanelTransform.position.x = -5;
-    this.playerRightPanelTransform.position.z += 2;
-    this.playerRightPanelTransform.rotation.y = Math.PI / 4;
+    this.playerDock3DPanel = new BABYLON.TransformNode('playerDock3DPanel', this.scene);
+    this.playerDock3DPanel.parent = scoreboardTransform;
+    this.playerDock3DPanel.position.x = -5;
+    this.playerDock3DPanel.position.z += 2;
+    this.playerDock3DPanel.rotation.y = Math.PI / 4;
 
     this.playerMoonNavs = {};
     for (let d = 0; d < 4; d++) {
@@ -1843,7 +1847,7 @@ export class StoryApp extends BaseApp {
         clickCommand: 'selectMainMesh',
         seatIndex: c
       };
-      avatarNav.parent = this.playerRightPanelTransform;
+      avatarNav.parent = this.playerDock3DPanel;
       let colors = this.get3DColors(c);
       this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
       this.playerAvatarNavs.push(avatarNav);
