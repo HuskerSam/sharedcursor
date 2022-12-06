@@ -106,21 +106,78 @@
 
     <div class="signed_in_options" style="text-align:left;padding-left:16px;padding-bottom: 8px;">
       <div class="btn-group tab_buttons" role="group">
-        <button class="btn btn-primary active" value="new">New</button>
-        <button class="btn btn-primary" value="recent">Current</button>
+        <button class="btn btn-primary active" value="recent">Current</button>
         <button class="btn btn-primary" value="find">Join</button>
       </div>
     </div>
 
     <div class="tab-content signed_in_flex body_wrapper" id="nav-tabContent">
-      <div class="tab-pane fade row new_game_view active show" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-        <div style="line-height:6em;">
-          <button class="create_new_solar_btn btn btn-primary">Create Moon Fight</button>
-          <br>
-          <button class="create_new_match_btn btn btn-primary">Match Moon Cards</button>
+      <div class="tab-pane fade row active show" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
+        <div style="text-align:left;">
+          <div style="line-height:6em;padding-left:16px">
+            <button class="create_new_solar_btn btn btn-primary">Create Moon Fight</button>
+            &nbsp;
+            <button class="create_new_match_btn btn btn-primary">Match Moon Cards</button>
+          </div>
+          <div class="basic_options" style="display:none;">
+            <div style="text-align:left">
+              <div style="display:inline-block;">
+                <label class="form-label">Visibility</label>
+                <select class="visibility_select form-select ">
+                  <option>public</option>
+                  <option selected>private</option>
+                </select>
+              </div>
+              <div style="display:inline-block;">
+                <label class="form-label">Seats</label>
+                <select class="seat_count_select form-select ">
+                  <option value="1">1 seat</option>
+                  <option selected value="2">2 seats</option>
+                  <option value="3">3 seats</option>
+                  <option value="4">4 seats</option>
+                </select>
+              </div>
+              <br>
+              <div style="display:inline-block;">
+                <label class="form-label">Messaging</label>
+                <select class="message_level_select form-select ">
+                  <option value="seated">Seated</option>
+                  <option value="all">All</option>
+                </select>
+              </div>
+              <div style="display:inline-block;">
+                <label class="form-label">Seat Limit</label>
+                <select class="seats_per_user_select form-select ">
+                  <option value="one">One</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+              <div class="match_additional_options">
+                <div style="display:inline-block;">
+                  <label class="form-label">Card Deck</label>
+                  <select class="card_deck_select form-select ">
+                    <option value="solarsystem">Solar System</option>
+                  </select>
+                </div>
+                <div style="display:inline-block;">
+                  <label class="form-label">Scoring</label>
+                  <select class="scoring_system_select form-select ">
+                    <option value="simple">Simple</option>
+                    <option value="stable">Stable</option>
+                    <option value="regular" selected>Regular</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="join_game_view" style="text-align:center">
-          <div style="display:inline-block">
+        <div class="game_history_view" style="flex:1;overflow:auto;">
+        </div>
+
+      </div>
+      <div class="tab-pane fade" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab" style="flex-direction:column;overflow:hidden;">
+        <div class="join_game_view" style="line-height:6em;text-align:left;padding-left:16px;">
+          <div style="display:inline-block;">
             <div class="form-floating">
               <input type="text" class="form-control game_code_start" name="gamecode" placeholder="Code">
               <label>Code</label>
@@ -129,61 +186,6 @@
           &nbsp;
           <button class="join_game_btn btn btn-secondary">Join</button>
         </div>
-        <div class="basic_options" style="display:none;">
-          <div style="text-align:left">
-            <div style="display:inline-block;">
-              <label class="form-label">Visibility</label>
-              <select class="visibility_select form-select ">
-                <option>public</option>
-                <option selected>private</option>
-              </select>
-            </div>
-            <div style="display:inline-block;">
-              <label class="form-label">Seats</label>
-              <select class="seat_count_select form-select ">
-                <option value="1">1 seat</option>
-                <option selected value="2">2 seats</option>
-                <option value="3">3 seats</option>
-                <option value="4">4 seats</option>
-              </select>
-            </div>
-            <br>
-            <div style="display:inline-block;">
-              <label class="form-label">Messaging</label>
-              <select class="message_level_select form-select ">
-                <option value="seated">Seated</option>
-                <option value="all">All</option>
-              </select>
-            </div>
-            <div style="display:inline-block;">
-              <label class="form-label">Seat Limit</label>
-              <select class="seats_per_user_select form-select ">
-                <option value="one">One</option>
-                <option value="none">None</option>
-              </select>
-            </div>
-            <div class="match_additional_options">
-              <div style="display:inline-block;">
-                <label class="form-label">Card Deck</label>
-                <select class="card_deck_select form-select ">
-                  <option value="solarsystem">Solar System</option>
-                </select>
-              </div>
-              <div style="display:inline-block;">
-                <label class="form-label">Scoring</label>
-                <select class="scoring_system_select form-select ">
-                  <option value="simple">Simple</option>
-                  <option value="stable">Stable</option>
-                  <option value="regular" selected>Regular</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tab-pane fade game_history_view row" id="nav-recent" role="tabpanel" aria-labelledby="nav-recent-tab">
-      </div>
-      <div class="tab-pane fade" id="nav-find" role="tabpanel" aria-labelledby="nav-find-tab" style="flex-direction:column;overflow:hidden;">
         <div class=" public_game_view row" style="flex:1;overflow:auto;"></div>
       </div>
     </div>

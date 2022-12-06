@@ -321,13 +321,11 @@ export class GamesApp extends BaseApp {
       btn.closest('.gamelist_item').querySelector('.game_number_open').click();
     }
   }
-  async joinGame(gameNumber, gameType = '') {
+  async joinGame(gameNumber) {
     if (!gameNumber)
       gameNumber = this.game_code_start.value;
     let a = document.createElement('a');
-    if (gameType !== '')
-      gameType += '/';
-    a.setAttribute('href', `/${gameType}?game=${gameNumber}`);
+    a.setAttribute('href', `/dashboard/?game=${gameNumber}`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
