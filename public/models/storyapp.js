@@ -1337,14 +1337,17 @@ export class StoryApp extends BaseApp {
         this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
-      let baseDisc = BABYLON.MeshBuilder.CreateDisc("emptyseat" + index.toString(), {
-        radius: this.dockDiscRadius,
-        //    tessellation: 9,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      let baseDisc = Utility3D.__createTextMesh("emptyseat" + index.toString(), {
+        text: 'Sit',
+        fontFamily: 'Arial',
+        size: 100,
+        depth: .25
       }, this.scene);
 
-      baseDisc.rotation.x = Math.PI / 2;
-      baseDisc.position.y = 0.65;
+    //  baseDisc.rotation.x = Math.PI / 2;
+    baseDisc.rotation.z = -Math.PI / 2;
+    baseDisc.rotation.y = -Math.PI / 2;
+    baseDisc.position.y = 1;
       baseDisc.assetMeta = {
         emptySeat: true,
         seatIndex: index,
