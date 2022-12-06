@@ -828,8 +828,6 @@ export class StoryApp extends BaseApp {
     if (meta.clickCommand === 'customClick') {
       meta.handleClick(pointerInfo, mesh, meta);
     }
-    if (meta.clickCommand === 'activeMoon')
-      this.clickActiveMoonNavigate();
     if (meta.clickCommand === 'playerMoon')
       this.clickPlayerMoonNavigate(meta.seatIndex);
     if (meta.clickCommand === 'selectMainMesh')
@@ -897,25 +895,6 @@ export class StoryApp extends BaseApp {
   }
   clickEndGame() {
 
-  }
-  clickActiveMoonNavigate() {
-    let position = new BABYLON.Vector3(0, 0, 0);
-    let target = new BABYLON.Vector3(0, 0, 0);
-
-    target.copyFrom(this.seatMeshes[this.currentSeatIndex].assetMeta.basePivot.getAbsolutePosition());
-    position.copyFrom(target);
-
-    if (this.xr.baseExperience.state === 3)
-      position.y += 5;
-    else
-      position.y = 0;
-    position.x -= 8;
-    position.z -= 8;
-
-    this.aimCamera({
-      position,
-      target
-    });
   }
   clickPlayerMoonNavigate(index = 0) {
     let position = new BABYLON.Vector3(0, 0, 0);
@@ -1668,7 +1647,10 @@ export class StoryApp extends BaseApp {
     this.activeMoonNav.rotation.y = -Math.PI / 2;
     this.activeMoonNav.assetMeta = {
       appClickable: true,
-      clickCommand: 'activeMoon'
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.setFollowMeta();
+      }
     };
     this.activeMoonNav.parent = this.assetFocusPanelTN;
     this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
