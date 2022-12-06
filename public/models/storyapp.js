@@ -852,7 +852,7 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
     this.selectedMeshInstance.wrapper.position.y = 2.5;
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
-    this._fitNodeToSize(mesh, 2.5);
+    this._fitNodeToSize(this.selectedMeshInstance.mesh, 2.5);
 
 
     this._updateAssetSizeButtons();
@@ -1747,7 +1747,7 @@ export class StoryApp extends BaseApp {
 
     this.playerMoonNavs = [];
     let loadMoonButton = async (index) => {
-      let moonNav = await this.loadStaticMesh(this.seatMeshes[index].assetMeta.extended.glbPath, '', this.seatMeshes[index].assetMeta.extended.scale, 0, 0, 0);
+      let moonNav = this.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone();
       moonNav.position.y = 2.75;
       moonNav.position.x = 2 - (index * 1.5);
       moonNav.position.z = 0;
