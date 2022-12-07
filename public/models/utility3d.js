@@ -414,7 +414,7 @@ export default class Utility3D {
     particlePivot.rotation.z = Math.PI;
     particlePivot.parent = wrapper;
 
-    wrapper.particleSystem = this.createParticleSystem(particlePivot);
+    wrapper.particleSystem = this.createParticleSystem(scene);
     wrapper.particleSystem.emitter = particlePivot;
 
     wrapper.particleSystem.start();

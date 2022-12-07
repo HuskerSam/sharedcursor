@@ -291,7 +291,7 @@ export class StoryApp extends BaseApp {
     if (meta.smallglbpath)
       smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
 
-      let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
+    let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
     this.addLineToLoading(`
         ${meta.name}:
         &nbsp;
@@ -309,9 +309,6 @@ export class StoryApp extends BaseApp {
 
     if (this.shadowGenerator)
       this.shadowGenerator.addShadowCaster(mesh, true);
-
-    if (meta.mp3file)
-      this._loadMeshMusic(meta, mesh, name);
 
     meta.basePivot = meshPivot;
 
@@ -534,9 +531,6 @@ export class StoryApp extends BaseApp {
   }
 
   _loadMeshMusic(meta, mesh, name) {
-    if (!this.hugeAssets)
-      return;
-
     let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
       encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
 
@@ -1943,13 +1937,46 @@ export class StoryApp extends BaseApp {
       return;
     this.mascotsAreaInited = true;
 
-    var mesh = BABYLON.MeshBuilder.CreateDisc('disc', {
+    let iconName = 'home';
+    let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button1');
+    mascotsBtn.position.y = 1;
+    mascotsBtn.position.x = 20;
+    mascotsBtn.position.z = -20;
+    mascotsBtn.rotation.y = 0.5;
+
+    mascotsBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.loadOptional('mascots');
+      }
+    };
+
+
+    iconName = 'edit';
+    mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button1');
+    mascotsBtn.position.y = 1;
+    mascotsBtn.position.x = 23;
+    mascotsBtn.position.z = -18;
+    mascotsBtn.rotation.y = 0.25;
+
+    mascotsBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.shootRocket();
+      }
+    };
+
+  }
+  _addOptionButton(texturePath, name) {
+    let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
       radius: 1,
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
-    var mat = new BABYLON.StandardMaterial('disc-mat', this.scene);
-    var iconName = 'home'
-    var tex = new BABYLON.Texture('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', this.scene, false, false);
+    let mat = new BABYLON.StandardMaterial(name + 'disc-mat', this.scene);
+
+    let tex = new BABYLON.Texture(texturePath, this.scene, false, false);
     tex.hasAlpha = true;
     mat.opacityTexture = tex;
     mat.emissiveColor = new BABYLON.Color3(1, 0, 1);
@@ -1957,19 +1984,7 @@ export class StoryApp extends BaseApp {
     mat.ambientColor = new BABYLON.Color3(1, 0, 1);
     mesh.material = mat;
 
-    // Move the sphere upward 1/2 its height
-    mesh.position.y = 1;
-    mesh.position.x = 20;
-    mesh.position.z = -20;
-    mesh.rotation.y = 0.5;
-
-    mesh.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
-        this.loadOptional('mascots');
-      }
-    };
+    return mesh;
   }
   async loadOptional(kind) {
     let promises = [];
@@ -1981,10 +1996,156 @@ export class StoryApp extends BaseApp {
     await Promise.all(promises);
   }
 
+  async rocketTakeOff(rocketMesh, height, xDelta, timeMS = 2000) {
+    return new Promise((res, rej) => {
+      const id = rocketMesh.id;
+      const frameRate = 60;
+      const endFrame = timeMS * frameRate / 1000;
+
+      const heightAnim = new BABYLON.Animation(id + "heightPos", "position.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const heightKeys = [];
+      heightKeys.push({
+        frame: 0,
+        value: rocketMesh.position.y
+      });
+      heightKeys.push({
+        frame: Math.floor(0.5 * endFrame),
+        value: rocketMesh.position.y + height / 5
+      });
+      heightKeys.push({
+        frame: endFrame,
+        value: rocketMesh.position.y + height
+      });
+      heightAnim.setKeys(heightKeys);
+
+      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.x", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const rotationKeys = [];
+      rotationKeys.push({
+        frame: 0,
+        value: rocketMesh.rotation.x
+      });
+      rotationKeys.push({
+        frame: Math.floor(0.667 * endFrame),
+        value: rocketMesh.rotation.x
+      });
+      rotationKeys.push({
+        frame: Math.floor(0.75 * endFrame),
+        value: rocketMesh.rotation.x + Math.PI / 4
+      });
+      rotationKeys.push({
+        frame: endFrame,
+        value: rocketMesh.rotation.x + Math.PI / 2
+      });
+      rotationAnim.setKeys(rotationKeys);
+
+      const positionAnim = new BABYLON.Animation(id + "positionAnim", "position.z", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const positionKeys = [];
+      positionKeys.push({
+        frame: 0,
+        value: rocketMesh.position.z
+      });
+      positionKeys.push({
+        frame: Math.floor(0.667 * endFrame),
+        value: rocketMesh.position.z
+      });
+      positionKeys.push({
+        frame: endFrame,
+        value: rocketMesh.position.z + xDelta
+      });
+      positionAnim.setKeys(positionKeys);
+
+
+      rocketMesh.animations.push(heightAnim);
+      rocketMesh.animations.push(rotationAnim);
+      rocketMesh.animations.push(positionAnim);
+
+      let rocketAnim = this.scene.beginAnimation(rocketMesh, 0, endFrame, true);
+
+      let animArray = rocketMesh.animations;
+      setTimeout(() => {
+        rocketAnim.stop();
+        animArray.splice(animArray.indexOf(heightAnim), 1);
+        animArray.splice(animArray.indexOf(rotationAnim), 1);
+        animArray.splice(animArray.indexOf(positionAnim), 1);
+
+        res();
+      }, timeMS);
+    });
+  }
+  async rocketTravelTo(id) {
+
+  }
+  async shootRocket() {
+    let id = 'rocket' + new Date().toISOString();
+    let newRocket = this.staticAssetMeshes['rocket_atlasv'].clone(id);
+
+    newRocket.setEnabled(true);
+    Utility3D.createFireParticles(this.staticAssetMeshes['rocket_atlasv'].assetMeta, newRocket, id, this.scene);
+
+    newRocket.position.y = 3;
+    newRocket.position.x = 25;
+    newRocket.position.z = -18;
+
+    setTimeout(() => {
+      this.rocketTakeOff(newRocket, 6, 10, 2000).then(() => {
+        newRocket.particleSystem.stop();
+        return this.rocketTravelTo("saturn");
+      });
+    }, 200);
+
+    /*
+        const frameRate = 60;
+        const posAnim = new BABYLON.Animation(id + "animPos", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+        const posKeys = [];
+        const rotAnim = new BABYLON.Animation(id + "animRot", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+        const rotKeys = [];
+
+        for (let i = 0; i < curvePath.length; i++) {
+
+
+          posKeys.push({
+            frame: i * frameRate,
+            value: position
+          });
+          rotKeys.push({
+            frame: i * frameRate,
+            value: rotation
+          });
+        }
+
+        posAnim.setKeys(posKeys);
+        rotAnim.setKeys(rotKeys);
+
+        newRocket.animations.push(posAnim);
+        newRocket.animations.push(rotAnim);
+
+        this.scene.beginAnimation(newRocket, 0, frameRate * curvePath.length, true);
+
+      */
+    /*
+
+          let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
+          let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
+
+
+          let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
+          curve = curve.continue(curveCont);
+          curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
+          curve = curve.continue(curveCont);
+          curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
+          curve = curve.continue(curveCont);
+          curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
+          curve = curve.continue(curveCont);
+          // Transform the curves into a proper Path3D object and get its orientation information
+          var path3d = new BABYLON.Path3D(curve.getPoints());
+      */
+
+  }
+
   async addRocket() {
 
     // visualisation
-//    let pathGroup = new BABYLON.Mesh("pathGroup");
+    //    let pathGroup = new BABYLON.Mesh("pathGroup");
 
     let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
     let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
@@ -1996,7 +2157,7 @@ export class StoryApp extends BaseApp {
     curve = curve.continue(curveCont);
     curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
     curve = curve.continue(curveCont);
-      // Transform the curves into a proper Path3D object and get its orientation information
+    // Transform the curves into a proper Path3D object and get its orientation information
     var path3d = new BABYLON.Path3D(curve.getPoints());
 
   }
