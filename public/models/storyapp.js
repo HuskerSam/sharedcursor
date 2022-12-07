@@ -825,15 +825,10 @@ export class StoryApp extends BaseApp {
       this.clickStartGame();
     if (meta.clickCommand === 'endGame')
       this.clickEndGame();
-    if (meta.clickCommand === 'customClick') {
+    if (meta.clickCommand === 'customClick')
       meta.handleClick(pointerInfo, mesh, meta);
-    }
-    if (meta.clickCommand === 'playerMoon')
-      this.clickPlayerMoonNavigate(meta.seatIndex);
     if (meta.clickCommand === 'selectMainMesh')
       this.selectMoonMesh(meta.seatIndex);
-    if (meta.clickCommand === 'zoomOut')
-      this.clickZoomout();
 
     return true;
   }
@@ -896,25 +891,6 @@ export class StoryApp extends BaseApp {
   clickEndGame() {
 
   }
-  clickPlayerMoonNavigate(index = 0) {
-    let position = new BABYLON.Vector3(0, 0, 0);
-    let target = new BABYLON.Vector3(0, 0, 0);
-
-    target.copyFrom(this.seatMeshes[index].assetMeta.basePivot.getAbsolutePosition());
-    position.copyFrom(target);
-
-    if (this.xr.baseExperience.state === 3)
-      position.y += 5;
-    else
-      position.y = 0;
-    position.x -= 8;
-    position.z -= 8;
-
-    this.aimCamera({
-      position,
-      target
-    });
-  }
   clickShowScoreboard() {
     if (this.lastShowScoreboardTime === undefined)
       this.lastShowScoreboardTime = 0;
@@ -975,14 +951,6 @@ export class StoryApp extends BaseApp {
       targetPosition.y = 0;
       this.scoreboardWrapper.lookAt(targetPosition);
     }
-  }
-  clickZoomout() {
-    this.clearFollowMeta();
-    this.aimCamera(this.cameraMetaY);
-    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR)
-      this.scene.activeCamera.position.y += 10;
-    else
-      this.scene.activeCamera.radius = 35;
   }
   selectMoonMesh(seatIndex) {
     if (seatIndex === 1)
@@ -1642,7 +1610,7 @@ export class StoryApp extends BaseApp {
     this.activeMoonNav.scaling.z = .5;
     this.activeMoonNav.position.y = 1.25;
     this.activeMoonNav.position.z = 0;
-    this.activeMoonNav.position.x = 2;
+    this.activeMoonNav.position.x = 0;
     this.activeMoonNav.rotation.z = -Math.PI / 2;
     this.activeMoonNav.rotation.y = -Math.PI / 2;
     this.activeMoonNav.assetMeta = {
@@ -1654,27 +1622,6 @@ export class StoryApp extends BaseApp {
     };
     this.activeMoonNav.parent = this.assetFocusPanelTN;
     this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
-
-    this.zoomoutViewMap = Utility3D.__createTextMesh('zoomoutViewMap', {
-      text: 'Zoom out',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.zoomoutViewMap.scaling.x = .5;
-    this.zoomoutViewMap.scaling.y = .5;
-    this.zoomoutViewMap.scaling.z = .5;
-    this.zoomoutViewMap.position.y = 1.25;
-    this.zoomoutViewMap.position.x = -2;
-    this.zoomoutViewMap.position.z = 0;
-    this.zoomoutViewMap.rotation.z = -Math.PI / 2;
-    this.zoomoutViewMap.rotation.y = -Math.PI / 2;
-    this.zoomoutViewMap.assetMeta = {
-      appClickable: true,
-      clickCommand: 'zoomOut'
-    };
-    this.zoomoutViewMap.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.zoomoutViewMap, 1, 1, 1);
 
     let buttonPanel = this._initSizePanel();
     buttonPanel.position.y = 4;

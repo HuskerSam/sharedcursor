@@ -1276,23 +1276,16 @@ export class BaseApp {
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
     light2.intensity = .6;
 
-    let enableGroundShadow = this.hugeAssets;
-
     var environment = scene.createDefaultEnvironment({
-      enableGroundShadow,
+      enableGroundShadow: false,
       createSkybox: false,
       groundSize: 150
     });
-    environment.setMainColor(BABYLON.Color3.FromHexString("#2222ff"))
+    environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
+    environment.groundMaterial.alpha = 0.25;
     environment.ground.parent.position.y = 0;
     environment.ground.position.y = 0;
     this.env = environment;
-
-    if (enableGroundShadow) {
-      this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
-      this.shadowGenerator.useBlurExponentialShadowMap = true;
-      this.shadowGenerator.blurKernel = 32;
-    }
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
@@ -1303,7 +1296,6 @@ export class BaseApp {
     scene.activeCamera.setPosition(this.cameraMetaX.position);
     scene.activeCamera.setTarget(this.cameraMetaX.target);
     scene.activeCamera.panningSensibility = 300;
-
 
     scene.activeCamera.storeState();
 

@@ -108,7 +108,21 @@ export class ProfileApp extends BaseApp {
     this.create_login_code_button.addEventListener('click', e => this.createLoginCode());
 
     this.access_code_login = document.querySelector('#access_code_login');
-    this.access_code_login.addEventListener('click', e => this.customCodeLogin())
+    this.access_code_login.addEventListener('click', e => this.customCodeLogin());
+
+    this.asset_cache_display = document.querySelector('.asset_cache_display');
+
+    this.clear_asset_caches = document.querySelector('.clear_asset_caches');
+    this.clear_asset_caches.addEventListener('click', e => this.clearAssetCaches());
+  }
+  async clearAssetCaches() {
+    let updatePacket = {
+      assetSizeOverrides: null
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
+        merge: true
+      });
   }
   async createLoginCode() {
     let body = {};
@@ -297,6 +311,11 @@ export class ProfileApp extends BaseApp {
       this.initGraphics();
 
       this.updateMatchedCards();
+
+      if (!this.profile.assetSizeOverrides)
+        this.profile.assetSizeOverrides = {};
+
+      this.asset_cache_display.innerHTML = JSON.stringify(this.profile.assetSizeOverrides, null, '\t');
     }
 
     super.authUpdateStatusUI();
