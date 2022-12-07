@@ -104,19 +104,6 @@ export class StoryApp extends BaseApp {
 
       alert('reload needed to see changes');
     });
-
-    this.optional_extras = document.querySelector('.optional_extras');
-    this.optional_extras.addEventListener('input', async e => {
-      let updatePacket = {
-        optionalExtras: this.optional_extras.value
-      };
-      if (this.fireToken)
-        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-      this.profile.optionalExtras = updatePacket.optionalExtras;
-
-      alert('reload needed to see changes');
-    });
   }
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
@@ -320,8 +307,9 @@ export class StoryApp extends BaseApp {
 
     this.sceneInited = true;
     this.initScoreboard();
-
     this.selectMoonMesh();
+
+    this.addMascotsArea();
 
     this.loadAvatars();
     this.loadAsteroids();
@@ -518,10 +506,10 @@ export class StoryApp extends BaseApp {
     return asteroidSymbol;
   }
 
-  async loadStaticAsset(name, parent) {
+  async loadStaticAsset(name, parent, optionalLoadFlag = 'optionalLoadType') {
     let meta = Object.assign({}, this.allCards[name]);
 
-    if (meta.optionalLoad && this.profile.optionalExtras !== meta.optionalFlags)
+    if (meta.optionalLoad && meta.optionalLoadFlag !== optionalLoadFlag)
       return;
 
     meta.extended = this.processStaticAssetMeta(meta);
@@ -1055,9 +1043,6 @@ export class StoryApp extends BaseApp {
     if (this.profile.asteroidCount)
       this.profile_asteroid_count.value = this.profile.asteroidCount;
 
-    if (this.profile.optionalExtras)
-      this.optional_extras.value = this.profile.optionalExtras;
-
     let gameId = this.urlParams.get('game');
     if (gameId) {
       await this.gameAPIJoin(gameId);
@@ -1510,6 +1495,7 @@ export class StoryApp extends BaseApp {
     this.__initScorePanel(scoreboardTransform);
     this.__initFocusedAssetPanel(scoreboardTransform);
     this.__initDock3DPanel(scoreboardTransform);
+
     return scoreboardWrapper;
   }
   __initScorePanel(scoreboardTransform) {
@@ -1997,5 +1983,50 @@ export class StoryApp extends BaseApp {
 
     this.staticAssetMeshes[id].assetMeta.extended = this.processStaticAssetMeta(this.staticAssetMeshes[id].assetMeta);
     this._updateLastClickMeta(this.staticAssetMeshes[id].assetMeta);
+  }
+
+  addMascotsArea() {
+    if (this.mascotsAreaInited)
+      return;
+    this.mascotsAreaInited = true;
+
+    let options = ["mascots", "probes", "mars", "rockets"];
+
+    var mesh = BABYLON.MeshBuilder.CreateDisc('disc', {
+      radius: 1,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    var mat = new BABYLON.StandardMaterial('disc-mat', this.scene);
+    var iconName = 'home'
+    var tex = new BABYLON.Texture('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', this.scene, false, false);
+    tex.hasAlpha = true;
+    mat.opacityTexture = tex;
+    mat.emissiveColor = new BABYLON.Color3(1, 0, 1);
+    mat.diffuseColor = new BABYLON.Color3(1, 0, 1);
+    mat.ambientColor = new BABYLON.Color3(1, 0, 1);
+    mesh.material = mat;
+
+    // Move the sphere upward 1/2 its height
+    mesh.position.y = 1;
+    mesh.position.x = 20;
+    mesh.position.z = -20;
+    mesh.rotation.y = 0.5;
+
+    mesh.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.loadOptional('mascots');
+      }
+    };
+  }
+  async loadOptional(kind) {
+    let promises = [];
+    let deck = GameCards.getCardDeck('mascots');
+    deck.forEach(card => {
+      if (!this.staticAssetMeshes[card.id] && card.optionalLoadFlag === kind)
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, kind));
+    });
+    await Promise.all(promises);
   }
 }

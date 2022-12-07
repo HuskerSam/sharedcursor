@@ -1282,7 +1282,7 @@ export class BaseApp {
       groundSize: 150
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
-    environment.groundMaterial.alpha = 0.25;
+    environment.groundMaterial.alpha = 0.75;
     environment.ground.parent.position.y = 0;
     environment.ground.position.y = 0;
     this.env = environment;

@@ -1,4 +1,34 @@
-[
+[{
+    "id": "action_lander",
+    "name": "Lunar Orbiter",
+    "objectType": "mascot",
+    "description": "",
+    "image": "/match/deckmedia/phobos.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/solar/lander.glb",
+    "glbscale": 0.3,
+    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "color": "rgb(255, 127, 255)",
+    "x": 2,
+    "z": -2,
+    "y": 0
+  },
+  {
+    "id": "action_buggy",
+    "name": "Lunar Buggy",
+    "objectType": "mascot",
+    "description": "",
+    "image": "/match/deckmedia/phobos.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/solar/buggy.glb",
+    "glbscale": 0.3,
+    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+    "color": "rgb(255, 127, 255)",
+    "color": "rgb(255, 127, 255)",
+    "x": 5,
+    "z": -6,
+    "y": 0
+  },
   {
     "id": "mascot_nebraska",
     "name": "Herbie Husker",
@@ -11,17 +41,17 @@
     "symbolY": 2,
     "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
     "color": "rgb(255, 0, 0)",
-    "x": 3,
-    "y": 2,
-    "z": 3,
+    "x": 16,
+    "y": 1,
+    "z": -17,
     "optionalLoad": true,
-    "optionalFlags": "mascots"
+    "optionalLoadFlag": "mascots"
   },
   {
     "id": "mascot_ceres",
-    "name": "Sooner Martain",
+    "name": "Marty Jayhawk",
     "objectType": "mascot",
-    "description": "Herbie Husker v3.",
+    "description": "Belt Command",
     "image": "/match/deckmedia/phobos.jpg",
     "symbol": "/symbol/cleo.png",
     "glbpath": "/mascots/ceresalien.glb",
@@ -29,10 +59,11 @@
     "symbolY": 2,
     "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
     "color": "rgb(255, 0, 0)",
-    "x": 3,
-    "z": 3,
+    "x": 18,
+    "z": -18,
+    "y": 0,
     "optionalLoad": true,
-    "optionalFlags": "mascots"
+    "optionalLoadFlag": "mascots"
   },
   {
     "id": "mascot_io",
@@ -46,11 +77,11 @@
     "symbolY": 2,
     "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
     "color": "rgb(255, 0, 0)",
-    "x": -3,
+    "x": 24,
     "y": 0,
-    "z": 3,
+    "z": -20,
     "optionalLoad": true,
-    "optionalFlags": "mascots"
+    "optionalLoadFlag": "mascots"
   },
   {
     "id": "mascot_apollo",
@@ -64,71 +95,11 @@
     "symbolY": 2,
     "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
     "color": "rgb(255, 0, 0)",
-    "x": -3,
-    "y": -5,
-    "z": -3,
-    "optionalLoad": true,
-    "optionalFlags": "mascots"
-  },
-  {
-    "id": "probe_radiodish",
-    "name": "Radio Dish",
-    "objectType": "mascot",
-    "description": "",
-    "image": "/match/deckmedia/phobos.jpg",
-    "symbol": "/symbol/bird.png",
-    "glbpath": "/mascots/radiodish.glb",
-    "glbscale": 0.025,
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
-    "color": "rgb(255, 127, 255)",
-    "x": 1,
+    "x": 22,
+    "z": -18,
     "y": 0,
-    "z": 0,
-    "norx": 1.57,
-    "nory": 0,
-    "norz": -1.57,
-    "ry": 1.57,
-    "rz": 1.57,
-    "orbitTime": 10500,
-    "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "mascots"
-  },
-  {
-    "id": "moon_lander",
-    "name": "Lander",
-    "objectType": "mascot",
-    "description": "",
-    "image": "/match/deckmedia/phobos.jpg",
-    "symbol": "/symbol/bird.png",
-    "glbpath": "/solar/lander.glb",
-    "glbscale": 0.3,
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
-    "color": "rgb(255, 127, 255)",
-    "x": 0.5,
-    "y": 0,
-    "z": 7,
-    "optionalLoad": true,
-    "optionalFlags": "mascots"
-  },
-  {
-    "id": "moon_buggy",
-    "name": "Apollo Rover",
-    "objectType": "mascot",
-    "description": "",
-    "image": "/match/deckmedia/phobos.jpg",
-    "symbol": "/symbol/bird.png",
-    "glbpath": "/solar/buggy.glb",
-    "glbscale": 0.3,
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
-    "color": "rgb(255, 127, 255)",
-    "x": 5,
-    "y": 0,
-    "z": -2,
-    "radius": 1.5,
-    "noNavMesh": true,
-    "optionalLoad": true,
-    "optionalFlags": "mascots"
+    "optionalLoadFlag": "heavystuff"
   },
   {
     "id": "mascot_juno",
@@ -151,7 +122,7 @@
     "noNavMesh": true,
     "orbitTime": 30000,
     "optionalLoad": true,
-    "optionalFlags": "probes",
+    "optionalLoadFlag": "probes",
     "parent": "j5_io"
   },
   {
@@ -175,7 +146,7 @@
     "noNavMesh": true,
     "orbitTime": 30000,
     "optionalLoad": true,
-    "optionalFlags": "probes",
+    "optionalLoadFlag": "probes",
     "parent": "s22_titan"
   },
   {
@@ -200,7 +171,7 @@
     "orbitTime": 30000,
     "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "mars"
+    "optionalLoadFlag": "mars"
   },
   {
     "id": "rover_curiosity",
@@ -224,7 +195,7 @@
     "orbitTime": 30000,
     "parent": "mars",
     "optionalLoad": true,
-    "optionalFlags": "mars"
+    "optionalLoadFlag": "mars"
   },
   {
     "id": "rocket_atlasv",
@@ -252,7 +223,7 @@
     "py": -1,
     "pz": 0,
     "optionalLoad": true,
-    "optionalFlags": "rockets"
+    "optionalLoadFlag": "rockets"
   },
   {
     "id": "probe_tgo",
@@ -275,7 +246,7 @@
     "noNavMesh": true,
     "orbitTime": 30000,
     "optionalLoad": true,
-    "optionalFlags": "mars",
+    "optionalLoadFlag": "mars",
     "parent": "mars"
   },
   {
@@ -304,7 +275,7 @@
     "py": -2,
     "pz": 0,
     "optionalLoad": true,
-    "optionalFlags": "rockets"
+    "optionalLoadFlag": "rockets"
   },
   {
     "id": "probe_voyager",
@@ -327,7 +298,7 @@
     "noNavMesh": true,
     "orbitTime": 30000,
     "optionalLoad": true,
-    "optionalFlags": "mars",
+    "optionalLoadFlag": "mars",
     "parent": "mars"
   },
   {
@@ -352,7 +323,7 @@
     "noNavMesh": true,
     "orbitTime": 30000,
     "optionalLoad": true,
-    "optionalFlags": "probes",
+    "optionalLoadFlag": "probes",
     "parent": "sun"
   },
   {
@@ -377,7 +348,7 @@
     "noNavMesh": true,
     "orbitTime": 30000,
     "optionalLoad": true,
-    "optionalFlags": "probes",
+    "optionalLoadFlag": "probes",
     "parent": "arrokoth"
   }
 ]
