@@ -1964,7 +1964,11 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'customClick',
       handleClick: async (pointerInfo, mesh, meta) => {
-        this.shootRocket();
+        let rotation = new BABYLON.Vector3(0, 0, 0);
+
+        let endPosition = this.vector(this.staticAssetMeshes['mars'].position);
+        let startPosition = this.vector(this.staticAssetMeshes['neptune'].position);
+        this.shootRocket(startPosition, rotation, endPosition);
       }
     };
 
@@ -1996,6 +2000,9 @@ export class StoryApp extends BaseApp {
     await Promise.all(promises);
   }
 
+  v(x, y, z) {
+    return new BABYLON.Vector3(x, y, z);
+  }
   async rocketTakeOff(rocketMesh, height, xDelta, timeMS = 2000) {
     return new Promise((res, rej) => {
       const id = rocketMesh.id;
@@ -2067,98 +2074,141 @@ export class StoryApp extends BaseApp {
         animArray.splice(animArray.indexOf(heightAnim), 1);
         animArray.splice(animArray.indexOf(rotationAnim), 1);
         animArray.splice(animArray.indexOf(positionAnim), 1);
-
         res();
       }, timeMS);
     });
   }
-  async rocketTravelTo(id) {
+  async rocketLand(rocketMesh, endPosition, timeMS = 1500) {
+    return new Promise((res, rej) => {
+      const id = rocketMesh.id;
+      const frameRate = 60;
+      const endFrame = timeMS * frameRate / 1000;
 
-  }
-  async shootRocket() {
-    let id = 'rocket' + new Date().toISOString();
-    let newRocket = this.staticAssetMeshes['rocket_atlasv'].clone(id);
-
-    newRocket.setEnabled(true);
-    Utility3D.createFireParticles(this.staticAssetMeshes['rocket_atlasv'].assetMeta, newRocket, id, this.scene);
-
-    newRocket.position.y = 3;
-    newRocket.position.x = 25;
-    newRocket.position.z = -18;
-
-    setTimeout(() => {
-      this.rocketTakeOff(newRocket, 6, 10, 2000).then(() => {
-        newRocket.particleSystem.stop();
-        return this.rocketTravelTo("saturn");
+      const positionAnim = new BABYLON.Animation(id + "heightPosLand", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      const positionKeys = [];
+      positionKeys.push({
+        frame: 0,
+        value: rocketMesh.position
       });
-    }, 200);
+      positionKeys.push({
+        frame: endFrame,
+        value: endPosition
+      });
+      positionAnim.setKeys(positionKeys);
 
-    /*
-        const frameRate = 60;
-        const posAnim = new BABYLON.Animation(id + "animPos", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-        const posKeys = [];
-        const rotAnim = new BABYLON.Animation(id + "animRot", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-        const rotKeys = [];
+      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.x", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const rotationKeys = [];
+      rotationKeys.push({
+        frame: 0,
+        value: rocketMesh.rotation.x
+      });
+      rotationKeys.push({
+        frame: endFrame,
+        value: rocketMesh.rotation.x + Math.PI / 3
+      });
+      rotationAnim.setKeys(rotationKeys);
 
-        for (let i = 0; i < curvePath.length; i++) {
+      let origScaling = this.vector(rocketMesh.scaling);
+      const scalingAnim = new BABYLON.Animation(id + "scaleLand", "scaling", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      const scalingKeys = [];
+      scalingKeys.push({
+        frame: 0,
+        value: origScaling
+      });
+      scalingKeys.push({
+        frame: endFrame,
+        value: this.v(origScaling.x * 0.25, origScaling.y * 0.25, origScaling.z * 0.25)
+      });
+      scalingAnim.setKeys(scalingKeys);
 
+      rocketMesh.animations.push(rotationAnim);
+      rocketMesh.animations.push(positionAnim);
+      rocketMesh.animations.push(scalingAnim);
 
-          posKeys.push({
-            frame: i * frameRate,
-            value: position
-          });
-          rotKeys.push({
-            frame: i * frameRate,
-            value: rotation
-          });
-        }
+      let rocketAnim = this.scene.beginAnimation(rocketMesh, 0, endFrame, true);
 
-        posAnim.setKeys(posKeys);
-        rotAnim.setKeys(rotKeys);
+      let animArray = rocketMesh.animations;
+      setTimeout(() => {
+        rocketAnim.stop();
+        animArray.splice(animArray.indexOf(rotationAnim), 1);
+        animArray.splice(animArray.indexOf(positionAnim), 1);
+        animArray.splice(animArray.indexOf(scalingAnim), 1);
+        rocketMesh.scaling.copyFrom(origScaling);
+        res();
+      }, timeMS);
+    });
+  }
+  async rocketTravelTo(rocket, endPosition, travelTime, landingDelay = 1500) {
+    return new Promise((res, rej) => {
+      let startPosition = this.vector(rocket.position);
+      const id = rocket.id;
+      const frameRate = 60;
+      const endFrame = Math.floor((travelTime + landingDelay) * frameRate / 1000);
+      const delayFrame = Math.floor((travelTime) * frameRate / 1000);
 
-        newRocket.animations.push(posAnim);
-        newRocket.animations.push(rotAnim);
+      const positionAnimation = new BABYLON.Animation(id + "positionAnim", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      const positionKeys = [];
+      positionKeys.push({
+        frame: 0,
+        value: this.v(startPosition.x, startPosition.y, startPosition.z)
+      });
+      positionKeys.push({
+        frame: delayFrame,
+        value: this.v(endPosition.x, startPosition.y, endPosition.z)
+      });
+      positionKeys.push({
+        frame: endFrame,
+        value: this.v(endPosition.x, startPosition.y, endPosition.z)
+      });
+      positionAnimation.setKeys(positionKeys);
 
-        this.scene.beginAnimation(newRocket, 0, frameRate * curvePath.length, true);
+      rocket.animations.push(positionAnimation);
+      let rocketAnim = this.scene.beginAnimation(rocket, 0, travelTime, true);
 
-      */
-    /*
+      let animArray = rocket.animations;
+      setTimeout(() => {
+        rocketAnim.stop();
+        animArray.splice(animArray.indexOf(positionAnimation), 1);
+        res();
+      }, (travelTime - landingDelay));
+    });
+  }
+  vector(vector) {
+    let v = new BABYLON.Vector3();
+    v.copyFrom(vector);
+    return v;
+  }
+  async shootRocket(startPos, startRotation, endPosition) {
+    if (this.rocketRunning)
+      return;
 
-          let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
-          let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
+    let newRocket = this.staticAssetMeshes['rocket_atlasv'];
+    this.rocketRunning = true;
 
+    newRocket.position.copyFrom(startPos);
+    newRocket.rotation.copyFrom(startRotation);
+    newRocket.setEnabled(true);
 
-          let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
-          curve = curve.continue(curveCont);
-          curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
-          curve = curve.continue(curveCont);
-          curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
-          curve = curve.continue(curveCont);
-          curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
-          curve = curve.continue(curveCont);
-          // Transform the curves into a proper Path3D object and get its orientation information
-          var path3d = new BABYLON.Path3D(curve.getPoints());
-      */
+    if (!newRocket.particleSystem)
+      Utility3D.createFireParticles(this.staticAssetMeshes['rocket_atlasv'].assetMeta, newRocket, 'rocket1', this.scene);
+    else {
+      newRocket.particleSystem.reset();
+      newRocket.particleSystem.start();
+    }
 
+    await this.rocketTakeOff(newRocket, 6, 10, 2500);
+    await this.rocketTravelTo(newRocket, endPosition, 8000, 1500);
+    await this.rocketLand(newRocket, endPosition, 1500);
+
+    newRocket.particleSystem.stop();
+    newRocket.setEnabled(false);
+    newRocket.position.copyFrom(startPos);
+    newRocket.rotation.copyFrom(startRotation);
+    this.rocketRunning = false;
   }
 
   async addRocket() {
 
-    // visualisation
-    //    let pathGroup = new BABYLON.Mesh("pathGroup");
-
-    let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
-    let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
-    let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
-    curve = curve.continue(curveCont);
-    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
-    curve = curve.continue(curveCont);
-    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
-    curve = curve.continue(curveCont);
-    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
-    curve = curve.continue(curveCont);
-    // Transform the curves into a proper Path3D object and get its orientation information
-    var path3d = new BABYLON.Path3D(curve.getPoints());
-
+    //var input5 = new BABYLON.GUI.InputText();
   }
 }
