@@ -53,10 +53,6 @@ export class StoryApp extends BaseApp {
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
 
-
-    this.camera_switch = document.querySelector('.camera_switch');
-    this.camera_switch.addEventListener('click', e => this.cameraOptionSwitch());
-
     this.profile_webglLevel = document.querySelector('.profile_webglLevel');
     this.profile_webglLevel.addEventListener('input', async e => {
       let updatePacket = {
@@ -105,6 +101,7 @@ export class StoryApp extends BaseApp {
       alert('reload needed to see changes');
     });
   }
+
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
     this.buttonOneRed.addEventListener('click', e => this.aButtonPress());
@@ -115,60 +112,11 @@ export class StoryApp extends BaseApp {
     this.buttonFour = document.querySelector('.choice-button-four');
     this.buttonFour.addEventListener('click', e => this.yButtonPress());
 
-
-    this.startCameraAlpha = this.scene.activeCamera.alpha;
-    this.scene.onPointerObservable.add((eventData) => {
-      if (this.xr.baseExperience.state !== 3) { //inxr is 2
-        return
-      }
-      if (this.attachControl !== false) {
-        return
-      }
-
-      if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN) {
-        this.pointerActive = true;
-      } else if (eventData.type === BABYLON.PointerEventTypes.POINTERUP) {
-        this.pointerActive = false;
-      } else if (this.pointerActive && eventData.type === BABYLON.PointerEventTypes.POINTERMOVE) {
-        let evt = eventData.event;
-        let mX, mY
-        if (evt.movementX != 0) {
-          mX = evt.movementX / -20
-        } else mX = evt.movementX
-        if (evt.movementY != 0) {
-          mY = evt.movementY / 20
-        } else mY = evt.movementY;
-
-        let movementVector = new BABYLON.Vector3(mX, 0, mY);
-
-        let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
-        movementVector.set(
-          movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
-          0,
-          movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
-        );
-
-        this.scene.activeCamera.position.addInPlace(movementVector);
-        this.scene.activeCamera.target.addInPlace(movementVector);
-      }
-    });
-
     this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
       this.clearFollowMeta();
     });
   }
-  cameraOptionSwitch() {
-    this.clearFollowMeta();
-    if (this.attachControl !== false) {
-      this.scene.activeCamera.detachControl();
-      this.attachControl = false;
-      this.camera_switch.innerHTML = 'Rotate';
-    } else {
-      this.scene.activeCamera.attachControl(this.canvas, true);
-      this.attachControl = true;
-      this.camera_switch.innerHTML = 'Pan';
-    }
-  }
+
   aimCamera(locationMeta) {
     this.camera.restoreState();
     if (locationMeta) {
@@ -180,6 +128,7 @@ export class StoryApp extends BaseApp {
       this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
     }
   }
+
   clearFollowMeta() {
     this.buttonOneRed.innerHTML = 'A';
     this.buttonTwo.innerHTML = 'B';
@@ -188,10 +137,6 @@ export class StoryApp extends BaseApp {
   setFollowMeta() {
     //  this.aimCamera();
     this.followMeta = this.lastClickMetaButtonCache;
-    if (!this.attachControl) {
-      this.scene.activeCamera.attachControl(this.canvas, true);
-      this.attachControl = true;
-    }
     let v = new BABYLON.Vector3(0, 0, 0);
 
     if (this.followMeta.basePivot)
@@ -216,6 +161,7 @@ export class StoryApp extends BaseApp {
     this.buttonOneRed.innerHTML = 'A';
     this.buttonTwo.innerHTML = 'B Stop follow';
   }
+
   xButtonPress() {
     this.clearFollowMeta();
     this.aimCamera(this.cameraMetaX);
@@ -229,6 +175,7 @@ export class StoryApp extends BaseApp {
   bButtonPress() {
     this.clearFollowMeta();
   }
+
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
   }
@@ -239,6 +186,7 @@ export class StoryApp extends BaseApp {
 
     this.loading_dynamic_area.scrollIntoView(false);
   }
+
   async loadStaticScene() {
     if (this.profile.webGLLevel === "3") {
       this.hugeAssets = true;
@@ -316,6 +264,8 @@ export class StoryApp extends BaseApp {
 
     this.paintGameData();
 
+    this.addRocket();
+
     this.verifyLoaddingComplete = setInterval(() => {
       if (!this.runRender)
         this.paintGameData();
@@ -323,6 +273,83 @@ export class StoryApp extends BaseApp {
         clearInterval(this.verifyLoaddingComplete);
     }, 400);
   }
+  async loadStaticAsset(name, parent, optionalLoadFlag = 'optionalLoadType') {
+    let meta = Object.assign({}, this.allCards[name]);
+
+    if (meta.optionalLoad && meta.optionalLoadFlag !== optionalLoadFlag)
+      return;
+
+    meta.extended = this.processStaticAssetMeta(meta);
+
+    let mesh = await this.loadStaticMesh(meta.extended.glbPath, '', meta.extended.scale, 0, 0, 0);
+
+    let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
+    let smallLink = '';
+    let largeLink = '';
+    if (meta.largeglbpath)
+      largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
+    if (meta.smallglbpath)
+      smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
+
+      let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
+    this.addLineToLoading(`
+        ${meta.name}:
+        &nbsp;
+        ${smallLink}
+        ${normalLink}
+        ${largeLink}
+        <br>
+        <a href="${meta.url}" target="_blank">wiki</a>
+        &nbsp; ${imgHTML}
+        <br>
+      `);
+
+    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
+    mesh.parent = meshPivot;
+
+    if (this.shadowGenerator)
+      this.shadowGenerator.addShadowCaster(mesh, true);
+
+    if (meta.mp3file)
+      this._loadMeshMusic(meta, mesh, name);
+
+    meta.basePivot = meshPivot;
+
+    if (meta.symbol)
+      meshPivot = this.infoPanel(name, meta, meshPivot, this.scene);
+
+    if (meta.rotationTime)
+      meshPivot = Utility3D.rotationAnimation(name, meta, meshPivot, this.scene);
+    if (meta.orbitTime)
+      meshPivot = Utility3D.orbitAnimation(name, meta, meshPivot, this.scene);
+
+    meshPivot = Utility3D.positionPivot(name, meta, meshPivot, this.scene);
+
+    meshPivot.assetMeta = meta;
+    meshPivot.baseMesh = mesh;
+    this.staticAssetMeshes[name] = meshPivot;
+
+    if (meta.parent) {
+      if (meta.parentType === 'basePivot')
+        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+      else
+        meshPivot.parent = this.staticAssetMeshes[meta.parent];
+    } else
+      meshPivot.parent = this.sceneTransformNode;
+
+    if (meta.noClick !== true) {
+      meta.appClickable = true;
+      meta.masterid = name;
+      meta.clickCommand = 'pauseSpin';
+    }
+
+    if (meta.seatIndex !== undefined)
+      this.seatMeshes[meta.seatIndex] = meshPivot;
+
+    if (meta.loadDisabled)
+      meshPivot.setEnabled(false);
+  }
+
   async loadAsteroids() {
     let asteroids = Utility3D.getAsteroids();
 
@@ -506,78 +533,6 @@ export class StoryApp extends BaseApp {
     return asteroidSymbol;
   }
 
-  async loadStaticAsset(name, parent, optionalLoadFlag = 'optionalLoadType') {
-    let meta = Object.assign({}, this.allCards[name]);
-
-    if (meta.optionalLoad && meta.optionalLoadFlag !== optionalLoadFlag)
-      return;
-
-    meta.extended = this.processStaticAssetMeta(meta);
-
-    let mesh = await this.loadStaticMesh(meta.extended.glbPath, '', meta.extended.scale, 0, 0, 0);
-
-    let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
-    let smallLink = '';
-    let largeLink = '';
-    if (meta.largeglbpath)
-      largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
-    if (meta.smallglbpath)
-      smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
-
-    this.addLineToLoading(`
-        ${meta.name}:
-        &nbsp;
-        ${smallLink}
-        ${normalLink}
-        ${largeLink}
-        <br>
-        <a href="${meta.url}" target="_blank">wiki</a>
-        &nbsp; <img src="${meta.extended.symbolPath}" class="symbol_image">
-        <br>
-      `);
-
-    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
-    mesh.parent = meshPivot;
-
-    if (this.shadowGenerator)
-      this.shadowGenerator.addShadowCaster(mesh, true);
-
-    if (meta.mp3file)
-      this._loadMeshMusic(meta, mesh, name);
-
-    meta.basePivot = meshPivot;
-
-    if (meta.symbol)
-      meshPivot = this.infoPanel(name, meta, meshPivot, this.scene);
-
-    if (meta.rotationTime)
-      meshPivot = Utility3D.rotationAnimation(name, meta, meshPivot, this.scene);
-    if (meta.orbitTime)
-      meshPivot = Utility3D.orbitAnimation(name, meta, meshPivot, this.scene);
-
-    meshPivot = Utility3D.positionPivot(name, meta, meshPivot, this.scene);
-
-    meshPivot.assetMeta = meta;
-    meshPivot.baseMesh = mesh;
-    this.staticAssetMeshes[name] = meshPivot;
-
-    if (meta.parent) {
-      if (meta.parentType === 'basePivot')
-        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
-      else
-        meshPivot.parent = this.staticAssetMeshes[meta.parent];
-    } else
-      meshPivot.parent = this.sceneTransformNode;
-
-    if (meta.noClick !== true) {
-      meta.appClickable = true;
-      meta.masterid = name;
-      meta.clickCommand = 'pauseSpin';
-    }
-
-    if (meta.seatIndex !== undefined)
-      this.seatMeshes[meta.seatIndex] = meshPivot;
-  }
   _loadMeshMusic(meta, mesh, name) {
     if (!this.hugeAssets)
       return;
@@ -1876,7 +1831,7 @@ export class StoryApp extends BaseApp {
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     normalSizeButton.material = new BABYLON.StandardMaterial('assetPanelNormalSizeButtonMat', this.scene);
-    Utility3D.setTextMaterial(this.scene, normalSizeButton.material, 'Normal', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
+    Utility3D.setTextMaterial(this.scene, normalSizeButton.material, 'Normal', 'rgb(255, 255, 255)', 'transparent', 180);
     normalSizeButton.parent = buttonBarTransform;
     this.assetPanelNormalButton = normalSizeButton;
 
@@ -1897,7 +1852,7 @@ export class StoryApp extends BaseApp {
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     hugeSizeButton.material = new BABYLON.StandardMaterial('assetPanelHugeSizeButtonMat', this.scene);
-    Utility3D.setTextMaterial(this.scene, hugeSizeButton.material, 'Huge', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
+    Utility3D.setTextMaterial(this.scene, hugeSizeButton.material, 'Huge', 'rgb(255, 255, 255)', 'transparent', 180);
     hugeSizeButton.parent = buttonBarTransform;
     this.assetPanelHugeButton = hugeSizeButton;
 
@@ -1909,9 +1864,7 @@ export class StoryApp extends BaseApp {
         this.updateAssetSize('huge', this.lastClickMetaButtonCache);
       }
     };
-
     hugeSizeButton.position.x = 2;
-
 
     let smallSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelSmallSizeButton', {
       height: 0.25,
@@ -1919,7 +1872,7 @@ export class StoryApp extends BaseApp {
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     smallSizeButton.material = new BABYLON.StandardMaterial('assetPanelSmallSizeButtonMat', this.scene);
-    Utility3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'rgb(50, 50, 50)', 180);
+    Utility3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'transparent', 180);
     smallSizeButton.parent = buttonBarTransform;
     this.assetSmallSizeButton = smallSizeButton;
 
@@ -1990,8 +1943,6 @@ export class StoryApp extends BaseApp {
       return;
     this.mascotsAreaInited = true;
 
-    let options = ["mascots", "probes", "mars", "rockets"];
-
     var mesh = BABYLON.MeshBuilder.CreateDisc('disc', {
       radius: 1,
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
@@ -2025,8 +1976,28 @@ export class StoryApp extends BaseApp {
     let deck = GameCards.getCardDeck('mascots');
     deck.forEach(card => {
       if (!this.staticAssetMeshes[card.id] && card.optionalLoadFlag === kind)
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, kind));
+        promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, kind));
     });
     await Promise.all(promises);
+  }
+
+  async addRocket() {
+
+    // visualisation
+//    let pathGroup = new BABYLON.Mesh("pathGroup");
+
+    let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
+    let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
+    let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
+    curve = curve.continue(curveCont);
+    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
+    curve = curve.continue(curveCont);
+    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
+    curve = curve.continue(curveCont);
+    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
+    curve = curve.continue(curveCont);
+      // Transform the curves into a proper Path3D object and get its orientation information
+    var path3d = new BABYLON.Path3D(curve.getPoints());
+
   }
 }

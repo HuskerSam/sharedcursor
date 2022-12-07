@@ -1293,6 +1293,9 @@ export class BaseApp {
     this.camera.upperRadiusLimit = 25;
     this.camera.allowUpsideDown = false;
     this.camera.maxZ = 750;
+    this.camera.panningAxis.y = 0;
+    this.camera.panningAxis.z = 1;
+
     scene.activeCamera.setPosition(this.cameraMetaX.position);
     scene.activeCamera.setTarget(this.cameraMetaX.target);
     scene.activeCamera.panningSensibility = 300;
@@ -1372,25 +1375,7 @@ export class BaseApp {
           let mX = position.x - this.scene.activeCamera.position.x;
           let mZ = position.z - this.scene.activeCamera.position.z;
 
-          /*
-                  let mX, mY
-                  if (evt.movementX != 0) {
-                    mX = evt.movementX / -20
-                  } else mX = evt.movementX
-                  if (evt.movementY != 0) {
-                    mY = evt.movementY / 20
-                  } else mY = evt.movementY;
-          */
           let movementVector = new BABYLON.Vector3(mX, 0, mZ);
-          /*
-          let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
-          movementVector.set(
-            movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
-            0,
-            movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
-          );
-          */
-
           this.xr.baseExperience.camera.position.copyFrom(position);
         }
       })

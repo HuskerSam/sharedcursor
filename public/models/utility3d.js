@@ -406,8 +406,6 @@ export default class Utility3D {
     return asteroidNameMesh;
   }
   static createFireParticles(meta, wrapper, name, scene) {
-    if (!meta.particlesEnabled)
-      return;
     let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, scene);
     particlePivot.position.x = meta.px;
     particlePivot.position.y = meta.py;
