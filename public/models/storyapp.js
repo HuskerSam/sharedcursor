@@ -385,11 +385,6 @@ export class StoryApp extends BaseApp {
     this.selectedAsteroidMaterial = mats.selectedMaterial;
 
     this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
-    this.asteroidSymbolMesh1 = Utility3D.generateSymbolMesh(this.scene, 'asteroidsymbolwrapper', 'asteroid');
-    this.asteroidSymbolMesh2 = Utility3D.generateSymbolMesh(this.scene, 'asteroidsymbolwrapper2', 'asteroid2');
-
-    this.asteroidSymbolMesh1.setEnabled(false);
-    this.asteroidSymbolMesh2.setEnabled(false);
 
     this.loadedAsteroids = {};
     for (let c = 0; c < count; c++)
@@ -447,6 +442,7 @@ export class StoryApp extends BaseApp {
     if (startRatio !== 0.0)
       orbitAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
 
+/*
     let anim = new BABYLON.Animation(
       "asteroidspiny" + asteroid,
       "rotation",
@@ -492,8 +488,7 @@ export class StoryApp extends BaseApp {
     positionTN.animations.push(anim);
 
     let animR = this.scene.beginAnimation(positionTN, 0, spinEndFrame, true);
-
-    let asteroidSymbolWrapper = this.loadSymbolForAsteroid(positionTN, asteroid, index);
+*/
 
     orbitWrapper.assetMeta = {
       appClickable: true,
@@ -502,7 +497,6 @@ export class StoryApp extends BaseApp {
       asteroidType: true,
       asteroidName: asteroid,
       asteroidMesh: positionTN,
-      asteroidSymbolWrapper,
       orbitAnimation,
       basePivot: mesh
     };
@@ -514,20 +508,6 @@ export class StoryApp extends BaseApp {
       orbitWrapper,
       mesh
     };
-  }
-  loadSymbolForAsteroid(parent, name, index) {
-    let asteroidSymbol;
-    if (index % 2 === 0) {
-      asteroidSymbol = this.asteroidSymbolMesh1.clone("asteroidsymbol" + name);
-      asteroidSymbol.parent = parent;
-    } else {
-      asteroidSymbol = this.asteroidSymbolMesh2.clone("asteroidsymbol" + name);
-      asteroidSymbol.parent = parent;
-    }
-
-    asteroidSymbol.setEnabled(true);
-
-    return asteroidSymbol;
   }
 
   _loadMeshMusic(meta, mesh, name) {
@@ -937,12 +917,11 @@ export class StoryApp extends BaseApp {
 
   asteroidPtrDown(meta, up = false) {
     if (!up) {
-      meta.asteroidMesh.material = this.selectedAsteroidMaterial;
+      meta.basePivot.material = this.selectedAsteroidMaterial;
       meta.asteroidMesh.scaling.x = meta.asteroidMesh.origsx * 1.25;
       meta.asteroidMesh.scaling.y = meta.asteroidMesh.origsy * 1.25;
       meta.asteroidMesh.scaling.z = meta.asteroidMesh.origsz * 1.25;
 
-      meta.asteroidSymbolWrapper.setEnabled(false);
       this.asteroidSymbolMeshName.setEnabled(true);
       this.asteroidSymbolMeshName.parent = meta.asteroidMesh;
 
@@ -950,15 +929,14 @@ export class StoryApp extends BaseApp {
       Utility3D.setTextMaterial(this.scene, this.asteroidSymbolMeshName.nameMaterial, text);
 
       setTimeout(() => {
-        meta.asteroidMesh.material = this.asteroidMaterial;
+        meta.basePivot.material = this.asteroidMaterial;
       }, 3000);
     } else {
-      meta.asteroidMesh.material = this.asteroidMaterial;
+      meta.basePivot.material = this.asteroidMaterial;
       meta.asteroidMesh.scaling.x = meta.asteroidMesh.origsx;
       meta.asteroidMesh.scaling.y = meta.asteroidMesh.origsy;
       meta.asteroidMesh.scaling.z = meta.asteroidMesh.origsz;
 
-      meta.asteroidSymbolWrapper.setEnabled(true);
       this.asteroidSymbolMeshName.setEnabled(false);
     }
   }
@@ -2189,18 +2167,10 @@ export class StoryApp extends BaseApp {
     newRocket.rotation.copyFrom(startRotation);
     newRocket.setEnabled(true);
 
-    if (!newRocket.particleSystem)
-      Utility3D.createFireParticles(this.staticAssetMeshes['rocket_atlasv'].assetMeta, newRocket, 'rocket1', this.scene);
-    else {
-      newRocket.particleSystem.reset();
-      newRocket.particleSystem.start();
-    }
-
     await this.rocketTakeOff(newRocket, 6, 10, 2500);
     await this.rocketTravelTo(newRocket, endPosition, 8000, 1500);
     await this.rocketLand(newRocket, endPosition, 1500);
 
-    newRocket.particleSystem.stop();
     newRocket.setEnabled(false);
     newRocket.position.copyFrom(startPos);
     newRocket.rotation.copyFrom(startRotation);

@@ -10,7 +10,9 @@
     "color": "rgb(255, 127, 255)",
     "x": 2,
     "z": -2,
-    "y": 0
+    "y": 0,
+    "optionalLoad": true,
+    "optionalLoadFlag": "mascots"
   },
   {
     "id": "action_buggy",
@@ -25,7 +27,9 @@
     "color": "rgb(255, 127, 255)",
     "x": 5,
     "z": -6,
-    "y": 0
+    "y": 0,
+    "optionalLoad": true,
+    "optionalLoadFlag": "mascots"
   },
   {
     "id": "mascot_nebraska",

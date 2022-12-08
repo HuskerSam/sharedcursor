@@ -11,10 +11,9 @@
     "symbolY": -3.25,
     "url": "https://en.wikipedia.org/wiki/Sun",
     "color": "rgb(200, 200, 200)",
-    "x": -4,
+    "x": 18,
     "y": 5,
-    "z": 4,
-    "rotationTime": 2000
+    "z": 5
   },
   {
     "id": "mercury",
@@ -29,9 +28,9 @@
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Mercury_(planet)",
     "color": "rgb(63, 63, 255)",
-    "x": 3,
+    "x": 20,
     "y": 1,
-    "z": 2,
+    "z": 10,
     "navDiameter": 2,
     "rotationTime": 50000
   },
@@ -48,9 +47,9 @@
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Venus",
     "color": "rgb(63, 63, 255)",
-    "x": 8,
+    "x": 16,
     "y": 1.1,
-    "z": 3,
+    "z": 15,
     "navDiameter": 2.4,
     "rotationTime": 100000,
     "rotationDirection": -1
@@ -68,9 +67,9 @@
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Earth",
     "color": "rgb(63, 63, 255)",
-    "x": 11,
+    "x": 9,
     "y": 1.1,
-    "z": 10,
+    "z": 18,
     "navDiameter": 2.4,
     "rotationTime": 10000
   },
@@ -86,7 +85,7 @@
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Mars",
     "color": "rgb(63, 63, 255)",
-    "x": 9,
+    "x": 0,
     "y": 1,
     "z": 18,
     "navDiameter": 2.1,

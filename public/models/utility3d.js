@@ -324,12 +324,12 @@ export default class Utility3D {
     mat.ambientTexture = nameTexture;
   }
   static asteroidMaterial(scene, name = 'asteroidmaterial') {
-    let material = new BABYLON.StandardMaterial(name, scene);
+    let material = new BABYLON.StandardMaterial(name + 'mat', scene);
     material.wireframe = true;
     let at = new BABYLON.Texture('/images/asteroid2diff.jpg', scene);
     material.diffuseTexture = at;
 
-    let selectedMaterial = new BABYLON.StandardMaterial(name + 'selected', scene)
+    let selectedMaterial = new BABYLON.StandardMaterial(name + 'selectedmat', scene)
     let t = new BABYLON.Texture('/images/asteroid2diff.jpg', scene);
     selectedMaterial.diffuseTexture = t;
     let bt = new BABYLON.Texture('/images/asteroid2normal.jpg', scene);
@@ -338,46 +338,9 @@ export default class Utility3D {
     selectedMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
 
     return {
-      selectedMaterial,
-      material
+      material: selectedMaterial,
+      selectedMaterial: material
     }
-  }
-  static generateSymbolMesh(scene, name = 'asteroidsymbolwrapper', texturePrefix = 'asteroid') {
-    let size = 1;
-
-    let alphaMat = new BABYLON.StandardMaterial(name + 'mat1alpha', scene);
-    alphaMat.alpha = 0;
-
-    let symbolWrapper = BABYLON.MeshBuilder.CreateBox(name, {
-      width: .01,
-      height: .01,
-      depth: .01
-    }, scene);
-    symbolWrapper.material = alphaMat;
-
-    let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane(name + 'symbolshow1', {
-      height: size,
-      width: size,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-
-    let m = new BABYLON.StandardMaterial(name + 'mat', scene);
-    let file1 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(`/symbol/${texturePrefix}.png`) + '?alt=media';
-    let t = new BABYLON.Texture(file1, scene);
-    t.vScale = 1;
-    t.uScale = 1;
-    t.hasAlpha = true;
-
-    m.diffuseTexture = t;
-    m.emissiveTexture = t;
-    m.ambientTexture = t;
-    let extraY = 0;
-    symbolMesh1.material = m;
-    symbolMesh1.parent = symbolWrapper;
-    symbolMesh1.rotation.y = 0;
-    symbolMesh1.position.y = extraY;
-
-    return symbolWrapper;
   }
   static generateNameMesh(scene, name = 'asteroidnamemesh') {
     let alphaMat = new BABYLON.StandardMaterial(name + 'mat1alpha', scene);
