@@ -1248,8 +1248,8 @@ export class BaseApp {
       return;
 
     this.cameraMetaX = {
-      position: new BABYLON.Vector3(15, 6, 15),
-      target: new BABYLON.Vector3(10, 1, 10)
+      position: new BABYLON.Vector3(10, 6, 10),
+      target: new BABYLON.Vector3(5, 1, 5)
     };
     this.cameraMetaY = {
       position: new BABYLON.Vector3(30, 6, 30),

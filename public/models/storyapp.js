@@ -350,7 +350,7 @@ export class StoryApp extends BaseApp {
       this._loadAsteroid(asteroids[randomArray[c]], c, count);
   }
   async _loadAsteroid(asteroid, index, count) {
-    let startRatio = index / (count + 1); //+1 so no overlap on intersection poit for the double loop
+    let startRatio = index / count;
     let mainY = 1.5;
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
@@ -426,11 +426,11 @@ export class StoryApp extends BaseApp {
     });
     positionkeys.push({
       frame: Math.floor(orbitEndFrame * 1.1 / 2),
-      value: this.v(-15, 0, 9)
+      value: this.v(-10, 0, 0)
     });
     positionkeys.push({
-      frame: Math.floor(orbitEndFrame * 1.9 / 2) + 1,
-      value: this.v(-15, 0, 9)
+      frame: Math.floor(orbitEndFrame * 1.95 / 2) + 1,
+      value: this.v(-10, 0, 0)
     });
     positionkeys.push({
       frame: orbitEndFrame,
@@ -448,6 +448,11 @@ export class StoryApp extends BaseApp {
     a_positionkeys.push({
       frame: Math.floor(orbitEndFrame / 2) + 1,
       value: this.v(42, mainY, 0)
+    });
+
+    a_positionkeys.push({
+      frame: Math.floor(orbitEndFrame * 1.5 / 2),
+      value: this.v(60, mainY, 0)
     });
     a_positionkeys.push({
       frame: orbitEndFrame,
