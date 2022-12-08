@@ -52,18 +52,6 @@ export class StoryApp extends BaseApp {
 
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
-
-    this.profile_webglLevel = document.querySelector('.profile_webglLevel');
-    this.profile_webglLevel.addEventListener('input', async e => {
-      let updatePacket = {
-        webGLLevel: this.profile_webglLevel.value
-      };
-      if (this.fireToken)
-        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-      alert('reload needed to see changes');
-    });
-
   }
 
   initCameraToolbar() {
@@ -154,14 +142,6 @@ export class StoryApp extends BaseApp {
   }
 
   async loadStaticScene() {
-    if (this.profile.webGLLevel === "3") {
-      this.hugeAssets = true;
-    } else if (this.profile.webGLLevel === "2") {
-      this.normalAssets = true;
-    } else {
-      this.smallAssets = true;
-    }
-
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
     this.addLineToLoading('Solar System Objects<br>');
@@ -938,9 +918,6 @@ export class StoryApp extends BaseApp {
     this.currentGame = null;
     this.initRTDBPresence();
 
-    if (this.profile.webGLLevel)
-      this.profile_webglLevel.value = this.profile.webGLLevel;
-
     let gameId = this.urlParams.get('game');
     if (gameId) {
       await this.gameAPIJoin(gameId);
@@ -1212,8 +1189,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (seatData.seated) {
-      if (this.hugeAssets)
-        this.renderSeatText(seat, index);
+    //    this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
       let baseDisc = Utility3D.__createTextMesh("emptyseat" + index.toString(), {
