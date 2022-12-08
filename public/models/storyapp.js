@@ -38,7 +38,7 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.asteroidOrbitTime = 60000;
+    this.asteroidOrbitTime = 120000;
     this.dockDiscRadius = .6;
 
     this.settings_button = document.querySelector('.settings_button');
@@ -350,24 +350,18 @@ export class StoryApp extends BaseApp {
       this._loadAsteroid(asteroids[randomArray[c]], c, count);
   }
   async _loadAsteroid(asteroid, index, count) {
-    let startRatio = index / count;
-    let mainY = 1;
-    if (index % 2 !== 0)
-      mainY = 2.5;
+    let startRatio = index / (count + 1); //+1 so no overlap on intersection poit for the double loop
+    let mainY = 1.5;
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await this.loadStaticMesh(path, '', 1, 0, 0, 0);
+    this._fitNodeToSize(mesh, 1.5);
 
     mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, this.scene);
     let positionTN = new BABYLON.TransformNode('asteroidpositionwrapper' + asteroid, this.scene);
-
-    positionTN.position.x = 20;
-    positionTN.position.y = mainY;
-    orbitWrapper.position.x = 7;
-    orbitWrapper.position.z = 9;
 
     mesh.parent = positionTN;
     positionTN.parent = orbitWrapper;
@@ -379,9 +373,26 @@ export class StoryApp extends BaseApp {
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
+    let orbitPositionAnim = new BABYLON.Animation(
+      "asteroidorbitp" + asteroid,
+      "position",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let asteroidPositionAnim = new BABYLON.Animation(
+      "asteroidpositionp" + asteroid,
+      "position",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
 
     let orbitEndFrame = this.asteroidOrbitTime / 1000 * 30;
     let orbitkeys = [];
+    let positionkeys = [];
+    let a_positionkeys = [];
     orbitkeys.push({
       frame: 0,
       value: new BABYLON.Vector3(0, 0, 0)
@@ -389,65 +400,78 @@ export class StoryApp extends BaseApp {
 
     orbitkeys.push({
       frame: orbitEndFrame,
-      value: new BABYLON.Vector3(0, -2 * Math.PI, 0)
+      value: new BABYLON.Vector3(0, -4 * Math.PI, 0)
+    });
+
+    positionkeys.push({
+      frame: 0,
+      value: this.v(7, 6, 9)
+    });
+    positionkeys.push({
+      frame: Math.floor(orbitEndFrame * 0.1 / 2),
+      value: this.v(7, 0, 9)
+    });
+    positionkeys.push({
+      frame: Math.floor(orbitEndFrame * 0.9 / 2),
+      value: this.v(7, 0, 9)
+    });
+
+    positionkeys.push({
+      frame: Math.floor(orbitEndFrame / 2),
+      value: this.v(7, 6, 9)
+    });
+    positionkeys.push({
+      frame: Math.floor(orbitEndFrame / 2) + 1,
+      value: this.v(-15, 6, 9)
+    });
+    positionkeys.push({
+      frame: Math.floor(orbitEndFrame * 1.1 / 2),
+      value: this.v(-15, 0, 9)
+    });
+    positionkeys.push({
+      frame: Math.floor(orbitEndFrame * 1.9 / 2) + 1,
+      value: this.v(-15, 0, 9)
+    });
+    positionkeys.push({
+      frame: orbitEndFrame,
+      value: this.v(-15, 6, 9)
+    });
+
+    a_positionkeys.push({
+      frame: 0,
+      value: this.v(20, mainY, 0)
+    });
+    a_positionkeys.push({
+      frame: Math.floor(orbitEndFrame / 2),
+      value: this.v(20, mainY, 0)
+    });
+    a_positionkeys.push({
+      frame: Math.floor(orbitEndFrame / 2) + 1,
+      value: this.v(42, mainY, 0)
+    });
+    a_positionkeys.push({
+      frame: orbitEndFrame,
+      value: this.v(42, mainY, 0)
     });
 
     orbitAnim.setKeys(orbitkeys);
+    orbitPositionAnim.setKeys(positionkeys);
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];
     orbitWrapper.animations.push(orbitAnim);
+    orbitWrapper.animations.push(orbitPositionAnim);
     let orbitAnimation = this.scene.beginAnimation(orbitWrapper, 0, orbitEndFrame, true);
 
-    if (startRatio !== 0.0)
+    if (!positionTN.animations)
+      positionTN.animations = [];
+    asteroidPositionAnim.setKeys(a_positionkeys);
+    positionTN.animations.push(asteroidPositionAnim);
+    let positionAnimation = this.scene.beginAnimation(positionTN, 0, orbitEndFrame, true);
+
+    if (startRatio !== 0.0) {
+      positionAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
       orbitAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
-
-    /*
-        let anim = new BABYLON.Animation(
-          "asteroidspiny" + asteroid,
-          "rotation",
-          30,
-          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-        );
-
-        let x = positionTN.rotation.x;
-        let y = positionTN.rotation.y;
-        let z = positionTN.rotation.z;
-        let spinkeys = [];
-
-        let extraFrames = 0;
-        if (index % 3 === 0)
-          extraFrames += 75;
-        if (index % 3 === 1)
-          extraFrames += 150;
-        if (index % 2 === 0)
-          extraFrames -= 50;
-        if (index % 2 === 1)
-          extraFrames -= 50;
-        if (index % 5 === 0)
-          extraFrames -= 50;
-
-        let spinEndFrame = 24 * 30 + extraFrames;
-        spinkeys.push({
-          frame: 0,
-          value: new BABYLON.Vector3(x, y, z)
-        });
-
-        let endY = y + -2 * Math.PI;
-        if (Math.random() > 0.5)
-          endY *= -1;
-        spinkeys.push({
-          frame: spinEndFrame,
-          value: new BABYLON.Vector3(x + -4 * Math.PI, endY, z + 4 * Math.PI)
-        });
-
-        anim.setKeys(spinkeys);
-        if (!positionTN.animations)
-          positionTN.animations = [];
-        positionTN.animations.push(anim);
-
-        let animR = this.scene.beginAnimation(positionTN, 0, spinEndFrame, true);
-    */
+    }
 
     orbitWrapper.assetMeta = {
       appClickable: true,
@@ -1189,7 +1213,7 @@ export class StoryApp extends BaseApp {
     }
 
     if (seatData.seated) {
-    //    this.renderSeatText(seat, index);
+      //    this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
       let baseDisc = Utility3D.__createTextMesh("emptyseat" + index.toString(), {
