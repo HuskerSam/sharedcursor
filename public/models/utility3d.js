@@ -261,19 +261,19 @@ export default class Utility3D {
     let lenY = 0;
     let polies = [];
 
-    for (var i = 0; i < vectorData.length; i++) {
-      var letter = vectorData[i];
-      var conners = [];
-      for (var k = 0; k < letter[0].length; k++) {
+    for (let i = 0; i < vectorData.length; i++) {
+      let letter = vectorData[i];
+      let conners = [];
+      for (let k = 0; k < letter[0].length; k++) {
         conners[k] = new BABYLON.Vector2(scale * letter[0][k][1], scale * letter[0][k][0]);
         if (lenX < conners[k].x) lenX = conners[k].x;
         if (lenY < conners[k].y) lenY = conners[k].y;
       }
-      var polyBuilder = new BABYLON.PolygonMeshBuilder("pBuilder" + i, conners, scene);
+      let polyBuilder = new BABYLON.PolygonMeshBuilder("pBuilder" + i, conners, scene);
 
-      for (var j = 1; j < letter.length; j++) {
-        var hole = [];
-        for (var k = 0; k < letter[j].length; k++) {
+      for (let j = 1; j < letter.length; j++) {
+        let hole = [];
+        for (let k = 0; k < letter[j].length; k++) {
           hole[k] = new BABYLON.Vector2(scale * letter[j][k][1], scale * letter[j][k][0]);
         }
         hole.reverse();
@@ -281,7 +281,7 @@ export default class Utility3D {
       }
 
       try {
-        var polygon = polyBuilder.build(false, thick);
+        let polygon = polyBuilder.build(false, thick);
         //polygon.receiveShadows = true;
 
         polies.push(polygon);
@@ -398,12 +398,12 @@ export default class Utility3D {
       }, scene);
       pSystem.activeParticleCount = 100000;
     } else {
-      pSystem = new BABYLON.ParticleSystem("particles", 25000, this.scene);
+      pSystem = new BABYLON.ParticleSystem("particles", 25000, scene);
     }
 
     pSystem.emitRate = 500;
     // pSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
-    pSystem.particleTexture = new BABYLON.Texture("/images/flare.png", this.scene);
+    pSystem.particleTexture = new BABYLON.Texture("/images/flare.png", scene);
 
     pSystem.gravity = new BABYLON.Vector3(0, 0, 0);
 
@@ -674,5 +674,40 @@ export default class Utility3D {
     ];
 
     return fullList;
+  }
+  static getTextPlane(text, name, scene, planeWidth = 4, planeHeight = 1, color = "rgb(255, 0, 255)", backcolor = "rgba(0, 0, 0, 0.25)",
+    font_type = "Arial", scaleFactor = 100) {
+    let plane = BABYLON.MeshBuilder.CreatePlane(name + "textplane", {
+      width: planeWidth,
+      height: planeHeight,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, scene);
+
+    let DTWidth = planeWidth * scaleFactor;
+    let DTHeight = planeHeight * scaleFactor;
+
+    let dynamicTexture = new BABYLON.DynamicTexture(name + "textplaneDynamicTexture", {
+      width: DTWidth,
+      height: DTHeight
+    }, scene);
+
+    let ctx = dynamicTexture.getContext();
+    let size = 12; //any value will work
+    ctx.font = size + "px " + font_type;
+    let textWidth = ctx.measureText(text).width;
+    let ratio = textWidth / size;
+    let font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
+    let font = font_size + "px " + font_type;
+
+    dynamicTexture.hasAlpha = true;
+    dynamicTexture.drawText(text, null, null, font, color, backcolor, true);
+
+    let mat = new BABYLON.StandardMaterial(name + "textplanemat", scene);
+    mat.diffuseTexture = dynamicTexture;
+    mat.emissiveTexture = dynamicTexture;
+    mat.ambientTexture = dynamicTexture;
+
+    plane.material = mat;
+    return plane;
   }
 }

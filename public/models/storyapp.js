@@ -149,6 +149,8 @@ export class StoryApp extends BaseApp {
     this.loading_dynamic_area.appendChild(div);
 
     this.loading_dynamic_area.scrollIntoView(false);
+
+    return div;
   }
 
   async loadStaticScene() {
@@ -226,6 +228,7 @@ export class StoryApp extends BaseApp {
     this.loadAvatars();
     this.loadAsteroids();
     this.initSkyBoxOptions();
+    this.initAsteroidCounts();
 
     this.paintGameData();
 
@@ -313,16 +316,28 @@ export class StoryApp extends BaseApp {
   }
 
   async loadAsteroids() {
+    if (this.asteroidLoadingLine1) {
+      this.asteroidLoadingLine1.remove();
+      this.asteroidLoadingLine2.remove();
+
+      for (let asteroid in this.loadedAsteroids) {
+        this.loadedAsteroids[asteroid].orbitWrapper.dispose();
+      }
+    }
+    this.loadedAsteroids = {};
+
     let asteroids = Utility3D.getAsteroids();
 
     let ratio = 0;
     let max = asteroids.length;
 
     let count = 20;
-    if (this.profile.asteroidCount)
+    if (this.profile.asteroidCount === 'all')
+      count = max;
+    else if (this.profile.asteroidCount)
       count = Number(this.profile.asteroidCount);
 
-    this.addLineToLoading(`Asteroids - ${count} from ${max} available`);
+    this.asteroidLoadingLine1 = this.addLineToLoading(`Asteroids - ${count} from ${max} available`);
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {
@@ -343,7 +358,7 @@ export class StoryApp extends BaseApp {
       if (i % 4 === 3)
         linkNameList += '<br>';
     });
-    this.addLineToLoading(linkNameList);
+    this.asteroidLoadingLine2 = this.addLineToLoading(linkNameList);
 
     let mats = Utility3D.asteroidMaterial(this.scene);
     this.asteroidMaterial = mats.material;
@@ -351,7 +366,6 @@ export class StoryApp extends BaseApp {
 
     this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
 
-    this.loadedAsteroids = {};
     for (let c = 0; c < count; c++)
       this._loadAsteroid(asteroids[randomArray[c]], c, count);
   }
@@ -407,53 +421,53 @@ export class StoryApp extends BaseApp {
     if (startRatio !== 0.0)
       orbitAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
 
-/*
-    let anim = new BABYLON.Animation(
-      "asteroidspiny" + asteroid,
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
+    /*
+        let anim = new BABYLON.Animation(
+          "asteroidspiny" + asteroid,
+          "rotation",
+          30,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
 
-    let x = positionTN.rotation.x;
-    let y = positionTN.rotation.y;
-    let z = positionTN.rotation.z;
-    let spinkeys = [];
+        let x = positionTN.rotation.x;
+        let y = positionTN.rotation.y;
+        let z = positionTN.rotation.z;
+        let spinkeys = [];
 
-    let extraFrames = 0;
-    if (index % 3 === 0)
-      extraFrames += 75;
-    if (index % 3 === 1)
-      extraFrames += 150;
-    if (index % 2 === 0)
-      extraFrames -= 50;
-    if (index % 2 === 1)
-      extraFrames -= 50;
-    if (index % 5 === 0)
-      extraFrames -= 50;
+        let extraFrames = 0;
+        if (index % 3 === 0)
+          extraFrames += 75;
+        if (index % 3 === 1)
+          extraFrames += 150;
+        if (index % 2 === 0)
+          extraFrames -= 50;
+        if (index % 2 === 1)
+          extraFrames -= 50;
+        if (index % 5 === 0)
+          extraFrames -= 50;
 
-    let spinEndFrame = 24 * 30 + extraFrames;
-    spinkeys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
-    });
+        let spinEndFrame = 24 * 30 + extraFrames;
+        spinkeys.push({
+          frame: 0,
+          value: new BABYLON.Vector3(x, y, z)
+        });
 
-    let endY = y + -2 * Math.PI;
-    if (Math.random() > 0.5)
-      endY *= -1;
-    spinkeys.push({
-      frame: spinEndFrame,
-      value: new BABYLON.Vector3(x + -4 * Math.PI, endY, z + 4 * Math.PI)
-    });
+        let endY = y + -2 * Math.PI;
+        if (Math.random() > 0.5)
+          endY *= -1;
+        spinkeys.push({
+          frame: spinEndFrame,
+          value: new BABYLON.Vector3(x + -4 * Math.PI, endY, z + 4 * Math.PI)
+        });
 
-    anim.setKeys(spinkeys);
-    if (!positionTN.animations)
-      positionTN.animations = [];
-    positionTN.animations.push(anim);
+        anim.setKeys(spinkeys);
+        if (!positionTN.animations)
+          positionTN.animations = [];
+        positionTN.animations.push(anim);
 
-    let animR = this.scene.beginAnimation(positionTN, 0, spinEndFrame, true);
-*/
+        let animR = this.scene.beginAnimation(positionTN, 0, spinEndFrame, true);
+    */
 
     orbitWrapper.assetMeta = {
       appClickable: true,
@@ -1925,6 +1939,12 @@ export class StoryApp extends BaseApp {
 
     return mesh;
   }
+  _addTextButton(text, name, width = 10, height = 3) {
+
+    return Utility3D.getTextPlane(text, name, this.scene, width, height); //, planeWidth = 10, planeHeight = 3, color = "#000000", backcolor = "#ffffff",
+    //      font_type = "Arial", scaleFactor = 0.5);
+  }
+
   async loadOptional(kind) {
     let promises = [];
     let deck = GameCards.getCardDeck('mascots');
@@ -2141,33 +2161,33 @@ export class StoryApp extends BaseApp {
 
   async initSkyBoxOptions() {
     this.skyboxesList = [
-        'nebula_orange_blue',
-        'moon_high_clear',
-        'moonless_2',
-        'nebula_black',
-        'nebula_blue_red',
-        'nebula_cold',
-        'nebula_glow',
-        'nebula_green',
-        'nebula_red',
-        'neon_starless',
-        'vortex_starless'
-      ];
+      'nebula_orange_blue',
+      'moon_high_clear',
+      'moonless_2',
+      'nebula_black',
+      'nebula_blue_red',
+      'nebula_cold',
+      'nebula_glow',
+      'nebula_green',
+      'nebula_red',
+      'neon_starless',
+      'vortex_starless'
+    ];
 
-      let iconName = 'arrow-right';
-      let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-      nextSkyBoxBtn.position.y = 1;
-      nextSkyBoxBtn.position.x = 20;
-      nextSkyBoxBtn.position.z = -25;
-      nextSkyBoxBtn.rotation.y = 0.5;
+    let iconName = 'arrow-right';
+    let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
+    nextSkyBoxBtn.position.y = 1;
+    nextSkyBoxBtn.position.x = 20;
+    nextSkyBoxBtn.position.z = -25;
+    nextSkyBoxBtn.rotation.y = 0.5;
 
-      nextSkyBoxBtn.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handleClick: async (pointerInfo, mesh, meta) => {
-          this._nextSkybox();
-        }
-      };
+    nextSkyBoxBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this._nextSkybox();
+      }
+    };
 
   }
   async _nextSkybox() {
@@ -2187,8 +2207,81 @@ export class StoryApp extends BaseApp {
   }
 
 
-  async asteroidCountChange(asteroidCount = 20) {
-      //20, 50, 100
+  async initAsteroidCounts() {
+    let asteroid50Button = this._addTextButton('*50', 'asteroid50countbtn', 3, 2);
+    asteroid50Button.position.y = 1;
+    asteroid50Button.position.x = 20;
+    asteroid50Button.position.z = -30;
+    asteroid50Button.rotation.y = 0.5;
+
+    asteroid50Button.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.asteroidCountChange("50");
+      }
+    };
+
+    let asteroid20Button = this._addTextButton('*20', 'asteroid20countbtn', 3, 2);
+    asteroid20Button.position.y = 1;
+    asteroid20Button.position.x = 25;
+    asteroid20Button.position.z = -30;
+    asteroid20Button.rotation.y = 0.5;
+
+    asteroid20Button.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.asteroidCountChange("20");
+      }
+    };
+
+
+    let asteroid100Button = this._addTextButton('*100', 'asteroid100countbtn', 3.5, 2);
+    asteroid100Button.position.y = 1;
+    asteroid100Button.position.x = 30;
+    asteroid100Button.position.z = -30;
+    asteroid100Button.rotation.y = 0.5;
+
+    asteroid100Button.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.asteroidCountChange("100");
+      }
+    };
+
+    let asteroid150Button = this._addTextButton('*150', 'asteroid150countbtn', 3.5, 2);
+    asteroid150Button.position.y = 1;
+    asteroid150Button.position.x = 40;
+    asteroid150Button.position.z = -30;
+    asteroid150Button.rotation.y = 0.5;
+
+    asteroid150Button.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.asteroidCountChange("150");
+      }
+    };
+
+
+    let asteroidallButton = this._addTextButton('*all', 'asteroidallcountbtn', 3.5, 2);
+    asteroidallButton.position.y = 1;
+    asteroidallButton.position.x = 45;
+    asteroidallButton.position.z = -30;
+    asteroidallButton.rotation.y = 0.5;
+
+    asteroidallButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.asteroidCountChange("all");
+      }
+    };
+
+  }
+  async asteroidCountChange(asteroidCount = "20") {
     let updatePacket = {
       asteroidCount
     };
@@ -2196,5 +2289,6 @@ export class StoryApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
+    this.loadAsteroids();
   }
 }

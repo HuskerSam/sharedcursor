@@ -1391,7 +1391,7 @@ export class BaseApp {
   initSkybox() {
     if (this.skyBox)
       this.skyBox.dispose();
-    let skybox = BABYLON.Mesh.CreateBox("skyBox", 800, this.scene);
+    let skybox = BABYLON.Mesh.CreateBox("skyBox", 200, this.scene, false);
     this.skyBox = skybox;
     skybox.isPickable = false;
 
