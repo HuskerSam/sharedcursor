@@ -328,20 +328,24 @@ export default class Utility3D {
     material.wireframe = true;
     let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
     material.diffuseTexture = at;
-    material.ambientTexture = at;
-    material.emissiveTexture = at;
+    //material.ambientTexture = at;
+    //material.emissiveTexture = at;
+    material.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+    material.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
     at.vScale = 1;
     at.uScale = 1;
 
     let selectedMaterial = new BABYLON.StandardMaterial(name + 'selectedmat', scene)
     let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
     selectedMaterial.diffuseTexture = t;
-    selectedMaterial.ambientTexture = t;
-    selectedMaterial.emissiveTexture = t;
-    selectedMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+  //  selectedMaterial.ambientTexture = t;
+    //selectedMaterial.emissiveTexture = t;
+    //selectedMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
     t.vScale = 1;
     t.uScale = 1;
     selectedMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+    selectedMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+    selectedMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
 
     return {
       material: selectedMaterial,
