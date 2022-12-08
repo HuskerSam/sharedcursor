@@ -1269,12 +1269,12 @@ export class BaseApp {
     this.scene.autoClear = false; // Color buffer
     this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
 
-    let light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
-    light.position = new BABYLON.Vector3(10, 15, -15);
-    light.intensity = 1.5;
+    //let light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
+    //light.position = new BABYLON.Vector3(10, 15, -15);
+    //light.intensity = 1.5;
 
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
-    light2.intensity = .6;
+    light2.intensity = 0.4;
 
     var environment = scene.createDefaultEnvironment({
       enableGroundShadow: false,
@@ -1409,40 +1409,6 @@ export class BaseApp {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;
-
-    if (!this.profile.skyboxRotation)
-      return;
-
-    let rotationTime = Number(this.profile.skyboxRotation);
-    console.log(this.profile.skyboxRotation);
-    let endFrame = rotationTime * 30;
-
-    let orbitAnimation = new BABYLON.Animation(
-      "staticorbitmeshrotation" + name,
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let orbitkeys = [];
-
-    orbitkeys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(0, 0, 0)
-    });
-
-    orbitkeys.push({
-      frame: endFrame,
-      value: new BABYLON.Vector3(-6 * Math.PI, 2 * Math.PI, 4 * Math.PI)
-    });
-
-    orbitAnimation.setKeys(orbitkeys);
-    if (!this.skyBox.animations)
-      this.skyBox.animations = [];
-    this.skyBox.animations.push(orbitAnimation);
-
-    this.skyBox.spinAnimation = this.scene.beginAnimation(this.skyBox, 0, endFrame, true);
   }
   pointerUp() {}
   pointerDown() {}

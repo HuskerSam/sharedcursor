@@ -64,42 +64,6 @@ export class StoryApp extends BaseApp {
       alert('reload needed to see changes');
     });
 
-    this.profile_skybox_status = document.querySelector('.profile_skybox_status');
-    this.profile_skybox_status.addEventListener('input', async e => {
-      let updatePacket = {
-        skyboxPath: this.profile_skybox_status.value
-      };
-      if (this.fireToken)
-        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-      this.profile.skyboxPath = updatePacket.skyboxPath;
-      this.initSkybox();
-    });
-
-    this.profile_skyboxrotation = document.querySelector('.profile_skyboxrotation');
-    this.profile_skyboxrotation.addEventListener('input', async e => {
-      let updatePacket = {
-        skyboxRotation: this.profile_skyboxrotation.value
-      };
-      if (this.fireToken)
-        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-      this.profile.skyboxRotation = updatePacket.skyboxRotation;
-      this.initSkybox();
-    });
-
-    this.profile_asteroid_count = document.querySelector('.profile_asteroid_count');
-    this.profile_asteroid_count.addEventListener('input', async e => {
-      let updatePacket = {
-        asteroidCount: this.profile_asteroid_count.value
-      };
-      if (this.fireToken)
-        await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-      this.profile.asteroidCount = updatePacket.asteroidCount;
-
-      alert('reload needed to see changes');
-    });
   }
 
   initCameraToolbar() {
@@ -261,6 +225,7 @@ export class StoryApp extends BaseApp {
 
     this.loadAvatars();
     this.loadAsteroids();
+    this.initSkyBoxOptions();
 
     this.paintGameData();
 
@@ -765,6 +730,7 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance.wrapper.position.y = 2.5;
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
     this._fitNodeToSize(this.selectedMeshInstance.mesh, 2.5);
+    this.selectedMeshInstance.mesh.setEnabled(true);
 
     Utility3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
 
@@ -960,15 +926,6 @@ export class StoryApp extends BaseApp {
 
     if (this.profile.webGLLevel)
       this.profile_webglLevel.value = this.profile.webGLLevel;
-
-    if (this.profile.skyboxPath)
-      this.profile_skybox_status.value = this.profile.skyboxPath;
-
-    if (this.profile.skyboxRotation)
-      this.profile_skyboxrotation.value = this.profile.skyboxRotation;
-
-    if (this.profile.asteroidCount)
-      this.profile_asteroid_count.value = this.profile.asteroidCount;
 
     let gameId = this.urlParams.get('game');
     if (gameId) {
@@ -1644,7 +1601,7 @@ export class StoryApp extends BaseApp {
 
       //       await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
     }
-
+    mesh.setEnabled(false);
     let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
     mesh.parent = rotationTransform;
 
@@ -1931,8 +1888,8 @@ export class StoryApp extends BaseApp {
     };
 
 
-    iconName = 'edit';
-    mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button1');
+    iconName = 'globe';
+    mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
     mascotsBtn.position.y = 1;
     mascotsBtn.position.x = 23;
     mascotsBtn.position.z = -18;
@@ -2180,5 +2137,64 @@ export class StoryApp extends BaseApp {
   async addRocket() {
 
     //var input5 = new BABYLON.GUI.InputText();
+  }
+
+  async initSkyBoxOptions() {
+    this.skyboxesList = [
+        'nebula_orange_blue',
+        'moon_high_clear',
+        'moonless_2',
+        'nebula_black',
+        'nebula_blue_red',
+        'nebula_cold',
+        'nebula_glow',
+        'nebula_green',
+        'nebula_red',
+        'neon_starless',
+        'vortex_starless'
+      ];
+
+      let iconName = 'arrow-right';
+      let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
+      nextSkyBoxBtn.position.y = 1;
+      nextSkyBoxBtn.position.x = 20;
+      nextSkyBoxBtn.position.z = -25;
+      nextSkyBoxBtn.rotation.y = 0.5;
+
+      nextSkyBoxBtn.assetMeta = {
+        appClickable: true,
+        clickCommand: 'customClick',
+        handleClick: async (pointerInfo, mesh, meta) => {
+          this._nextSkybox();
+        }
+      };
+
+  }
+  async _nextSkybox() {
+    let index = this.skyboxesList.indexOf(this.profile.skyboxPath);
+    if (index < this.skyboxesList.length - 1)
+      index++
+    else
+      index = 0;
+    this.profile.skyboxPath = this.skyboxesList[index];
+    this.initSkybox();
+
+    let updatePacket = {
+      skyboxPath: this.profile.skyboxPath
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+  }
+
+
+  async asteroidCountChange(asteroidCount = 20) {
+      //20, 50, 100
+    let updatePacket = {
+      asteroidCount
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+    this.profile.asteroidCount = updatePacket.asteroidCount;
   }
 }

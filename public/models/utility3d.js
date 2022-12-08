@@ -326,16 +326,22 @@ export default class Utility3D {
   static asteroidMaterial(scene, name = 'asteroidmaterial') {
     let material = new BABYLON.StandardMaterial(name + 'mat', scene);
     material.wireframe = true;
-    let at = new BABYLON.Texture('/images/asteroid2diff.jpg', scene);
+    let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
     material.diffuseTexture = at;
+    material.ambientTexture = at;
+    material.emissiveTexture = at;
+    at.vScale = 1;
+    at.uScale = 1;
 
     let selectedMaterial = new BABYLON.StandardMaterial(name + 'selectedmat', scene)
-    let t = new BABYLON.Texture('/images/asteroid2diff.jpg', scene);
+    let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
     selectedMaterial.diffuseTexture = t;
-    let bt = new BABYLON.Texture('/images/asteroid2normal.jpg', scene);
-    selectedMaterial.bumpTexture = bt;
-    selectedMaterial.roughness = 1;
-    selectedMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    selectedMaterial.ambientTexture = t;
+    selectedMaterial.emissiveTexture = t;
+    selectedMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+    t.vScale = 1;
+    t.uScale = 1;
+    selectedMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
 
     return {
       material: selectedMaterial,

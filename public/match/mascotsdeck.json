@@ -32,23 +32,6 @@
     "optionalLoadFlag": "mascots"
   },
   {
-    "id": "mascot_nebraska",
-    "name": "Herbie Husker",
-    "objectType": "mascot",
-    "description": "Herbie Husker v3.",
-    "image": "/match/deckmedia/phobos.jpg",
-    "glbpath": "/mascots/herbie.glb",
-    "glbscale": 5,
-    "symbolY": 2,
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
-    "color": "rgb(255, 0, 0)",
-    "x": 16,
-    "y": 1,
-    "z": -17,
-    "optionalLoad": true,
-    "optionalLoadFlag": "mascots"
-  },
-  {
     "id": "mascot_ceres",
     "name": "Marty Jayhawk",
     "objectType": "mascot",
@@ -62,23 +45,6 @@
     "x": 18,
     "z": -18,
     "y": 0,
-    "optionalLoad": true,
-    "optionalLoadFlag": "mascots"
-  },
-  {
-    "id": "mascot_io",
-    "name": "Dino Hawkeye",
-    "objectType": "mascot",
-    "description": "Herbie Husker v3.",
-    "image": "/match/deckmedia/phobos.jpg",
-    "glbpath": "/mascots/dino_hawkeye.glb",
-    "glbscale": 0.008,
-    "symbolY": 2,
-    "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
-    "color": "rgb(255, 0, 0)",
-    "x": 24,
-    "y": 0,
-    "z": -20,
     "optionalLoad": true,
     "optionalLoadFlag": "mascots"
   },
