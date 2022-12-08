@@ -16,7 +16,8 @@
     "orbitRadius": 4,
     "orbitTime": 36000,
     "startRatio": 0.65,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s3_daphnis",
@@ -36,7 +37,8 @@
     "orbitRadius": 5,
     "orbitTime": 36000,
     "startRatio": 0.25,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s4_atlas",
@@ -56,7 +58,8 @@
     "orbitRadius": 5.5,
     "orbitTime": 36000,
     "startRatio": 0.45,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s5_prometheus",
@@ -95,7 +98,8 @@
     "orbitRadius": 7,
     "orbitTime": 36000,
     "startRatio": 0.75,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s7_epimetheus",
@@ -115,7 +119,8 @@
     "orbitRadius": 8,
     "orbitTime": 36000,
     "startRatio": 0.5,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s8_janus",
@@ -135,7 +140,8 @@
     "orbitRadius": 8.5,
     "orbitTime": 39000,
     "startRatio": 0.95,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s10_mimas",

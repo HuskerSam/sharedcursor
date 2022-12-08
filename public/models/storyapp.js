@@ -144,6 +144,10 @@ export class StoryApp extends BaseApp {
   async loadStaticScene() {
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
+    let mats = Utility3D.asteroidMaterial(this.scene);
+    this.asteroidMaterial = mats.material;
+    this.selectedAsteroidMaterial = mats.selectedMaterial;
+
     this.addLineToLoading('Solar System Objects<br>');
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
@@ -152,23 +156,20 @@ export class StoryApp extends BaseApp {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
     });
     await Promise.all(promises);
+    promises = [];
 
     this.addLineToLoading('Moons<br>');
-    promises = [];
     deck = GameCards.getCardDeck('moons1');
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
     });
-
-    await Promise.all(promises);
-    promises = [];
     deck = GameCards.getCardDeck('moons2');
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
     });
     await Promise.all(promises);
-
     promises = [];
+
     deck = GameCards.getCardDeck('mascots');
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
@@ -229,7 +230,13 @@ export class StoryApp extends BaseApp {
 
     meta.extended = this.processStaticAssetMeta(meta);
 
-    let mesh = await this.loadStaticMesh(meta.extended.glbPath, '', meta.extended.scale, 0, 0, 0);
+    let mesh;
+    if (meta.sizeBoxFit !== undefined) {
+      mesh = await this.loadStaticMesh(meta.extended.glbPath, '', 1, 0, 0, 0);
+      this._fitNodeToSize(mesh, meta.sizeBoxFit);
+    } else {
+      mesh = await this.loadStaticMesh(meta.extended.glbPath, '', meta.extended.scale, 0, 0, 0);
+    }
 
     let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
     let smallLink = '';
@@ -251,6 +258,11 @@ export class StoryApp extends BaseApp {
         &nbsp; ${imgHTML}
         <br>
       `);
+
+    if (meta.wireframe) {
+      mesh.material = this.selectedAsteroidMaterial;
+      mesh.getChildMeshes().forEach(mesh => mesh.material = this.selectedAsteroidMaterial);
+    }
 
     let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
     mesh.parent = meshPivot;
@@ -339,10 +351,6 @@ export class StoryApp extends BaseApp {
         linkNameList += '<br>';
     });
     this.asteroidLoadingLine2 = this.addLineToLoading(linkNameList);
-
-    let mats = Utility3D.asteroidMaterial(this.scene);
-    this.asteroidMaterial = mats.material;
-    this.selectedAsteroidMaterial = mats.selectedMaterial;
 
     this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
 
