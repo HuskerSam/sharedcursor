@@ -1,6 +1,7 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
 import Utility3D from '/models/utility3d.js';
+import Asteroid3D from '/models/asteroid3d.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -207,7 +208,7 @@ export class StoryApp extends BaseApp {
     this.addMascotsArea();
 
     this.loadAvatars();
-    this.loadAsteroids();
+    Asteroid3D.loadAsteroids(this.scene, this);
     this.initSkyBoxOptions();
     this.initAsteroidCounts();
 
@@ -305,187 +306,6 @@ export class StoryApp extends BaseApp {
 
     if (meta.loadDisabled)
       meshPivot.setEnabled(false);
-  }
-
-  async loadAsteroids() {
-    if (this.asteroidLoadingLine1) {
-      this.asteroidLoadingLine1.remove();
-      this.asteroidLoadingLine2.remove();
-
-      for (let asteroid in this.loadedAsteroids) {
-        this.loadedAsteroids[asteroid].orbitWrapper.dispose();
-      }
-    }
-    this.loadedAsteroids = {};
-
-    let asteroids = Utility3D.getAsteroids();
-
-    let ratio = 0;
-    let max = asteroids.length;
-
-    let count = 20;
-    if (this.profile.asteroidCount === 'all')
-      count = max;
-    else if (this.profile.asteroidCount)
-      count = Number(this.profile.asteroidCount);
-
-    this.asteroidLoadingLine1 = this.addLineToLoading(`Asteroids - ${count} from ${max} available`);
-
-    let randomArray = [];
-    for (let c = 0; c < max; c++) {
-      randomArray.push(c);
-    }
-    randomArray = this._shuffleArray(randomArray);
-    randomArray = randomArray.slice(0, count); //.sort();
-
-
-    let linkNameList = '';
-    randomArray.forEach((index, i) => {
-      let name = asteroids[index];
-      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
-        encodeURIComponent(name) + '?alt=media';
-      linkNameList += `<a target="_blank" href="${path}">${name}</a>`;
-      if (i < count - 1)
-        linkNameList += ', '
-      if (i % 4 === 3)
-        linkNameList += '<br>';
-    });
-    this.asteroidLoadingLine2 = this.addLineToLoading(linkNameList);
-
-    this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
-
-    this.defaultAsteroidPath = this._buildAsteroidPath();
-    let endFrame = this.asteroidOrbitTime / 1000 * 30;
-    this.defaultAsteroidPositionKeys = [];
-
-    let ptCount = this.defaultAsteroidPath.length - 1;
-    this.defaultAsteroidPath.forEach((value, index) => {
-      this.defaultAsteroidPositionKeys.push({
-        frame: Math.floor(endFrame * index / ptCount),
-        value
-      });
-    });
-
-    this.runRender = false;
-    let promises = [];
-    for (let c = 0; c < count; c++)
-      promises.push(this._loadAsteroid(asteroids[randomArray[c]], c, count));
-
-    await Promise.all(promises);
-    this.runRender = true;
-
-  }
-  async _loadAsteroid(asteroid, index, count) {
-    let startRatio = index / count;
-    let mainY = 1.5;
-
-    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
-      encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', 1, 0, -1000, 0);
-    this._fitNodeToSize(mesh, 1.5);
-    mesh.origScaling = this.vector(mesh.scaling);
-
-    mesh.material = this.asteroidMaterial;
-
-    let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, this.scene);
-    orbitWrapper.parent = mesh.parent;
-    mesh.parent = orbitWrapper;
-    orbitWrapper.origScaling = this.vector(orbitWrapper.scaling);
-
-    let positionAnim = new BABYLON.Animation(
-      "asteroidposition" + asteroid,
-      "position",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let endFrame = this.asteroidOrbitTime / 1000 * 30;
-    positionAnim.setKeys(this.defaultAsteroidPositionKeys);
-    if (!orbitWrapper.animations)
-      orbitWrapper.animations = [];
-    orbitWrapper.animations.push(positionAnim);
-    let orbitAnimation = this.scene.beginAnimation(orbitWrapper, 0, endFrame, true);
-
-    if (startRatio !== 0.0) {
-      orbitAnimation.goToFrame(Math.floor(endFrame * startRatio));
-    }
-
-    mesh.position.y = 0;
-
-    orbitWrapper.assetMeta = {
-      appClickable: true,
-      clickCommand: 'pauseSpin',
-      name: asteroid,
-      asteroidType: true,
-      asteroidName: asteroid,
-      asteroidMesh: orbitWrapper,
-      orbitAnimation,
-      basePivot: mesh
-    };
-
-    this.loadedAsteroids[asteroid] = {
-      orbitWrapper,
-      mesh
-    };
-  }
-  asteroidPtrDown(meta, up = false) {
-    if (!up) {
-      meta.basePivot.material = this.selectedAsteroidMaterial;
-
-      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origScaling.x * 1.25;
-      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origScaling.y * 1.25;
-      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origScaling.z * 1.25;
-
-      this.asteroidSymbolMeshName.setEnabled(true);
-      this.asteroidSymbolMeshName.parent = meta.asteroidMesh;
-
-      let text = meta.asteroidName.replace('.obj', '');
-      Utility3D.setTextMaterial(this.scene, this.asteroidSymbolMeshName.nameMaterial, text);
-
-      setTimeout(() => {
-        meta.basePivot.material = this.asteroidMaterial;
-      }, 3000);
-    } else {
-      meta.basePivot.material = this.asteroidMaterial;
-      meta.asteroidMesh.scaling.copyFrom(meta.asteroidMesh.origScaling);
-
-      this.asteroidSymbolMeshName.setEnabled(false);
-    }
-  }
-
-  _buildAsteroidPath() {
-    let y = 2;
-
-    let xMin = -60;
-    let xMax = 35;
-    let zMin = -48;
-    let zMax = 48;
-    const lowerRight = BABYLON.Curve3.ArcThru3Points(
-      this.v(xMax, y, 0),
-      this.v(0.707 * xMax, y, 0.707 * zMax),
-      this.v(0, y, zMax),
-      32);
-    const upperRight = BABYLON.Curve3.ArcThru3Points(
-      this.v(0, y, zMax),
-      this.v(0.707 * xMin, y, 0.707 * zMax),
-      this.v(xMin, y, 0),
-      32);
-    const upperLeft = BABYLON.Curve3.ArcThru3Points(
-      this.v(xMin, y, 0),
-      this.v(0.707 * xMin, y, 0.707 * zMin),
-      this.v(0, y, zMin),
-      32);
-    const lowerLeft = BABYLON.Curve3.ArcThru3Points(
-      this.v(0, y, zMin),
-      this.v(0.707 * xMax, y, 0.707 * zMin),
-      this.v(xMax, y, 0),
-      32);
-
-    let outerLoop = lowerRight.continue(upperRight).continue(upperLeft).continue(lowerLeft);
-    let path = outerLoop.getPoints();
-
-    return path;
   }
 
   _loadMeshMusic(meta, mesh, name) {
@@ -863,7 +683,7 @@ export class StoryApp extends BaseApp {
       this.showBoardWrapper(meta);
 
       if (meta.asteroidType)
-        this.asteroidPtrDown(meta);
+        Asteroid3D.asteroidPtrDown(this.scene, this, meta);
 
       //if (this.currentSeatMesh !== mesh) {
       if (meta.masterid && this.musicMeshes[meta.masterid])
@@ -879,7 +699,7 @@ export class StoryApp extends BaseApp {
       this.hideBoardWrapper(meta);
 
       if (meta.asteroidType)
-        this.asteroidPtrDown(meta, true);
+        Asteroid3D.asteroidPtrDown(this.scene, this, meta, true);
 
       //  if (this.currentSeatMesh !== mesh) {
       if (meta.masterid && this.musicMeshes[meta.masterid])
@@ -2294,6 +2114,6 @@ export class StoryApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
-    this.loadAsteroids();
+    Asteroid3D.loadAsteroids(this.scene);
   }
 }
