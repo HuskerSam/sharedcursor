@@ -39,7 +39,7 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.asteroidOrbitTime = 120000;
+    this.asteroidOrbitTime = 180000;
     this.dockDiscRadius = .6;
 
     this.settings_button = document.querySelector('.settings_button');
@@ -2114,6 +2114,6 @@ export class StoryApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
-    Asteroid3D.loadAsteroids(this.scene);
+    Asteroid3D.loadAsteroids(this.scene, this);
   }
 }

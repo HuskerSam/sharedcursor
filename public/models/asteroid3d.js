@@ -89,12 +89,12 @@ export default class Asteroid3D {
     let positionAnim = new BABYLON.Animation(
       "asteroidposition" + asteroid,
       "position",
-      30,
+      60,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    let endFrame = app.asteroidOrbitTime / 1000 * 30;
+    let endFrame = app.asteroidOrbitTime / 1000 * 60;
     positionAnim.setKeys(app.defaultAsteroidPositionKeys);
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];
@@ -155,68 +155,75 @@ export default class Asteroid3D {
     let zMin = -48;
     let zMax = 48;
 
-    let basePoint = this.v(xMax, y, 0);
-    let point1 = this.v(0, y, zMax);
-    const lowerRight = BABYLON.Curve3.ArcThru3Points(
-      basePoint,
-      this.curveV(basePoint, point1),
-      point1,
-      32);
+    let keyPoints = [];
 
-    let point2 = this.v(xMin, y, 0);
-    const upperRight = BABYLON.Curve3.ArcThru3Points(
-      point1,
-      this.curveV(point1, point2),
-      point2,
-      32);
 
-    let point3 = this.v(0, y, zMin)
-    const upperLeft = BABYLON.Curve3.ArcThru3Points(
-      point2,
-      this.curveV(point2, point3),
-      point3,
-      32);
+/* orig Points
+keyPoints.push(this.v4(xMax, y, 0, 32));
+keyPoints.push(this.v4(0, y, zMax, 64));
+keyPoints.push(this.v4(xMin, y, 0, 64));
+keyPoints.push(this.v4(0, y, zMin, 64));
+keyPoints.push(this.v4(28, y, 0, 64));
+keyPoints.push(this.v4(0, y, 30, 32));
+keyPoints.push(this.v4(-10, y, 0, 32));
+keyPoints.push(this.v4(0, y + 5, -5, 32));
+*/
 
-    let point4 = this.v(28, y, 0);
-    const lowerLeft = BABYLON.Curve3.ArcThru3Points(
-      point3,
-      this.curveV(point3, point4),
-      point4,
-      32);
 
-    let point5 = this.v(0, y, 25);
-    const lowerRight2 = BABYLON.Curve3.ArcThru3Points(
-      point4,
-      this.curveV(point4, point5),
-      point5,
-      32);
+    keyPoints.push(this.v4(xMax, y, 0, 32));
+    keyPoints.push(this.v4(0, y, zMax, 64));
+    keyPoints.push(this.v4(xMin, y, 0, 64));
+    keyPoints.push(this.v4(0, y, zMin, 64));
+    keyPoints.push(this.v4(32, y, 0, 64));
+    keyPoints.push(this.v4(0, y, 30, 32));
+    keyPoints.push(this.v4(-10, y, 0, 32));
 
-    let point6 = this.v(-10, y, 0);
-    const upperRight2 = BABYLON.Curve3.ArcThru3Points(
-      point5,
-      this.curveV(point5, point6),
-      point6,
-      32);
+    keyPoints.push(this.v4(-50, y + 8, -40, 120));
 
-    let point7 = this.v(0, y + 5, -5);
-    const upperLeft2 = BABYLON.Curve3.ArcThru3Points(
-      point6,
-      this.curveV(point6, point7),
-      point7,
-      32);
+    //saturn
+    keyPoints.push(this.v4(-35, y, -20, 32));
+    keyPoints.push(this.v4(-20, y, 0, 32));
+    keyPoints.push(this.v4(-30, y, 5, 32));
+    keyPoints.push(this.v4(-50, y + 8, -5, 32));
 
-  //  let point8 = this.v(xMax, y, 0);
-    const lowerLeft2 = BABYLON.Curve3.ArcThru3Points(
-      point7,
-      this.curveV(point7, basePoint),
-      basePoint,
-      32);
+    //jupiter
+    keyPoints.push(this.v4(-45, y, 0, 32));
+    keyPoints.push(this.v4(-45, y + 8, 30, 32));
 
-    let outerLoop = lowerRight.continue(upperRight).continue(upperLeft).continue(lowerLeft)
-      .continue(lowerRight2).continue(upperRight2).continue(upperLeft2).continue(lowerLeft2);
-    let path = outerLoop.getPoints();
+    keyPoints.push(this.v4(-25, y, 23, 32));
+    //    keyPoints.push(this.v4(-40, y, 5, 32));
+
+    keyPoints.push(this.v4(0, y + 5, -5, 32));
+
+    let curve = this.curvePointsMerge(keyPoints);
+    let path = curve.getPoints();
 
     return path;
+  }
+  static curvePointsMerge(keyPoints) {
+    let count = keyPoints.length;
+    let fullCurve;
+
+    for (let c = 0; c < count; c++) {
+      let pt1 = keyPoints[c].v;
+
+      let index2 = c + 1;
+      if (c + 1 >= count)
+        index2 = 0;
+      let pt2 = keyPoints[index2].v;
+      let weight = keyPoints[index2].weight;
+      let curve = BABYLON.Curve3.ArcThru3Points(
+        pt1,
+        this.curveV(pt1, pt2),
+        pt2,
+        weight);
+      if (fullCurve)
+        fullCurve = fullCurve.continue(curve);
+      else
+        fullCurve = curve;
+    }
+
+    return fullCurve;
   }
   static curveV(v1, v2) {
     let x = v1.x;
@@ -230,6 +237,12 @@ export default class Asteroid3D {
   }
   static v(x, y, z) {
     return new BABYLON.Vector3(x, y, z);
+  }
+  static v4(x, y, z, weight) {
+    return {
+      v: new BABYLON.Vector3(x, y, z),
+      weight: weight * 2
+    };
   }
   static vector(vector) {
     let v = new BABYLON.Vector3();
