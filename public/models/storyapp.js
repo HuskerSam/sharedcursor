@@ -39,7 +39,7 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
     this.debounceBusy = false;
 
-    this.asteroidOrbitTime = 180000;
+    this.asteroidOrbitTime = 300000;
     this.dockDiscRadius = .6;
 
     this.settings_button = document.querySelector('.settings_button');

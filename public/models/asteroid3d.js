@@ -170,7 +170,7 @@ keyPoints.push(this.v4(0, y + 5, -5, 32));
 */
 
 
-    keyPoints.push(this.v4(xMax, y, 0, 32));
+    keyPoints.push(this.v4(xMax, y, 0, 128));
     keyPoints.push(this.v4(0, y, zMax, 64));
     keyPoints.push(this.v4(xMin, y, 0, 64));
     keyPoints.push(this.v4(0, y, zMin, 64));
@@ -182,18 +182,18 @@ keyPoints.push(this.v4(0, y + 5, -5, 32));
 
     //saturn
     keyPoints.push(this.v4(-35, y, -20, 32));
+    keyPoints.push(this.v4(-25, y, -15, 32));
     keyPoints.push(this.v4(-20, y, 0, 32));
     keyPoints.push(this.v4(-30, y, 5, 32));
     keyPoints.push(this.v4(-50, y + 8, -5, 32));
 
     //jupiter
-    keyPoints.push(this.v4(-45, y, 0, 32));
-    keyPoints.push(this.v4(-45, y + 8, 30, 32));
+    keyPoints.push(this.v4(-50, y, 15, 32));
+    keyPoints.push(this.v4(-25, y, 15, 32));
+    keyPoints.push(this.v4(-25, y, 35, 32));
 
-    keyPoints.push(this.v4(-25, y, 23, 32));
-    //    keyPoints.push(this.v4(-40, y, 5, 32));
-
-    keyPoints.push(this.v4(0, y + 5, -5, 32));
+    keyPoints.push(this.v4(-35, y + 8, 35, 64));
+//    keyPoints.push(this.v4(0, y + 5, -5, 64));
 
     let curve = this.curvePointsMerge(keyPoints);
     let path = curve.getPoints();
