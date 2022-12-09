@@ -49,7 +49,7 @@ export default class Asteroid3D {
     app.asteroidSymbolMeshName = Utility3D.generateNameMesh(scene);
 
     app.defaultAsteroidPath = this._buildAsteroidPath(app);
-    let endFrame = app.asteroidOrbitTime / 1000 * 30;
+    let endFrame = app.asteroidOrbitTime / 1000 * 60;
     app.defaultAsteroidPositionKeys = [];
 
     let ptCount = app.defaultAsteroidPath.length - 1;
@@ -157,26 +157,13 @@ export default class Asteroid3D {
 
     let keyPoints = [];
 
-
-/* orig Points
-keyPoints.push(this.v4(xMax, y, 0, 32));
-keyPoints.push(this.v4(0, y, zMax, 64));
-keyPoints.push(this.v4(xMin, y, 0, 64));
-keyPoints.push(this.v4(0, y, zMin, 64));
-keyPoints.push(this.v4(28, y, 0, 64));
-keyPoints.push(this.v4(0, y, 30, 32));
-keyPoints.push(this.v4(-10, y, 0, 32));
-keyPoints.push(this.v4(0, y + 5, -5, 32));
-*/
-
-
     keyPoints.push(this.v4(xMax, y, 0, 128));
-    keyPoints.push(this.v4(0, y, zMax, 64));
-    keyPoints.push(this.v4(xMin, y, 0, 64));
-    keyPoints.push(this.v4(0, y, zMin, 64));
+    keyPoints.push(this.v4(0, y, zMax, 128));
+    keyPoints.push(this.v4(xMin, y, 0, 128));
+    keyPoints.push(this.v4(0, y, zMin, 128));
     keyPoints.push(this.v4(32, y, 0, 64));
-    keyPoints.push(this.v4(0, y, 30, 32));
-    keyPoints.push(this.v4(-10, y, 0, 32));
+    keyPoints.push(this.v4(0, y, 30, 64));
+    keyPoints.push(this.v4(-10, y, 0, 64));
 
     keyPoints.push(this.v4(-50, y + 8, -40, 120));
 
@@ -188,12 +175,11 @@ keyPoints.push(this.v4(0, y + 5, -5, 32));
     keyPoints.push(this.v4(-50, y + 8, -5, 32));
 
     //jupiter
-    keyPoints.push(this.v4(-50, y, 15, 32));
-    keyPoints.push(this.v4(-25, y, 15, 32));
-    keyPoints.push(this.v4(-25, y, 35, 32));
+    keyPoints.push(this.v4(-50, y, 20, 32));
+    keyPoints.push(this.v4(-15, y, 20, 32));
+    keyPoints.push(this.v4(-15, y, 55, 64));
 
     keyPoints.push(this.v4(-35, y + 8, 35, 64));
-//    keyPoints.push(this.v4(0, y + 5, -5, 64));
 
     let curve = this.curvePointsMerge(keyPoints);
     let path = curve.getPoints();
