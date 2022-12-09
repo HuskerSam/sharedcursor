@@ -260,7 +260,8 @@
     "orbitRadius": 6.5,
     "orbitTime": 39000,
     "startRatio": 0.85,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s18_dione",
@@ -292,7 +293,9 @@
     "solarPosition": "S19",
     "glbpath": "/solar/s19_helene.obj",
     "smallglbpath": "/solar/s19_helenesmall.obj",
+    "largeglbpath": "/solar/s19_helenelarge.obj",
     "glbscale": 0.002,
+    "sizeBoxFit": 1.5,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Helene_(moon)",
     "color": "rgb(255, 200, 63)",
@@ -300,7 +303,8 @@
     "orbitRadius": 4.5,
     "orbitTime": 39000,
     "startRatio": 0.55,
-    "parent": "saturn"
+    "parent": "saturn",
+    "wireframe": true
   },
   {
     "id": "s21_rhea",

@@ -1454,7 +1454,7 @@ export class BaseApp {
     return;
   }
   async loadStaticMesh(path, file, scale = 1, x = 0, y = 0, z = 0) {
-    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file);
+    let result = await BABYLON.SceneLoader.ImportMeshAsync("", path, file, this.scene);
 
     let mesh = result.meshes[0];
 

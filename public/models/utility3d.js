@@ -714,4 +714,22 @@ export default class Utility3D {
     plane.material = mat;
     return plane;
   }
+
+  static createAsteroidPath() {
+
+        let v3 = (x, y, z) => new BABYLON.Vector3(x,y,z);
+        let curve = BABYLON.Curve3.CreateCubicBezier(v3(5,0,0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
+        let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
+        curve = curve.continue(curveCont);
+        curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
+        curve = curve.continue(curveCont);
+        curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
+        curve = curve.continue(curveCont);
+        curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
+        curve = curve.continue(curveCont);
+        var curveMesh = BABYLON.MeshBuilder.CreateLines(
+            "bezier", {points: curve.getPoints()}, scene);
+        curveMesh.color = new BABYLON.Color3(1, 1, 0.5);
+        curveMesh.parent = pathGroup;
+  }
 }

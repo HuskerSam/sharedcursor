@@ -354,8 +354,26 @@ export class StoryApp extends BaseApp {
 
     this.asteroidSymbolMeshName = Utility3D.generateNameMesh(this.scene);
 
+    this.defaultAsteroidPath = this._buildAsteroidPath();
+    let endFrame = this.asteroidOrbitTime / 1000 * 30;
+    this.defaultAsteroidPositionKeys = [];
+
+    let ptCount = this.defaultAsteroidPath.length - 1;
+    this.defaultAsteroidPath.forEach((value, index) => {
+      this.defaultAsteroidPositionKeys.push({
+        frame: Math.floor(endFrame * index / ptCount),
+        value
+      });
+    });
+
+    this.runRender = false;
+    let promises = [];
     for (let c = 0; c < count; c++)
-      this._loadAsteroid(asteroids[randomArray[c]], c, count);
+      promises.push(this._loadAsteroid(asteroids[randomArray[c]], c, count));
+
+    await Promise.all(promises);
+    this.runRender = true;
+
   }
   async _loadAsteroid(asteroid, index, count) {
     let startRatio = index / count;
@@ -363,128 +381,37 @@ export class StoryApp extends BaseApp {
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await this.loadStaticMesh(path, '', 1, 0, 0, 0);
+    let mesh = await this.loadStaticMesh(path, '', 1, 0, -1000, 0);
     this._fitNodeToSize(mesh, 1.5);
+    mesh.origScaling = this.vector(mesh.scaling);
 
     mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, this.scene);
-    let positionTN = new BABYLON.TransformNode('asteroidpositionwrapper' + asteroid, this.scene);
+    orbitWrapper.parent = mesh.parent;
+    mesh.parent = orbitWrapper;
+    orbitWrapper.origScaling = this.vector(orbitWrapper.scaling);
 
-    mesh.parent = positionTN;
-    positionTN.parent = orbitWrapper;
-
-    let orbitAnim = new BABYLON.Animation(
-      "asteroidorbit" + asteroid,
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-    let orbitPositionAnim = new BABYLON.Animation(
-      "asteroidorbitp" + asteroid,
+    let positionAnim = new BABYLON.Animation(
+      "asteroidposition" + asteroid,
       "position",
       30,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    let asteroidPositionAnim = new BABYLON.Animation(
-      "asteroidpositionp" + asteroid,
-      "position",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let orbitEndFrame = this.asteroidOrbitTime / 1000 * 30;
-    let orbitkeys = [];
-    let positionkeys = [];
-    let a_positionkeys = [];
-    orbitkeys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(0, 0, 0)
-    });
-
-    orbitkeys.push({
-      frame: orbitEndFrame,
-      value: new BABYLON.Vector3(0, -4 * Math.PI, 0)
-    });
-
-    positionkeys.push({
-      frame: 0,
-      value: this.v(7, 6, 9)
-    });
-    positionkeys.push({
-      frame: Math.floor(orbitEndFrame * 0.1 / 2),
-      value: this.v(7, 0, 9)
-    });
-    positionkeys.push({
-      frame: Math.floor(orbitEndFrame * 0.9 / 2),
-      value: this.v(7, 0, 9)
-    });
-
-    positionkeys.push({
-      frame: Math.floor(orbitEndFrame / 2),
-      value: this.v(7, 6, 9)
-    });
-    positionkeys.push({
-      frame: Math.floor(orbitEndFrame / 2) + 1,
-      value: this.v(-15, 6, 9)
-    });
-    positionkeys.push({
-      frame: Math.floor(orbitEndFrame * 1.1 / 2),
-      value: this.v(-10, 0, 0)
-    });
-    positionkeys.push({
-      frame: Math.floor(orbitEndFrame * 1.95 / 2) + 1,
-      value: this.v(-10, 0, 0)
-    });
-    positionkeys.push({
-      frame: orbitEndFrame,
-      value: this.v(-15, 6, 9)
-    });
-
-    a_positionkeys.push({
-      frame: 0,
-      value: this.v(20, mainY, 0)
-    });
-    a_positionkeys.push({
-      frame: Math.floor(orbitEndFrame / 2),
-      value: this.v(20, mainY, 0)
-    });
-    a_positionkeys.push({
-      frame: Math.floor(orbitEndFrame / 2) + 1,
-      value: this.v(42, mainY, 0)
-    });
-
-    a_positionkeys.push({
-      frame: Math.floor(orbitEndFrame * 1.5 / 2),
-      value: this.v(60, mainY, 0)
-    });
-    a_positionkeys.push({
-      frame: orbitEndFrame,
-      value: this.v(42, mainY, 0)
-    });
-
-    orbitAnim.setKeys(orbitkeys);
-    orbitPositionAnim.setKeys(positionkeys);
+    let endFrame = this.asteroidOrbitTime / 1000 * 30;
+    positionAnim.setKeys(this.defaultAsteroidPositionKeys);
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];
-    orbitWrapper.animations.push(orbitAnim);
-    orbitWrapper.animations.push(orbitPositionAnim);
-    let orbitAnimation = this.scene.beginAnimation(orbitWrapper, 0, orbitEndFrame, true);
-
-    if (!positionTN.animations)
-      positionTN.animations = [];
-    asteroidPositionAnim.setKeys(a_positionkeys);
-    positionTN.animations.push(asteroidPositionAnim);
-    let positionAnimation = this.scene.beginAnimation(positionTN, 0, orbitEndFrame, true);
+    orbitWrapper.animations.push(positionAnim);
+    let orbitAnimation = this.scene.beginAnimation(orbitWrapper, 0, endFrame, true);
 
     if (startRatio !== 0.0) {
-      positionAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
-      orbitAnimation.goToFrame(Math.floor(orbitEndFrame * startRatio));
+      orbitAnimation.goToFrame(Math.floor(endFrame * startRatio));
     }
+
+    mesh.position.y = 0;
 
     orbitWrapper.assetMeta = {
       appClickable: true,
@@ -492,18 +419,73 @@ export class StoryApp extends BaseApp {
       name: asteroid,
       asteroidType: true,
       asteroidName: asteroid,
-      asteroidMesh: positionTN,
+      asteroidMesh: orbitWrapper,
       orbitAnimation,
       basePivot: mesh
     };
-    positionTN.origsx = positionTN.scaling.x;
-    positionTN.origsy = positionTN.scaling.y;
-    positionTN.origsz = positionTN.scaling.z;
 
     this.loadedAsteroids[asteroid] = {
       orbitWrapper,
       mesh
     };
+  }
+  asteroidPtrDown(meta, up = false) {
+    if (!up) {
+      meta.basePivot.material = this.selectedAsteroidMaterial;
+
+      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origScaling.x * 1.25;
+      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origScaling.y * 1.25;
+      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origScaling.z * 1.25;
+
+      this.asteroidSymbolMeshName.setEnabled(true);
+      this.asteroidSymbolMeshName.parent = meta.asteroidMesh;
+
+      let text = meta.asteroidName.replace('.obj', '');
+      Utility3D.setTextMaterial(this.scene, this.asteroidSymbolMeshName.nameMaterial, text);
+
+      setTimeout(() => {
+        meta.basePivot.material = this.asteroidMaterial;
+      }, 3000);
+    } else {
+      meta.basePivot.material = this.asteroidMaterial;
+      meta.asteroidMesh.scaling.copyFrom(meta.asteroidMesh.origScaling);
+
+      this.asteroidSymbolMeshName.setEnabled(false);
+    }
+  }
+
+  _buildAsteroidPath() {
+    let y = 2;
+
+    let xMin = -60;
+    let xMax = 35;
+    let zMin = -48;
+    let zMax = 48;
+    const lowerRight = BABYLON.Curve3.ArcThru3Points(
+      this.v(xMax, y, 0),
+      this.v(0.707 * xMax, y, 0.707 * zMax),
+      this.v(0, y, zMax),
+      32);
+    const upperRight = BABYLON.Curve3.ArcThru3Points(
+      this.v(0, y, zMax),
+      this.v(0.707 * xMin, y, 0.707 * zMax),
+      this.v(xMin, y, 0),
+      32);
+    const upperLeft = BABYLON.Curve3.ArcThru3Points(
+      this.v(xMin, y, 0),
+      this.v(0.707 * xMin, y, 0.707 * zMin),
+      this.v(0, y, zMin),
+      32);
+    const lowerLeft = BABYLON.Curve3.ArcThru3Points(
+      this.v(0, y, zMin),
+      this.v(0.707 * xMax, y, 0.707 * zMin),
+      this.v(xMax, y, 0),
+      32);
+
+    let outerLoop = lowerRight.continue(upperRight).continue(upperLeft).continue(lowerLeft);
+    let path = outerLoop.getPoints();
+
+    return path;
   }
 
   _loadMeshMusic(meta, mesh, name) {
@@ -760,7 +742,7 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
     this.selectedMeshInstance.wrapper.position.y = 2.5;
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
-    this._fitNodeToSize(this.selectedMeshInstance.mesh, 2.5);
+    this._fitNodeToSize(this.selectedMeshInstance.mesh, 1.75);
     this.selectedMeshInstance.mesh.setEnabled(true);
 
     Utility3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
@@ -912,31 +894,6 @@ export class StoryApp extends BaseApp {
     }
   }
 
-  asteroidPtrDown(meta, up = false) {
-    if (!up) {
-      meta.basePivot.material = this.selectedAsteroidMaterial;
-      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origsx * 1.25;
-      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origsy * 1.25;
-      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origsz * 1.25;
-
-      this.asteroidSymbolMeshName.setEnabled(true);
-      this.asteroidSymbolMeshName.parent = meta.asteroidMesh;
-
-      let text = meta.asteroidName.replace('.obj', '');
-      Utility3D.setTextMaterial(this.scene, this.asteroidSymbolMeshName.nameMaterial, text);
-
-      setTimeout(() => {
-        meta.basePivot.material = this.asteroidMaterial;
-      }, 3000);
-    } else {
-      meta.basePivot.material = this.asteroidMaterial;
-      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origsx;
-      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origsy;
-      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origsz;
-
-      this.asteroidSymbolMeshName.setEnabled(false);
-    }
-  }
   debounce() {
     return false;
 
@@ -1371,7 +1328,40 @@ export class StoryApp extends BaseApp {
     }
   }
   createGuides(size = 30) {
-    return new BABYLON.AxesViewer(this.scene, size);
+    let scene = this.scene;
+    var makeTextPlane = function(text, color, size) {
+      var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+      dynamicTexture.hasAlpha = true;
+      dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
+      var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+      plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+      plane.material.backFaceCulling = false;
+      plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+      plane.material.diffuseTexture = dynamicTexture;
+      return plane;
+    };
+
+    var axisX = BABYLON.Mesh.CreateLines("axisX", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+      new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+    ], scene);
+    axisX.color = new BABYLON.Color3(1, 0, 0);
+    var xChar = makeTextPlane("X", "red", size / 10);
+    xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+    var axisY = BABYLON.Mesh.CreateLines("axisY", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+      new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+    ], scene);
+    axisY.color = new BABYLON.Color3(0, 1, 0);
+    var yChar = makeTextPlane("Y", "green", size / 10);
+    yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+    var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+      new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
+    ], scene);
+    axisZ.color = new BABYLON.Color3(0, 0, 1);
+    var zChar = makeTextPlane("Z", "blue", size / 10);
+    zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
   }
 
   updateScoreboard() {
@@ -1621,16 +1611,15 @@ export class StoryApp extends BaseApp {
   }
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
     let mesh;
-    if (assetMeta.asteroidType) {
-      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id);
-    } else {
-      mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + this.staticAssetMeshes[assetMeta.id].baseMesh.id);
+    let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
+    rotationTransform.position.y = -1000;
 
-      //       await this.loadStaticMesh(assetMeta.extended.glbPath, '', assetMeta.extended.scale, 0, 0, 0);
+    if (assetMeta.asteroidType) {
+      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id, rotationTransform);
+    } else {
+      mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + this.staticAssetMeshes[assetMeta.id].baseMesh.id, rotationTransform);
     }
     mesh.setEnabled(false);
-    let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
-    mesh.parent = rotationTransform;
 
     let rotationAnim = new BABYLON.Animation(
       rotationTransform.id + 'anim',
@@ -1659,6 +1648,7 @@ export class StoryApp extends BaseApp {
     });
 
     rotationAnim.setKeys(keys);
+
     if (!mesh.animations)
       mesh.animations = [];
     mesh.animations.push(rotationAnim);
@@ -1682,7 +1672,11 @@ export class StoryApp extends BaseApp {
     if (this.playerMoonNavs[index.toString()])
       this.playerMoonNavs[index.toString()].dispose();
 
-    let moonNav = this.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone('moonnavmesh' + index);
+    let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
+    rotationTransform.parent = this.playerDock3DPanel;
+    rotationTransform.position.y = -1000;
+
+    let moonNav = this.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone('moonnavmesh' + index, rotationTransform);
     moonNav.position.y = 2.75;
     moonNav.position.x = 2 - (index * 1.5);
     moonNav.position.z = 0;
@@ -1695,9 +1689,6 @@ export class StoryApp extends BaseApp {
       seatIndex: index
     };
 
-    let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
-    rotationTransform.parent = this.playerDock3DPanel;
-    moonNav.parent = rotationTransform;
     this._fitNodeToSize(moonNav, 1.25);
 
     let rotationAnim = new BABYLON.Animation(
@@ -1731,6 +1722,7 @@ export class StoryApp extends BaseApp {
       moonNav.animations = [];
     moonNav.animations.push(rotationAnim);
     this.scene.beginAnimation(moonNav, 0, endFrame, true);
+    rotationTransform.position.y = 0;
 
     this.playerMoonNavs[index.toString()] = moonNav;
   }
