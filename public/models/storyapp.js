@@ -225,16 +225,6 @@ export class StoryApp extends BaseApp {
         clearInterval(this.verifyLoaddingComplete);
     }, 400);
   }
-  async loadSkellies() {
-    this.animsContainer = await Utility3D._loadAnimsContainer(this.scene);
-    window.one = Utility3D.loadAvatar(this.scene, null, this.animsContainer);
-    window.two = Utility3D.loadAvatar(this.scene, 'jolleen.glb', this.animsContainer);
-    window.two.meshes[0].position.z = 5;
-    window.three = Utility3D.loadAvatar(this.scene, 'pirate.glb', this.animsContainer);
-    window.three.meshes[0].position.z = 10;
-    window.four = Utility3D.loadAvatar(this.scene, 'maria.glb', this.animsContainer);
-    window.four.meshes[0].position.z = 15;
-  }
   async loadStaticAsset(name, parent, optionalLoadFlag = 'optionalLoadType') {
     let meta = Object.assign({}, this.allCards[name]);
 
@@ -2127,5 +2117,61 @@ export class StoryApp extends BaseApp {
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
     Asteroid3D.loadAsteroids(this.scene, this);
+  }
+
+
+
+  async randomizeAnimations(){
+    if (!this.initedSkellies) {
+      this.initedAvatars = [];
+      this.initedSkellies = await Utility3D._loadAnimsContainer(this.scene);
+      window.one = await Utility3D.loadAvatar(this.scene, null, this.initedSkellies);
+      window.one.originalModel.animationGroups[0].stop();
+      window.one.rootNodes[0].position = this.v(35, 0, -35);
+      this.initedAvatars.push(window.one);
+
+      window.two = await Utility3D.loadAvatar(this.scene, 'jolleen.glb', this.initedSkellies);
+      window.two.meshes[0].position = this.v(37, 0, -35);
+      window.two.originalModel.animationGroups[0].stop();
+      this.initedAvatars.push(window.two);
+
+      window.three = await Utility3D.loadAvatar(this.scene, 'pirate.glb', null);
+      window.three.meshes[0].position = this.v(39, 0, -35);
+      window.three.meshes[0].scaling = this.v(3, 3, 3);
+      window.three.originalModel.animationGroups[0].stop();
+      this.initedAvatars.push(window.three);
+
+      window.four = await Utility3D.loadAvatar(this.scene, 'maria.glb', this.initedSkellies);
+      window.four.meshes[0].position = this.v(41, 0, -35);
+      window.four.originalModel.animationGroups[0].stop();
+      this.initedAvatars.push(window.four);
+
+      this.initedSkellies = true;
+    }
+
+    this.initedAvatars.forEach(container => {
+      let arr = container.originalModel.animationGroups;
+      let index = Math.floor(Math.random() * arr.length);
+
+      arr.forEach(anim => anim.stop());
+      arr[index].start(true);
+    })
+  }
+  async loadSkellies() {
+      let iconName = 'edit';
+      let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
+      nextSkyBoxBtn.position.y = 1;
+      nextSkyBoxBtn.position.x = 30;
+      nextSkyBoxBtn.position.z = -35;
+      nextSkyBoxBtn.rotation.y = 0.5;
+
+      nextSkyBoxBtn.assetMeta = {
+        appClickable: true,
+        clickCommand: 'customClick',
+        handleClick: async (pointerInfo, mesh, meta) => {
+          this.randomizeAnimations();
+        }
+      };
+
   }
 }

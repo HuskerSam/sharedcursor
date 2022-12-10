@@ -741,20 +741,33 @@ export default class Utility3D {
         let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
         encodeURIComponent('/avatars/jonesbase.glb' ) + '?alt=media';
       BABYLON.SceneLoader.LoadAssetContainer(path, "", scene, container => {
+        container.originalModel = container;
         res(container);
       });
     })
   }
   static async loadAvatar(scene, fileName = null, animContainer) {
-    let newModel = animContainer.instantiateModelsToScene();
+    let newModel;
+
+    if (animContainer) {
+      newModel = animContainer.instantiateModelsToScene();
+      newModel.originalModel = newModel;
+    }
 
     if (fileName) {
       let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
       encodeURIComponent('/avatars/' + fileName) + '?alt=media';
 
       let skinResult = await BABYLON.SceneLoader.ImportMeshAsync(null, path, '');
-      newModel.rootNodes[0].setEnabled(false);
-      this.LinkSkeletonMeshes(newModel.skeletons[0], skinResult.skeletons[0]);
+
+      if (animContainer) {
+        this.LinkSkeletonMeshes(newModel.skeletons[0], skinResult.skeletons[0]);
+        newModel.rootNodes[0].setEnabled(false);
+        skinResult.originalModel = newModel;
+      } else {
+        skinResult.originalModel = skinResult;
+      }
+      newModel = skinResult;
     }
 
     return newModel;
