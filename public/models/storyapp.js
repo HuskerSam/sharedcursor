@@ -206,6 +206,8 @@ export class StoryApp extends BaseApp {
     this.selectMoonMesh();
 
     this.addMascotsArea();
+        Asteroid3D.loadAlien(this.scene);
+
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);

@@ -235,4 +235,77 @@ export default class Asteroid3D {
     v.copyFrom(vector);
     return v;
   }
+  static retargetAnimationGroup(animationGroup, targetSkeleton) {
+    //console.log("Retargeting animation group: " + animationGroup.name);
+    animationGroup.targetedAnimations.forEach((targetedAnimation) => {
+      const newTargetBone = targetSkeleton.bones.filter((bone) => {
+        return bone.name === targetedAnimation.target.name
+      })[0];
+      //console.log("Retargeting bone: " + target.name + "->" + newTargetBone.name);
+      targetedAnimation.target = newTargetBone ? newTargetBone.getTransformNode() : null;
+    });
+  }
+  static async loadAlien(scene) {
+    //  let bonesPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent("/solar/avatar-walk.glb") + '?alt=media';
+    //    let bonesPath = '/images/Dude.babylon';
+    //    let animationResult = await BABYLON.SceneLoader.ImportMeshAsync(null, bonesPath, null, scene);
+
+
+    //  scene.beginAnimation(animationResult.skeletons[0], 0, 100, true, 1.0);
+    //  let animationGLB = animationResult.meshes[0];
+    //    animationGLB.scaling = this.v(0.05, .05, .05);
+
+
+    BABYLON.SceneLoader.LoadAssetContainer("/images/jonesbase.glb", "", scene, async (container) => {
+      window.abc = container.instantiateModelsToScene();
+
+      window.def = container.instantiateModelsToScene();
+      let skinResult = await BABYLON.SceneLoader.ImportMeshAsync(null, '/images/maria.glb', '');
+      skinResult.meshes[0].position.x = 5;
+      //  window.def.skeletons[0].overrideMesh = skinResult.meshes[0];
+      window.def.rootNodes[0].setEnabled(false);
+      this.LinkSkeletonMeshes(window.def.skeletons[0], skinResult.skeletons[0]);
+
+
+
+      window.def.animationGroups[2].start(true);
+      window.abc.animationGroups[1].start(true);
+    });
+
+  }
+
+
+  static LinkSkeletonMeshes(master, slave) {
+    if (master != null && master.bones != null && master.bones.length > 0) {
+      if (slave != null && slave.bones != null && slave.bones.length > 0) {
+        const boneCount = slave.bones.length;
+        for (let index = 0; index < boneCount; index++) {
+          const sbone = slave.bones[index];
+          if (sbone != null) {
+            const mbone = this.FindBoneByName(master, sbone.name);
+            if (mbone != null) {
+              sbone._linkedTransformNode = mbone._linkedTransformNode;
+            } else {
+              console.warn("Failed to locate bone on master rig: " + sbone.name);
+            }
+          }
+        }
+      }
+    }
+  }
+  static FindBoneByName(skeleton, name) {
+    let result = null;
+    if (skeleton != null && skeleton.bones != null) {
+      for (let index = 0; index < skeleton.bones.length; index++) {
+        const bone = skeleton.bones[index];
+        const bname = bone.name.toLowerCase().replace("mixamo:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
+        const xname = name.toLowerCase().replace("mixamo:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
+        if (bname === xname) {
+          result = bone;
+          break;
+        }
+      }
+    }
+    return result;
+  }
 }
