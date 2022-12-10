@@ -398,14 +398,14 @@ export default class Utility3D {
     let pSystem;
     if (BABYLON.GPUParticleSystem.IsSupported) {
       pSystem = new BABYLON.GPUParticleSystem("particles", {
-        capacity: 1000000
-      }, scene);
-      pSystem.activeParticleCount = 100000;
+        capacity: 10000
+      }, scene)
+      pSystem.activeParticleCount = 10000;
     } else {
-      pSystem = new BABYLON.ParticleSystem("particles", 25000, scene);
+      pSystem = new BABYLON.ParticleSystem("particles", 2500, scene);
     }
 
-    pSystem.emitRate = 500;
+    pSystem.emitRate = 75;
     // pSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
     pSystem.particleTexture = new BABYLON.Texture("/images/flare.png", scene);
 
@@ -420,8 +420,8 @@ export default class Utility3D {
     pSystem.minEmitPower = 5;
     pSystem.maxEmitPower = 5;
 
-    pSystem.minSize = 0.01;
-    pSystem.maxSize = 0.1;
+    pSystem.minSize = 0.025;
+    pSystem.maxSize = 0.25;
 
     // adjust diections to aim out fat-bottom end of rocket, with slight spread.
     pSystem.direction1 = new BABYLON.Vector3(-.2, 1, -.2);

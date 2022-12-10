@@ -1965,7 +1965,13 @@ export class StoryApp extends BaseApp {
       return;
 
     let newRocket = this.staticAssetMeshes['rocket_atlasv'];
+    if (!this.createdFireParticles) {
+      this.createdFireParticles = true;
+      this.createdFireParticles = Utility3D.createFireParticles(this.staticAssetMeshes['rocket_atlasv'].assetMeta, this.staticAssetMeshes['rocket_atlasv'], 'rocket_atlasv', this.scene);
+    }
+
     this.rocketRunning = true;
+    this.createdFireParticles.start();
 
     newRocket.position.copyFrom(startPos);
     newRocket.rotation.copyFrom(startRotation);
@@ -1973,6 +1979,7 @@ export class StoryApp extends BaseApp {
 
     await this.rocketTakeOff(newRocket, 6, 10, 2500);
     await this.rocketTravelTo(newRocket, endPosition, 8000, 1500);
+    this.createdFireParticles.stop();
     await this.rocketLand(newRocket, endPosition, 1500);
 
     newRocket.setEnabled(false);
