@@ -338,7 +338,7 @@ export default class Utility3D {
     let selectedMaterial = new BABYLON.StandardMaterial(name + 'selectedmat', scene)
     let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
     selectedMaterial.diffuseTexture = t;
-  //  selectedMaterial.ambientTexture = t;
+    //  selectedMaterial.ambientTexture = t;
     //selectedMaterial.emissiveTexture = t;
     //selectedMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
     t.vScale = 1;
@@ -717,19 +717,79 @@ export default class Utility3D {
 
   static createAsteroidPath() {
 
-        let v3 = (x, y, z) => new BABYLON.Vector3(x,y,z);
-        let curve = BABYLON.Curve3.CreateCubicBezier(v3(5,0,0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
-        let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
-        curve = curve.continue(curveCont);
-        curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
-        curve = curve.continue(curveCont);
-        curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
-        curve = curve.continue(curveCont);
-        curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
-        curve = curve.continue(curveCont);
-        var curveMesh = BABYLON.MeshBuilder.CreateLines(
-            "bezier", {points: curve.getPoints()}, scene);
-        curveMesh.color = new BABYLON.Color3(1, 1, 0.5);
-        curveMesh.parent = pathGroup;
+    let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
+    let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
+    let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);
+    curve = curve.continue(curveCont);
+    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.75, 3, -2), v3(0, 4, -1), v3(0.5, 4.5, 0), v3(-0.5, 4.75, 1), 10);
+    curve = curve.continue(curveCont);
+    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-0.5, 4.75, 1), v3(-1, 4.75, 1.5), v3(-1.5, 4, 2.5), v3(-2, 3, 3.5), 10);
+    curve = curve.continue(curveCont);
+    curveCont = BABYLON.Curve3.CreateCubicBezier(v3(-2, 3, 3.5), v3(-2.5, 2, 4), v3(-1, 2.5, 5), v3(0, 0, 5), 10);
+    curve = curve.continue(curveCont);
+    var curveMesh = BABYLON.MeshBuilder.CreateLines(
+      "bezier", {
+        points: curve.getPoints()
+      }, scene);
+    curveMesh.color = new BABYLON.Color3(1, 1, 0.5);
+    curveMesh.parent = pathGroup;
+  }
+
+  static async _loadAnimsContainer(scene) {
+    return new Promise((res, rej) => {
+
+        let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
+        encodeURIComponent('/avatars/jonesbase.glb' ) + '?alt=media';
+      BABYLON.SceneLoader.LoadAssetContainer(path, "", scene, container => {
+        res(container);
+      });
+    })
+  }
+  static async loadAvatar(scene, fileName = null, animContainer) {
+    let newModel = animContainer.instantiateModelsToScene();
+
+    if (fileName) {
+      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
+      encodeURIComponent('/avatars/' + fileName) + '?alt=media';
+
+      let skinResult = await BABYLON.SceneLoader.ImportMeshAsync(null, path, '');
+      newModel.rootNodes[0].setEnabled(false);
+      this.LinkSkeletonMeshes(newModel.skeletons[0], skinResult.skeletons[0]);
+    }
+
+    return newModel;
+  }
+  static LinkSkeletonMeshes(master, slave) {
+    if (master != null && master.bones != null && master.bones.length > 0) {
+      if (slave != null && slave.bones != null && slave.bones.length > 0) {
+        const boneCount = slave.bones.length;
+        for (let index = 0; index < boneCount; index++) {
+          const sbone = slave.bones[index];
+          if (sbone != null) {
+            const mbone = this.FindBoneByName(master, sbone.name);
+            if (mbone != null) {
+              sbone._linkedTransformNode = mbone._linkedTransformNode;
+            } else {
+              console.warn("Failed to locate bone on master rig: " + sbone.name);
+            }
+          }
+        }
+      }
+    }
+  }
+  static FindBoneByName(skeleton, name) {
+    let result = null;
+    if (skeleton != null && skeleton.bones != null) {
+      for (let index = 0; index < skeleton.bones.length; index++) {
+        const bone = skeleton.bones[index];
+        const bname = bone.name.toLowerCase().replace("mixamo:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
+        const xname = name.toLowerCase().replace("mixamo:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
+        if (bname === xname) {
+          result = bone;
+          break;
+        }
+      }
+    }
+    return result;
   }
 }

@@ -206,8 +206,6 @@ export class StoryApp extends BaseApp {
     this.selectMoonMesh();
 
     this.addMascotsArea();
-        Asteroid3D.loadAlien(this.scene);
-
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);
@@ -218,12 +216,24 @@ export class StoryApp extends BaseApp {
 
     this.addRocket();
 
+    this.loadSkellies();
+
     this.verifyLoaddingComplete = setInterval(() => {
       if (!this.runRender)
         this.paintGameData();
       else
         clearInterval(this.verifyLoaddingComplete);
     }, 400);
+  }
+  async loadSkellies() {
+    this.animsContainer = await Utility3D._loadAnimsContainer(this.scene);
+    window.one = Utility3D.loadAvatar(this.scene, null, this.animsContainer);
+    window.two = Utility3D.loadAvatar(this.scene, 'jolleen.glb', this.animsContainer);
+    window.two.meshes[0].position.z = 5;
+    window.three = Utility3D.loadAvatar(this.scene, 'pirate.glb', this.animsContainer);
+    window.three.meshes[0].position.z = 10;
+    window.four = Utility3D.loadAvatar(this.scene, 'maria.glb', this.animsContainer);
+    window.four.meshes[0].position.z = 15;
   }
   async loadStaticAsset(name, parent, optionalLoadFlag = 'optionalLoadType') {
     let meta = Object.assign({}, this.allCards[name]);
