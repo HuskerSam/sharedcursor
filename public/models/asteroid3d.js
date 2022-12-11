@@ -46,8 +46,6 @@ export default class Asteroid3D {
     });
     app.asteroidLoadingLine2 = app.addLineToLoading(linkNameList);
 
-    app.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
-
     app.defaultAsteroidPath = this._buildAsteroidPath(app);
     let endFrame = app.asteroidOrbitTime / 1000 * 60;
     app.defaultAsteroidPositionKeys = [];

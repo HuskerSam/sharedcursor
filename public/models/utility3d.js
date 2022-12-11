@@ -293,32 +293,6 @@ export default class Utility3D {
       selectedMaterial: material
     }
   }
-  static generateNameMesh(scene, name = 'asteroidnamemesh') {
-    let alphaMat = new BABYLON.StandardMaterial(name + 'mat1alpha', scene);
-    alphaMat.alpha = 0;
-
-    let asteroidNameMesh = BABYLON.Mesh.CreateBox(name + 'wrapper', 0.001, scene);
-    asteroidNameMesh.position.y = 1;
-    asteroidNameMesh.material = alphaMat;
-    asteroidNameMesh.setEnabled(false);
-
-    let size = 1;
-    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane(name + 'show1asteroid', {
-      height: size * 5,
-      width: size * 5,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-
-    let nameMat = new BABYLON.StandardMaterial(name + 'showmatasteroid', scene);
-    asteroidNameMesh.nameMaterial = nameMat;
-    nameMesh1.material = nameMat;
-    nameMesh1.parent = asteroidNameMesh;
-
-    let factor = -1.25;
-    nameMesh1.position.y = factor;
-
-    return asteroidNameMesh;
-  }
   static createFireParticles(meta, wrapper, name, scene) {
     let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, scene);
     particlePivot.position.x = meta.px;
@@ -1137,6 +1111,31 @@ export default class Utility3D {
     mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
 
+  static showNamePlate(meta, text) {
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    var rect1 = new BABYLON.GUI.Rectangle();
+    rect1.width = 0.2;
+    rect1.height = 0.04;
+    rect1.cornerRadius = 20;
+    rect1.color = "Orange";
+    rect1.thickness = 4;
+    rect1.background = "green";
+    rect1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    advancedTexture.addControl(rect1);
+    var label = new BABYLON.GUI.TextBlock();
+    label.text = text;
+    rect1.addControl(label);
+    rect1.linkWithMesh(meta.basePivot);
+    rect1.linkOffsetY = -50;
+
+    meta.shownNamePanel = advancedTexture;
+  }
+  static hideNamePlate(meta) {
+    if (meta.shownNamePanel) {
+      meta.shownNamePanel.dispose();
+      meta.shownNamePanel = null;
+    }
+  }
 
   static pointerDown(pointerInfo) {
     let mesh = pointerInfo.pickInfo.pickedMesh;

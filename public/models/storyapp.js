@@ -202,8 +202,6 @@ export class StoryApp extends BaseApp {
     });
 
 
-    this.initItemNamePanel(this.scene);
-
     this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
       width: 1,
       height: 1,
@@ -251,57 +249,35 @@ export class StoryApp extends BaseApp {
     }, 400);
   }
 
-  showItemNamePanel(meta) {
-    let nameDesc = meta.name;
-    if (meta.solarPosition)
-      nameDesc += ` (${meta.solarPosition})`
-
-    let nameTexture = U3D.__texture2DText(this.scene, nameDesc, meta.color);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    this.boardWrapper.nameMat.diffuseTexture = nameTexture;
-    this.boardWrapper.nameMat.emissiveTexture = nameTexture;
-    this.boardWrapper.nameMat.ambientTexture = nameTexture;
-  }
-
-  initItemNamePanel(scene) {
-    let size = 1;
-    let name = 'one';
-    this.boardWrapper = new BABYLON.TransformNode('boardpopupwrapper' + name, scene);
-    this.boardWrapper.position.y = -1000;
-
-    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
-      height: size * 5,
-      width: size * 5,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-
-    let factor = -1.8;
-    nameMesh1.position.y = factor;
-
-    let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
-    nameMesh1.material = nameMat;
-    nameMesh1.parent = this.boardWrapper;
-
-    this.boardWrapper.nameMat = nameMat;
-    this.boardWrapper.nameMesh1 = nameMesh1;
-  }
 
   showBoardWrapper(meta) {
+
+    if (meta.asteroidType) {
+      meta.basePivot.material = window.selectedAsteroidMaterial;
+      let text = meta.asteroidName.replace('.obj', '');
+
+      U3D.showNamePlate(meta, text);
+
+      setTimeout(() => {
+        meta.basePivot.material = window.asteroidMaterial;
+      }, 3000);
+    }
+
     if (!meta.textPivot)
       return;
-    this.showItemNamePanel(meta)
-    this.boardWrapper.position.y = meta.yOffset;
-    this.boardWrapper.parent = meta.textPivot.parent;
-    meta.textPivot.position.y = -1000;
+
+      U3D.showNamePlate(meta, meta.name);
   }
   hideBoardWrapper(meta) {
+    if (meta.asteroidType) {
+      meta.basePivot.material = window.asteroidMaterial;
+
+      U3D.hideNamePlate(meta);
+    }
+
     if (!meta.textPivot)
       return;
-    this.boardWrapper.position.y = -1000;
-    this.boardWrapper.parent = null;
-    meta.textPivot.position.y = 0;
+    U3D.hideNamePlate(meta);
   }
   viewSettings() {
     this.modal.show();
