@@ -1114,18 +1114,23 @@ export default class Utility3D {
   static showNamePlate(meta, text) {
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     var rect1 = new BABYLON.GUI.Rectangle();
-    rect1.width = 0.2;
-    rect1.height = 0.04;
+    rect1.width = 0.0001;
+    rect1.height = 0.0001;
     rect1.cornerRadius = 20;
-    rect1.color = "Orange";
+    rect1.color = "rgb(255, 255, 200)";
     rect1.thickness = 4;
-    rect1.background = "green";
+    rect1.background = "rgb(0, 0, 100)";
     rect1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
     advancedTexture.addControl(rect1);
     var label = new BABYLON.GUI.TextBlock();
     label.text = text;
     rect1.addControl(label);
     rect1.linkWithMesh(meta.basePivot);
+    setTimeout(() => {
+      rect1.width = 0.15;
+      rect1.height = 0.06;
+      rect1.linkWithMesh(null);
+    }, 50);
     rect1.linkOffsetY = -50;
 
     meta.shownNamePanel = advancedTexture;
