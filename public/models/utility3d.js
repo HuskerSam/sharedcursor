@@ -735,42 +735,13 @@ export default class Utility3D {
     curveMesh.parent = pathGroup;
   }
 
-  static async _loadAnimsContainer(scene) {
+  static async loadContainer(scene, path) {
     return new Promise((res, rej) => {
-
-        let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
-        encodeURIComponent('/avatars/jonesbase.glb' ) + '?alt=media';
       BABYLON.SceneLoader.LoadAssetContainer(path, "", scene, container => {
-        container.originalModel = container;
+        container.animContainer = container;
         res(container);
       });
     })
-  }
-  static async loadAvatar(scene, fileName = null, animContainer) {
-    let newModel;
-
-    if (animContainer) {
-      newModel = animContainer.instantiateModelsToScene();
-      newModel.originalModel = newModel;
-    }
-
-    if (fileName) {
-      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
-      encodeURIComponent('/avatars/' + fileName) + '?alt=media';
-
-      let skinResult = await BABYLON.SceneLoader.ImportMeshAsync(null, path, '');
-
-      if (animContainer) {
-        this.LinkSkeletonMeshes(newModel.skeletons[0], skinResult.skeletons[0]);
-        newModel.rootNodes[0].setEnabled(false);
-        skinResult.originalModel = newModel;
-      } else {
-        skinResult.originalModel = skinResult;
-      }
-      newModel = skinResult;
-    }
-
-    return newModel;
   }
   static LinkSkeletonMeshes(master, slave) {
     if (master != null && master.bones != null && master.bones.length > 0) {
@@ -804,5 +775,82 @@ export default class Utility3D {
       }
     }
     return result;
+  }
+  static async _initAvatars(scene) {
+    let initedAvatars = [];
+    let avatarContainers = {};
+
+    let avatarMetas = this.getAvatarData();
+    for (let c = 0; c < 4; c++) {
+      let avatarMeta = avatarMetas[c];
+      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
+        encodeURIComponent('/avatars/' + avatarMeta.path) + '?alt=media';
+
+      let container = await this.loadContainer(scene, path);
+      container.avatarMeta = avatarMeta;
+      avatarContainers[avatarMeta.name] = container;
+    }
+
+    for (let c = 0; c < 4; c++) {
+      let newModel;
+      let avatarMeta = avatarMetas[c];
+      if (avatarMeta.cloneAnimations) {
+        newModel = avatarContainers[avatarMeta.cloneAnimations].instantiateModelsToScene();
+        let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
+
+        this.LinkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
+        newModel.rootNodes[0].setEnabled(false);
+
+        newSkin.animContainer = newModel;
+        newModel = newSkin;
+      } else {
+        newModel = avatarContainers[avatarMeta.name].instantiateModelsToScene();
+        newModel.animContainer = newModel;
+      }
+
+      initedAvatars.push(newModel);
+      initedAvatars[c].animContainer.animationGroups[0].stop();
+
+      initedAvatars[c].rootNodes[0].position.x = avatarMeta.x;
+      initedAvatars[c].rootNodes[0].position.z = avatarMeta.z;
+    }
+
+    return {
+      initedAvatars,
+      avatarContainers
+    };
+  }
+  static getAvatarData() {
+    return [{
+        "name": "Terra",
+        "path": "maria.glb",
+        "cloneAnimations": "Daya",
+        "x": 35,
+        "z": -35,
+        "race": "Human"
+      },
+      {
+        "name": "Jade",
+        "path": "jolleen.glb",
+        "cloneAnimations": "Daya",
+        "x": 37,
+        "z": -35,
+        "race": "Botan"
+      },
+      {
+        "name": "Daya",
+        "path": "jonesbase.glb",
+        "x": 39,
+        "z": -35,
+        "race": "Avian"
+      },
+      {
+        "name": "Astarte",
+        "path": "pirate.glb",
+        "x": 41,
+        "z": -35,
+        "race": "Titan"
+      }
+    ]
   }
 }
