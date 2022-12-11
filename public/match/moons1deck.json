@@ -18,7 +18,8 @@
     "url": "https://en.wikipedia.org/wiki/Moon",
     "color": "rgb(255, 200, 63)",
     "orbitRadius": 2.5,
-    "orbitTime": 10000,
+    "orbitTime": 30000,
+    "rotationTime": 30000,
     "parent": "earth"
   },
   {

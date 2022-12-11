@@ -25,34 +25,31 @@ export default class Utility3D {
     orbitPivot.parent = meshPivot.parent;
     meshPivot.parent = orbitPivot;
 
-    if (meta.orbitRadius)
-      meshPivot.position.x = meta.orbitRadius;
-
     let orbitAnimation = new BABYLON.Animation(
-      "staticmeshrotation" + name,
-      "rotation",
+      "staticmeshorbitanim" + name,
+      "position",
       30,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    let x = 0;
-    let y = 0;
-    let z = 0;
     let keys = [];
-    let endFrame = meta.orbitTime / 1000 * 30;
+    let endFrame = Math.floor(meta.orbitTime / 1000 * 30);
 
-    let orbitDirection = meta.orbitDirection === -1 ? 2 : -2;
+    let orbitDirection = meta.orbitDirection === -1 ? -1 : 1;
 
-    keys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
-    });
-
-    keys.push({
-      frame: endFrame,
-      value: new BABYLON.Vector3(x, y + orbitDirection * Math.PI, z)
-    });
+    let y = 0;
+    let amp = Number(meta.orbitRadius);
+    for (let frame = 0; frame < endFrame; frame++) {
+      let ratio = frame / endFrame * 2 * Math.PI * orbitDirection;
+      let x = Math.cos(ratio) * amp;
+      let z = Math.sin(ratio) * amp;
+      let value = this.v(x, y, z);
+      keys.push({
+        frame,
+        value
+      });
+    }
 
     orbitAnimation.setKeys(keys);
     if (!orbitPivot.animations)
@@ -110,62 +107,6 @@ export default class Utility3D {
     return rotationPivot;
   }
 
-  static _addOrbitWrapper(name, meta, model, scene) {
-    let orbitLayerMesh = new BABYLON.TransformNode('assetwrapperorbit' + name, scene);
-
-    model.parent = orbitLayerMesh;
-
-    if (meta.norx !== undefined)
-      model.rotation.x = meta.norx;
-    if (meta.nory !== undefined)
-      model.rotation.y = meta.nory;
-    if (meta.norz !== undefined)
-      model.rotation.z = meta.norz;
-
-    let orbitAnimation = new BABYLON.Animation(
-      "staticorbitmeshrotation" + name,
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    //At the animation key 0, the value of scaling is "1"
-    let x = model.rotation.x;
-    let y = model.rotation.y;
-    let z = model.rotation.z;
-
-    let y_factor = -2 * Math.PI;
-    let x_factor = 0;
-    if (meta.parent === 'uranus') {
-      x_factor = y_factor;
-      y_factor = 0;
-      y += 1.2;
-    }
-
-    let orbitkeys = [];
-    let endFrame = meta.orbitTime / 1000 * 30;
-    orbitkeys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
-    });
-
-    orbitkeys.push({
-      frame: endFrame,
-      value: new BABYLON.Vector3(x + x_factor, y + y_factor, z)
-    });
-
-    orbitAnimation.setKeys(orbitkeys);
-    if (!orbitLayerMesh.animations)
-      orbitLayerMesh.animations = [];
-    orbitLayerMesh.animations.push(orbitAnimation);
-    orbitLayerMesh.spinAnimation = scene.beginAnimation(orbitLayerMesh, 0, endFrame, true);
-
-    if (meta.startRatio !== undefined)
-      orbitLayerMesh.spinAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
-
-    return orbitLayerMesh;
-  }
   static __texture2DText(scene, textureText, cssColor, cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
     let texture = new BABYLON.DynamicTexture("dynamic texture", renderSize, scene, true);
     let numChar = textureText.length;
@@ -889,8 +830,6 @@ export default class Utility3D {
         mesh.animations = [];
       mesh.animations.push(offsetPositionAnim);
       avatarContainer.offsetAnimation = scene.beginAnimation(mesh, 0, endFrame, true);
-  //    if (offsetInfo.startRatio !== undefined)
-  //      avatarContainer.offsetAnimation.goToFrame(Math.floor(endFrame * offsetInfo.startRatio));
       avatarContainer.offsetPositionAnim = offsetPositionAnim;
 
       arr[animationIndex].reset();
