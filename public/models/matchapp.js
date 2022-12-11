@@ -1,6 +1,6 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
-import Utility3D from '/models/utility3d.js';
+import U3D from '/models/utility3d.js';
 
 export class MatchApp extends BaseApp {
   constructor() {
@@ -196,11 +196,11 @@ export class MatchApp extends BaseApp {
     //store the card in the winning user profile (if this user)
 
     //set model for 3d here
-    let extendedMetaData = this.processStaticAssetMeta(cardMeta);
+    let extendedMetaData = U3D.processStaticAssetMeta(cardMeta, this.profile);
     this.runRender = true;
 
-    let mesh = Utility3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
-    this._fitNodeToSize(mesh, 2.5);
+    let mesh = U3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
+    U3D._fitNodeToSize(mesh, 2.5);
     this.engine.resize();
 
     this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.name;

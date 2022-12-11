@@ -1,4 +1,4 @@
-import Utility3D from '/models/utility3d.js';
+import U3D from '/models/utility3d.js';
 
 export default class Asteroid3D {
   static async loadAsteroids(scene, app) {
@@ -12,7 +12,7 @@ export default class Asteroid3D {
     }
     app.loadedAsteroids = {};
 
-    let asteroids = Utility3D.getAsteroids();
+    let asteroids = U3D.getAsteroids();
 
     let ratio = 0;
     let max = asteroids.length;
@@ -46,7 +46,7 @@ export default class Asteroid3D {
     });
     app.asteroidLoadingLine2 = app.addLineToLoading(linkNameList);
 
-    app.asteroidSymbolMeshName = Utility3D.generateNameMesh(scene);
+    app.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
 
     app.defaultAsteroidPath = this._buildAsteroidPath(app);
     let endFrame = app.asteroidOrbitTime / 1000 * 60;
@@ -75,11 +75,11 @@ export default class Asteroid3D {
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await Utility3D.loadStaticMesh(scene, path);
-    app._fitNodeToSize(mesh, 1.5);
+    let mesh = await U3D.loadStaticMesh(scene, path);
+    U3D._fitNodeToSize(mesh, 1.5);
     mesh.origScaling = this.vector(mesh.scaling);
 
-    mesh.material = app.asteroidMaterial;
+    mesh.material = window.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, scene);
     orbitWrapper.parent = mesh.parent;
@@ -125,7 +125,7 @@ export default class Asteroid3D {
   }
   static asteroidPtrDown(scene, app, meta, up = false) {
     if (!up) {
-      meta.basePivot.material = app.selectedAsteroidMaterial;
+      meta.basePivot.material = window.selectedAsteroidMaterial;
 
       meta.asteroidMesh.scaling.x = meta.asteroidMesh.origScaling.x * 1.25;
       meta.asteroidMesh.scaling.y = meta.asteroidMesh.origScaling.y * 1.25;
@@ -135,13 +135,13 @@ export default class Asteroid3D {
       app.asteroidSymbolMeshName.parent = meta.asteroidMesh;
 
       let text = meta.asteroidName.replace('.obj', '');
-      Utility3D.setTextMaterial(scene, app.asteroidSymbolMeshName.nameMaterial, text);
+      U3D.setTextMaterial(scene, app.asteroidSymbolMeshName.nameMaterial, text);
 
       setTimeout(() => {
-        meta.basePivot.material = app.asteroidMaterial;
+        meta.basePivot.material = window.asteroidMaterial;
       }, 3000);
     } else {
-      meta.basePivot.material = app.asteroidMaterial;
+      meta.basePivot.material = window.asteroidMaterial;
       meta.asteroidMesh.scaling.copyFrom(meta.asteroidMesh.origScaling);
 
       app.asteroidSymbolMeshName.setEnabled(false);

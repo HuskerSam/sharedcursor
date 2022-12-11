@@ -153,7 +153,7 @@ export default class Utility3D {
     };
   }
   static colorRGB255(str) {
-    let bC = Utility3D.color(str);
+    let bC = this.color(str);
     if (isNaN(bC.r))
       bC.r = 1;
     if (isNaN(bC.g))
@@ -256,7 +256,7 @@ export default class Utility3D {
     return textWrapperMesh;
   }
   static setTextMaterial(scene, mat, text, rgbColor = 'rgb(255,0,0)', cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
-    let nameTexture = Utility3D.__texture2DText(scene, text, rgbColor, cssClearColor, textFontSize, textFontFamily, fontWeight, renderSize);
+    let nameTexture = this.__texture2DText(scene, text, rgbColor, cssClearColor, textFontSize, textFontFamily, fontWeight, renderSize);
     nameTexture.vScale = 1;
     nameTexture.uScale = 1;
     nameTexture.hasAlpha = true;
@@ -934,7 +934,162 @@ export default class Utility3D {
     if (!window.staticMeshContainer[path])
       window.staticMeshContainer[path] = await this.loadContainer(scene, path);
 
-    let result =  window.staticMeshContainer[path].instantiateModelsToScene();
+    let result = window.staticMeshContainer[path].instantiateModelsToScene();
     return result.rootNodes[0];
+  }
+
+
+  static async ___awaitAssetLoad(name) {
+    return new Promise((res, rej) => {
+      let awaitInterval = setInterval(() => {
+        if (window.staticAssetMeshes[name]) {
+          clearInterval(awaitInterval);
+          res(window.staticAssetMeshes[name]);
+        }
+      }, 50);
+    });
+  }
+  static async loadStaticAsset(name, sceneParent, profile, scene) {
+    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
+    meta.extended = this.processStaticAssetMeta(meta, profile);
+
+    let mesh;
+    if (meta.sizeBoxFit === undefined)
+      meta.sizeBoxFit = 2;
+    mesh = await this.loadStaticMesh(scene, meta.extended.glbPath);
+    this._fitNodeToSize(mesh, meta.sizeBoxFit);
+
+    if (meta.wireframe) {
+      mesh.material = window.selectedAsteroidMaterial;
+      mesh.getChildMeshes().forEach(mesh => mesh.material = window.selectedAsteroidMaterial);
+    }
+
+    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
+    mesh.parent = meshPivot;
+    meta.basePivot = meshPivot;
+
+    if (meta.symbol)
+      meshPivot = this.infoPanel(name, meta, meshPivot, scene);
+
+    if (meta.rotationTime)
+      meshPivot = this.rotationAnimation(name, meta, meshPivot, scene);
+    if (meta.orbitTime)
+      meshPivot = this.orbitAnimation(name, meta, meshPivot, scene);
+
+    meshPivot = this.positionPivot(name, meta, meshPivot, scene);
+
+    meshPivot.assetMeta = meta;
+    meshPivot.baseMesh = mesh;
+    window.staticAssetMeshes[name] = meshPivot;
+
+    if (meta.parent) {
+      await this.___awaitAssetLoad(meta.parent);
+      if (meta.parentType === 'basePivot')
+        meshPivot.parent = window.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+      else
+        meshPivot.parent = window.staticAssetMeshes[meta.parent];
+    } else
+      meshPivot.parent = sceneParent;
+
+    if (meta.noClick !== true) {
+      meta.appClickable = true;
+      meta.masterid = name;
+      meta.clickCommand = 'pauseSpin';
+    }
+
+    if (meta.loadDisabled)
+      meshPivot.setEnabled(false);
+
+    return window.staticAssetMeshes[name];
+  }
+  static processStaticAssetMeta(meta, profile) {
+
+    let override = '';
+    if (profile.assetSizeOverrides && profile.assetSizeOverrides[meta.id])
+      override = profile.assetSizeOverrides[meta.id];
+
+    let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
+    let smallGlbPath = '';
+    if (meta.smallglbpath)
+      smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
+    let largeGlbPath = '';
+    if (meta.largeglbpath)
+      largeGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.largeglbpath) + '?alt=media';
+    let glbPath = normalGlbPath;
+
+    if (smallGlbPath)
+      glbPath = smallGlbPath;
+
+    if (override === 'normal') {
+      glbPath = normalGlbPath;
+    }
+    if (override === 'small') {
+      if (smallGlbPath)
+        glbPath = smallGlbPath;
+    }
+    if (override === 'huge') {
+      if (largeGlbPath)
+        glbPath = largeGlbPath;
+    }
+
+    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+
+    return {
+      symbolPath,
+      normalGlbPath,
+      smallGlbPath,
+      largeGlbPath,
+      glbPath
+    };
+  }
+  static _fitNodeToSize(node, size) {
+    const boundingInfo = node.getHierarchyBoundingVectors(true);
+    const currentLength = boundingInfo.max.subtract(boundingInfo.min);
+    const biggestSide = Math.max(currentLength.x, Math.max(currentLength.y, currentLength.z));
+    let scale = size / biggestSide;
+    node.scaling.scaleInPlace(scale);
+  }
+  static infoPanel(name, meta, pivotMesh, scene) {
+    let size = 1;
+
+    let symbolPivot = new BABYLON.TransformNode('symbolpopupwrapper' + name, scene);
+    let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, scene);
+    symbolPivot.parent = pivotMesh.parent;
+    pivotMesh.parent = symbolPivot;
+
+    let textPivot = new BABYLON.TransformNode('textsymbolpopupwrapper' + name, scene);
+    textPivot.parent = symbolPivot;
+    meta.textPivot = textPivot;
+
+    if (meta.parent === 'uranus') {
+      textPivot.rotation.x -= 1.57;
+    }
+
+    let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
+      height: size,
+      width: size,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, scene);
+
+    let m = new BABYLON.StandardMaterial('symbolshowmat' + name, scene);
+    let t = new BABYLON.Texture(meta.extended.symbolPath, scene);
+    t.vScale = 1;
+    t.uScale = 1;
+    t.hasAlpha = true;
+
+    m.diffuseTexture = t;
+    m.emissiveTexture = t;
+    m.ambientTexture = t;
+    let extraY = 0;
+    if (meta.symbolY)
+      extraY = meta.symbolY;
+
+    meta.yOffset = 0.5 + extraY;
+    symbolMesh1.material = m;
+    symbolMesh1.parent = textPivot;
+    symbolMesh1.rotation.y = 0;
+    symbolMesh1.position.y = meta.yOffset;
+
+    return symbolPivot;
   }
 }

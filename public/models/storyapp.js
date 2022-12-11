@@ -1,6 +1,6 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
-import Utility3D from '/models/utility3d.js';
+import U3D from '/models/utility3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 
 export class StoryApp extends BaseApp {
@@ -8,7 +8,7 @@ export class StoryApp extends BaseApp {
     super();
     this.apiType = 'story';
     this.cache = {};
-    this.staticAssetMeshes = {};
+    window.staticAssetMeshes = {};
     this.musicMeshes = {};
     this.seatMeshes = {};
     this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
@@ -95,7 +95,7 @@ export class StoryApp extends BaseApp {
     if (this.followMeta.basePivot)
       v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
     else
-      v.copyFrom(this.staticAssetMeshes[this.followMeta.id].getAbsolutePosition());
+      v.copyFrom(window.staticAssetMeshes[this.followMeta.id].getAbsolutePosition());
     v.y += 4;
     this.camera.position.copyFrom(v);
     this.camera.alpha += Math.PI;
@@ -145,37 +145,56 @@ export class StoryApp extends BaseApp {
   async loadStaticScene() {
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
-    let mats = Utility3D.asteroidMaterial(this.scene);
-    this.asteroidMaterial = mats.material;
-    this.selectedAsteroidMaterial = mats.selectedMaterial;
+    let mats = U3D.asteroidMaterial(this.scene);
+    window.asteroidMaterial = mats.material;
+    window.selectedAsteroidMaterial = mats.selectedMaterial;
 
-    this.addLineToLoading('Solar System Objects<br>');
+    this.addLineToLoading('Loading Assets...<br>');
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
 
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
-    await Promise.all(promises);
-    promises = [];
-
-    this.addLineToLoading('Moons<br>');
     deck = GameCards.getCardDeck('moons1');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
     deck = GameCards.getCardDeck('moons2');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
-    await Promise.all(promises);
-    promises = [];
+    let loadingResults = await Promise.all(promises);
+    loadingResults.forEach(assetMesh => {
+      let meta = assetMesh.assetMeta;
 
-    deck = GameCards.getCardDeck('mascots');
-    deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode));
+      let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
+      let smallLink = '';
+      let largeLink = '';
+      if (meta.largeglbpath)
+        largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
+      if (meta.smallglbpath)
+        smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
+
+      let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
+
+      this.addLineToLoading(`
+        ${meta.name}:
+        &nbsp;
+        ${smallLink}
+        ${normalLink}
+        ${largeLink}
+        <br>
+        <a href="${meta.url}" target="_blank">wiki</a>
+        &nbsp; ${imgHTML}
+        <br>
+      `);
+
+
+      if (meta.seatIndex !== undefined)
+        this.seatMeshes[meta.seatIndex] = assetMesh;
     });
-    await Promise.all(promises);
+
 
     this.initItemNamePanel(this.scene);
 
@@ -225,84 +244,6 @@ export class StoryApp extends BaseApp {
         clearInterval(this.verifyLoaddingComplete);
     }, 400);
   }
-  async loadStaticAsset(name, parent, optionalLoadFlag = 'optionalLoadType') {
-    let meta = Object.assign({}, this.allCards[name]);
-
-    if (meta.optionalLoad && meta.optionalLoadFlag !== optionalLoadFlag)
-      return;
-
-    meta.extended = this.processStaticAssetMeta(meta);
-
-    let mesh;
-    if (meta.sizeBoxFit === undefined)
-      meta.sizeBoxFit = 2;
-    mesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.glbPath);
-    this._fitNodeToSize(mesh, meta.sizeBoxFit);
-
-    let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
-    let smallLink = '';
-    let largeLink = '';
-    if (meta.largeglbpath)
-      largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
-    if (meta.smallglbpath)
-      smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
-
-    let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
-    this.addLineToLoading(`
-        ${meta.name}:
-        &nbsp;
-        ${smallLink}
-        ${normalLink}
-        ${largeLink}
-        <br>
-        <a href="${meta.url}" target="_blank">wiki</a>
-        &nbsp; ${imgHTML}
-        <br>
-      `);
-
-    if (meta.wireframe) {
-      mesh.material = this.selectedAsteroidMaterial;
-      mesh.getChildMeshes().forEach(mesh => mesh.material = this.selectedAsteroidMaterial);
-    }
-
-    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
-    mesh.parent = meshPivot;
-    meta.basePivot = meshPivot;
-
-    if (meta.symbol)
-      meshPivot = this.infoPanel(name, meta, meshPivot, this.scene);
-
-    if (meta.rotationTime)
-      meshPivot = Utility3D.rotationAnimation(name, meta, meshPivot, this.scene);
-    if (meta.orbitTime)
-      meshPivot = Utility3D.orbitAnimation(name, meta, meshPivot, this.scene);
-
-    meshPivot = Utility3D.positionPivot(name, meta, meshPivot, this.scene);
-
-    meshPivot.assetMeta = meta;
-    meshPivot.baseMesh = mesh;
-    this.staticAssetMeshes[name] = meshPivot;
-
-    if (meta.parent) {
-      if (meta.parentType === 'basePivot')
-        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
-      else
-        meshPivot.parent = this.staticAssetMeshes[meta.parent];
-    } else
-      meshPivot.parent = this.sceneTransformNode;
-
-    if (meta.noClick !== true) {
-      meta.appClickable = true;
-      meta.masterid = name;
-      meta.clickCommand = 'pauseSpin';
-    }
-
-    if (meta.seatIndex !== undefined)
-      this.seatMeshes[meta.seatIndex] = meshPivot;
-
-    if (meta.loadDisabled)
-      meshPivot.setEnabled(false);
-  }
 
   _loadMeshMusic(meta, mesh, name) {
     let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
@@ -318,55 +259,13 @@ export class StoryApp extends BaseApp {
 
     this.musicMeshes[name] = music;
   }
-  infoPanel(name, meta, pivotMesh, scene) {
-    let size = 1;
 
-    let symbolPivot = new BABYLON.TransformNode('symbolpopupwrapper' + name, scene);
-    let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, scene);
-    symbolPivot.parent = pivotMesh.parent;
-    pivotMesh.parent = symbolPivot;
-
-    let textPivot = new BABYLON.TransformNode('textsymbolpopupwrapper' + name, scene);
-    textPivot.parent = symbolPivot;
-    meta.textPivot = textPivot;
-
-    if (meta.parent === 'uranus') {
-      textPivot.rotation.x -= 1.57;
-    }
-
-    let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
-      height: size,
-      width: size,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-
-    let m = new BABYLON.StandardMaterial('symbolshowmat' + name, scene);
-    let t = new BABYLON.Texture(meta.extended.symbolPath, scene);
-    t.vScale = 1;
-    t.uScale = 1;
-    t.hasAlpha = true;
-
-    m.diffuseTexture = t;
-    m.emissiveTexture = t;
-    m.ambientTexture = t;
-    let extraY = 0;
-    if (meta.symbolY)
-      extraY = meta.symbolY;
-
-    meta.yOffset = 0.5 + extraY;
-    symbolMesh1.material = m;
-    symbolMesh1.parent = textPivot;
-    symbolMesh1.rotation.y = 0;
-    symbolMesh1.position.y = meta.yOffset;
-
-    return symbolPivot;
-  }
   showItemNamePanel(meta) {
     let nameDesc = meta.name;
     if (meta.solarPosition)
       nameDesc += ` (${meta.solarPosition})`
 
-    let nameTexture = Utility3D.__texture2DText(this.scene, nameDesc, meta.color);
+    let nameTexture = U3D.__texture2DText(this.scene, nameDesc, meta.color);
     nameTexture.vScale = 1;
     nameTexture.uScale = 1;
     nameTexture.hasAlpha = true;
@@ -558,10 +457,10 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
     this.selectedMeshInstance.wrapper.position.y = 2.5;
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
-    this._fitNodeToSize(this.selectedMeshInstance.mesh, 1.75);
+    U3D._fitNodeToSize(this.selectedMeshInstance.mesh, 1.75);
     this.selectedMeshInstance.mesh.setEnabled(true);
 
-    Utility3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
+    U3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
 
     this._updateAssetSizeButtons();
   }
@@ -584,14 +483,6 @@ export class StoryApp extends BaseApp {
     this.assetPanelNormalButton.setEnabled(!isNormalSize);
     this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
     this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
-  }
-
-  _fitNodeToSize(node, size) {
-    const boundingInfo = node.getHierarchyBoundingVectors(true);
-    const currentLength = boundingInfo.max.subtract(boundingInfo.min);
-    const biggestSide = Math.max(currentLength.x, Math.max(currentLength.y, currentLength.z));
-    let scale = size / biggestSide;
-    node.scaling.scaleInPlace(scale);
   }
 
   clickEndTurn() {
@@ -666,13 +557,13 @@ export class StoryApp extends BaseApp {
   }
   selectMoonMesh(seatIndex) {
     if (seatIndex === 1)
-      this._updateLastClickMeta(this.staticAssetMeshes['ceres'].assetMeta);
+      this._updateLastClickMeta(window.staticAssetMeshes['ceres'].assetMeta);
     else if (seatIndex === 2)
-      this._updateLastClickMeta(this.staticAssetMeshes['j5_io'].assetMeta);
+      this._updateLastClickMeta(window.staticAssetMeshes['j5_io'].assetMeta);
     else if (seatIndex === 3)
-      this._updateLastClickMeta(this.staticAssetMeshes['eris'].assetMeta);
+      this._updateLastClickMeta(window.staticAssetMeshes['eris'].assetMeta);
     else
-      this._updateLastClickMeta(this.staticAssetMeshes['e1_luna'].assetMeta);
+      this._updateLastClickMeta(window.staticAssetMeshes['e1_luna'].assetMeta);
   }
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
@@ -741,7 +632,7 @@ export class StoryApp extends BaseApp {
     }
   }
   async load() {
-    this.allCards = await GameCards.loadDecks();
+    window.allStaticAssetMeta = await GameCards.loadDecks();
     await super.load();
   }
   paintDock() {
@@ -880,7 +771,7 @@ export class StoryApp extends BaseApp {
     let name = seatData.name;
     let colors = this.get3DColors(index);
 
-    let name3d = Utility3D.__createTextMesh('seattext' + index, {
+    let name3d = U3D.__createTextMesh('seattext' + index, {
       text: name,
       fontFamily: 'Arial',
       size: 100,
@@ -946,7 +837,7 @@ export class StoryApp extends BaseApp {
         intensity = 0;
         text = 'X';
       }
-      let x3d = Utility3D.__createTextMesh('seattextX' + index, {
+      let x3d = U3D.__createTextMesh('seattextX' + index, {
         text,
         fontFamily: 'monospace',
         size: 100,
@@ -1002,7 +893,7 @@ export class StoryApp extends BaseApp {
       //    this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
-      let baseDisc = Utility3D.__createTextMesh("emptyseat" + index.toString(), {
+      let baseDisc = U3D.__createTextMesh("emptyseat" + index.toString(), {
         text: 'Sit',
         fontFamily: 'Arial',
         size: 100,
@@ -1185,9 +1076,9 @@ export class StoryApp extends BaseApp {
 
     let rgb = this.get3DColors(seatIndex);
     let str = rgb.r + ',' + rgb.g + "," + rgb.b;
-    let backColor = Utility3D.colorRGB255(str);
+    let backColor = U3D.colorRGB255(str);
     let color = seatIndex !== 3 ? "rgb(0,0,0)" : "rgb(255,255,255)";
-    let nameTexture = Utility3D.__texture2DText(this.scene, "Scoreboard Status", color, backColor, 50);
+    let nameTexture = U3D.__texture2DText(this.scene, "Scoreboard Status", color, backColor, 50);
     nameTexture.vScale = 1;
     nameTexture.uScale = 1;
     nameTexture.hasAlpha = true;
@@ -1241,7 +1132,7 @@ export class StoryApp extends BaseApp {
     nameMesh2.material = this.scoreboardNameMaterial;
     nameMesh2.parent = this.playerMidPanelTransform;
 
-    this.startGameButton = Utility3D.__createTextMesh('startgamebutton', {
+    this.startGameButton = U3D.__createTextMesh('startgamebutton', {
       text: 'Start Game',
       fontFamily: 'Arial',
       size: 100,
@@ -1259,7 +1150,7 @@ export class StoryApp extends BaseApp {
     this.startGameButton.parent = this.playerMidPanelTransform;
     this.__setTextMeshColor(this.startGameButton, 0, 1, 0);
 
-    this.endGameButton = Utility3D.__createTextMesh('endgamebutton', {
+    this.endGameButton = U3D.__createTextMesh('endgamebutton', {
       text: 'End Game',
       fontFamily: 'Arial',
       size: 100,
@@ -1276,7 +1167,7 @@ export class StoryApp extends BaseApp {
     this.endGameButton.parent = this.playerMidPanelTransform;
     this.__setTextMeshColor(this.endGameButton, 0, 1, 0);
 
-    this.endTurnButton = Utility3D.__createTextMesh('endturnbutton', {
+    this.endTurnButton = U3D.__createTextMesh('endturnbutton', {
       text: 'End Turn',
       fontFamily: 'Arial',
       size: 100,
@@ -1302,7 +1193,7 @@ export class StoryApp extends BaseApp {
     this.assetFocusPanelTN = new BABYLON.TransformNode('assetFocusPanelTN', this.scene);
     this.assetFocusPanelTN.parent = scoreboardTransform;
 
-    this.activeMoonNav = Utility3D.__createTextMesh('activemoonnavigate', {
+    this.activeMoonNav = U3D.__createTextMesh('activemoonnavigate', {
       text: 'A Follow',
       fontFamily: 'Impact',
       size: 100,
@@ -1344,7 +1235,7 @@ export class StoryApp extends BaseApp {
     this.selectedAssetNameMat = new BABYLON.StandardMaterial('selectedAssetNameMat', this.scene);
     this.selectedAssetNameMesh.material = this.selectedAssetNameMat;
 
-    this.nextselectedassetmesh = Utility3D.__createTextMesh('nextselectedassetmesh', {
+    this.nextselectedassetmesh = U3D.__createTextMesh('nextselectedassetmesh', {
       text: '>',
       fontFamily: 'Arial',
       size: 100,
@@ -1367,7 +1258,7 @@ export class StoryApp extends BaseApp {
     this.nextselectedassetmesh.parent = this.assetFocusPanelTN;
     this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
 
-    this.previousselectedassetmesh = Utility3D.__createTextMesh('previousselectedassetmesh', {
+    this.previousselectedassetmesh = U3D.__createTextMesh('previousselectedassetmesh', {
       text: '<',
       fontFamily: 'Arial',
       size: 100,
@@ -1407,10 +1298,10 @@ export class StoryApp extends BaseApp {
       let key = keys[nextIndex];
       this._updateLastClickMeta(this.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else {
-      let keys = Object.keys(this.staticAssetMeshes).sort((a, b) => {
-        if (this.staticAssetMeshes[a].assetMeta.name > this.staticAssetMeshes[b].assetMeta.name)
+      let keys = Object.keys(window.staticAssetMeshes).sort((a, b) => {
+        if (window.staticAssetMeshes[a].assetMeta.name > window.staticAssetMeshes[b].assetMeta.name)
           return 1;
-        if (this.staticAssetMeshes[a].assetMeta.name < this.staticAssetMeshes[b].assetMeta.name)
+        if (window.staticAssetMeshes[a].assetMeta.name < window.staticAssetMeshes[b].assetMeta.name)
           return -1;
         return 0;
       });
@@ -1422,7 +1313,7 @@ export class StoryApp extends BaseApp {
         nextIndex = 0;
 
       let key = keys[nextIndex];
-      this._updateLastClickMeta(this.staticAssetMeshes[key].assetMeta);
+      this._updateLastClickMeta(window.staticAssetMeshes[key].assetMeta);
     }
   }
   async __loadRotatingAsset(assetMeta, prefix = 'selected') {
@@ -1433,7 +1324,7 @@ export class StoryApp extends BaseApp {
     if (assetMeta.asteroidType) {
       mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id, rotationTransform);
     } else {
-      mesh = this.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + this.staticAssetMeshes[assetMeta.id].baseMesh.id, rotationTransform);
+      mesh = window.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + window.staticAssetMeshes[assetMeta.id].baseMesh.id, rotationTransform);
     }
     mesh.setEnabled(false);
 
@@ -1492,7 +1383,7 @@ export class StoryApp extends BaseApp {
     rotationTransform.parent = this.playerDock3DPanel;
     rotationTransform.position.y = -1000;
 
-    let moonNav = this.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone('moonnavmesh' + index, rotationTransform);
+    let moonNav = window.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone('moonnavmesh' + index, rotationTransform);
     moonNav.position.y = 2.75;
     moonNav.position.x = 2 - (index * 1.5);
     moonNav.position.z = 0;
@@ -1505,7 +1396,7 @@ export class StoryApp extends BaseApp {
       seatIndex: index
     };
 
-    this._fitNodeToSize(moonNav, 1.25);
+    U3D._fitNodeToSize(moonNav, 1.25);
 
     let rotationAnim = new BABYLON.Animation(
       rotationTransform.id + 'anim',
@@ -1558,7 +1449,7 @@ export class StoryApp extends BaseApp {
     this.playerAvatarNavs = [];
     for (let c = 0; c < 4; c++) {
 
-      let avatarNav = Utility3D.__createTextMesh('myavatarnavigate' + c.toString(), {
+      let avatarNav = U3D.__createTextMesh('myavatarnavigate' + c.toString(), {
         text: this.seatMeshes[c].assetMeta.name,
         fontFamily: 'Tahoma',
         fontWeight: 'bold',
@@ -1595,7 +1486,7 @@ export class StoryApp extends BaseApp {
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     normalSizeButton.material = new BABYLON.StandardMaterial('assetPanelNormalSizeButtonMat', this.scene);
-    Utility3D.setTextMaterial(this.scene, normalSizeButton.material, 'Normal', 'rgb(255, 255, 255)', 'transparent', 180);
+    U3D.setTextMaterial(this.scene, normalSizeButton.material, 'Normal', 'rgb(255, 255, 255)', 'transparent', 180);
     normalSizeButton.parent = buttonBarTransform;
     this.assetPanelNormalButton = normalSizeButton;
 
@@ -1616,7 +1507,7 @@ export class StoryApp extends BaseApp {
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     hugeSizeButton.material = new BABYLON.StandardMaterial('assetPanelHugeSizeButtonMat', this.scene);
-    Utility3D.setTextMaterial(this.scene, hugeSizeButton.material, 'Huge', 'rgb(255, 255, 255)', 'transparent', 180);
+    U3D.setTextMaterial(this.scene, hugeSizeButton.material, 'Huge', 'rgb(255, 255, 255)', 'transparent', 180);
     hugeSizeButton.parent = buttonBarTransform;
     this.assetPanelHugeButton = hugeSizeButton;
 
@@ -1636,7 +1527,7 @@ export class StoryApp extends BaseApp {
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     smallSizeButton.material = new BABYLON.StandardMaterial('assetPanelSmallSizeButtonMat', this.scene);
-    Utility3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'transparent', 180);
+    U3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'transparent', 180);
     smallSizeButton.parent = buttonBarTransform;
     this.assetSmallSizeButton = smallSizeButton;
 
@@ -1670,27 +1561,27 @@ export class StoryApp extends BaseApp {
   }
   async updateAssetSize(size, meta) {
     let id = meta.id;
-    if (this.staticAssetMeshes[id]) {
+    if (window.staticAssetMeshes[id]) {
       if (size === 'huge') {
-        let freshMesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.largeGlbPath);
-        freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
-        this._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-        this.staticAssetMeshes[id].baseMesh.dispose();
-        this.staticAssetMeshes[id].baseMesh = freshMesh;
+        let freshMesh = await U3D.loadStaticMesh(this.scene, meta.extended.largeGlbPath);
+        freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
+        U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
+        window.staticAssetMeshes[id].baseMesh.dispose();
+        window.staticAssetMeshes[id].baseMesh = freshMesh;
       }
       if (size === 'normal') {
-        let freshMesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.normalGlbPath);
-        freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
-        this._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-        this.staticAssetMeshes[id].baseMesh.dispose();
-        this.staticAssetMeshes[id].baseMesh = freshMesh;
+        let freshMesh = await U3D.loadStaticMesh(this.scene, meta.extended.normalGlbPath);
+        freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
+        U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
+        window.staticAssetMeshes[id].baseMesh.dispose();
+        window.staticAssetMeshes[id].baseMesh = freshMesh;
       }
       if (size === 'small') {
-        let freshMesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.smallGlbPath);
-        freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
-        this._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-        this.staticAssetMeshes[id].baseMesh.dispose();
-        this.staticAssetMeshes[id].baseMesh = freshMesh;
+        let freshMesh = await U3D.loadStaticMesh(this.scene, meta.extended.smallGlbPath);
+        freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
+        U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
+        window.staticAssetMeshes[id].baseMesh.dispose();
+        window.staticAssetMeshes[id].baseMesh = freshMesh;
       }
     }
 
@@ -1701,8 +1592,8 @@ export class StoryApp extends BaseApp {
 
     await this.updateProfileMeshOverride(id, size);
 
-    this.staticAssetMeshes[id].assetMeta.extended = this.processStaticAssetMeta(this.staticAssetMeshes[id].assetMeta);
-    this._updateLastClickMeta(this.staticAssetMeshes[id].assetMeta);
+    window.staticAssetMeshes[id].assetMeta.extended = U3D.processStaticAssetMeta(window.staticAssetMeshes[id].assetMeta, this.profile);
+    this._updateLastClickMeta(window.staticAssetMeshes[id].assetMeta);
   }
 
   addMascotsArea() {
@@ -1710,24 +1601,8 @@ export class StoryApp extends BaseApp {
       return;
     this.mascotsAreaInited = true;
 
-    let iconName = 'home';
-    let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button1');
-    mascotsBtn.position.y = 1;
-    mascotsBtn.position.x = 20;
-    mascotsBtn.position.z = -20;
-    mascotsBtn.rotation.y = 0.5;
-
-    mascotsBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
-        this.loadOptional('mascots');
-      }
-    };
-
-
-    iconName = 'globe';
-    mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
+    let iconName = 'globe';
+    let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
     mascotsBtn.position.y = 1;
     mascotsBtn.position.x = 23;
     mascotsBtn.position.z = -18;
@@ -1739,8 +1614,8 @@ export class StoryApp extends BaseApp {
       handleClick: async (pointerInfo, mesh, meta) => {
         let rotation = new BABYLON.Vector3(0, 0, 0);
 
-        let endPosition = this.vector(this.staticAssetMeshes['mars'].position);
-        let startPosition = this.vector(this.staticAssetMeshes['neptune'].position);
+        let endPosition = this.vector(window.staticAssetMeshes['mars'].position);
+        let startPosition = this.vector(window.staticAssetMeshes['neptune'].position);
         this.shootRocket(startPosition, rotation, endPosition);
       }
     };
@@ -1765,18 +1640,8 @@ export class StoryApp extends BaseApp {
   }
   _addTextButton(text, name, width = 10, height = 3) {
 
-    return Utility3D.getTextPlane(text, name, this.scene, width, height); //, planeWidth = 10, planeHeight = 3, color = "#000000", backcolor = "#ffffff",
+    return U3D.getTextPlane(text, name, this.scene, width, height); //, planeWidth = 10, planeHeight = 3, color = "#000000", backcolor = "#ffffff",
     //      font_type = "Arial", scaleFactor = 0.5);
-  }
-
-  async loadOptional(kind) {
-    let promises = [];
-    let deck = GameCards.getCardDeck('mascots');
-    deck.forEach(card => {
-      if (!this.staticAssetMeshes[card.id] && card.optionalLoadFlag === kind)
-        promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, kind));
-    });
-    await Promise.all(promises);
   }
 
   v(x, y, z) {
@@ -1961,10 +1826,10 @@ export class StoryApp extends BaseApp {
     if (this.rocketRunning)
       return;
 
-    let newRocket = this.staticAssetMeshes['rocket_atlasv'];
+    let newRocket = window.staticAssetMeshes['rocket_atlasv'];
     if (!this.createdFireParticles) {
       this.createdFireParticles = true;
-      this.createdFireParticles = Utility3D.createFireParticles(this.staticAssetMeshes['rocket_atlasv'].assetMeta, this.staticAssetMeshes['rocket_atlasv'], 'rocket_atlasv', this.scene);
+      this.createdFireParticles = U3D.createFireParticles(window.staticAssetMeshes['rocket_atlasv'].assetMeta, window.staticAssetMeshes['rocket_atlasv'], 'rocket_atlasv', this.scene);
     }
 
     this.rocketRunning = true;
@@ -2127,7 +1992,7 @@ export class StoryApp extends BaseApp {
 
   async randomizeAnimations() {
     if (!this.initedAvatars) {
-      let result = await Utility3D._initAvatars(this.scene);
+      let result = await U3D._initAvatars(this.scene);
       this.initedAvatars = result.initedAvatars;
       this.avatarContainers = result.avatarContainers;
     }
@@ -2136,7 +2001,7 @@ export class StoryApp extends BaseApp {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
 
-      Utility3D.avatarSequence(container, index, this.scene);
+      U3D.avatarSequence(container, index, this.scene);
     })
   }
   async loadSkellies() {

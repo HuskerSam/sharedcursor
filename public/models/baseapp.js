@@ -1453,46 +1453,6 @@ export class BaseApp {
   groundClick(pointerInfo) {
     return;
   }
-  processStaticAssetMeta(meta) {
-
-    let override = '';
-    if (this.profile.assetSizeOverrides && this.profile.assetSizeOverrides[meta.id])
-      override = this.profile.assetSizeOverrides[meta.id];
-
-    let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
-    let smallGlbPath = '';
-    if (meta.smallglbpath)
-      smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
-    let largeGlbPath = '';
-    if (meta.largeglbpath)
-      largeGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.largeglbpath) + '?alt=media';
-    let glbPath = normalGlbPath;
-
-    if (smallGlbPath)
-      glbPath = smallGlbPath;
-
-    if (override === 'normal') {
-      glbPath = normalGlbPath;
-    }
-    if (override === 'small') {
-      if (smallGlbPath)
-        glbPath = smallGlbPath;
-    }
-    if (override === 'huge') {
-      if (largeGlbPath)
-        glbPath = largeGlbPath;
-    }
-
-    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-
-    return {
-      symbolPath,
-      normalGlbPath,
-      smallGlbPath,
-      largeGlbPath,
-      glbPath
-    };
-  }
 }
 
 export default BaseApp;

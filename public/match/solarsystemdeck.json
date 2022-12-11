@@ -352,5 +352,16 @@
     "orbitRadius": 16.5,
     "orbitTime": 30000,
     "startRatio": 0.8
+  },
+  {
+    "id": "rocket_atlasv",
+    "name": "Atlas V",
+    "objectType": "rocket",
+    "glbpath": "/mascots/atlasv.glb",
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
+    "loadDisabled": true
   }
 ]
