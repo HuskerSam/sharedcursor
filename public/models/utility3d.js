@@ -20,7 +20,7 @@ export default class Utility3D {
 
     return positionPivot;
   }
-  static orbitAnimation(name, meta, meshPivot, scene) {
+  static __orbitAnimation(name, meta, meshPivot, scene) {
     let orbitPivot = new BABYLON.TransformNode("transformorbit" + name, scene);
     orbitPivot.parent = meshPivot.parent;
     meshPivot.parent = orbitPivot;
@@ -64,7 +64,7 @@ export default class Utility3D {
 
     return orbitPivot;
   }
-  static rotationAnimation(name, meta, meshPivot, scene) {
+  static __rotationAnimation(name, meta, meshPivot, scene) {
     let rotationPivot = new BABYLON.TransformNode("transformrotation" + name, scene);
     rotationPivot.parent = meshPivot.parent;
     meshPivot.parent = rotationPivot;
@@ -972,9 +972,9 @@ export default class Utility3D {
       meshPivot = this.infoPanel(name, meta, meshPivot, scene);
 
     if (meta.rotationTime)
-      meshPivot = this.rotationAnimation(name, meta, meshPivot, scene);
+      meshPivot = this.__rotationAnimation(name, meta, meshPivot, scene);
     if (meta.orbitTime)
-      meshPivot = this.orbitAnimation(name, meta, meshPivot, scene);
+      meshPivot = this.__orbitAnimation(name, meta, meshPivot, scene);
 
     meshPivot = this.positionPivot(name, meta, meshPivot, scene);
 
@@ -990,12 +990,6 @@ export default class Utility3D {
         meshPivot.parent = window.staticAssetMeshes[meta.parent];
     } else
       meshPivot.parent = sceneParent;
-
-    if (meta.noClick !== true) {
-      meta.appClickable = true;
-      meta.masterid = name;
-      meta.clickCommand = 'pauseSpin';
-    }
 
     if (meta.loadDisabled)
       meshPivot.setEnabled(false);
@@ -1091,5 +1085,73 @@ export default class Utility3D {
     symbolMesh1.position.y = meta.yOffset;
 
     return symbolPivot;
+  }
+
+  static createGuides(scene,size = 30) {
+    var makeTextPlane = function(text, color, size) {
+      var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+      dynamicTexture.hasAlpha = true;
+      dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
+      var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+      plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+      plane.material.backFaceCulling = false;
+      plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+      plane.material.diffuseTexture = dynamicTexture;
+      return plane;
+    };
+
+    var axisX = BABYLON.Mesh.CreateLines("axisX", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+      new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+    ], scene);
+    axisX.color = new BABYLON.Color3(1, 0, 0);
+    var xChar = makeTextPlane("X", "red", size / 10);
+    xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+    var axisY = BABYLON.Mesh.CreateLines("axisY", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+      new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+    ], scene);
+    axisY.color = new BABYLON.Color3(0, 1, 0);
+    var yChar = makeTextPlane("Y", "green", size / 10);
+    yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+    var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+      new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
+    ], scene);
+    axisZ.color = new BABYLON.Color3(0, 0, 1);
+    var zChar = makeTextPlane("Z", "blue", size / 10);
+    zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+  }
+  static meshSetVerticeColors(mesh, r, g, b, a = 1) {
+    let colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
+    if (!colors) {
+      colors = [];
+
+      let positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+
+      for (let p = 0; p < positions.length / 3; p++) {
+        colors.push(r, g, b, a);
+      }
+    }
+
+    mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+  }
+
+
+  static pointerDown(pointerInfo) {
+    let mesh = pointerInfo.pickInfo.pickedMesh;
+    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
+      mesh = mesh.parent;
+    }
+
+    if (!mesh || !mesh.assetMeta.appClickable)
+      return false;
+
+    let meta = mesh.assetMeta;
+
+    if (meta.clickCommand === 'customClick')
+      meta.handleClick(pointerInfo, mesh, meta);
+
+    return true;
   }
 }

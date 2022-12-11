@@ -9,7 +9,6 @@ export class StoryApp extends BaseApp {
     this.apiType = 'story';
     this.cache = {};
     window.staticAssetMeshes = {};
-    this.musicMeshes = {};
     this.seatMeshes = {};
     this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
 
@@ -190,9 +189,16 @@ export class StoryApp extends BaseApp {
         <br>
       `);
 
-
       if (meta.seatIndex !== undefined)
         this.seatMeshes[meta.seatIndex] = assetMesh;
+      if (meta.noClick !== true) {
+        meta.appClickable = true;
+        meta.masterid = name;
+        meta.clickCommand = 'customClick';
+        meta.handleClick = async (pointerInfo, mesh, meta) => {
+          this.__pauseSpin(pointerInfo, mesh, meta);
+        };
+      }
     });
 
 
@@ -216,7 +222,7 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.material = pm;
 
     if (this.urlParams.get('showguides'))
-      this.createGuides();
+      U3D.createGuides(this.scene);
 
     this.initCameraToolbar();
 
@@ -243,21 +249,6 @@ export class StoryApp extends BaseApp {
       else
         clearInterval(this.verifyLoaddingComplete);
     }, 400);
-  }
-
-  _loadMeshMusic(meta, mesh, name) {
-    let song = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
-      encodeURIComponent(meta.mp3file) + '?alt=media&ext=.mp3';
-
-    let music = new BABYLON.Sound("music", song, this.scene, null, {
-      loop: true,
-      spatialSound: true,
-      distanceModel: "exponential",
-      rolloffFactor: 2
-    });
-    music.attachToMesh(mesh);
-
-    this.musicMeshes[name] = music;
   }
 
   showItemNamePanel(meta) {
@@ -380,68 +371,17 @@ export class StoryApp extends BaseApp {
     }
   }
 
-  pointerUp(pointerInfo) {
+  pointerMove(pointerInfo) {
 
+  }
+  pointerUp(pointerInfo) {
     if (this.lastClickMeta) {
       this.meshToggleAnimation(this.lastClickMeta, true, null);
       this.lastClickMeta = null;
       return;
     }
-    /*
-    let mesh = pointerInfo.pickInfo.pickedMesh;
-    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
-    mesh = mesh.parent;
   }
 
-    if (!mesh || !mesh.assetMeta)
-      return;
-
-    let meta = mesh.assetMeta;
-
-    if (meta.clickCommand === 'pauseSpin')
-      this.meshToggleAnimation(meta, true, mesh);
-      */
-  }
-  pointerDown(pointerInfo) {
-    let mesh = pointerInfo.pickInfo.pickedMesh;
-    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
-      mesh = mesh.parent;
-    }
-
-    if (!mesh || !mesh.assetMeta.appClickable)
-      return false;
-
-    let meta = mesh.assetMeta;
-
-    if (meta.emptySeat) {
-      this.dockSit(meta.seatIndex);
-    }
-
-    if (meta.clickCommand === 'stand') {
-      this._gameAPIStand(meta.seatIndex);
-    }
-
-    if (meta.clickCommand === 'pauseSpin') {
-      this.lastClickMeta = meta;
-      this.lastClickMetaButtonCache = this.lastClickMeta;
-      this.meshToggleAnimation(meta, false, mesh);
-
-      this._updateLastClickMeta(this.lastClickMetaButtonCache);
-    }
-
-    if (meta.clickCommand === 'endTurn')
-      this.clickEndTurn();
-    if (meta.clickCommand === 'startGame')
-      this.clickStartGame();
-    if (meta.clickCommand === 'endGame')
-      this.clickEndGame();
-    if (meta.clickCommand === 'customClick')
-      meta.handleClick(pointerInfo, mesh, meta);
-    if (meta.clickCommand === 'selectMainMesh')
-      this.selectMoonMesh(meta.seatIndex);
-
-    return true;
-  }
   async _updateLastClickMeta(assetMeta) {
     this.lastClickMeta = assetMeta;
     this.lastClickMetaButtonCache = this.lastClickMeta;
@@ -569,14 +509,6 @@ export class StoryApp extends BaseApp {
     if (!stop) {
       this.showBoardWrapper(meta);
 
-      if (meta.asteroidType)
-        Asteroid3D.asteroidPtrDown(this.scene, this, meta);
-
-      //if (this.currentSeatMesh !== mesh) {
-      if (meta.masterid && this.musicMeshes[meta.masterid])
-        this.musicMeshes[meta.masterid].play();
-      //}
-
       if (meta.rotationAnimation)
         meta.rotationAnimation.pause();
 
@@ -584,14 +516,6 @@ export class StoryApp extends BaseApp {
         meta.orbitAnimation.pause();
     } else {
       this.hideBoardWrapper(meta);
-
-      if (meta.asteroidType)
-        Asteroid3D.asteroidPtrDown(this.scene, this, meta, true);
-
-      //  if (this.currentSeatMesh !== mesh) {
-      if (meta.masterid && this.musicMeshes[meta.masterid])
-        this.musicMeshes[meta.masterid].stop();
-      //  }
 
       if (meta.rotationAnimation && meta.rotationAnimation._paused)
         meta.rotationAnimation.restart();
@@ -745,14 +669,8 @@ export class StoryApp extends BaseApp {
     if (!seatWrapperMesh)
       return;
 
-    for (let name in this.musicMeshes) {
-      this.musicMeshes[name].stop();
-    }
-
     let seatMesh = this.seatMeshes[seatIndex];
     this.currentSeatMesh = seatMesh;
-    if (seatMesh.assetMeta.masterid && this.musicMeshes[seatMesh.assetMeta.masterid] && !this.musicMeshes[seatMesh.assetMeta.masterid].isPlaying)
-      this.musicMeshes[seatMesh.assetMeta.masterid].play();
 
     this.selectedPlayerPanel.parent = seatWrapperMesh;
     this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].assetMeta.basePivot;
@@ -786,10 +704,10 @@ export class StoryApp extends BaseApp {
 
     for (let i in this.scene.meshes) {
       if (this.scene.meshes[i].parent === name3d)
-        this.meshSetVerticeColors(this.scene.meshes[i], colors.r, colors.g, colors.b);
+        U3D.meshSetVerticeColors(this.scene.meshes[i], colors.r, colors.g, colors.b);
     }
 
-    this.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
+    U3D.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
     name3d.parent = mesh;
     mesh.name3d = name3d;
 
@@ -855,16 +773,18 @@ export class StoryApp extends BaseApp {
 
       for (let i in this.scene.meshes) {
         if (this.scene.meshes[i].parent === x3d)
-          this.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
+          U3D.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
       }
 
-      this.meshSetVerticeColors(x3d, intensity, intensity, intensity);
+      U3D.meshSetVerticeColors(x3d, intensity, intensity, intensity);
       x3d.parent = mesh;
       x3d.assetMeta = {
         appClickable: true,
-        clickCommand: 'stand',
-        seatIndex: index
-      }
+        clickCommand: 'customClick',
+        handleClick: async (pointerInfo, mesh, meta) => {
+          this._gameAPIStand(index);
+        }
+      };
     }
   }
 
@@ -905,13 +825,16 @@ export class StoryApp extends BaseApp {
       baseDisc.rotation.y = -Math.PI / 2;
       baseDisc.position.y = 1;
       baseDisc.assetMeta = {
-        emptySeat: true,
         seatIndex: index,
-        appClickable: true
+        appClickable: true,
+        clickCommand: 'customClick',
+        handleClick: async (pointerInfo, mesh, meta) => {
+          this.dockSit(index);
+        }
       };
 
       let colors = this.get3DColors(index);
-      this.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
+      U3D.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
       baseDisc.parent = seat;
 
       seat.baseDisc = baseDisc;
@@ -952,20 +875,6 @@ export class StoryApp extends BaseApp {
     }
 
     return new BABYLON.Color3(r, g, b);
-  }
-  meshSetVerticeColors(mesh, r, g, b, a = 1) {
-    let colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
-    if (!colors) {
-      colors = [];
-
-      let positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-
-      for (let p = 0; p < positions.length / 3; p++) {
-        colors.push(r, g, b, a);
-      }
-    }
-
-    mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
 
   updateUserPresence() {
@@ -1033,42 +942,6 @@ export class StoryApp extends BaseApp {
         alert('Failed to resolve selection: ' + json.errorMessage);
       return;
     }
-  }
-  createGuides(size = 30) {
-    let scene = this.scene;
-    var makeTextPlane = function(text, color, size) {
-      var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
-      dynamicTexture.hasAlpha = true;
-      dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
-      var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
-      plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
-      plane.material.backFaceCulling = false;
-      plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
-      plane.material.diffuseTexture = dynamicTexture;
-      return plane;
-    };
-
-    var axisX = BABYLON.Mesh.CreateLines("axisX", [
-      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
-      new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-    ], scene);
-    axisX.color = new BABYLON.Color3(1, 0, 0);
-    var xChar = makeTextPlane("X", "red", size / 10);
-    xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
-    var axisY = BABYLON.Mesh.CreateLines("axisY", [
-      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
-      new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
-    ], scene);
-    axisY.color = new BABYLON.Color3(0, 1, 0);
-    var yChar = makeTextPlane("Y", "green", size / 10);
-    yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
-    var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
-      new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
-    ], scene);
-    axisZ.color = new BABYLON.Color3(0, 0, 1);
-    var zChar = makeTextPlane("Z", "blue", size / 10);
-    zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
   }
 
   updateScoreboard() {
@@ -1184,7 +1057,11 @@ export class StoryApp extends BaseApp {
     this.endTurnButton.parent = this.playerMidPanelTransform;
     this.endTurnButton.assetMeta = {
       appClickable: true,
-      clickCommand: 'endTurn'
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.clickEndTurn();
+      }
+
     };
     this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
 
@@ -1369,10 +1246,10 @@ export class StoryApp extends BaseApp {
   __setTextMeshColor(mesh, r, g, b) {
     for (let i in this.scene.meshes) {
       if (this.scene.meshes[i].parent === mesh)
-        this.meshSetVerticeColors(this.scene.meshes[i], r, g, b);
+        U3D.meshSetVerticeColors(this.scene.meshes[i], r, g, b);
     }
 
-    this.meshSetVerticeColors(mesh, r, g, b);
+    U3D.meshSetVerticeColors(mesh, r, g, b);
   }
 
   async loadMoonButton(index) {
@@ -1392,8 +1269,10 @@ export class StoryApp extends BaseApp {
 
     moonNav.assetMeta = {
       appClickable: true,
-      clickCommand: 'selectMainMesh',
-      seatIndex: index
+      clickCommand: 'customClick',
+      handleClick: async (pointerInfo, mesh, meta) => {
+        this.selectMoonMesh(index);
+      }
     };
 
     U3D._fitNodeToSize(moonNav, 1.25);
@@ -1464,10 +1343,13 @@ export class StoryApp extends BaseApp {
       avatarNav.position.z = 0;
       avatarNav.rotation.z = -Math.PI / 2;
       avatarNav.rotation.y = -Math.PI / 2;
+      let seatIndex = c;
       avatarNav.assetMeta = {
         appClickable: true,
-        clickCommand: 'selectMainMesh',
-        seatIndex: c
+        clickCommand: 'customClick',
+        handleClick: async (pointerInfo, mesh, meta) => {
+          this.selectMoonMesh(seatIndex);
+        }
       };
       avatarNav.parent = this.playerDock3DPanel;
       let colors = this.get3DColors(c);
@@ -1614,8 +1496,8 @@ export class StoryApp extends BaseApp {
       handleClick: async (pointerInfo, mesh, meta) => {
         let rotation = new BABYLON.Vector3(0, 0, 0);
 
-        let endPosition = this.vector(window.staticAssetMeshes['mars'].position);
-        let startPosition = this.vector(window.staticAssetMeshes['neptune'].position);
+        let endPosition = U3D.vector(window.staticAssetMeshes['mars'].position);
+        let startPosition = U3D.vector(window.staticAssetMeshes['neptune'].position);
         this.shootRocket(startPosition, rotation, endPosition);
       }
     };
@@ -1644,9 +1526,6 @@ export class StoryApp extends BaseApp {
     //      font_type = "Arial", scaleFactor = 0.5);
   }
 
-  v(x, y, z) {
-    return new BABYLON.Vector3(x, y, z);
-  }
   async rocketTakeOff(rocketMesh, height, xDelta, timeMS = 2000) {
     return new Promise((res, rej) => {
       const id = rocketMesh.id;
@@ -1752,7 +1631,7 @@ export class StoryApp extends BaseApp {
       });
       rotationAnim.setKeys(rotationKeys);
 
-      let origScaling = this.vector(rocketMesh.scaling);
+      let origScaling = U3D.vector(rocketMesh.scaling);
       const scalingAnim = new BABYLON.Animation(id + "scaleLand", "scaling", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
       const scalingKeys = [];
       scalingKeys.push({
@@ -1761,7 +1640,7 @@ export class StoryApp extends BaseApp {
       });
       scalingKeys.push({
         frame: endFrame,
-        value: this.v(origScaling.x * 0.25, origScaling.y * 0.25, origScaling.z * 0.25)
+        value: U3D.v(origScaling.x * 0.25, origScaling.y * 0.25, origScaling.z * 0.25)
       });
       scalingAnim.setKeys(scalingKeys);
 
@@ -1784,7 +1663,7 @@ export class StoryApp extends BaseApp {
   }
   async rocketTravelTo(rocket, endPosition, travelTime, landingDelay = 1500) {
     return new Promise((res, rej) => {
-      let startPosition = this.vector(rocket.position);
+      let startPosition = U3D.vector(rocket.position);
       const id = rocket.id;
       const frameRate = 60;
       const endFrame = Math.floor((travelTime + landingDelay) * frameRate / 1000);
@@ -1794,15 +1673,15 @@ export class StoryApp extends BaseApp {
       const positionKeys = [];
       positionKeys.push({
         frame: 0,
-        value: this.v(startPosition.x, startPosition.y, startPosition.z)
+        value: U3D.v(startPosition.x, startPosition.y, startPosition.z)
       });
       positionKeys.push({
         frame: delayFrame,
-        value: this.v(endPosition.x, startPosition.y, endPosition.z)
+        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
       });
       positionKeys.push({
         frame: endFrame,
-        value: this.v(endPosition.x, startPosition.y, endPosition.z)
+        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
       });
       positionAnimation.setKeys(positionKeys);
 
@@ -1816,11 +1695,6 @@ export class StoryApp extends BaseApp {
         res();
       }, (travelTime - landingDelay));
     });
-  }
-  vector(vector) {
-    let v = new BABYLON.Vector3();
-    v.copyFrom(vector);
-    return v;
   }
   async shootRocket(startPos, startRotation, endPosition) {
     if (this.rocketRunning)
@@ -1901,7 +1775,6 @@ export class StoryApp extends BaseApp {
     if (this.fireToken)
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
   }
-
 
   async initAsteroidCounts() {
     let asteroid50Button = this._addTextButton('*50', 'asteroid50countbtn', 3, 2);
@@ -1988,8 +1861,6 @@ export class StoryApp extends BaseApp {
     Asteroid3D.loadAsteroids(this.scene, this);
   }
 
-
-
   async randomizeAnimations() {
     if (!this.initedAvatars) {
       let result = await U3D._initAvatars(this.scene);
@@ -2021,5 +1892,12 @@ export class StoryApp extends BaseApp {
       }
     };
 
+  }
+
+  __pauseSpin(pointerInfo, mesh, meta) {
+    this.lastClickMeta = meta;
+    this.lastClickMetaButtonCache = this.lastClickMeta;
+    this.meshToggleAnimation(meta, false, mesh);
+    this._updateLastClickMeta(this.lastClickMetaButtonCache);
   }
 }

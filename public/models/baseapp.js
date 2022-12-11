@@ -1,4 +1,5 @@
 import Utility from '/models/utility.js';
+import U3D from '/models/utility3d.js';
 
 export class BaseApp {
   constructor() {
@@ -1312,7 +1313,7 @@ export class BaseApp {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
           if (pointerInfo.pickInfo.hit) {
-            if (this.pointerDown(pointerInfo))
+            if (U3D.pointerDown(pointerInfo))
               break;
           }
           if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {
@@ -1324,7 +1325,7 @@ export class BaseApp {
           this.pointerUp(pointerInfo);
           break;
         case BABYLON.PointerEventTypes.POINTERMOVE:
-          //this.pointerMove();
+          this.pointerMove(pointerInfo);
           break;
       }
     });
@@ -1384,6 +1385,7 @@ export class BaseApp {
 
     return scene;
   }
+  pointerMove() {}
   xButtonPress() {}
   yButtonPress() {}
   aButtonPress() {}

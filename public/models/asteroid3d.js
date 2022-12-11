@@ -77,14 +77,11 @@ export default class Asteroid3D {
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await U3D.loadStaticMesh(scene, path);
     U3D._fitNodeToSize(mesh, 1.5);
-    mesh.origScaling = this.vector(mesh.scaling);
-
     mesh.material = window.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, scene);
     orbitWrapper.parent = mesh.parent;
     mesh.parent = orbitWrapper;
-    orbitWrapper.origScaling = this.vector(orbitWrapper.scaling);
 
     let positionAnim = new BABYLON.Animation(
       "asteroidposition" + asteroid,
@@ -109,7 +106,10 @@ export default class Asteroid3D {
 
     orbitWrapper.assetMeta = {
       appClickable: true,
-      clickCommand: 'pauseSpin',
+      clickCommand: "customClick",
+      handleClick: (pointerInfo, mesh, meta) => {
+        app.__pauseSpin(pointerInfo, mesh, meta);
+      },
       name: asteroid,
       asteroidType: true,
       asteroidName: asteroid,
@@ -122,30 +122,6 @@ export default class Asteroid3D {
       orbitWrapper,
       mesh
     };
-  }
-  static asteroidPtrDown(scene, app, meta, up = false) {
-    if (!up) {
-      meta.basePivot.material = window.selectedAsteroidMaterial;
-
-      meta.asteroidMesh.scaling.x = meta.asteroidMesh.origScaling.x * 1.25;
-      meta.asteroidMesh.scaling.y = meta.asteroidMesh.origScaling.y * 1.25;
-      meta.asteroidMesh.scaling.z = meta.asteroidMesh.origScaling.z * 1.25;
-
-      app.asteroidSymbolMeshName.setEnabled(true);
-      app.asteroidSymbolMeshName.parent = meta.asteroidMesh;
-
-      let text = meta.asteroidName.replace('.obj', '');
-      U3D.setTextMaterial(scene, app.asteroidSymbolMeshName.nameMaterial, text);
-
-      setTimeout(() => {
-        meta.basePivot.material = window.asteroidMaterial;
-      }, 3000);
-    } else {
-      meta.basePivot.material = window.asteroidMaterial;
-      meta.asteroidMesh.scaling.copyFrom(meta.asteroidMesh.origScaling);
-
-      app.asteroidSymbolMeshName.setEnabled(false);
-    }
   }
   static _buildAsteroidPath() {
     let y = 2;
@@ -219,10 +195,7 @@ export default class Asteroid3D {
     if (Math.abs(v2.z) > Math.abs(v1.z))
       z = v2.z;
 
-    return this.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
-  }
-  static v(x, y, z) {
-    return new BABYLON.Vector3(x, y, z);
+    return U3D.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
   }
   static v4(x, y, z, weight) {
     return {
