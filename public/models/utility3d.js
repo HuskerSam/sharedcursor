@@ -811,14 +811,102 @@ export default class Utility3D {
       initedAvatars.push(newModel);
       initedAvatars[c].animContainer.animationGroups[0].stop();
 
-      initedAvatars[c].rootNodes[0].position.x = avatarMeta.x;
-      initedAvatars[c].rootNodes[0].position.z = avatarMeta.z;
+      let mesh = initedAvatars[c].rootNodes[0];
+      let t = new BABYLON.TransformNode("tn" + mesh.id);
+      t.position.x = avatarMeta.x;
+      t.position.z = avatarMeta.z;
+      mesh.parent = t;
+      newModel.TN = t;
+      newModel.TN.avatarMeta = avatarMeta;
     }
 
     return {
       initedAvatars,
       avatarContainers
     };
+  }
+  static async avatarSequence(avatarContainer, animationIndex, scene) {
+    let arr = avatarContainer.animContainer.animationGroups;
+    arr.forEach(anim => anim.stop());
+
+    if (avatarContainer.offsetAnimation) {
+      //stop previous
+      avatarContainer.offsetAnimation.stop();
+      avatarContainer.offsetAnimation = null;
+
+      let mesh = avatarContainer.TN;
+      let animIndex = mesh.animations.indexOf(avatarContainer.offsetPositionAnim);
+      mesh.animations.splice(animIndex, 1);
+      avatarContainer.offsetPositionAnim = null;
+    }
+
+    let animName = arr[animationIndex].name;
+    const offsets = this.getAnimationOffsets();
+
+
+    //start new offsets
+    if (offsets[animName]) {
+      let offsetInfo = offsets[animName];
+
+      let offsetPositionAnim = new BABYLON.Animation(
+        'offsetanimavatar' + animationIndex.toString(),
+        "position",
+        60,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+
+      let mesh = avatarContainer.TN;
+      let x = mesh.avatarMeta.x;
+      let y = 0;
+      let z = mesh.avatarMeta.z;
+      let keys = [];
+      let endFrame = offsetInfo.frames;
+
+      let offsetX = 0;
+      let offsetY = 0;
+      let offsetZ = 0;
+      if (offsetInfo.z)
+        offsetZ = offsetInfo.z;
+      if (offsetInfo.y)
+        offsetY = offsetInfo.y;
+      if (offsetInfo.x)
+        offsetX = offsetInfo.x;
+
+      keys.push({
+        frame: 0,
+        value: this.v(x, y, z)
+      });
+
+      keys.push({
+        frame: endFrame,
+        value: this.v(x - offsetX, y - offsetY, z - offsetZ)
+      });
+
+      offsetPositionAnim.setKeys(keys);
+
+      if (!mesh.animations)
+        mesh.animations = [];
+      mesh.animations.push(offsetPositionAnim);
+      avatarContainer.offsetAnimation = scene.beginAnimation(mesh, 0, endFrame, true);
+  //    if (offsetInfo.startRatio !== undefined)
+  //      avatarContainer.offsetAnimation.goToFrame(Math.floor(endFrame * offsetInfo.startRatio));
+      avatarContainer.offsetPositionAnim = offsetPositionAnim;
+
+      arr[animationIndex].reset();
+      arr[animationIndex].start(true);
+
+      mesh.position.x = mesh.avatarMeta.x;
+      mesh.position.z = mesh.avatarMeta.z;
+    } else {
+      arr[animationIndex].reset();
+      arr[animationIndex].start(true);
+
+
+      let mesh = avatarContainer.TN;
+      mesh.position.x = mesh.avatarMeta.x;
+      mesh.position.z = mesh.avatarMeta.z;
+    }
   }
   static getAvatarData() {
     return [{
@@ -852,5 +940,32 @@ export default class Utility3D {
         "race": "Titan"
       }
     ]
+  }
+  static getAnimationOffsets() {
+    return {
+      "Clone of jogging": {
+        "z": 5.55,
+        "frames": 156,
+        "startRatio": 0.75
+      },
+      "Clone of strut": {
+        "z": 1.5,
+        "frames": 88
+      }
+    };
+  }
+  static v(x, y, z) {
+    return new BABYLON.Vector3(x, y, z);
+  }
+  static v4(x, y, z, weight) {
+    return {
+      v: new BABYLON.Vector3(x, y, z),
+      weight: weight * 2
+    };
+  }
+  static vector(vector) {
+    let v = new BABYLON.Vector3();
+    v.copyFrom(vector);
+    return v;
   }
 }

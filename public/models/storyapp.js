@@ -2139,8 +2139,7 @@ export class StoryApp extends BaseApp {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
 
-      arr.forEach(anim => anim.stop());
-      arr[index].start(true);
+      Utility3D.avatarSequence(container, index, this.scene);
     })
   }
   async loadSkellies() {
