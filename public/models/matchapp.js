@@ -1,5 +1,6 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
+import Utility3D from '/models/utility3d.js';
 
 export class MatchApp extends BaseApp {
   constructor() {
@@ -198,9 +199,10 @@ export class MatchApp extends BaseApp {
     let extendedMetaData = this.processStaticAssetMeta(cardMeta);
     this.runRender = true;
 
-    this.loadStaticMesh(extendedMetaData.glbPath, '', extendedMetaData.scale * 1.25, 0, 2, 0);
+    let mesh = Utility3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
+    this._fitNodeToSize(mesh, 2.5);
     this.engine.resize();
-    
+
     this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.name;
     this.match_end_display_promo.querySelector('.beer_name_anchor').setAttribute('href', cardMeta.url);
 

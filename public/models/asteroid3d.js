@@ -75,7 +75,7 @@ export default class Asteroid3D {
 
     let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
-    let mesh = await app.loadStaticMesh(path, '', 1, 0, -1000, 0);
+    let mesh = await Utility3D.loadStaticMesh(scene, path);
     app._fitNodeToSize(mesh, 1.5);
     mesh.origScaling = this.vector(mesh.scaling);
 

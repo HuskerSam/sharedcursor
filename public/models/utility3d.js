@@ -926,4 +926,15 @@ export default class Utility3D {
     v.copyFrom(vector);
     return v;
   }
+
+  static async loadStaticMesh(scene, path) {
+    if (!window.staticMeshContainer)
+      window.staticMeshContainer = {};
+
+    if (!window.staticMeshContainer[path])
+      window.staticMeshContainer[path] = await this.loadContainer(scene, path);
+
+    let result =  window.staticMeshContainer[path].instantiateModelsToScene();
+    return result.rootNodes[0];
+  }
 }

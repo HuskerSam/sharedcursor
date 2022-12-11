@@ -234,12 +234,10 @@ export class StoryApp extends BaseApp {
     meta.extended = this.processStaticAssetMeta(meta);
 
     let mesh;
-    if (meta.sizeBoxFit !== undefined) {
-      mesh = await this.loadStaticMesh(meta.extended.glbPath, '', 1, 0, 0, 0);
-      this._fitNodeToSize(mesh, meta.sizeBoxFit);
-    } else {
-      mesh = await this.loadStaticMesh(meta.extended.glbPath, '', meta.extended.scale, 0, 0, 0);
-    }
+    if (meta.sizeBoxFit === undefined)
+      meta.sizeBoxFit = 2;
+    mesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.glbPath);
+    this._fitNodeToSize(mesh, meta.sizeBoxFit);
 
     let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
     let smallLink = '';
@@ -269,10 +267,6 @@ export class StoryApp extends BaseApp {
 
     let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, this.scene);
     mesh.parent = meshPivot;
-
-    if (this.shadowGenerator)
-      this.shadowGenerator.addShadowCaster(mesh, true);
-
     meta.basePivot = meshPivot;
 
     if (meta.symbol)
@@ -1678,20 +1672,23 @@ export class StoryApp extends BaseApp {
     let id = meta.id;
     if (this.staticAssetMeshes[id]) {
       if (size === 'huge') {
-        let freshMesh = await this.loadStaticMesh(meta.extended.largeGlbPath, '', meta.extended.largeScale, 0, 0, 0);
+        let freshMesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.largeGlbPath);
         freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
+        this._fitNodeToSize(freshMesh, meta.sizeBoxFit);
         this.staticAssetMeshes[id].baseMesh.dispose();
         this.staticAssetMeshes[id].baseMesh = freshMesh;
       }
       if (size === 'normal') {
-        let freshMesh = await this.loadStaticMesh(meta.extended.normalGlbPath, '', meta.extended.normalScale, 0, 0, 0);
+        let freshMesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.normalGlbPath);
         freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
+        this._fitNodeToSize(freshMesh, meta.sizeBoxFit);
         this.staticAssetMeshes[id].baseMesh.dispose();
         this.staticAssetMeshes[id].baseMesh = freshMesh;
       }
       if (size === 'small') {
-        let freshMesh = await this.loadStaticMesh(meta.extended.smallGlbPath, '', meta.extended.smallScale, 0, 0, 0);
+        let freshMesh = await Utility3D.loadStaticMesh(this.scene, meta.extended.smallGlbPath);
         freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
+        this._fitNodeToSize(freshMesh, meta.sizeBoxFit);
         this.staticAssetMeshes[id].baseMesh.dispose();
         this.staticAssetMeshes[id].baseMesh = freshMesh;
       }
