@@ -932,25 +932,44 @@ export default class Utility3D {
         "z": -35,
         "race": "Avian"
       },
+      /*
       {
         "name": "Astarte",
         "path": "pirate.glb",
         "x": 41,
         "z": -35,
         "race": "Titan"
+      },
+      */
+      {
+        "name": "Astarte",
+        "path": "maynard.glb",
+        "cloneAnimations": "Daya",
+        "x": 41,
+        "z": -35,
+        "race": "Titan"
       }
+
     ]
   }
   static getAnimationOffsets() {
     return {
       "Clone of jogging": {
-        "z": 5.55,
+        "z": 5.3,
         "frames": 156,
         "startRatio": 0.75
       },
       "Clone of strut": {
         "z": 1.5,
         "frames": 88
+      },
+      "Clone of walking": {
+        "z": 1.78,
+        "frames": 64
+      },
+      "Clone of femalewalk": {
+        "z": 1.5,
+        "frames": 72
       }
     };
   }
