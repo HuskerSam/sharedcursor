@@ -229,6 +229,8 @@ export class StoryApp extends BaseApp {
 
     this.initCameraToolbar();
 
+    this._loadAvatars();
+
     this.sceneInited = true;
     this.initScoreboard();
     this.selectMoonMesh();
@@ -242,7 +244,6 @@ export class StoryApp extends BaseApp {
 
     this.addRocket();
 
-    this.loadSkellies();
 
     this.verifyLoaddingComplete = setInterval(() => {
       if (!this.runRender)
@@ -250,6 +251,13 @@ export class StoryApp extends BaseApp {
       else
         clearInterval(this.verifyLoaddingComplete);
     }, 400);
+  }
+  async _loadAvatars() {
+    let result = await U3D._initAvatars(this.scene);
+    this.initedAvatars = result.initedAvatars;
+    this.avatarContainers = result.avatarContainers;
+
+    this.randomizeAnimations();
   }
 
   showItemNamePanel(meta) {
@@ -393,7 +401,7 @@ export class StoryApp extends BaseApp {
     this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
     this.selectedMeshInstance.wrapper.position.y = 2.5;
     this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
-    U3D._fitNodeToSize(this.selectedMeshInstance.mesh, 1.75);
+    U3D._fitNodeToSize(this.selectedMeshInstance.mesh, 0.7);
     this.selectedMeshInstance.mesh.setEnabled(true);
 
     U3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
@@ -491,6 +499,7 @@ export class StoryApp extends BaseApp {
       this.scoreboardWrapper.lookAt(targetPosition);
     }
   }
+
   selectMoonMesh(seatIndex) {
     if (seatIndex === 1)
       this._updateLastClickMeta(window.staticAssetMeshes['ceres'].assetMeta);
@@ -501,6 +510,9 @@ export class StoryApp extends BaseApp {
     else
       this._updateLastClickMeta(window.staticAssetMeshes['e1_luna'].assetMeta);
   }
+
+
+
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
       this.showBoardWrapper(meta);
@@ -522,13 +534,6 @@ export class StoryApp extends BaseApp {
   }
 
   debounce() {
-    return false;
-
-    if (this.debounceBusy)
-      return true;
-
-    this.debounceBusy = true;
-    setTimeout(() => this.debounceBusy = false, 500);
     return false;
   }
   async authUpdateStatusUI() {
@@ -970,7 +975,6 @@ export class StoryApp extends BaseApp {
     scoreboardTransform.position.y = -0.5;
 
     this.__initScorePanel(scoreboardTransform);
-    this.__initFocusedAssetPanel(scoreboardTransform);
     this.__initDock3DPanel(scoreboardTransform);
 
     return scoreboardWrapper;
@@ -1061,98 +1065,6 @@ export class StoryApp extends BaseApp {
     };
     this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
 
-  }
-  async __initFocusedAssetPanel(scoreboardTransform) {
-    this.assetFocusPanelTN = new BABYLON.TransformNode('assetFocusPanelTN', this.scene);
-    this.assetFocusPanelTN.parent = scoreboardTransform;
-
-    this.activeMoonNav = U3D.__createTextMesh('activemoonnavigate', {
-      text: 'A Follow',
-      fontFamily: 'Impact',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.activeMoonNav.scaling.x = .5;
-    this.activeMoonNav.scaling.y = .5;
-    this.activeMoonNav.scaling.z = .5;
-    this.activeMoonNav.position.y = 1.25;
-    this.activeMoonNav.position.z = 0;
-    this.activeMoonNav.position.x = 0;
-    this.activeMoonNav.rotation.z = -Math.PI / 2;
-    this.activeMoonNav.rotation.y = -Math.PI / 2;
-    this.activeMoonNav.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.setFollowMeta();
-      }
-    };
-    this.activeMoonNav.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
-
-    let buttonPanel = this._initSizePanel();
-    buttonPanel.position.y = 4;
-    buttonPanel.rotation.y = Math.PI;
-    buttonPanel.parent = this.assetFocusPanelTN;
-
-    let size = 1;
-    this.selectedAssetNameMesh = BABYLON.MeshBuilder.CreatePlane('selectedAssetNameMesh', {
-      height: 1.5,
-      width: size * 5,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    this.selectedAssetNameMesh.position.y = 3;
-    this.selectedAssetNameMesh.rotation.y = Math.PI;
-    this.selectedAssetNameMesh.parent = this.assetFocusPanelTN;
-
-    this.selectedAssetNameMat = new BABYLON.StandardMaterial('selectedAssetNameMat', this.scene);
-    this.selectedAssetNameMesh.material = this.selectedAssetNameMat;
-
-    this.nextselectedassetmesh = U3D.__createTextMesh('nextselectedassetmesh', {
-      text: '>',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .5
-    }, this.scene);
-    this.nextselectedassetmesh.scaling.x = .5;
-    this.nextselectedassetmesh.scaling.y = .5;
-    this.nextselectedassetmesh.scaling.z = .5;
-    this.nextselectedassetmesh.position.y = 2.5;
-    this.nextselectedassetmesh.position.x = -2;
-    this.nextselectedassetmesh.rotation.z = -Math.PI / 2;
-    this.nextselectedassetmesh.rotation.y = -Math.PI / 2;
-    this.nextselectedassetmesh.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextSelectedObject();
-      }
-    };
-    this.nextselectedassetmesh.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
-
-    this.previousselectedassetmesh = U3D.__createTextMesh('previousselectedassetmesh', {
-      text: '<',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .5
-    }, this.scene);
-    this.previousselectedassetmesh.scaling.x = .5;
-    this.previousselectedassetmesh.scaling.y = .5;
-    this.previousselectedassetmesh.scaling.z = .5;
-    this.previousselectedassetmesh.position.y = 2.5;
-    this.previousselectedassetmesh.position.x = 2;
-    this.previousselectedassetmesh.rotation.z = -Math.PI / 2;
-    this.previousselectedassetmesh.rotation.y = -Math.PI / 2;
-    this.previousselectedassetmesh.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextSelectedObject(true);
-      }
-    };
-    this.previousselectedassetmesh.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
   }
   nextSelectedObject(previous = false) {
     let meta = this.lastClickMetaButtonCache;
@@ -1479,7 +1391,17 @@ export class StoryApp extends BaseApp {
       return;
     this.mascotsAreaInited = true;
 
-    let iconName = 'globe';
+    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
+    this.menuBarLeftTN.position = U3D.v(-10, 1, -10);
+    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarLeftTN.billboardMode = 7;
+
+    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
+    this.menuBarRightTN.position = U3D.v(-15, 1, -15);
+    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarRightTN.billboardMode = 7;
+
+    let iconName = 'rocket';
     let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
 
     mascotsBtn.assetMeta = {
@@ -1493,37 +1415,145 @@ export class StoryApp extends BaseApp {
         this.shootRocket(startPosition, rotation, endPosition);
       }
     };
-
-    this.menuBarTN = new BABYLON.TransformNode('menuBarTN', this.scene);
-    mascotsBtn.parent = this.menuBarTN;
+    mascotsBtn.parent = this.menuBarLeftTN;
     mascotsBtn.position.x = -5;
-
-    this.menuBarTN.position = U3D.v(-10, 1, -10);
-    this.menuBarTN.scaling = U3D.v(0.3, 0.3, 0.3);
-
-    this.menuBarTN.billboardMode = 7;
 
     this.initSkyBoxOptions();
     this.initAsteroidCounts();
+    this.__initFocusedAssetPanel();
+
+    iconName = 'robot'; //meteor
+    let randomAnimsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
+    randomAnimsBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.randomizeAnimations();
+      }
+    };
+    randomAnimsBtn.position.x = -7.5;
+    randomAnimsBtn.parent = this.menuBarLeftTN;
 
   }
+  async __initFocusedAssetPanel() {
+    this.assetFocusPanelTN = new BABYLON.TransformNode('assetFocusPanelTN', this.scene);
+    this.assetFocusPanelTN.parent = this.menuBarRightTN;
+
+    this.activeMoonNav = U3D.__createTextMesh('activemoonnavigate', {
+      text: 'A Follow',
+      fontFamily: 'Impact',
+      size: 100,
+      depth: .25
+    }, this.scene);
+    this.activeMoonNav.scaling.x = .5;
+    this.activeMoonNav.scaling.y = .5;
+    this.activeMoonNav.scaling.z = .5;
+    this.activeMoonNav.position.y = 1.25;
+    this.activeMoonNav.position.z = 0;
+    this.activeMoonNav.position.x = 0;
+    this.activeMoonNav.rotation.z = -Math.PI / 2;
+    this.activeMoonNav.rotation.y = -Math.PI / 2;
+    this.activeMoonNav.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.setFollowMeta();
+      }
+    };
+    this.activeMoonNav.parent = this.assetFocusPanelTN;
+    this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
+
+    let buttonPanel = this._initSizePanel();
+    buttonPanel.position.y = 4;
+    buttonPanel.parent = this.assetFocusPanelTN;
+
+    let size = 1;
+    this.selectedAssetNameMesh = BABYLON.MeshBuilder.CreatePlane('selectedAssetNameMesh', {
+      height: 1.5,
+      width: size * 5,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    this.selectedAssetNameMesh.position.y = 3;
+    this.selectedAssetNameMesh.rotation.y = Math.PI;
+    this.selectedAssetNameMesh.parent = this.assetFocusPanelTN;
+
+    this.selectedAssetNameMat = new BABYLON.StandardMaterial('selectedAssetNameMat', this.scene);
+    this.selectedAssetNameMesh.material = this.selectedAssetNameMat;
+
+    this.nextselectedassetmesh = U3D.__createTextMesh('nextselectedassetmesh', {
+      text: '>',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .5
+    }, this.scene);
+    this.nextselectedassetmesh.scaling.x = .5;
+    this.nextselectedassetmesh.scaling.y = .5;
+    this.nextselectedassetmesh.scaling.z = .5;
+    this.nextselectedassetmesh.position.y = 2.5;
+    this.nextselectedassetmesh.position.x = -2;
+    this.nextselectedassetmesh.rotation.z = -Math.PI / 2;
+    this.nextselectedassetmesh.rotation.y = -Math.PI / 2;
+    this.nextselectedassetmesh.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.nextSelectedObject();
+      }
+    };
+    this.nextselectedassetmesh.parent = this.assetFocusPanelTN;
+    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
+
+    this.previousselectedassetmesh = U3D.__createTextMesh('previousselectedassetmesh', {
+      text: '<',
+      fontFamily: 'Arial',
+      size: 100,
+      depth: .5
+    }, this.scene);
+    this.previousselectedassetmesh.scaling.x = .5;
+    this.previousselectedassetmesh.scaling.y = .5;
+    this.previousselectedassetmesh.scaling.z = .5;
+    this.previousselectedassetmesh.position.y = 2.5;
+    this.previousselectedassetmesh.position.x = 2;
+    this.previousselectedassetmesh.rotation.z = -Math.PI / 2;
+    this.previousselectedassetmesh.rotation.y = -Math.PI / 2;
+    this.previousselectedassetmesh.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.nextSelectedObject(true);
+      }
+    };
+    this.previousselectedassetmesh.parent = this.assetFocusPanelTN;
+    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
+  }
+
+
   enterXR() {
-    this.menuBarTN.position = U3D.v(0.05, 0.05, -0.05);
-    this.menuBarTN.scaling = U3D.v(0.02, 0.02, 1);
-    this.menuBarTN.parent = this.leftHandedControllerGrip;
+    this.menuBarLeftTN.position = U3D.v(0.05, 0.05, -0.05);
+    this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
+    this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
+
+    this.menuBarRightTN.position = U3D.v(0.05, 0.05, -0.05);
+    this.menuBarRightTN.scaling = U3D.v(0.02, 0.02, 0.02);
+    this.menuBarRightTN.parent = this.rightHandedControllerGrip;
   }
   enterNotInXR() {
-    this.menuBarTN.position = U3D.v(1, 1, 1);
-    this.menuBarTN.scaling = U3D.v(1, 1, 1);
-    this.menuBarTN.parent = null;
+    this.menuBarLeftTN.position = U3D.vector(-10, 1, -10);
+    this.menuBarLeftTN.scaling = U3D.v(1, 1, 1);
+    this.menuBarLeftTN.parent = null;
+
+    this.menuBarRightTN.position = U3D.vector(-15, 1, -15);
+    this.menuBarRightTN.scaling = U3D.v(1, 1, 1);
+    this.menuBarRightTN.parent = null;
   }
   XRControllerAdded(model, handed) {
     if (handed === 'left') {
       this.leftHandedControllerGrip = model.grip;
-      this.menuBarTN.parent = model.grip;
+      this.menuBarLeftTN.parent = model.grip;
     }
     if (handed === 'right') {
       this.rightHandedControllerGrip = model.grip;
+      this.menuBarRightTN.parent = model.grip;
     }
   }
 
@@ -1764,10 +1794,10 @@ export class StoryApp extends BaseApp {
       'vortex_starless'
     ];
 
-    let iconName = 'arrow-right';
+    let iconName = 'eye';
     let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
     nextSkyBoxBtn.position.x = -2.5;
-    nextSkyBoxBtn.parent = this.menuBarTN;
+    nextSkyBoxBtn.parent = this.menuBarLeftTN;
 
     nextSkyBoxBtn.assetMeta = {
       appClickable: true,
@@ -1805,7 +1835,7 @@ export class StoryApp extends BaseApp {
         this.asteroidCountChange(-20);
       }
     };
-    this.asteroidDownCountBtn.parent = this.menuBarTN;
+    this.asteroidDownCountBtn.parent = this.menuBarLeftTN;
 
     this.asteroidUpCountBtn = U3D.addTextPlane(this.scene, '+', 'asteroidUpCountBtn');
     this.asteroidUpCountBtn.assetMeta = {
@@ -1817,12 +1847,12 @@ export class StoryApp extends BaseApp {
     };
     this.asteroidUpCountBtn.position.x = 6;
     this.asteroidUpCountBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidUpCountBtn.parent = this.menuBarTN;
+    this.asteroidUpCountBtn.parent = this.menuBarLeftTN;
 
     this._updateAsteroidLabel();
   }
   _updateAsteroidLabel() {
-    if (!this.menuBarTN)
+    if (!this.menuBarLeftTN)
       return;
 
     if (this.asteroidCountLabel)
@@ -1830,7 +1860,7 @@ export class StoryApp extends BaseApp {
 
     let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
     this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.menuBarTN;
+    this.asteroidCountLabel.parent = this.menuBarLeftTN;
     this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
     this.asteroidCountLabel.position.x = 4;
   }
@@ -1850,12 +1880,6 @@ export class StoryApp extends BaseApp {
   }
 
   async randomizeAnimations() {
-    if (!this.initedAvatars) {
-      let result = await U3D._initAvatars(this.scene);
-      this.initedAvatars = result.initedAvatars;
-      this.avatarContainers = result.avatarContainers;
-    }
-
     this.initedAvatars.forEach(container => {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
@@ -1863,21 +1887,6 @@ export class StoryApp extends BaseApp {
       U3D.avatarSequence(container, index, this.scene);
     })
   }
-  async loadSkellies() {
-
-    let iconName = 'edit';
-    let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    nextSkyBoxBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.randomizeAnimations();
-      }
-    };
-    nextSkyBoxBtn.position.x = -7.5;
-    nextSkyBoxBtn.parent = this.menuBarTN;
-  }
-
 
   pointerMove(pointerInfo) {
     if (this.lastClickMeta && this.lastClickSpinPaused) {
@@ -1885,17 +1894,13 @@ export class StoryApp extends BaseApp {
     }
   }
   pointerUp(pointerInfo) {
-
     if (this.lastClickSpinPaused) {
-
       this.lastClickSpinPaused = false;
       if (this.lastClickMeta) {
         this.lastClickMeta.basePivot.rotation.copyFrom(this.lastClickMeta.basePivot.originalRotation);
       }
     }
     if (this.lastClickMeta) {
-
-
       this.meshToggleAnimation(this.lastClickMeta, true, null);
       this.lastClickMeta = null;
       return;
@@ -1916,6 +1921,10 @@ export class StoryApp extends BaseApp {
   __pauseSpinMove(pointerInfo, meta) {
     let dX = this.scene.pointerX - this.lastClickMetaPointerX;
     let dY = this.scene.pointerY - this.lastClickMetaPointerY;
+
+    //debounce so doesn't shake in XR
+    if (Math.abs(dX) + Math.abs(dY) < 5)
+      return;
 
     meta.basePivot.rotation.y -= dX * 0.01;
     meta.basePivot.rotation.x -= dY * 0.01;
