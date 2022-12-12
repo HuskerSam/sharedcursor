@@ -406,15 +406,12 @@ export class StoryApp extends BaseApp {
     this.selectedContainerTransform.parent = this.focusPanelTab;
     this.selectedContainerTransform.position.y = 2.5;
 
-    let mesh;
-    let prefix = "selectedContainerItem";
-    if (assetMeta.asteroidType) {
-      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id, this.selectedContainerTransform);
-    } else {
-      mesh = window.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + window.staticAssetMeshes[assetMeta.id].baseMesh.id, this.selectedContainerTransform);
-    }
+    let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
+    let mesh = result.rootNodes[0];
     mesh.parent = this.selectedContainerTransform;
-    U3D._fitNodeToSize(this.selectedContainerTransform, 0.7);
+    U3D._fitNodeToSize(this.selectedContainerTransform, 0.3);
+    if (assetMeta.asteroidType)
+      mesh.material = window.selectedAsteroidMaterial;
 
     U3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
     this._updateAssetSizeButtons();
@@ -1307,27 +1304,18 @@ export class StoryApp extends BaseApp {
   async updateAssetSize(size, meta) {
     let id = meta.id;
     if (window.staticAssetMeshes[id]) {
-      if (size === 'huge') {
-        let freshMesh = await U3D.loadStaticMesh(this.scene, meta.extended.largeGlbPath);
-        freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
-        U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-        window.staticAssetMeshes[id].baseMesh.dispose();
-        window.staticAssetMeshes[id].baseMesh = freshMesh;
-      }
-      if (size === 'normal') {
-        let freshMesh = await U3D.loadStaticMesh(this.scene, meta.extended.normalGlbPath);
-        freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
-        U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-        window.staticAssetMeshes[id].baseMesh.dispose();
-        window.staticAssetMeshes[id].baseMesh = freshMesh;
-      }
-      if (size === 'small') {
-        let freshMesh = await U3D.loadStaticMesh(this.scene, meta.extended.smallGlbPath);
-        freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
-        U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-        window.staticAssetMeshes[id].baseMesh.dispose();
-        window.staticAssetMeshes[id].baseMesh = freshMesh;
-      }
+      if (size === 'huge')
+        meta.containerPath = meta.extended.largeGlbPath;
+      if (size === 'normal')
+        meta.containerPath = meta.extended.normalGlbPath;
+      if (size === 'small')
+        meta.containerPath = meta.extended.smallGlbPath;
+
+      let freshMesh = await U3D.loadStaticMesh(this.scene, meta.containerPath);
+      freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
+      U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
+      window.staticAssetMeshes[id].baseMesh.dispose();
+      window.staticAssetMeshes[id].baseMesh = freshMesh;
     }
 
     let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);

@@ -1281,16 +1281,10 @@ export class BaseApp {
       console.log(perfValue + "ms per frame");
     }, 300);
     */
-    
-    var light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
-    light.position = new BABYLON.Vector3(6, 9, 3);
-    var generator = new BABYLON.ShadowGenerator(2048, light);
-    generator.useBlurExponentialShadowMap = true;
-    generator.blurKernel = 128;
-    scene.baseShadowGenerator = generator;
 
-  //  let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
-//    light2.intensity = 0.4;
+    var light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
+    light.position = new BABYLON.Vector3(6, 15, 3);
+    this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, light);
 
     var environment = scene.createDefaultEnvironment({
       createSkybox: false,

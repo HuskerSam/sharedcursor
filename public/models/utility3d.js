@@ -952,10 +952,10 @@ export default class Utility3D {
     let meta = Object.assign({}, window.allStaticAssetMeta[name]);
     meta.extended = this.processStaticAssetMeta(meta, profile);
 
-    let mesh;
     if (meta.sizeBoxFit === undefined)
       meta.sizeBoxFit = 2;
-    mesh = await this.loadStaticMesh(scene, meta.extended.glbPath);
+    meta.containerPath = meta.extended.glbPath;
+    let mesh = await this.loadStaticMesh(scene, meta.containerPath);
     this._fitNodeToSize(mesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
