@@ -1285,6 +1285,8 @@ export class BaseApp {
     var light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
     light.position = new BABYLON.Vector3(6, 15, 3);
     this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, light);
+    this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
+    this.scene.baseShadowGenerator.blurKernel = 32;
 
     var environment = scene.createDefaultEnvironment({
       createSkybox: false,
@@ -1293,7 +1295,6 @@ export class BaseApp {
       groundShadowLevel: 0.3
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
-    //environment.groundMaterial.alpha = 0.65;
     this.env = environment;
 
     scene.createDefaultCamera(true, true, true);

@@ -257,7 +257,7 @@ export class StoryApp extends BaseApp {
   async _loadAvatars() {
     if (this.initedAvatars)
       return;
-    this.initedAvatars  = 'loading';
+    this.initedAvatars = 'loading';
     let result = await U3D._initAvatars(this.scene);
     this.initedAvatars = result.initedAvatars;
     this.avatarContainers = result.avatarContainers;
@@ -409,7 +409,10 @@ export class StoryApp extends BaseApp {
     let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
     let mesh = result.rootNodes[0];
     mesh.parent = this.selectedContainerTransform;
-    U3D._fitNodeToSize(this.selectedContainerTransform, 0.3);
+    let factor = 0.7;
+    if (this.inXR)
+      factor *= 0.2;
+    U3D._fitNodeToSize(this.selectedContainerTransform, factor);
     if (assetMeta.asteroidType)
       mesh.material = window.selectedAsteroidMaterial;
 
@@ -954,6 +957,7 @@ export class StoryApp extends BaseApp {
   }
 
   updateScoreboard() {
+/*
     let seatIndex = this.gameData.currentSeat;
 
     let rgb = this.get3DColors(seatIndex);
@@ -967,6 +971,7 @@ export class StoryApp extends BaseApp {
     this.scoreboardNameMaterial.diffuseTexture = nameTexture;
     this.scoreboardNameMaterial.ambientTexture = nameTexture;
     this.scoreboardNameMaterial.emissiveTexture = nameTexture;
+*/
   }
   initScoreboard() {
     if (this.scoreboardInited)
@@ -982,97 +987,39 @@ export class StoryApp extends BaseApp {
     scoreboardTransform.position.z = 2;
     scoreboardTransform.position.y = -0.5;
 
-    this.__initScorePanel(scoreboardTransform);
     this.__initDock3DPanel(scoreboardTransform);
 
     return scoreboardWrapper;
   }
-  __initScorePanel(scoreboardTransform) {
-    this.playerMidPanelTransform = new BABYLON.TransformNode('playerMidPanelTransform', this.scene);
-    this.playerMidPanelTransform.parent = scoreboardTransform;
-    this.playerMidPanelTransform.position.x = 5;
-    this.playerMidPanelTransform.position.z += 2;
-    this.playerMidPanelTransform.rotation.y = -Math.PI / 4;
-
-    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelX', {
-      height: 2,
-      width: 4
-    }, this.scene);
-    nameMesh1.position.y = 2.5;
-
-    let nameMesh2 = BABYLON.MeshBuilder.CreatePlane('scoreboardpanelZ', {
-      height: 2,
-      width: 4
-    }, this.scene);
-    nameMesh2.position.y = 2.5;
-    nameMesh2.rotation.y = Math.PI;
-
-    this.scoreboardNameMaterial = new BABYLON.StandardMaterial('scoreboardmaterial', this.scene);
-    nameMesh1.material = this.scoreboardNameMaterial;
-    nameMesh1.parent = this.playerMidPanelTransform;
-    nameMesh2.material = this.scoreboardNameMaterial;
-    nameMesh2.parent = this.playerMidPanelTransform;
-
-    this.startGameButton = U3D.__createTextMesh('startgamebutton', {
-      text: 'Start Game',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.startGameButton.scaling.x = .5;
-    this.startGameButton.scaling.y = .5;
-    this.startGameButton.scaling.z = .5;
-    this.startGameButton.position.y = 2;
+  __initScorePanel() {
+    this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
+    this.startGameButton.parent = this.gameStatusPanelTab;
+    this.startGameButton.scaling = U3D.v(2, 2, 2);
     this.startGameButton.position.x = -5;
-    this.startGameButton.position.z = 0;
-    this.startGameButton.rotation.z = -Math.PI / 2;
-    this.startGameButton.rotation.y = -Math.PI / 2;
+    this.startGameButton.position.y = 3;
+    this.startGameButton.position.z = 1;
     this.startGameButton.setEnabled(false);
-    this.startGameButton.parent = this.playerMidPanelTransform;
-    U3D.setTextMeshColor(this.startGameButton, 0, 1, 0, this.scene);
 
-    this.endGameButton = U3D.__createTextMesh('endgamebutton', {
-      text: 'End Game',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.endGameButton.scaling.x = .5;
-    this.endGameButton.scaling.y = .5;
-    this.endGameButton.scaling.z = .5;
-    this.endGameButton.position.y = 4;
-    this.endGameButton.position.x = 0;
-    this.endGameButton.position.z = 0;
-    this.endGameButton.rotation.z = -Math.PI / 2;
-    this.endGameButton.rotation.y = -Math.PI / 2;
-    this.endGameButton.parent = this.playerMidPanelTransform;
-    U3D.setTextMeshColor(this.endGameButton, 0, 1, 0, this.scene);
+    this.endGameButton = U3D.addTextPlane(this.scene, "END Game", "endGameButton", "Impact", "", "#ffffff");
+    this.endGameButton.parent = this.gameStatusPanelTab;
+    this.endGameButton.scaling = U3D.v(2, 2, 2);
+    this.endGameButton.position.x = -10;
+    this.endGameButton.position.y = 3;
+    this.endGameButton.position.z = 1;
 
-    this.endTurnButton = U3D.__createTextMesh('endturnbutton', {
-      text: 'End Turn',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.endTurnButton.scaling.x = .5;
-    this.endTurnButton.scaling.y = .5;
-    this.endTurnButton.scaling.z = .5;
-    this.endTurnButton.position.y = 1;
+    this.endTurnButton = U3D.addTextPlane(this.scene, "End Turn", "endTurnButton", "Arial", "", "#ffffff");
+    this.endTurnButton.parent = this.gameStatusPanelTab;
+    this.endTurnButton.scaling = U3D.v(2, 2, 2);
     this.endTurnButton.position.x = 0;
-    this.endTurnButton.position.z = 0;
-    this.endTurnButton.rotation.z = -Math.PI / 2;
-    this.endTurnButton.rotation.y = -Math.PI / 2;
-    this.endTurnButton.parent = this.playerMidPanelTransform;
+    this.endTurnButton.position.y = 3;
+    this.endTurnButton.position.z = 1;
     this.endTurnButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.clickEndTurn();
       }
-
     };
-    U3D.setTextMeshColor(this.endTurnButton, 0, 1, 0, this.scene);
-
   }
 
 
@@ -1336,13 +1283,18 @@ export class StoryApp extends BaseApp {
       this.optionsMenuTab.setEnabled(false);
     if (this.focusPanelTab)
       this.focusPanelTab.setEnabled(false);
+    if (this.playerMoonPanelTab)
+      this.playerMoonPanelTab.setEnabled(false);
+    if (this.gameStatusPanelTab)
+      this.gameStatusPanelTab.setEnabled(false);
 
     if (menuTabToShow)
       menuTabToShow.setEnabled(true);
   }
   __addTabButtons(tabBar) {
     let iconName = 'meteor';
-    let meteorMenuTabBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'meteorMenuTabBtn');
+    let meteorMenuTabBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
+      'meteorMenuTabBtn');
     meteorMenuTabBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -1351,10 +1303,11 @@ export class StoryApp extends BaseApp {
       }
     };
     meteorMenuTabBtn.parent = tabBar;
-    meteorMenuTabBtn.position.x = -7;
+    meteorMenuTabBtn.position.x = -13;
 
     iconName = 'sun';
-    let optionsMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'optionsMenuBtn');
+    let optionsMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
+      'optionsMenuBtn');
     optionsMenuBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -1363,10 +1316,11 @@ export class StoryApp extends BaseApp {
       }
     };
     optionsMenuBtn.parent = tabBar;
-    optionsMenuBtn.position.x = -4;
+    optionsMenuBtn.position.x = -10;
 
     iconName = 'anchor';
-    let selectedObjectMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'selectedObjectMenuBtn');
+    let selectedObjectMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
+      'selectedObjectMenuBtn');
     selectedObjectMenuBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -1375,7 +1329,33 @@ export class StoryApp extends BaseApp {
       }
     };
     selectedObjectMenuBtn.parent = tabBar;
-    selectedObjectMenuBtn.position.x = -1;
+    selectedObjectMenuBtn.position.x = -7;
+
+    iconName = 'moon';
+    let playersMoonsMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
+      'playersMoonsMenuBtn');
+    playersMoonsMenuBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.playerMoonPanelTab);
+      }
+    };
+    playersMoonsMenuBtn.parent = tabBar;
+    playersMoonsMenuBtn.position.x = -4;
+
+    iconName = 'edit';
+    let gameStatusMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
+      'gameStatusMenuBtn');
+    gameStatusMenuBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.gameStatusPanelTab);
+      }
+    };
+    gameStatusMenuBtn.parent = tabBar;
+    gameStatusMenuBtn.position.x = -1;
   }
   initOptionsBar() {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
@@ -1411,6 +1391,19 @@ export class StoryApp extends BaseApp {
     this.focusPanelTab.position.y = 0;
     this.focusPanelTab.setEnabled(false);
     this.__initFocusedAssetPanel();
+
+    this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.scene);
+    this.playerMoonPanelTab.parent = this.menuBarLeftTN;
+    this.playerMoonPanelTab.position.y = 0;
+    this.playerMoonPanelTab.setEnabled(false);
+
+
+        this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', this.scene);
+        this.gameStatusPanelTab.parent = this.menuBarLeftTN;
+        this.gameStatusPanelTab.position.y = 0;
+        this.gameStatusPanelTab.setEnabled(false);
+    this.__initScorePanel();
+
   }
   async __initFocusedAssetPanel() {
     this.followSelectedMetaBtn = U3D.addTextPlane(this.scene, 'A Follow', 'followSelectedMetaBtn');
@@ -1481,6 +1474,8 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
 
+    this.inXR = true;
+
     this.menuBarRightTN.position = U3D.v(0.05, 0.05, -0.05);
     this.menuBarRightTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarRightTN.parent = this.rightHandedControllerGrip;
@@ -1489,6 +1484,8 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.position = U3D.vector(-10, 1, -10);
     this.menuBarLeftTN.scaling = U3D.v(1, 1, 1);
     this.menuBarLeftTN.parent = null;
+
+    this.inXR = false;
 
     this.menuBarRightTN.position = U3D.vector(-15, 1, -15);
     this.menuBarRightTN.scaling = U3D.v(1, 1, 1);
