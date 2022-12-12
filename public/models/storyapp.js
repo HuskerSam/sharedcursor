@@ -1875,11 +1875,6 @@ export class StoryApp extends BaseApp {
 
     let iconName = 'edit';
     let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    nextSkyBoxBtn.position.y = 1;
-    nextSkyBoxBtn.position.x = 30;
-    nextSkyBoxBtn.position.z = -35;
-    nextSkyBoxBtn.rotation.y = 0.5;
-
     nextSkyBoxBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -1887,7 +1882,8 @@ export class StoryApp extends BaseApp {
         this.randomizeAnimations();
       }
     };
-
+    nextSkyBoxBtn.position.x = -7.5;
+    nextSkyBoxBtn.parent = this.menuBarTN;
   }
 
   __pauseSpin(pointerInfo, mesh, meta) {

@@ -852,23 +852,23 @@ export default class Utility3D {
         "name": "Terra",
         "path": "maria.glb",
         "cloneAnimations": "Daya",
-        "x": 35,
-        "z": -35,
+        "x": -9,
+        "z": -10,
         "race": "Human"
       },
       {
         "name": "Jade",
         "path": "jolleen.glb",
         "cloneAnimations": "Daya",
-        "x": 37,
-        "z": -35,
+        "x": -5,
+        "z": -10,
         "race": "Botan"
       },
       {
         "name": "Daya",
         "path": "jonesbase.glb",
-        "x": 39,
-        "z": -35,
+        "x": -3,
+        "z": -10,
         "race": "Avian"
       },
       /*
@@ -884,8 +884,8 @@ export default class Utility3D {
         "name": "Astarte",
         "path": "maynard.glb",
         "cloneAnimations": "Daya",
-        "x": 41,
-        "z": -35,
+        "x": -7,
+        "z": -10,
         "race": "Titan"
       }
 
