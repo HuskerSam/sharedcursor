@@ -229,7 +229,7 @@ export class StoryApp extends BaseApp {
 
     this.initCameraToolbar();
 
-    this._loadAvatars();
+    //this._loadAvatars();
 
     this.sceneInited = true;
     this.initScoreboard();
@@ -253,6 +253,8 @@ export class StoryApp extends BaseApp {
     }, 400);
   }
   async _loadAvatars() {
+    if (this.initedAvatars)
+      return;
     let result = await U3D._initAvatars(this.scene);
     this.initedAvatars = result.initedAvatars;
     this.avatarContainers = result.avatarContainers;
@@ -400,7 +402,7 @@ export class StoryApp extends BaseApp {
 
     this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
     this.selectedMeshInstance.wrapper.position.y = 2.5;
-    this.selectedMeshInstance.wrapper.parent = this.assetFocusPanelTN;
+    this.selectedMeshInstance.wrapper.parent = this.focusPanelTab;
     U3D._fitNodeToSize(this.selectedMeshInstance.mesh, 0.7);
     this.selectedMeshInstance.mesh.setEnabled(true);
 
@@ -1386,11 +1388,55 @@ export class StoryApp extends BaseApp {
     this._updateLastClickMeta(window.staticAssetMeshes[id].assetMeta);
   }
 
-  initOptionsBar() {
-    if (this.mascotsAreaInited)
-      return;
-    this.mascotsAreaInited = true;
+  selectedMenuBarTab(menuTabToShow) {
+    if (this.meteorMenuTab)
+      this.meteorMenuTab.setEnabled(false);
+    if (this.optionsMenuTab)
+      this.optionsMenuTab.setEnabled(false);
+    if (this.focusPanelTab)
+      this.focusPanelTab.setEnabled(false);
 
+    if (menuTabToShow)
+      menuTabToShow.setEnabled(true);
+  }
+  __addTabButtons(tabBar) {
+    let iconName = 'meteor';
+    let meteorMenuTabBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'meteorMenuTabBtn');
+    meteorMenuTabBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.meteorMenuTab);
+      }
+    };
+    meteorMenuTabBtn.parent = tabBar;
+    meteorMenuTabBtn.position.x = -7;
+
+    iconName = 'sun';
+    let optionsMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'optionsMenuBtn');
+    optionsMenuBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.optionsMenuTab);
+      }
+    };
+    optionsMenuBtn.parent = tabBar;
+    optionsMenuBtn.position.x = -4;
+
+    iconName = 'anchor';
+    let selectedObjectMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'selectedObjectMenuBtn');
+    selectedObjectMenuBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.focusPanelTab);
+      }
+    };
+    selectedObjectMenuBtn.parent = tabBar;
+    selectedObjectMenuBtn.position.x = -1;
+  }
+  initOptionsBar() {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(-10, 1, -10);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
@@ -1401,71 +1447,49 @@ export class StoryApp extends BaseApp {
     this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
     this.menuBarRightTN.billboardMode = 7;
 
-    let iconName = 'rocket';
-    let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
+    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
+    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
+    this.menuBarTabButtonsTN.position.y = 10;
+    this.__addTabButtons(this.menuBarTabButtonsTN);
 
-    mascotsBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        let rotation = new BABYLON.Vector3(0, 0, 0);
 
-        let endPosition = U3D.vector(window.staticAssetMeshes['mars'].position);
-        let startPosition = U3D.vector(window.staticAssetMeshes['neptune'].position);
-        this.shootRocket(startPosition, rotation, endPosition);
-      }
-    };
-    mascotsBtn.parent = this.menuBarLeftTN;
-    mascotsBtn.position.x = -5;
+    this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', this.scene);
+    this.optionsMenuTab.parent = this.menuBarLeftTN;
+    this.optionsMenuTab.position.y = 0;
+    this.optionsMenuTab.setEnabled(false);
+    this.initOptionsTab();
 
-    this.initSkyBoxOptions();
-    this.initAsteroidCounts();
+    this.meteorMenuTab = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
+    this.meteorMenuTab.parent = this.menuBarLeftTN;
+    this.meteorMenuTab.position.y = 0;
+    this.meteorMenuTab.setEnabled(false);
+    this.initMeteorTab(this.meteorMenuTab);
+
+    this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.scene);
+    this.focusPanelTab.parent = this.menuBarLeftTN;
+    this.focusPanelTab.position.y = 0;
+    this.focusPanelTab.setEnabled(false);
     this.__initFocusedAssetPanel();
-
-    iconName = 'robot'; //meteor
-    let randomAnimsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    randomAnimsBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.randomizeAnimations();
-      }
-    };
-    randomAnimsBtn.position.x = -7.5;
-    randomAnimsBtn.parent = this.menuBarLeftTN;
-
   }
   async __initFocusedAssetPanel() {
-    this.assetFocusPanelTN = new BABYLON.TransformNode('assetFocusPanelTN', this.scene);
-    this.assetFocusPanelTN.parent = this.menuBarRightTN;
-
-    this.activeMoonNav = U3D.__createTextMesh('activemoonnavigate', {
-      text: 'A Follow',
-      fontFamily: 'Impact',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    this.activeMoonNav.scaling.x = .5;
-    this.activeMoonNav.scaling.y = .5;
-    this.activeMoonNav.scaling.z = .5;
-    this.activeMoonNav.position.y = 1.25;
-    this.activeMoonNav.position.z = 0;
-    this.activeMoonNav.position.x = 0;
-    this.activeMoonNav.rotation.z = -Math.PI / 2;
-    this.activeMoonNav.rotation.y = -Math.PI / 2;
-    this.activeMoonNav.assetMeta = {
+    this.followSelectedMetaBtn = U3D.addTextPlane(this.scene, 'A Follow', 'followSelectedMetaBtn');
+    this.followSelectedMetaBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.setFollowMeta();
       }
     };
-    this.activeMoonNav.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.activeMoonNav, 0, 0, 1);
+    this.followSelectedMetaBtn.position.x = -3;
+    this.followSelectedMetaBtn.position.y = 5;
+    this.followSelectedMetaBtn.position.z = 2;
+
+    this.followSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
+    this.followSelectedMetaBtn.parent = this.focusPanelTab;
 
     let buttonPanel = this._initSizePanel();
     buttonPanel.position.y = 4;
-    buttonPanel.parent = this.assetFocusPanelTN;
+    buttonPanel.parent = this.focusPanelTab;
 
     let size = 1;
     this.selectedAssetNameMesh = BABYLON.MeshBuilder.CreatePlane('selectedAssetNameMesh', {
@@ -1475,56 +1499,39 @@ export class StoryApp extends BaseApp {
     }, this.scene);
     this.selectedAssetNameMesh.position.y = 3;
     this.selectedAssetNameMesh.rotation.y = Math.PI;
-    this.selectedAssetNameMesh.parent = this.assetFocusPanelTN;
+    this.selectedAssetNameMesh.parent = this.focusPanelTab;
 
     this.selectedAssetNameMat = new BABYLON.StandardMaterial('selectedAssetNameMat', this.scene);
     this.selectedAssetNameMesh.material = this.selectedAssetNameMat;
 
-    this.nextselectedassetmesh = U3D.__createTextMesh('nextselectedassetmesh', {
-      text: '>',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .5
-    }, this.scene);
-    this.nextselectedassetmesh.scaling.x = .5;
-    this.nextselectedassetmesh.scaling.y = .5;
-    this.nextselectedassetmesh.scaling.z = .5;
-    this.nextselectedassetmesh.position.y = 2.5;
-    this.nextselectedassetmesh.position.x = -2;
-    this.nextselectedassetmesh.rotation.z = -Math.PI / 2;
-    this.nextselectedassetmesh.rotation.y = -Math.PI / 2;
-    this.nextselectedassetmesh.assetMeta = {
+    this.nextSelectedMetaBtn = U3D.addTextPlane(this.scene, '>', 'nextSelectedMetaBtn');
+    this.nextSelectedMetaBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.nextSelectedObject();
       }
     };
-    this.nextselectedassetmesh.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
+    this.nextSelectedMetaBtn.position.x = 3;
+    this.nextSelectedMetaBtn.position.y = 0;
+    this.nextSelectedMetaBtn.position.z = 0;
+    this.nextSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
+    this.nextSelectedMetaBtn.parent = this.focusPanelTab;
 
-    this.previousselectedassetmesh = U3D.__createTextMesh('previousselectedassetmesh', {
-      text: '<',
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .5
-    }, this.scene);
-    this.previousselectedassetmesh.scaling.x = .5;
-    this.previousselectedassetmesh.scaling.y = .5;
-    this.previousselectedassetmesh.scaling.z = .5;
-    this.previousselectedassetmesh.position.y = 2.5;
-    this.previousselectedassetmesh.position.x = 2;
-    this.previousselectedassetmesh.rotation.z = -Math.PI / 2;
-    this.previousselectedassetmesh.rotation.y = -Math.PI / 2;
-    this.previousselectedassetmesh.assetMeta = {
+    this.previousSelectedMetaBtn = U3D.addTextPlane(this.scene, '<', 'previousSelectedMetaBtn');
+    this.previousSelectedMetaBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.nextSelectedObject(true);
       }
     };
-    this.previousselectedassetmesh.parent = this.assetFocusPanelTN;
-    this.__setTextMeshColor(this.nextselectedassetmesh, 0, 0, 1);
+    this.previousSelectedMetaBtn.position.x = -3;
+    this.previousSelectedMetaBtn.position.y = 0;
+    this.previousSelectedMetaBtn.position.z = 0;
+
+    this.previousSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
+    this.previousSelectedMetaBtn.parent = this.focusPanelTab;
   }
 
 
@@ -1779,7 +1786,35 @@ export class StoryApp extends BaseApp {
     //var input5 = new BABYLON.GUI.InputText();
   }
 
-  async initSkyBoxOptions() {
+  async initOptionsTab() {
+    let iconName = 'rocket';
+    let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
+    mascotsBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        let rotation = new BABYLON.Vector3(0, 0, 0);
+
+        let endPosition = U3D.vector(window.staticAssetMeshes['mars'].position);
+        let startPosition = U3D.vector(window.staticAssetMeshes['neptune'].position);
+        this.shootRocket(startPosition, rotation, endPosition);
+      }
+    };
+    mascotsBtn.parent = this.optionsMenuTab;
+    mascotsBtn.position.x = -5;
+
+    iconName = 'robot';
+    let randomAnimsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
+    randomAnimsBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.randomizeAnimations();
+      }
+    };
+    randomAnimsBtn.position.x = -7.5;
+    randomAnimsBtn.parent = this.optionsMenuTab;
+
     this.skyboxesList = [
       'nebula_orange_blue',
       'moon_high_clear',
@@ -1794,10 +1829,10 @@ export class StoryApp extends BaseApp {
       'vortex_starless'
     ];
 
-    let iconName = 'eye';
+    iconName = 'eye';
     let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
     nextSkyBoxBtn.position.x = -2.5;
-    nextSkyBoxBtn.parent = this.menuBarLeftTN;
+    nextSkyBoxBtn.parent = this.optionsMenuTab;
 
     nextSkyBoxBtn.assetMeta = {
       appClickable: true,
@@ -1806,7 +1841,6 @@ export class StoryApp extends BaseApp {
         this._nextSkybox();
       }
     };
-
   }
   async _nextSkybox() {
     let index = this.skyboxesList.indexOf(this.profile.skyboxPath);
@@ -1824,9 +1858,11 @@ export class StoryApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
   }
 
-  async initAsteroidCounts() {
+  initMeteorTab() {
     this.asteroidDownCountBtn = U3D.addTextPlane(this.scene, '-', 'asteroidDownCountBtn');
-    this.asteroidDownCountBtn.position.x = 2;
+    this.asteroidDownCountBtn.position.x = -7;
+    this.asteroidDownCountBtn.position.y = 3;
+    this.asteroidDownCountBtn.position.z = 1;
     this.asteroidDownCountBtn.scaling = U3D.v(2, 2, 2);
     this.asteroidDownCountBtn.assetMeta = {
       appClickable: true,
@@ -1835,7 +1871,7 @@ export class StoryApp extends BaseApp {
         this.asteroidCountChange(-20);
       }
     };
-    this.asteroidDownCountBtn.parent = this.menuBarLeftTN;
+    this.asteroidDownCountBtn.parent = this.meteorMenuTab;
 
     this.asteroidUpCountBtn = U3D.addTextPlane(this.scene, '+', 'asteroidUpCountBtn');
     this.asteroidUpCountBtn.assetMeta = {
@@ -1845,9 +1881,12 @@ export class StoryApp extends BaseApp {
         this.asteroidCountChange(20);
       }
     };
-    this.asteroidUpCountBtn.position.x = 6;
+    this.asteroidUpCountBtn.position.x = -3;
+    this.asteroidUpCountBtn.position.y = 3;
+    this.asteroidUpCountBtn.position.z = 1;
+
     this.asteroidUpCountBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidUpCountBtn.parent = this.menuBarLeftTN;
+    this.asteroidUpCountBtn.parent = this.meteorMenuTab;
 
     this._updateAsteroidLabel();
   }
@@ -1860,9 +1899,12 @@ export class StoryApp extends BaseApp {
 
     let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
     this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.menuBarLeftTN;
+    this.asteroidCountLabel.parent = this.meteorMenuTab;
     this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
-    this.asteroidCountLabel.position.x = 4;
+    this.asteroidCountLabel.position.x = -5;
+    this.asteroidCountLabel.position.y = 3;
+    this.asteroidCountLabel.position.z = 1;
+
   }
   async asteroidCountChange(delta) {
     let asteroidCount = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
@@ -1880,6 +1922,11 @@ export class StoryApp extends BaseApp {
   }
 
   async randomizeAnimations() {
+    if (!this.initedAvatars) {
+      await this._loadAvatars();
+      return;
+    }
+
     this.initedAvatars.forEach(container => {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
