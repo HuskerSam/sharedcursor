@@ -234,8 +234,6 @@ export class StoryApp extends BaseApp {
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);
-    this.initSkyBoxOptions();
-    this.initAsteroidCounts();
 
     this.paintGameData();
 
@@ -1492,7 +1490,6 @@ export class StoryApp extends BaseApp {
     let iconName = 'globe';
     let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
 
-
     mascotsBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -1507,21 +1504,15 @@ export class StoryApp extends BaseApp {
 
     this.menuBarTN = new BABYLON.TransformNode('menuBarTN', this.scene);
     mascotsBtn.parent = this.menuBarTN;
-    mascotsBtn.position.x = -4;
+    mascotsBtn.position.x = -5;
 
     this.menuBarTN.position = U3D.v(-10, 1, -10);
     this.menuBarTN.scaling = U3D.v(0.3, 0.3, 0.3);
 
     this.menuBarTN.billboardMode = 7;
 
-    /*
-        let panel = BABYLON.MeshBuilder.CreatePlane('controllerButtonPanel', {
-          height: 1,
-          width: 2
-        }, this.scene);
-        //        panel.rotation.y = Math.PI;
-        panel.parent = this.menuBarTN;
-    */
+    this.initSkyBoxOptions();
+    this.initAsteroidCounts();
 
   }
   enterXR() {
@@ -1561,11 +1552,6 @@ export class StoryApp extends BaseApp {
     mesh.material = mat;
 
     return mesh;
-  }
-  _addTextButton(text, name, width = 10, height = 3) {
-
-    return U3D.getTextPlane(text, name, this.scene, width, height); //, planeWidth = 10, planeHeight = 3, color = "#000000", backcolor = "#ffffff",
-    //      font_type = "Arial", scaleFactor = 0.5);
   }
 
   async rocketTakeOff(rocketMesh, height, xDelta, timeMS = 2000) {
@@ -1788,7 +1774,7 @@ export class StoryApp extends BaseApp {
 
     let iconName = 'arrow-right';
     let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    nextSkyBoxBtn.position.x = -2;
+    nextSkyBoxBtn.position.x = -2.5;
     nextSkyBoxBtn.parent = this.menuBarTN;
 
     nextSkyBoxBtn.assetMeta = {
@@ -1817,80 +1803,49 @@ export class StoryApp extends BaseApp {
   }
 
   async initAsteroidCounts() {
-    let asteroid50Button = this._addTextButton('*50', 'asteroid50countbtn', 3, 2);
-    asteroid50Button.position.y = 1;
-    asteroid50Button.position.x = 20;
-    asteroid50Button.position.z = -30;
-    asteroid50Button.rotation.y = 0.5;
-
-    asteroid50Button.assetMeta = {
+    this.asteroidDownCountBtn = U3D.addTextPlane(this.scene, '-', 'asteroidDownCountBtn');
+    this.asteroidDownCountBtn.position.x = 2;
+    this.asteroidDownCountBtn.scaling = U3D.v(2, 2, 2);
+    this.asteroidDownCountBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handleClick: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange("50");
+        this.asteroidCountChange(-20);
       }
     };
+    this.asteroidDownCountBtn.parent = this.menuBarTN;
 
-    let asteroid20Button = this._addTextButton('*20', 'asteroid20countbtn', 3, 2);
-    asteroid20Button.position.y = 1;
-    asteroid20Button.position.x = 25;
-    asteroid20Button.position.z = -30;
-    asteroid20Button.rotation.y = 0.5;
-
-    asteroid20Button.assetMeta = {
+    this.asteroidUpCountBtn = U3D.addTextPlane(this.scene, '+', 'asteroidUpCountBtn');
+    this.asteroidUpCountBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handleClick: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange("20");
+        this.asteroidCountChange(20);
       }
     };
+    this.asteroidUpCountBtn.position.x = 6;
+    this.asteroidUpCountBtn.scaling = U3D.v(2, 2, 2);
+    this.asteroidUpCountBtn.parent = this.menuBarTN;
 
-
-    let asteroid100Button = this._addTextButton('*100', 'asteroid100countbtn', 3.5, 2);
-    asteroid100Button.position.y = 1;
-    asteroid100Button.position.x = 30;
-    asteroid100Button.position.z = -30;
-    asteroid100Button.rotation.y = 0.5;
-
-    asteroid100Button.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange("100");
-      }
-    };
-
-    let asteroid150Button = this._addTextButton('*150', 'asteroid150countbtn', 3.5, 2);
-    asteroid150Button.position.y = 1;
-    asteroid150Button.position.x = 40;
-    asteroid150Button.position.z = -30;
-    asteroid150Button.rotation.y = 0.5;
-
-    asteroid150Button.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange("150");
-      }
-    };
-
-
-    let asteroidallButton = this._addTextButton('*all', 'asteroidallcountbtn', 3.5, 2);
-    asteroidallButton.position.y = 1;
-    asteroidallButton.position.x = 45;
-    asteroidallButton.position.z = -30;
-    asteroidallButton.rotation.y = 0.5;
-
-    asteroidallButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange("all");
-      }
-    };
-
+    this._updateAsteroidLabel();
   }
-  async asteroidCountChange(asteroidCount = "20") {
+  _updateAsteroidLabel() {
+    if (!this.menuBarTN)
+      return;
+
+    if (this.asteroidCountLabel)
+      this.asteroidCountLabel.dispose();
+
+    let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
+    this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
+    this.asteroidCountLabel.parent = this.menuBarTN;
+    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
+    this.asteroidCountLabel.position.x = 4;
+  }
+  async asteroidCountChange(delta) {
+    let asteroidCount = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
+    asteroidCount = Asteroid3D.getAsteroidCount(asteroidCount + delta);
+
     let updatePacket = {
       asteroidCount
     };
@@ -1899,6 +1854,7 @@ export class StoryApp extends BaseApp {
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
     Asteroid3D.loadAsteroids(this.scene, this);
+    this._updateAsteroidLabel();
   }
 
   async randomizeAnimations() {

@@ -219,4 +219,14 @@ export default class Asteroid3D {
       targetedAnimation.target = newTargetBone ? newTargetBone.getTransformNode() : null;
     });
   }
+  static getAsteroidCount(profileString) {
+    if (!profileString)
+      profileString = 20;
+    let count = Number(profileString);
+    if (count > U3D.getAsteroids().length)
+      count = U3D.getAsteroids().length;
+    if (count < 20)
+      count = 20;
+    return count;
+  }
 }

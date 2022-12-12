@@ -1155,4 +1155,37 @@ export default class Utility3D {
 
     return true;
   }
+  static addTextPlane(scene, text, id = "randomid", font_family = "Arial", bold = " bold", color = "#000000", backColor = "transparent") {
+    let font_size = 192;
+    var font = bold + " " + font_size + "px " + font_family;
+    var planeHeight = 1;
+    var DTHeight = 1.5 * font_size; //or set as wished
+    var ratio = planeHeight / DTHeight;
+    var temp = new BABYLON.DynamicTexture(id + "dt2", 64, scene);
+    var tmpctx = temp.getContext();
+    tmpctx.font = font;
+    var DTWidth = tmpctx.measureText(text).width + 8;
+
+    //Calculate width the plane has to be
+    var planeWidth = DTWidth * ratio;
+
+    //Create dynamic texture and write the text
+    var dynamicTexture = new BABYLON.DynamicTexture(id + "dt", {
+      width: DTWidth,
+      height: DTHeight
+    }, scene, false);
+    var mat = new BABYLON.StandardMaterial(id + "mat", scene);
+    mat.diffuseTexture = dynamicTexture;
+    dynamicTexture.hasAlpha = true;
+    dynamicTexture.drawText(text, null, null, font, color, backColor, true);
+
+    //Create plane and set dynamic texture as material
+    var plane = BABYLON.MeshBuilder.CreatePlane(id + "textplane", {
+      width: planeWidth,
+      height: planeHeight
+    }, scene);
+    plane.material = mat;
+
+    return plane;
+  }
 }
