@@ -759,6 +759,9 @@ export default class Utility3D {
       mesh.parent = t;
       newModel.TN = t;
       newModel.TN.avatarMeta = avatarMeta;
+
+
+      scene.baseShadowGenerator.addShadowCaster(mesh);
     }
 
     return {
@@ -928,7 +931,9 @@ export default class Utility3D {
     if (!window.staticMeshContainer[path])
       window.staticMeshContainer[path] = await this.loadContainer(scene, path);
 
+
     let result = window.staticMeshContainer[path].instantiateModelsToScene();
+    scene.baseShadowGenerator.addShadowCaster(result.rootNodes[0]);
     return result.rootNodes[0];
   }
 
@@ -1181,5 +1186,13 @@ export default class Utility3D {
     plane.material = mat;
 
     return plane;
+  }
+  static setTextMeshColor(mesh, r, g, b, scene) {
+    for (let i in scene.meshes) {
+      if (scene.meshes[i].parent === mesh)
+        this.meshSetVerticeColors(scene.meshes[i], r, g, b);
+    }
+
+    this.meshSetVerticeColors(mesh, r, g, b);
   }
 }

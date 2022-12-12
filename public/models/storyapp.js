@@ -233,12 +233,14 @@ export class StoryApp extends BaseApp {
 
     this.sceneInited = true;
     this.initScoreboard();
-    this.selectMoonMesh();
 
     this.initOptionsBar();
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);
+
+
+    this.selectMoonMesh();
 
     this.paintGameData();
 
@@ -255,6 +257,7 @@ export class StoryApp extends BaseApp {
   async _loadAvatars() {
     if (this.initedAvatars)
       return;
+    this.initedAvatars  = 'loading';
     let result = await U3D._initAvatars(this.scene);
     this.initedAvatars = result.initedAvatars;
     this.avatarContainers = result.avatarContainers;
@@ -396,18 +399,24 @@ export class StoryApp extends BaseApp {
     this.buttonOneRed.innerHTML = 'A Follow ' + desc;
     this.buttonTwo.innerHTML = 'B';
 
-    if (this.selectedMeshInstance) {
-      this.selectedMeshInstance.wrapper.dispose();
-    }
+    if (this.selectedContainerTransform)
+      this.selectedContainerTransform.dispose();
 
-    this.selectedMeshInstance = await this.__loadRotatingAsset(assetMeta);
-    this.selectedMeshInstance.wrapper.position.y = 2.5;
-    this.selectedMeshInstance.wrapper.parent = this.focusPanelTab;
-    U3D._fitNodeToSize(this.selectedMeshInstance.mesh, 0.7);
-    this.selectedMeshInstance.mesh.setEnabled(true);
+    this.selectedContainerTransform = new BABYLON.TransformNode('selectedContainerTransform', this.scene);
+    this.selectedContainerTransform.parent = this.focusPanelTab;
+    this.selectedContainerTransform.position.y = 2.5;
+
+    let mesh;
+    let prefix = "selectedContainerItem";
+    if (assetMeta.asteroidType) {
+      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id, this.selectedContainerTransform);
+    } else {
+      mesh = window.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + window.staticAssetMeshes[assetMeta.id].baseMesh.id, this.selectedContainerTransform);
+    }
+    mesh.parent = this.selectedContainerTransform;
+    U3D._fitNodeToSize(this.selectedContainerTransform, 0.7);
 
     U3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
-
     this._updateAssetSizeButtons();
   }
   _updateAssetSizeButtons() {
@@ -1023,7 +1032,7 @@ export class StoryApp extends BaseApp {
     this.startGameButton.rotation.y = -Math.PI / 2;
     this.startGameButton.setEnabled(false);
     this.startGameButton.parent = this.playerMidPanelTransform;
-    this.__setTextMeshColor(this.startGameButton, 0, 1, 0);
+    U3D.setTextMeshColor(this.startGameButton, 0, 1, 0, this.scene);
 
     this.endGameButton = U3D.__createTextMesh('endgamebutton', {
       text: 'End Game',
@@ -1040,7 +1049,7 @@ export class StoryApp extends BaseApp {
     this.endGameButton.rotation.z = -Math.PI / 2;
     this.endGameButton.rotation.y = -Math.PI / 2;
     this.endGameButton.parent = this.playerMidPanelTransform;
-    this.__setTextMeshColor(this.endGameButton, 0, 1, 0);
+    U3D.setTextMeshColor(this.endGameButton, 0, 1, 0, this.scene);
 
     this.endTurnButton = U3D.__createTextMesh('endturnbutton', {
       text: 'End Turn',
@@ -1065,9 +1074,11 @@ export class StoryApp extends BaseApp {
       }
 
     };
-    this.__setTextMeshColor(this.endTurnButton, 0, 1, 0);
+    U3D.setTextMeshColor(this.endTurnButton, 0, 1, 0, this.scene);
 
   }
+
+
   nextSelectedObject(previous = false) {
     let meta = this.lastClickMetaButtonCache;
     let id = meta.id;
@@ -1102,64 +1113,6 @@ export class StoryApp extends BaseApp {
       let key = keys[nextIndex];
       this._updateLastClickMeta(window.staticAssetMeshes[key].assetMeta);
     }
-  }
-  async __loadRotatingAsset(assetMeta, prefix = 'selected') {
-    let mesh;
-    let rotationTransform = new BABYLON.TransformNode(prefix + 'playerPanelMoonRotation', this.scene);
-    rotationTransform.position.y = -1000;
-
-    if (assetMeta.asteroidType) {
-      mesh = this.loadedAsteroids[assetMeta.asteroidName].mesh.clone(prefix + this.loadedAsteroids[assetMeta.asteroidName].mesh.id, rotationTransform);
-    } else {
-      mesh = window.staticAssetMeshes[assetMeta.id].baseMesh.clone(prefix + window.staticAssetMeshes[assetMeta.id].baseMesh.id, rotationTransform);
-    }
-    mesh.setEnabled(false);
-
-    let rotationAnim = new BABYLON.Animation(
-      rotationTransform.id + 'anim',
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    let keys = [];
-    let endFrame = 20 * 30;
-
-    let rotationDirection = -2;
-
-    keys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
-    });
-
-    keys.push({
-      frame: endFrame,
-      value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
-    });
-
-    rotationAnim.setKeys(keys);
-
-    if (!mesh.animations)
-      mesh.animations = [];
-    mesh.animations.push(rotationAnim);
-    this.scene.beginAnimation(mesh, 0, endFrame, true);
-
-    return {
-      wrapper: rotationTransform,
-      mesh
-    }
-  }
-  __setTextMeshColor(mesh, r, g, b) {
-    for (let i in this.scene.meshes) {
-      if (this.scene.meshes[i].parent === mesh)
-        U3D.meshSetVerticeColors(this.scene.meshes[i], r, g, b);
-    }
-
-    U3D.meshSetVerticeColors(mesh, r, g, b);
   }
 
   async loadMoonButton(index) {
@@ -1263,7 +1216,7 @@ export class StoryApp extends BaseApp {
       };
       avatarNav.parent = this.playerDock3DPanel;
       let colors = this.get3DColors(c);
-      this.__setTextMeshColor(avatarNav, colors.r, colors.g, colors.b);
+      U3D.setTextMeshColor(avatarNav, colors.r, colors.g, colors.b, this.scene);
       this.playerAvatarNavs.push(avatarNav);
     }
 
@@ -1904,7 +1857,6 @@ export class StoryApp extends BaseApp {
     this.asteroidCountLabel.position.x = -5;
     this.asteroidCountLabel.position.y = 3;
     this.asteroidCountLabel.position.z = 1;
-
   }
   async asteroidCountChange(delta) {
     let asteroidCount = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
@@ -1922,6 +1874,9 @@ export class StoryApp extends BaseApp {
   }
 
   async randomizeAnimations() {
+    if (this.initedAvatars === 'loading')
+      return;
+
     if (!this.initedAvatars) {
       await this._loadAvatars();
       return;

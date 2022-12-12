@@ -1272,18 +1272,34 @@ export class BaseApp {
 
     //this.scene.onBeforeRenderObservable.add(() => {});
 
-    let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
-    light2.intensity = 0.4;
+    // Instrumentation
+    /*
+    let instrumentation = new BABYLON.SceneInstrumentation(this.scene);
+    instrumentation.captureFrameTime = true;
+    setInterval(() => {
+      let perfValue = instrumentation.frameTimeCounter.lastSecAverage.toFixed(2);
+      console.log(perfValue + "ms per frame");
+    }, 300);
+    */
+    
+    var light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
+    light.position = new BABYLON.Vector3(6, 9, 3);
+    var generator = new BABYLON.ShadowGenerator(2048, light);
+    generator.useBlurExponentialShadowMap = true;
+    generator.blurKernel = 128;
+    scene.baseShadowGenerator = generator;
+
+  //  let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
+//    light2.intensity = 0.4;
 
     var environment = scene.createDefaultEnvironment({
-      enableGroundShadow: false,
       createSkybox: false,
-      groundSize: 150
+      groundSize: 150,
+      enableGroundMirror: true,
+      groundShadowLevel: 0.3
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
-    environment.groundMaterial.alpha = 0.75;
-    environment.ground.parent.position.y = 0;
-    environment.ground.position.y = 0;
+    //environment.groundMaterial.alpha = 0.65;
     this.env = environment;
 
     scene.createDefaultCamera(true, true, true);
