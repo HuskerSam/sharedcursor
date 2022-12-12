@@ -118,9 +118,7 @@ export class StoryApp extends BaseApp {
     this.clearFollowMeta();
     this.aimCamera(this.cameraMetaX);
   }
-  yButtonPress() {
-    this.clickShowScoreboard()
-  }
+  yButtonPress() {}
   aButtonPress() {
     this.setFollowMeta();
   }
@@ -232,15 +230,11 @@ export class StoryApp extends BaseApp {
     //this._loadAvatars();
 
     this.sceneInited = true;
-    this.initScoreboard();
 
     this.initOptionsBar();
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);
-
-
-    this.selectMoonMesh();
 
     this.paintGameData();
 
@@ -355,9 +349,6 @@ export class StoryApp extends BaseApp {
     };
   }
   async loadAvatars() {
-    if (!this.playerDock3DPanel)
-      return;
-
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       if (seatIndex < this.runningSeatCount) {
         let data = this.getSeatData(seatIndex);
@@ -365,7 +356,7 @@ export class StoryApp extends BaseApp {
         if (!this['dockSeatMesh' + seatIndex]) {
           let mesh = await this.renderSeat(seatIndex);
 
-          mesh.parent = this.playerDock3DPanel;
+          mesh.parent = this.playerMoonPanelTab;
 
           this['dockSeatMesh' + seatIndex] = mesh;
         } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
@@ -449,80 +440,6 @@ export class StoryApp extends BaseApp {
   clickEndGame() {
 
   }
-  clickShowScoreboard() {
-    if (this.lastShowScoreboardTime === undefined)
-      this.lastShowScoreboardTime = 0;
-    if (this.scoreboardShowing === undefined)
-      this.scoreboardShowing = true;
-
-    let testTime = this.lastShowScoreboardTime + 2000;
-    let hideScoreboard = (new Date().getTime() < testTime) && this.scoreboardShowing;
-    this.lastShowScoreboardTime = new Date().getTime();
-
-    if (this.scoreboardShowing && hideScoreboard) {
-      this.scoreboardShowing = false;
-      this.scoreboardWrapper.origY = this.scoreboardWrapper.position.y;
-      this.scoreboardWrapper.position.y = -100000;
-      this.scoreboardWrapper.scaling.x = 0.001;
-      this.scoreboardWrapper.scaling.y = 0.001;
-      this.scoreboardWrapper.scaling.z = 0.001;
-
-      return;
-    }
-    if (!this.scoreboardShowing) {
-      this.scoreboardShowing = true;
-    }
-
-    this._updateLastClickMeta(this.lastClickMetaButtonCache);
-
-    this.scoreboardWrapper.position.y = this.scoreboardWrapper.origY;
-    this.scoreboardWrapper.scaling.x = 1;
-    this.scoreboardWrapper.scaling.y = 1;
-    this.scoreboardWrapper.scaling.z = 1;
-
-    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-      if (!this.scene.activeCamera.positionTN) {
-        this.scene.activeCamera.positionTN = new BABYLON.TransformNode('camerapointerxr', this.scene);
-        this.scene.activeCamera.positionTN.parent = this.scene.activeCamera;
-        this.scene.activeCamera.positionTN.position.z += 5;
-      }
-
-      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.positionTN.getAbsolutePosition());
-      this.scoreboardWrapper.position.y = 0;
-
-      let targetPosition = new BABYLON.Vector3();
-      targetPosition.copyFrom(this.scene.activeCamera.position);
-      targetPosition.y = 0;
-      this.scoreboardWrapper.lookAt(targetPosition);
-    } else {
-      if (!this.scene.activeCamera.positionTN) {
-        this.scene.activeCamera.positionTN = new BABYLON.TransformNode('camerapointernonxr', this.scene);
-        this.scene.activeCamera.positionTN.parent = this.scene.activeCamera;
-        this.scene.activeCamera.positionTN.position.z += 10;
-      }
-
-      this.scoreboardWrapper.position.copyFrom(this.scene.activeCamera.positionTN.getAbsolutePosition());
-      this.scoreboardWrapper.position.y = 0;
-
-      let targetPosition = new BABYLON.Vector3();
-      targetPosition.copyFrom(this.scene.activeCamera.position);
-      targetPosition.y = 0;
-      this.scoreboardWrapper.lookAt(targetPosition);
-    }
-  }
-
-  selectMoonMesh(seatIndex) {
-    if (seatIndex === 1)
-      this._updateLastClickMeta(window.staticAssetMeshes['ceres'].assetMeta);
-    else if (seatIndex === 2)
-      this._updateLastClickMeta(window.staticAssetMeshes['j5_io'].assetMeta);
-    else if (seatIndex === 3)
-      this._updateLastClickMeta(window.staticAssetMeshes['eris'].assetMeta);
-    else
-      this._updateLastClickMeta(window.staticAssetMeshes['e1_luna'].assetMeta);
-  }
-
-
 
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
@@ -888,7 +805,6 @@ export class StoryApp extends BaseApp {
 
     return new BABYLON.Color3(r, g, b);
   }
-
   updateUserPresence() {
     super.updateUserPresence();
 
@@ -925,7 +841,6 @@ export class StoryApp extends BaseApp {
       }
     }
   }
-
   async _endTurn() {
     if (this.debounce())
       return;
@@ -955,43 +870,24 @@ export class StoryApp extends BaseApp {
       return;
     }
   }
-
   updateScoreboard() {
-/*
-    let seatIndex = this.gameData.currentSeat;
+    /*
+        let seatIndex = this.gameData.currentSeat;
 
-    let rgb = this.get3DColors(seatIndex);
-    let str = rgb.r + ',' + rgb.g + "," + rgb.b;
-    let backColor = U3D.colorRGB255(str);
-    let color = seatIndex !== 3 ? "rgb(0,0,0)" : "rgb(255,255,255)";
-    let nameTexture = U3D.__texture2DText(this.scene, "Scoreboard Status", color, backColor, 50);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    this.scoreboardNameMaterial.diffuseTexture = nameTexture;
-    this.scoreboardNameMaterial.ambientTexture = nameTexture;
-    this.scoreboardNameMaterial.emissiveTexture = nameTexture;
-*/
+        let rgb = this.get3DColors(seatIndex);
+        let str = rgb.r + ',' + rgb.g + "," + rgb.b;
+        let backColor = U3D.colorRGB255(str);
+        let color = seatIndex !== 3 ? "rgb(0,0,0)" : "rgb(255,255,255)";
+        let nameTexture = U3D.__texture2DText(this.scene, "Scoreboard Status", color, backColor, 50);
+        nameTexture.vScale = 1;
+        nameTexture.uScale = 1;
+        nameTexture.hasAlpha = true;
+        this.scoreboardNameMaterial.diffuseTexture = nameTexture;
+        this.scoreboardNameMaterial.ambientTexture = nameTexture;
+        this.scoreboardNameMaterial.emissiveTexture = nameTexture;
+    */
   }
-  initScoreboard() {
-    if (this.scoreboardInited)
-      return;
-
-    this.scoreboardInited = true;
-
-    let scoreboardWrapper = new BABYLON.TransformNode('scoreboardWrapper', this.scene);
-    this.scoreboardWrapper = scoreboardWrapper;
-
-    let scoreboardTransform = new BABYLON.TransformNode('scoreboardTransform', this.scene);
-    scoreboardTransform.parent = this.scoreboardWrapper;
-    scoreboardTransform.position.z = 2;
-    scoreboardTransform.position.y = -0.5;
-
-    this.__initDock3DPanel(scoreboardTransform);
-
-    return scoreboardWrapper;
-  }
-  __initScorePanel() {
+  initGameStatusPanel() {
     this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
     this.startGameButton.parent = this.gameStatusPanelTab;
     this.startGameButton.scaling = U3D.v(2, 2, 2);
@@ -1021,8 +917,6 @@ export class StoryApp extends BaseApp {
       }
     };
   }
-
-
   nextSelectedObject(previous = false) {
     let meta = this.lastClickMetaButtonCache;
     let id = meta.id;
@@ -1057,113 +951,6 @@ export class StoryApp extends BaseApp {
       let key = keys[nextIndex];
       this._updateLastClickMeta(window.staticAssetMeshes[key].assetMeta);
     }
-  }
-
-  async loadMoonButton(index) {
-    if (this.playerMoonNavs[index.toString()])
-      this.playerMoonNavs[index.toString()].dispose();
-
-    let rotationTransform = new BABYLON.TransformNode('playerPanelMoonRotation' + index, this.scene);
-    rotationTransform.parent = this.playerDock3DPanel;
-    rotationTransform.position.y = -1000;
-
-    let moonNav = window.staticAssetMeshes[this.seatMeshes[index].assetMeta.id].baseMesh.clone('moonnavmesh' + index, rotationTransform);
-    moonNav.position.y = 2.75;
-    moonNav.position.x = 2 - (index * 1.5);
-    moonNav.position.z = 0;
-    moonNav.rotation.z = -Math.PI / 2;
-    moonNav.rotation.y = -Math.PI / 2;
-
-    moonNav.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectMoonMesh(index);
-      }
-    };
-
-    U3D._fitNodeToSize(moonNav, 1.25);
-
-    let rotationAnim = new BABYLON.Animation(
-      rotationTransform.id + 'anim',
-      "rotation",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    let keys = [];
-    let endFrame = 20 * 30;
-
-    let rotationDirection = index % 2 === 0 ? 2 : -2;
-
-    keys.push({
-      frame: 0,
-      value: new BABYLON.Vector3(x, y, z)
-    });
-
-    keys.push({
-      frame: endFrame,
-      value: new BABYLON.Vector3(x, y + rotationDirection * Math.PI, z)
-    });
-
-    rotationAnim.setKeys(keys);
-    if (!moonNav.animations)
-      moonNav.animations = [];
-    moonNav.animations.push(rotationAnim);
-    this.scene.beginAnimation(moonNav, 0, endFrame, true);
-    rotationTransform.position.y = 0;
-
-    this.playerMoonNavs[index.toString()] = moonNav;
-  }
-
-  __initDock3DPanel(scoreboardTransform) {
-    this.playerDock3DPanel = new BABYLON.TransformNode('playerDock3DPanel', this.scene);
-    this.playerDock3DPanel.parent = scoreboardTransform;
-    this.playerDock3DPanel.position.x = -5;
-    this.playerDock3DPanel.position.z += 2;
-    this.playerDock3DPanel.rotation.y = Math.PI / 4;
-
-    this.playerMoonNavs = {};
-    for (let d = 0; d < 4; d++) {
-      this.loadMoonButton(d);
-    }
-
-    this.playerAvatarNavs = [];
-    for (let c = 0; c < 4; c++) {
-
-      let avatarNav = U3D.__createTextMesh('myavatarnavigate' + c.toString(), {
-        text: this.seatMeshes[c].assetMeta.name,
-        fontFamily: 'Tahoma',
-        fontWeight: 'bold',
-        size: 100,
-        depth: .25
-      }, this.scene)
-      avatarNav.scaling.x = .5;
-      avatarNav.scaling.y = .5;
-      avatarNav.scaling.z = .5;
-      avatarNav.position.y = 4;
-      avatarNav.position.x = 2 - (c * 1.5);
-      avatarNav.position.z = 0;
-      avatarNav.rotation.z = -Math.PI / 2;
-      avatarNav.rotation.y = -Math.PI / 2;
-      let seatIndex = c;
-      avatarNav.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.selectMoonMesh(seatIndex);
-        }
-      };
-      avatarNav.parent = this.playerDock3DPanel;
-      let colors = this.get3DColors(c);
-      U3D.setTextMeshColor(avatarNav, colors.r, colors.g, colors.b, this.scene);
-      this.playerAvatarNavs.push(avatarNav);
-    }
-
   }
 
   _initSizePanel() {
@@ -1396,13 +1183,13 @@ export class StoryApp extends BaseApp {
     this.playerMoonPanelTab.parent = this.menuBarLeftTN;
     this.playerMoonPanelTab.position.y = 0;
     this.playerMoonPanelTab.setEnabled(false);
+    this._initPlayerMoonsPanel();
 
-
-        this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', this.scene);
-        this.gameStatusPanelTab.parent = this.menuBarLeftTN;
-        this.gameStatusPanelTab.position.y = 0;
-        this.gameStatusPanelTab.setEnabled(false);
-    this.__initScorePanel();
+    this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', this.scene);
+    this.gameStatusPanelTab.parent = this.menuBarLeftTN;
+    this.gameStatusPanelTab.position.y = 0;
+    this.gameStatusPanelTab.setEnabled(false);
+    this.initGameStatusPanel();
 
   }
   async __initFocusedAssetPanel() {
@@ -1467,7 +1254,26 @@ export class StoryApp extends BaseApp {
     this.previousSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
     this.previousSelectedMetaBtn.parent = this.focusPanelTab;
   }
+  _initPlayerMoonsPanel() {
+    for (let c = 0; c < 4; c++) {
+      let result = window.staticMeshContainer[this.seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
+      let mesh = result.rootNodes[0];
+      mesh.position = U3D.v(2 - (c * 1.5), 2, 0);
+      let seatIndex = c;
+      mesh.assetMeta = {
+        appClickable: true,
+        clickCommand: 'customClick',
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this._updateLastClickMeta(this.seatMeshes[seatIndex].assetMeta);
+        }
+      };
+      mesh.parent = this.playerMoonPanelTab;
+      U3D._fitNodeToSize(mesh, 1.25);
 
+      //        text: this.seatMeshes[c].assetMeta.name,
+    }
+
+  }
 
   enterXR() {
     this.menuBarLeftTN.position = U3D.v(0.05, 0.05, -0.05);
@@ -1501,7 +1307,6 @@ export class StoryApp extends BaseApp {
       this.menuBarRightTN.parent = model.grip;
     }
   }
-
 
   _addOptionButton(texturePath, name) {
     let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
