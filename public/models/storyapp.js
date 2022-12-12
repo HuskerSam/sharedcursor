@@ -1484,6 +1484,12 @@ export class StoryApp extends BaseApp {
     this._updateLastClickMeta(window.staticAssetMeshes[id].assetMeta);
   }
 
+  attachStuff(model, handed) {
+    if (handed === 'right') {
+
+      this.menuBarTN.parent = model.grip;
+    }
+  }
   addMascotsArea() {
     if (this.mascotsAreaInited)
       return;
@@ -1491,10 +1497,10 @@ export class StoryApp extends BaseApp {
 
     let iconName = 'globe';
     let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
-    mascotsBtn.position.y = 1;
-    mascotsBtn.position.x = 23;
-    mascotsBtn.position.z = -18;
-    mascotsBtn.rotation.y = 0.25;
+  //  mascotsBtn.position.y = 1;
+//    mascotsBtn.position.x = 23;
+  //  mascotsBtn.position.z = -18;
+  //  mascotsBtn.rotation.y = 0.25;
 
     mascotsBtn.assetMeta = {
       appClickable: true,
@@ -1508,6 +1514,24 @@ export class StoryApp extends BaseApp {
       }
     };
 
+    this.menuBarTN = new BABYLON.TransformNode('menuBarTN', this.scene);
+    mascotsBtn.parent = this.menuBarTN;
+    this.menuBarTN.position.z = 0.01;
+    this.menuBarTN.position.y = 0.01;
+    this.menuBarTN.scaling = U3D.vector(.05, .05, .05);
+  //  this.menuBarTN.parent = this.scene.activeCamera;
+
+
+    this.xr.baseExperience.onStateChangedObservable.add((state) => {
+      switch (state) {
+        case BABYLON.WebXRState.IN_XR:
+    //      this.menuBarTN.parent = this.scene.activeCamera;
+          break;
+        case BABYLON.WebXRState.NOT_IN_XR:
+    //      this.menuBarTN.parent = this.scene.activeCamera;
+          break;
+      }
+    });
   }
   _addOptionButton(texturePath, name) {
     let mesh = BABYLON.MeshBuilder.CreateDisc(name, {

@@ -1331,7 +1331,14 @@ export class BaseApp {
     });
 
     this.xr.input.onControllerAddedObservable.add((controller) => {
+
       controller.onMotionControllerInitObservable.add((motionController) => {
+
+        motionController.onModelLoadedObservable.add(mc => {
+             this.attachStuff(controller, motionController.handedness);
+           })
+
+
         let yComponent = motionController.getComponent('y-button');
         if (yComponent)
           yComponent.onButtonStateChangedObservable.add(btn => {
