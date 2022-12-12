@@ -107,7 +107,7 @@ export default class Asteroid3D {
     orbitWrapper.assetMeta = {
       appClickable: true,
       clickCommand: "customClick",
-      handleClick: (pointerInfo, mesh, meta) => {
+      handlePointerDown: (pointerInfo, mesh, meta) => {
         app.__pauseSpin(pointerInfo, mesh, meta);
       },
       name: asteroid,

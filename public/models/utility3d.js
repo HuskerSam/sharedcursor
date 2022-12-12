@@ -854,7 +854,8 @@ export default class Utility3D {
         "cloneAnimations": "Daya",
         "x": -9,
         "z": -10,
-        "race": "Human"
+        "race": "Human",
+        "seatIndex": 0
       },
       {
         "name": "Jade",
@@ -862,33 +863,26 @@ export default class Utility3D {
         "cloneAnimations": "Daya",
         "x": -5,
         "z": -10,
-        "race": "Botan"
+        "race": "Botan",
+        "seatIndex": 1
       },
       {
         "name": "Daya",
         "path": "jonesbase.glb",
         "x": -3,
         "z": -10,
-        "race": "Avian"
+        "race": "Avian",
+        "seatIndex": 2
       },
-      /*
       {
-        "name": "Astarte",
-        "path": "pirate.glb",
-        "x": 41,
-        "z": -35,
-        "race": "Titan"
-      },
-      */
-      {
-        "name": "Astarte",
+        "name": "Geronimo",
         "path": "maynard.glb",
         "cloneAnimations": "Daya",
         "x": -7,
         "z": -10,
-        "race": "Titan"
+        "race": "Titan",
+        "seatIndex": 3
       }
-
     ]
   }
   static getAnimationOffsets() {
@@ -1151,7 +1145,7 @@ export default class Utility3D {
     let meta = mesh.assetMeta;
 
     if (meta.clickCommand === 'customClick')
-      meta.handleClick(pointerInfo, mesh, meta);
+      meta.handlePointerDown(pointerInfo, mesh, meta);
 
     return true;
   }

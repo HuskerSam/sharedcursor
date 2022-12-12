@@ -195,8 +195,11 @@ export class StoryApp extends BaseApp {
         meta.appClickable = true;
         meta.masterid = name;
         meta.clickCommand = 'customClick';
-        meta.handleClick = async (pointerInfo, mesh, meta) => {
+        meta.handlePointerDown = async (pointerInfo, mesh, meta) => {
           this.__pauseSpin(pointerInfo, mesh, meta);
+        };
+        meta.handlePointerMove = async (pointerInfo, mesh, meta) => {
+          this.__pauseSpinMove(pointerInfo, mesh, meta);
         };
       }
     });
@@ -372,17 +375,6 @@ export class StoryApp extends BaseApp {
       this.__updateSelectedSeatMesh();
 
       this.avatarsLoaded = true;
-    }
-  }
-
-  pointerMove(pointerInfo) {
-
-  }
-  pointerUp(pointerInfo) {
-    if (this.lastClickMeta) {
-      this.meshToggleAnimation(this.lastClickMeta, true, null);
-      this.lastClickMeta = null;
-      return;
     }
   }
 
@@ -785,7 +777,7 @@ export class StoryApp extends BaseApp {
       x3d.assetMeta = {
         appClickable: true,
         clickCommand: 'customClick',
-        handleClick: async (pointerInfo, mesh, meta) => {
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
           this._gameAPIStand(index);
         }
       };
@@ -832,7 +824,7 @@ export class StoryApp extends BaseApp {
         seatIndex: index,
         appClickable: true,
         clickCommand: 'customClick',
-        handleClick: async (pointerInfo, mesh, meta) => {
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.dockSit(index);
         }
       };
@@ -1062,7 +1054,7 @@ export class StoryApp extends BaseApp {
     this.endTurnButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.clickEndTurn();
       }
 
@@ -1091,7 +1083,7 @@ export class StoryApp extends BaseApp {
     this.activeMoonNav.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.setFollowMeta();
       }
     };
@@ -1132,7 +1124,7 @@ export class StoryApp extends BaseApp {
     this.nextselectedassetmesh.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.nextSelectedObject();
       }
     };
@@ -1155,7 +1147,7 @@ export class StoryApp extends BaseApp {
     this.previousselectedassetmesh.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.nextSelectedObject(true);
       }
     };
@@ -1274,7 +1266,7 @@ export class StoryApp extends BaseApp {
     moonNav.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.selectMoonMesh(index);
       }
     };
@@ -1351,7 +1343,7 @@ export class StoryApp extends BaseApp {
       avatarNav.assetMeta = {
         appClickable: true,
         clickCommand: 'customClick',
-        handleClick: async (pointerInfo, mesh, meta) => {
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.selectMoonMesh(seatIndex);
         }
       };
@@ -1376,7 +1368,7 @@ export class StoryApp extends BaseApp {
     normalSizeButton.parent = buttonBarTransform;
     this.assetPanelNormalButton = normalSizeButton;
 
-    let handleClick = async (pointerInfo, mesh, meta) => {
+    let handlePointerDown = async (pointerInfo, mesh, meta) => {
       normalSizeButton.setEnabled(false);
       this.updateAssetSize('normal', this.lastClickMetaButtonCache);
     };
@@ -1384,7 +1376,7 @@ export class StoryApp extends BaseApp {
     normalSizeButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick
+      handlePointerDown
     };
 
     let hugeSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelHugeSizeButton', {
@@ -1400,7 +1392,7 @@ export class StoryApp extends BaseApp {
     hugeSizeButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         hugeSizeButton.setEnabled(false);
         this.updateAssetSize('huge', this.lastClickMetaButtonCache);
       }
@@ -1420,7 +1412,7 @@ export class StoryApp extends BaseApp {
     smallSizeButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         smallSizeButton.setEnabled(false);
         this.updateAssetSize('small', this.lastClickMetaButtonCache);
       }
@@ -1493,7 +1485,7 @@ export class StoryApp extends BaseApp {
     mascotsBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         let rotation = new BABYLON.Vector3(0, 0, 0);
 
         let endPosition = U3D.vector(window.staticAssetMeshes['mars'].position);
@@ -1780,7 +1772,7 @@ export class StoryApp extends BaseApp {
     nextSkyBoxBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this._nextSkybox();
       }
     };
@@ -1809,7 +1801,7 @@ export class StoryApp extends BaseApp {
     this.asteroidDownCountBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.asteroidCountChange(-20);
       }
     };
@@ -1819,7 +1811,7 @@ export class StoryApp extends BaseApp {
     this.asteroidUpCountBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.asteroidCountChange(20);
       }
     };
@@ -1878,7 +1870,7 @@ export class StoryApp extends BaseApp {
     nextSkyBoxBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
-      handleClick: async (pointerInfo, mesh, meta) => {
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.randomizeAnimations();
       }
     };
@@ -1886,10 +1878,48 @@ export class StoryApp extends BaseApp {
     nextSkyBoxBtn.parent = this.menuBarTN;
   }
 
+
+  pointerMove(pointerInfo) {
+    if (this.lastClickMeta && this.lastClickSpinPaused) {
+      this.__pauseSpinMove(pointerInfo, this.lastClickMeta)
+    }
+  }
+  pointerUp(pointerInfo) {
+
+    if (this.lastClickSpinPaused) {
+
+      this.lastClickSpinPaused = false;
+      if (this.lastClickMeta) {
+        this.lastClickMeta.basePivot.rotation.copyFrom(this.lastClickMeta.basePivot.originalRotation);
+      }
+    }
+    if (this.lastClickMeta) {
+
+
+      this.meshToggleAnimation(this.lastClickMeta, true, null);
+      this.lastClickMeta = null;
+      return;
+    }
+  }
   __pauseSpin(pointerInfo, mesh, meta) {
     this.lastClickMeta = meta;
     this.lastClickMetaButtonCache = this.lastClickMeta;
+
+    this.lastClickMetaPointerX = this.scene.pointerX;
+    this.lastClickMetaPointerY = this.scene.pointerY;
+    this.lastClickSpinPaused = true;
+    meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
+
     this.meshToggleAnimation(meta, false, mesh);
     this._updateLastClickMeta(this.lastClickMetaButtonCache);
+  }
+  __pauseSpinMove(pointerInfo, meta) {
+    let dX = this.scene.pointerX - this.lastClickMetaPointerX;
+    let dY = this.scene.pointerY - this.lastClickMetaPointerY;
+
+    meta.basePivot.rotation.y -= dX * 0.01;
+    meta.basePivot.rotation.x -= dY * 0.01;
+    this.lastClickMetaPointerX = this.scene.pointerX;
+    this.lastClickMetaPointerY = this.scene.pointerY;
   }
 }
