@@ -230,7 +230,7 @@ export class StoryApp extends BaseApp {
     this.initScoreboard();
     this.selectMoonMesh();
 
-    this.addMascotsArea();
+    this.initOptionsBar();
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);
@@ -1484,23 +1484,14 @@ export class StoryApp extends BaseApp {
     this._updateLastClickMeta(window.staticAssetMeshes[id].assetMeta);
   }
 
-  attachStuff(model, handed) {
-    if (handed === 'right') {
-
-      this.menuBarTN.parent = model.grip;
-    }
-  }
-  addMascotsArea() {
+  initOptionsBar() {
     if (this.mascotsAreaInited)
       return;
     this.mascotsAreaInited = true;
 
     let iconName = 'globe';
     let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
-  //  mascotsBtn.position.y = 1;
-//    mascotsBtn.position.x = 23;
-  //  mascotsBtn.position.z = -18;
-  //  mascotsBtn.rotation.y = 0.25;
+
 
     mascotsBtn.assetMeta = {
       appClickable: true,
@@ -1516,23 +1507,44 @@ export class StoryApp extends BaseApp {
 
     this.menuBarTN = new BABYLON.TransformNode('menuBarTN', this.scene);
     mascotsBtn.parent = this.menuBarTN;
-    this.menuBarTN.position.z = 0.01;
-    this.menuBarTN.position.y = 0.01;
-    this.menuBarTN.scaling = U3D.vector(.05, .05, .05);
-  //  this.menuBarTN.parent = this.scene.activeCamera;
+    mascotsBtn.position.x = -4;
 
+    this.menuBarTN.position = U3D.v(-10, 1, -10);
+    this.menuBarTN.scaling = U3D.v(0.3, 0.3, 0.3);
 
-    this.xr.baseExperience.onStateChangedObservable.add((state) => {
-      switch (state) {
-        case BABYLON.WebXRState.IN_XR:
-    //      this.menuBarTN.parent = this.scene.activeCamera;
-          break;
-        case BABYLON.WebXRState.NOT_IN_XR:
-    //      this.menuBarTN.parent = this.scene.activeCamera;
-          break;
-      }
-    });
+    this.menuBarTN.billboardMode = 7;
+
+    /*
+        let panel = BABYLON.MeshBuilder.CreatePlane('controllerButtonPanel', {
+          height: 1,
+          width: 2
+        }, this.scene);
+        //        panel.rotation.y = Math.PI;
+        panel.parent = this.menuBarTN;
+    */
+
   }
+  enterXR() {
+    this.menuBarTN.position = U3D.v(0.05, 0.05, -0.05);
+    this.menuBarTN.scaling = U3D.v(0.02, 0.02, 1);
+    this.menuBarTN.parent = this.leftHandedControllerGrip;
+  }
+  enterNotInXR() {
+    this.menuBarTN.position = U3D.v(1, 1, 1);
+    this.menuBarTN.scaling = U3D.v(1, 1, 1);
+    this.menuBarTN.parent = null;
+  }
+  XRControllerAdded(model, handed) {
+    if (handed === 'left') {
+      this.leftHandedControllerGrip = model.grip;
+      this.menuBarTN.parent = model.grip;
+    }
+    if (handed === 'right') {
+      this.rightHandedControllerGrip = model.grip;
+    }
+  }
+
+
   _addOptionButton(texturePath, name) {
     let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
       radius: 1,
@@ -1776,10 +1788,8 @@ export class StoryApp extends BaseApp {
 
     let iconName = 'arrow-right';
     let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    nextSkyBoxBtn.position.y = 1;
-    nextSkyBoxBtn.position.x = 20;
-    nextSkyBoxBtn.position.z = -25;
-    nextSkyBoxBtn.rotation.y = 0.5;
+    nextSkyBoxBtn.position.x = -2;
+    nextSkyBoxBtn.parent = this.menuBarTN;
 
     nextSkyBoxBtn.assetMeta = {
       appClickable: true,

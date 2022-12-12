@@ -1270,9 +1270,7 @@ export class BaseApp {
     this.scene.autoClear = false; // Color buffer
     this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
 
-    //let light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -0.5, 1.0), scene);
-    //light.position = new BABYLON.Vector3(10, 15, -15);
-    //light.intensity = 1.5;
+    //this.scene.onBeforeRenderObservable.add(() => {});
 
     let light2 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 50, 0), scene);
     light2.intensity = 0.4;
@@ -1331,13 +1329,10 @@ export class BaseApp {
     });
 
     this.xr.input.onControllerAddedObservable.add((controller) => {
-
       controller.onMotionControllerInitObservable.add((motionController) => {
-
         motionController.onModelLoadedObservable.add(mc => {
-             this.attachStuff(controller, motionController.handedness);
-           })
-
+          this.XRControllerAdded(controller, motionController.handedness);
+        })
 
         let yComponent = motionController.getComponent('y-button');
         if (yComponent)
@@ -1387,11 +1382,23 @@ export class BaseApp {
           this.xr.baseExperience.camera.position.copyFrom(position);
         }
       })
-    })
+    });
 
+    this.xr.baseExperience.onStateChangedObservable.add((state) => {
+      switch (state) {
+        case BABYLON.WebXRState.IN_XR:
+          this.enterXR();
+          break;
+        case BABYLON.WebXRState.NOT_IN_XR:
+          this.enterNotInXR();
+          break;
+      }
+    });
 
     return scene;
   }
+  enterXR() {}
+  enterNotInXR() {}
   pointerMove() {}
   xButtonPress() {}
   yButtonPress() {}
