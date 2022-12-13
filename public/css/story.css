@@ -123,12 +123,16 @@ body {
 
 .nontouch_button_options button {
   padding: .15em;
-  width: 100%;
   line-height: 1.5em;
   max-width: 35em;
   overflow: hidden;
   height: 3.75em;
   text-align: left;
+  float: left;
+  clear: both;
+  min-width: 6em;
+  padding-left: .5em;
+  border: none;
 }
 
 .nontouch_button_options button i {

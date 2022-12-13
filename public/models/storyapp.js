@@ -1,13 +1,13 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
 import U3D from '/models/utility3d.js';
-import R3D from '/models/rocket3d.js';
-import MT3D from '/models/menutab3d.js';
+import MenuTab3D from '/models/menutab3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
     super();
+    this.menuTab3D = new MenuTab3D(this);
     this.apiType = 'story';
     this.cache = {};
     this.staticAssetMeshes = {};
@@ -71,57 +71,18 @@ export class StoryApp extends BaseApp {
     });
   }
 
-  initOptionsBar(scene, parent) {
-    MT3D.addTabButtons(scene, parent);
-
-    this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', scene);
-    this.optionsMenuTab.parent = this.menuBarLeftTN;
-    this.optionsMenuTab.position.y = 0;
-    this.optionsMenuTab.setEnabled(false);
-    MT3D.initOptionsTab(scene, this.optionsMenuTab);
-
-    this.meteorMenuTab = new BABYLON.TransformNode('meteorMenuTab', scene);
-    this.meteorMenuTab.parent = this.menuBarLeftTN;
-    this.meteorMenuTab.position.y = 0;
-    this.meteorMenuTab.setEnabled(false);
-    MT3D.initMeteorTab(scene, this.meteorMenuTab);
-    this.updateAsteroidLabel();
-
-    this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', scene);
-    this.focusPanelTab.parent = this.menuBarLeftTN;
-    this.focusPanelTab.position.y = 0;
-    this.focusPanelTab.setEnabled(false);
-    MT3D.initFocusedAssetPanel(scene, this.focusPanelTab);
-
-    let buttonPanel = this._initSizePanel();
-    buttonPanel.position.y = 4;
-    buttonPanel.parent = this.focusPanelTab;
-
-    this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', scene);
-    this.playerMoonPanelTab.parent = this.menuBarLeftTN;
-    this.playerMoonPanelTab.position.y = 0;
-    this.playerMoonPanelTab.setEnabled(false);
-    this._initPlayerMoonsPanel();
-
-    this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', scene);
-    this.gameStatusPanelTab.parent = this.menuBarLeftTN;
-    this.gameStatusPanelTab.position.y = 0;
-    this.gameStatusPanelTab.setEnabled(false);
-    this.initGameStatusPanel();
-  }
   updateAsteroidLabel() {
     if (this.asteroidCountLabel)
       this.asteroidCountLabel.dispose();
 
     let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
     this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.meteorMenuTab;
+    this.asteroidCountLabel.parent = this.menuTab3D.meteorMenuTab;
     this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
     this.asteroidCountLabel.position.x = -5;
     this.asteroidCountLabel.position.y = 3;
     this.asteroidCountLabel.position.z = 1;
   }
-
   async randomizeAnimations() {
     if (this.initedAvatars === 'loading')
       return;
@@ -150,16 +111,15 @@ export class StoryApp extends BaseApp {
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
     Asteroid3D.loadAsteroids(this.scene, this);
-    this.updateAsteroidLabel(scene);
+    this.updateAsteroidLabel();
   }
-
   async _nextSkybox() {
-    let index = MT3D.skyboxList().indexOf(this.profile.skyboxPath);
-    if (index < MT3D.skyboxList().length - 1)
+    let index = this.menuTab3D.skyboxList().indexOf(this.profile.skyboxPath);
+    if (index < this.menuTab3D.skyboxList().length - 1)
       index++
     else
       index = 0;
-    this.profile.skyboxPath = MT3D.skyboxesList[index];
+    this.profile.skyboxPath = this.menuTab3D.skyboxesList[index];
     window.App3D.initSkybox();
 
     let updatePacket = {
@@ -335,7 +295,7 @@ export class StoryApp extends BaseApp {
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = 10;
 
-    this.initOptionsBar(this.scene, this.menuBarTabButtonsTN);
+    await this.menuTab3D.initOptionsBar();
 
     this.sceneInited = true;
 
@@ -987,36 +947,7 @@ export class StoryApp extends BaseApp {
         this.scoreboardNameMaterial.emissiveTexture = nameTexture;
     */
   }
-  initGameStatusPanel() {
-    this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
-    this.startGameButton.parent = this.gameStatusPanelTab;
-    this.startGameButton.scaling = U3D.v(2, 2, 2);
-    this.startGameButton.position.x = -5;
-    this.startGameButton.position.y = 3;
-    this.startGameButton.position.z = 1;
-    this.startGameButton.setEnabled(false);
 
-    this.endGameButton = U3D.addTextPlane(this.scene, "END Game", "endGameButton", "Impact", "", "#ffffff");
-    this.endGameButton.parent = this.gameStatusPanelTab;
-    this.endGameButton.scaling = U3D.v(2, 2, 2);
-    this.endGameButton.position.x = -10;
-    this.endGameButton.position.y = 3;
-    this.endGameButton.position.z = 1;
-
-    this.endTurnButton = U3D.addTextPlane(this.scene, "End Turn", "endTurnButton", "Arial", "", "#ffffff");
-    this.endTurnButton.parent = this.gameStatusPanelTab;
-    this.endTurnButton.scaling = U3D.v(2, 2, 2);
-    this.endTurnButton.position.x = 0;
-    this.endTurnButton.position.y = 3;
-    this.endTurnButton.position.z = 1;
-    this.endTurnButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.clickEndTurn();
-      }
-    };
-  }
   nextSelectedObject(previous = false) {
     let meta = this.lastClickMetaButtonCache;
     let id = meta.id;
@@ -1160,43 +1091,6 @@ export class StoryApp extends BaseApp {
 
     this.staticAssetMeshes[id].assetMeta.extended = U3D.processStaticAssetMeta(this.staticAssetMeshes[id].assetMeta, this.profile);
     this._updateLastClickMeta(this.staticAssetMeshes[id].assetMeta);
-  }
-
-  selectedMenuBarTab(menuTabToShow) {
-    if (this.meteorMenuTab)
-      this.meteorMenuTab.setEnabled(false);
-    if (this.optionsMenuTab)
-      this.optionsMenuTab.setEnabled(false);
-    if (this.focusPanelTab)
-      this.focusPanelTab.setEnabled(false);
-    if (this.playerMoonPanelTab)
-      this.playerMoonPanelTab.setEnabled(false);
-    if (this.gameStatusPanelTab)
-      this.gameStatusPanelTab.setEnabled(false);
-
-    if (menuTabToShow)
-      menuTabToShow.setEnabled(true);
-  }
-
-  _initPlayerMoonsPanel() {
-    for (let c = 0; c < 4; c++) {
-      let result = window.staticMeshContainer[this.seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
-      let mesh = result.rootNodes[0];
-      mesh.position = U3D.v(2 - (c * 1.5), 2, 0);
-      let seatIndex = c;
-      mesh.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this._updateLastClickMeta(this.seatMeshes[seatIndex].assetMeta);
-        }
-      };
-      mesh.parent = this.playerMoonPanelTab;
-      U3D._fitNodeToSize(mesh, 1.25);
-
-      //        text: this.seatMeshes[c].assetMeta.name,
-    }
-
   }
 
   enterXR() {
