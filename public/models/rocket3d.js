@@ -23,23 +23,26 @@ export default class Rocket3D {
       });
       heightAnim.setKeys(heightKeys);
 
-      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
       const rotationKeys = [];
+      let startR = U3D.vector(rocketMesh.rotation);
       rotationKeys.push({
         frame: 0,
-        value: rocketMesh.rotation.y
+        value: startR
       });
       rotationKeys.push({
         frame: Math.floor(0.667 * endFrame),
-        value: rocketMesh.rotation.y
+        value: startR
       });
+      let midR = U3D.v(startR.x + Math.PI / 4, startR.y, startR.z);
       rotationKeys.push({
         frame: Math.floor(0.75 * endFrame),
-        value: rocketMesh.rotation.y + Math.PI / 4
+        value: midR
       });
+      let endR = U3D.v(startR.x + Math.PI / 2, startR.y, startR.z);
       rotationKeys.push({
         frame: endFrame,
-        value: rocketMesh.rotation.y + Math.PI / 2
+        value: endR
       });
       rotationAnim.setKeys(rotationKeys);
 
@@ -59,13 +62,11 @@ export default class Rocket3D {
       });
       positionAnim.setKeys(positionKeys);
 
-
       rocketMesh.animations.push(heightAnim);
       rocketMesh.animations.push(rotationAnim);
       rocketMesh.animations.push(positionAnim);
 
       let rocketAnim = scene.beginAnimation(rocketMesh, 0, endFrame, true);
-
       let animArray = rocketMesh.animations;
       setTimeout(() => {
         rocketAnim.stop();
@@ -178,19 +179,21 @@ export default class Rocket3D {
     let mesh = await U3D.loadStaticMesh(scene, meta.extended.glbPath);
     U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
 
+    let rocketTN = new BABYLON.TransformNode(mesh.id + 'tn', scene);
+    mesh.parent = rocketTN;
 
-    let particles = U3D.createFireParticles(meta, mesh, scene);
+    let particles = U3D.createFireParticles(meta, rocketTN, scene);
 
-    mesh.position.copyFrom(startPos);
-    mesh.rotation.copyFrom(startRotation);
+    rocketTN.position.copyFrom(startPos);
+    rocketTN.rotation.copyFrom(startRotation);
     particles.start();
 
-    await this.rocketTakeOff(scene, mesh, 6, 10, 2500);
-    await this.rocketTravelTo(scene, mesh, endPosition, 8000, 1500);
+    await this.rocketTakeOff(scene, rocketTN, 6, 10, 2500);
+    await this.rocketTravelTo(scene, rocketTN, endPosition, 8000, 1500);
     particles.stop();
-    await this.rocketLand(scene, mesh, endPosition, 1500);
+    await this.rocketLand(scene, rocketTN, endPosition, 1500);
 
-    mesh.dispose();
+    rocketTN.dispose();
     setTimeout(() => particles.dispose(), 2000);
   }
 }

@@ -33,12 +33,13 @@ export default class MenuTab3D {
         if (this.rocketRunning)
           return;
         this.rocketRunning = true;
+        setTimeout(() => this.rocketRunning = false, 1000);
+
         let rotation = new BABYLON.Vector3(0, 0, 0);
         let endPosition = U3D.vector(this.app.staticAssetMeshes['mars'].position);
         let startPosition = U3D.vector(this.app.staticAssetMeshes['neptune'].position);
         await R3D.shootRocket(scene, startPosition, rotation, endPosition);
 
-        setTimeout(() => this.rocketRunning = false, 1000);
       }
     };
     shootRocketBtn.parent = parent;

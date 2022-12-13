@@ -462,7 +462,7 @@ export class StoryApp extends BaseApp {
     mesh.parent = this.selectedContainerTransform;
     let factor = 0.7;
     if (this.inXR)
-      factor *= 0.2;
+      factor *= 0.1;
     U3D._fitNodeToSize(this.selectedContainerTransform, factor);
     if (assetMeta.asteroidType)
       mesh.material = window.selectedAsteroidMaterial;
