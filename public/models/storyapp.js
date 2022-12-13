@@ -2,6 +2,7 @@ import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
 import U3D from '/models/utility3d.js';
 import R3D from '/models/rocket3d.js';
+import MT3D from '/models/menutab3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 
 export class StoryApp extends BaseApp {
@@ -9,7 +10,7 @@ export class StoryApp extends BaseApp {
     super();
     this.apiType = 'story';
     this.cache = {};
-    window.staticAssetMeshes = {};
+    this.staticAssetMeshes = {};
     this.seatMeshes = {};
     this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
 
@@ -70,6 +71,103 @@ export class StoryApp extends BaseApp {
     });
   }
 
+  initOptionsBar(scene, parent) {
+    MT3D.addTabButtons(scene, parent);
+
+    this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', scene);
+    this.optionsMenuTab.parent = this.menuBarLeftTN;
+    this.optionsMenuTab.position.y = 0;
+    this.optionsMenuTab.setEnabled(false);
+    MT3D.initOptionsTab(scene, this.optionsMenuTab);
+
+    this.meteorMenuTab = new BABYLON.TransformNode('meteorMenuTab', scene);
+    this.meteorMenuTab.parent = this.menuBarLeftTN;
+    this.meteorMenuTab.position.y = 0;
+    this.meteorMenuTab.setEnabled(false);
+    MT3D.initMeteorTab(scene, this.meteorMenuTab);
+    this.updateAsteroidLabel();
+
+    this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', scene);
+    this.focusPanelTab.parent = this.menuBarLeftTN;
+    this.focusPanelTab.position.y = 0;
+    this.focusPanelTab.setEnabled(false);
+    MT3D.initFocusedAssetPanel(scene, this.focusPanelTab);
+
+    let buttonPanel = this._initSizePanel();
+    buttonPanel.position.y = 4;
+    buttonPanel.parent = this.focusPanelTab;
+
+    this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', scene);
+    this.playerMoonPanelTab.parent = this.menuBarLeftTN;
+    this.playerMoonPanelTab.position.y = 0;
+    this.playerMoonPanelTab.setEnabled(false);
+    this._initPlayerMoonsPanel();
+
+    this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', scene);
+    this.gameStatusPanelTab.parent = this.menuBarLeftTN;
+    this.gameStatusPanelTab.position.y = 0;
+    this.gameStatusPanelTab.setEnabled(false);
+    this.initGameStatusPanel();
+  }
+  updateAsteroidLabel() {
+    if (this.asteroidCountLabel)
+      this.asteroidCountLabel.dispose();
+
+    let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
+    this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
+    this.asteroidCountLabel.parent = this.meteorMenuTab;
+    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
+    this.asteroidCountLabel.position.x = -5;
+    this.asteroidCountLabel.position.y = 3;
+    this.asteroidCountLabel.position.z = 1;
+  }
+
+  async randomizeAnimations() {
+    if (this.initedAvatars === 'loading')
+      return;
+
+    if (!this.initedAvatars) {
+      await this._loadAvatars();
+      return;
+    }
+
+    this.initedAvatars.forEach(container => {
+      let arr = container.animContainer.animationGroups;
+      let index = Math.floor(Math.random() * arr.length);
+
+      U3D.avatarSequence(container, index, this.scene);
+    })
+  }
+  async asteroidCountChange(delta) {
+    let asteroidCount = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
+    asteroidCount = Asteroid3D.getAsteroidCount(asteroidCount + delta);
+
+    let updatePacket = {
+      asteroidCount
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+    this.profile.asteroidCount = updatePacket.asteroidCount;
+    Asteroid3D.loadAsteroids(this.scene, this);
+    this.updateAsteroidLabel(scene);
+  }
+
+  async _nextSkybox() {
+    let index = MT3D.skyboxList().indexOf(this.profile.skyboxPath);
+    if (index < MT3D.skyboxList().length - 1)
+      index++
+    else
+      index = 0;
+    this.profile.skyboxPath = MT3D.skyboxesList[index];
+    window.App3D.initSkybox();
+
+    let updatePacket = {
+      skyboxPath: this.profile.skyboxPath
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+  }
   aimCamera(locationMeta) {
     this.camera.restoreState();
     if (locationMeta) {
@@ -93,7 +191,7 @@ export class StoryApp extends BaseApp {
     if (this.followMeta.basePivot)
       v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
     else
-      v.copyFrom(window.staticAssetMeshes[this.followMeta.id].getAbsolutePosition());
+      v.copyFrom(this.staticAssetMeshes[this.followMeta.id].getAbsolutePosition());
     v.y += 4;
     this.camera.position.copyFrom(v);
     this.camera.alpha += Math.PI;
@@ -199,7 +297,6 @@ export class StoryApp extends BaseApp {
       }
     });
 
-
     this.initItemNamePanel(this.scene);
 
     this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
@@ -224,11 +321,23 @@ export class StoryApp extends BaseApp {
 
     this.initCameraToolbar();
 
-    //this._loadAvatars();
+    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
+    this.menuBarLeftTN.position = U3D.v(-10, 1, -10);
+    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarLeftTN.billboardMode = 7;
+
+    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
+    this.menuBarRightTN.position = U3D.v(-15, 1, -15);
+    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarRightTN.billboardMode = 7;
+
+    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
+    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
+    this.menuBarTabButtonsTN.position.y = 10;
+
+    this.initOptionsBar(this.scene, this.menuBarTabButtonsTN);
 
     this.sceneInited = true;
-
-    this.initOptionsBar();
 
     this.loadAvatars();
     Asteroid3D.loadAsteroids(this.scene, this);
@@ -925,10 +1034,10 @@ export class StoryApp extends BaseApp {
       let key = keys[nextIndex];
       this._updateLastClickMeta(this.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else {
-      let keys = Object.keys(window.staticAssetMeshes).sort((a, b) => {
-        if (window.staticAssetMeshes[a].assetMeta.name > window.staticAssetMeshes[b].assetMeta.name)
+      let keys = Object.keys(this.staticAssetMeshes).sort((a, b) => {
+        if (this.staticAssetMeshes[a].assetMeta.name > this.staticAssetMeshes[b].assetMeta.name)
           return 1;
-        if (window.staticAssetMeshes[a].assetMeta.name < window.staticAssetMeshes[b].assetMeta.name)
+        if (this.staticAssetMeshes[a].assetMeta.name < this.staticAssetMeshes[b].assetMeta.name)
           return -1;
         return 0;
       });
@@ -940,10 +1049,9 @@ export class StoryApp extends BaseApp {
         nextIndex = 0;
 
       let key = keys[nextIndex];
-      this._updateLastClickMeta(window.staticAssetMeshes[key].assetMeta);
+      this._updateLastClickMeta(this.staticAssetMeshes[key].assetMeta);
     }
   }
-
   _initSizePanel() {
     let buttonBarTransform = new BABYLON.TransformNode('assetPanelButtonTN', this.scene);
 
@@ -1028,7 +1136,7 @@ export class StoryApp extends BaseApp {
   }
   async updateAssetSize(size, meta) {
     let id = meta.id;
-    if (window.staticAssetMeshes[id]) {
+    if (this.staticAssetMeshes[id]) {
       if (size === 'huge')
         meta.containerPath = meta.extended.largeGlbPath;
       if (size === 'normal')
@@ -1037,10 +1145,10 @@ export class StoryApp extends BaseApp {
         meta.containerPath = meta.extended.smallGlbPath;
 
       let freshMesh = await U3D.loadStaticMesh(this.scene, meta.containerPath);
-      freshMesh.parent = window.staticAssetMeshes[id].baseMesh.parent;
+      freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
       U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-      window.staticAssetMeshes[id].baseMesh.dispose();
-      window.staticAssetMeshes[id].baseMesh = freshMesh;
+      this.staticAssetMeshes[id].baseMesh.dispose();
+      this.staticAssetMeshes[id].baseMesh = freshMesh;
     }
 
     let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
@@ -1050,8 +1158,8 @@ export class StoryApp extends BaseApp {
 
     await this.updateProfileMeshOverride(id, size);
 
-    window.staticAssetMeshes[id].assetMeta.extended = U3D.processStaticAssetMeta(window.staticAssetMeshes[id].assetMeta, this.profile);
-    this._updateLastClickMeta(window.staticAssetMeshes[id].assetMeta);
+    this.staticAssetMeshes[id].assetMeta.extended = U3D.processStaticAssetMeta(this.staticAssetMeshes[id].assetMeta, this.profile);
+    this._updateLastClickMeta(this.staticAssetMeshes[id].assetMeta);
   }
 
   selectedMenuBarTab(menuTabToShow) {
@@ -1069,182 +1177,7 @@ export class StoryApp extends BaseApp {
     if (menuTabToShow)
       menuTabToShow.setEnabled(true);
   }
-  __addTabButtons(tabBar) {
-    let iconName = 'meteor';
-    let meteorMenuTabBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
-      'meteorMenuTabBtn');
-    meteorMenuTabBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.meteorMenuTab);
-      }
-    };
-    meteorMenuTabBtn.parent = tabBar;
-    meteorMenuTabBtn.position.x = -13;
 
-    iconName = 'sun';
-    let optionsMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
-      'optionsMenuBtn');
-    optionsMenuBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.optionsMenuTab);
-      }
-    };
-    optionsMenuBtn.parent = tabBar;
-    optionsMenuBtn.position.x = -10;
-
-    iconName = 'anchor';
-    let selectedObjectMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
-      'selectedObjectMenuBtn');
-    selectedObjectMenuBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.focusPanelTab);
-      }
-    };
-    selectedObjectMenuBtn.parent = tabBar;
-    selectedObjectMenuBtn.position.x = -7;
-
-    iconName = 'moon';
-    let playersMoonsMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
-      'playersMoonsMenuBtn');
-    playersMoonsMenuBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.playerMoonPanelTab);
-      }
-    };
-    playersMoonsMenuBtn.parent = tabBar;
-    playersMoonsMenuBtn.position.x = -4;
-
-    iconName = 'edit';
-    let gameStatusMenuBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg',
-      'gameStatusMenuBtn');
-    gameStatusMenuBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.gameStatusPanelTab);
-      }
-    };
-    gameStatusMenuBtn.parent = tabBar;
-    gameStatusMenuBtn.position.x = -1;
-  }
-  initOptionsBar() {
-    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
-    this.menuBarLeftTN.position = U3D.v(-10, 1, -10);
-    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.billboardMode = 7;
-
-    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
-    this.menuBarRightTN.position = U3D.v(-15, 1, -15);
-    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarRightTN.billboardMode = 7;
-
-    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
-    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-    this.menuBarTabButtonsTN.position.y = 10;
-    this.__addTabButtons(this.menuBarTabButtonsTN);
-
-
-    this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', this.scene);
-    this.optionsMenuTab.parent = this.menuBarLeftTN;
-    this.optionsMenuTab.position.y = 0;
-    this.optionsMenuTab.setEnabled(false);
-    this.initOptionsTab();
-
-    this.meteorMenuTab = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
-    this.meteorMenuTab.parent = this.menuBarLeftTN;
-    this.meteorMenuTab.position.y = 0;
-    this.meteorMenuTab.setEnabled(false);
-    this.initMeteorTab(this.meteorMenuTab);
-
-    this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.scene);
-    this.focusPanelTab.parent = this.menuBarLeftTN;
-    this.focusPanelTab.position.y = 0;
-    this.focusPanelTab.setEnabled(false);
-    this.__initFocusedAssetPanel();
-
-    this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.scene);
-    this.playerMoonPanelTab.parent = this.menuBarLeftTN;
-    this.playerMoonPanelTab.position.y = 0;
-    this.playerMoonPanelTab.setEnabled(false);
-    this._initPlayerMoonsPanel();
-
-    this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', this.scene);
-    this.gameStatusPanelTab.parent = this.menuBarLeftTN;
-    this.gameStatusPanelTab.position.y = 0;
-    this.gameStatusPanelTab.setEnabled(false);
-    this.initGameStatusPanel();
-
-  }
-  async __initFocusedAssetPanel() {
-    this.followSelectedMetaBtn = U3D.addTextPlane(this.scene, 'A Follow', 'followSelectedMetaBtn');
-    this.followSelectedMetaBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.setFollowMeta();
-      }
-    };
-    this.followSelectedMetaBtn.position.x = -3;
-    this.followSelectedMetaBtn.position.y = 5;
-    this.followSelectedMetaBtn.position.z = 2;
-
-    this.followSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
-    this.followSelectedMetaBtn.parent = this.focusPanelTab;
-
-    let buttonPanel = this._initSizePanel();
-    buttonPanel.position.y = 4;
-    buttonPanel.parent = this.focusPanelTab;
-
-    let size = 1;
-    this.selectedAssetNameMesh = BABYLON.MeshBuilder.CreatePlane('selectedAssetNameMesh', {
-      height: 1.5,
-      width: size * 5,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    this.selectedAssetNameMesh.position.y = 3;
-    this.selectedAssetNameMesh.rotation.y = Math.PI;
-    this.selectedAssetNameMesh.parent = this.focusPanelTab;
-
-    this.selectedAssetNameMat = new BABYLON.StandardMaterial('selectedAssetNameMat', this.scene);
-    this.selectedAssetNameMesh.material = this.selectedAssetNameMat;
-
-    this.nextSelectedMetaBtn = U3D.addTextPlane(this.scene, '>', 'nextSelectedMetaBtn');
-    this.nextSelectedMetaBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextSelectedObject();
-      }
-    };
-    this.nextSelectedMetaBtn.position.x = 3;
-    this.nextSelectedMetaBtn.position.y = 0;
-    this.nextSelectedMetaBtn.position.z = 0;
-    this.nextSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
-    this.nextSelectedMetaBtn.parent = this.focusPanelTab;
-
-    this.previousSelectedMetaBtn = U3D.addTextPlane(this.scene, '<', 'previousSelectedMetaBtn');
-    this.previousSelectedMetaBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextSelectedObject(true);
-      }
-    };
-    this.previousSelectedMetaBtn.position.x = -3;
-    this.previousSelectedMetaBtn.position.y = 0;
-    this.previousSelectedMetaBtn.position.z = 0;
-
-    this.previousSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
-    this.previousSelectedMetaBtn.parent = this.focusPanelTab;
-  }
   _initPlayerMoonsPanel() {
     for (let c = 0; c < 4; c++) {
       let result = window.staticMeshContainer[this.seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
@@ -1297,179 +1230,6 @@ export class StoryApp extends BaseApp {
       this.rightHandedControllerGrip = model.grip;
       this.menuBarRightTN.parent = model.grip;
     }
-  }
-
-  _addOptionButton(texturePath, name) {
-    let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
-      radius: 1,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    let mat = new BABYLON.StandardMaterial(name + 'disc-mat', this.scene);
-
-    let tex = new BABYLON.Texture(texturePath, this.scene, false, false);
-    tex.hasAlpha = true;
-    mat.opacityTexture = tex;
-    mat.emissiveColor = new BABYLON.Color3(1, 0, 1);
-    mat.diffuseColor = new BABYLON.Color3(1, 0, 1);
-    mat.ambientColor = new BABYLON.Color3(1, 0, 1);
-    mesh.material = mat;
-
-    return mesh;
-  }
-
-  async initOptionsTab() {
-    let iconName = 'rocket';
-    let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
-    mascotsBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        if (this.rocketRunning)
-          return;
-        this.rocketRunning = true;
-        let rotation = new BABYLON.Vector3(0, 0, 0);
-        let endPosition = U3D.vector(window.staticAssetMeshes['mars'].position);
-        let startPosition = U3D.vector(window.staticAssetMeshes['neptune'].position);
-        await R3D.shootRocket(this.scene, startPosition, rotation, endPosition);
-
-        setTimeout(() => this.rocketRunning = false, 1000);
-      }
-    };
-    mascotsBtn.parent = this.optionsMenuTab;
-    mascotsBtn.position.x = -5;
-
-    iconName = 'robot';
-    let randomAnimsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    randomAnimsBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.randomizeAnimations();
-      }
-    };
-    randomAnimsBtn.position.x = -7.5;
-    randomAnimsBtn.parent = this.optionsMenuTab;
-
-    this.skyboxesList = [
-      'nebula_orange_blue',
-      'moon_high_clear',
-      'moonless_2',
-      'nebula_black',
-      'nebula_blue_red',
-      'nebula_cold',
-      'nebula_glow',
-      'nebula_green',
-      'nebula_red',
-      'neon_starless',
-      'vortex_starless'
-    ];
-
-    iconName = 'eye';
-    let nextSkyBoxBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'skyboxspeedbutton');
-    nextSkyBoxBtn.position.x = -2.5;
-    nextSkyBoxBtn.parent = this.optionsMenuTab;
-
-    nextSkyBoxBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this._nextSkybox();
-      }
-    };
-  }
-  async _nextSkybox() {
-    let index = this.skyboxesList.indexOf(this.profile.skyboxPath);
-    if (index < this.skyboxesList.length - 1)
-      index++
-    else
-      index = 0;
-    this.profile.skyboxPath = this.skyboxesList[index];
-    this.initSkybox();
-
-    let updatePacket = {
-      skyboxPath: this.profile.skyboxPath
-    };
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-  }
-
-  initMeteorTab() {
-    this.asteroidDownCountBtn = U3D.addTextPlane(this.scene, '-', 'asteroidDownCountBtn');
-    this.asteroidDownCountBtn.position.x = -7;
-    this.asteroidDownCountBtn.position.y = 3;
-    this.asteroidDownCountBtn.position.z = 1;
-    this.asteroidDownCountBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidDownCountBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange(-20);
-      }
-    };
-    this.asteroidDownCountBtn.parent = this.meteorMenuTab;
-
-    this.asteroidUpCountBtn = U3D.addTextPlane(this.scene, '+', 'asteroidUpCountBtn');
-    this.asteroidUpCountBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.asteroidCountChange(20);
-      }
-    };
-    this.asteroidUpCountBtn.position.x = -3;
-    this.asteroidUpCountBtn.position.y = 3;
-    this.asteroidUpCountBtn.position.z = 1;
-
-    this.asteroidUpCountBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidUpCountBtn.parent = this.meteorMenuTab;
-
-    this._updateAsteroidLabel();
-  }
-  _updateAsteroidLabel() {
-    if (!this.menuBarLeftTN)
-      return;
-
-    if (this.asteroidCountLabel)
-      this.asteroidCountLabel.dispose();
-
-    let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
-    this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.meteorMenuTab;
-    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
-    this.asteroidCountLabel.position.x = -5;
-    this.asteroidCountLabel.position.y = 3;
-    this.asteroidCountLabel.position.z = 1;
-  }
-  async asteroidCountChange(delta) {
-    let asteroidCount = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
-    asteroidCount = Asteroid3D.getAsteroidCount(asteroidCount + delta);
-
-    let updatePacket = {
-      asteroidCount
-    };
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-    this.profile.asteroidCount = updatePacket.asteroidCount;
-    Asteroid3D.loadAsteroids(this.scene, this);
-    this._updateAsteroidLabel();
-  }
-
-  async randomizeAnimations() {
-    if (this.initedAvatars === 'loading')
-      return;
-
-    if (!this.initedAvatars) {
-      await this._loadAvatars();
-      return;
-    }
-
-    this.initedAvatars.forEach(container => {
-      let arr = container.animContainer.animationGroups;
-      let index = Math.floor(Math.random() * arr.length);
-
-      U3D.avatarSequence(container, index, this.scene);
-    })
   }
 
   pointerMove(pointerInfo) {

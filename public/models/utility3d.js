@@ -943,9 +943,9 @@ export default class Utility3D {
   static async ___awaitAssetLoad(name) {
     return new Promise((res, rej) => {
       let awaitInterval = setInterval(() => {
-        if (window.staticAssetMeshes[name]) {
+        if (window.App3D.staticAssetMeshes[name]) {
           clearInterval(awaitInterval);
-          res(window.staticAssetMeshes[name]);
+          res(window.App3D.staticAssetMeshes[name]);
         }
       }, 50);
     });
@@ -986,18 +986,18 @@ export default class Utility3D {
 
     meshPivot.assetMeta = meta;
     meshPivot.baseMesh = mesh;
-    window.staticAssetMeshes[name] = meshPivot;
+    window.App3D.staticAssetMeshes[name] = meshPivot;
 
     if (meta.parent) {
       await this.___awaitAssetLoad(meta.parent);
       if (meta.parentType === 'basePivot')
-        meshPivot.parent = window.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+        meshPivot.parent = window.App3D.staticAssetMeshes[meta.parent].assetMeta.basePivot;
       else
-        meshPivot.parent = window.staticAssetMeshes[meta.parent];
+        meshPivot.parent = window.App3D.staticAssetMeshes[meta.parent];
     } else
       meshPivot.parent = sceneParent;
 
-    return window.staticAssetMeshes[name];
+    return window.App3D.staticAssetMeshes[name];
   }
   static processStaticAssetMeta(meta, profile) {
 
