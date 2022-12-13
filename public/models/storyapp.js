@@ -119,7 +119,7 @@ export class StoryApp extends BaseApp {
       index++
     else
       index = 0;
-    this.profile.skyboxPath = this.menuTab3D.skyboxesList[index];
+    this.profile.skyboxPath = this.menuTab3D.skyboxList()[index];
     window.App3D.initSkybox();
 
     let updatePacket = {
