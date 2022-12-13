@@ -1,6 +1,7 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
 import U3D from '/models/utility3d.js';
+import R3D from '/models/rocket3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 
 export class StoryApp extends BaseApp {
@@ -82,8 +83,6 @@ export class StoryApp extends BaseApp {
   }
 
   clearFollowMeta() {
-    this.buttonOneRed.innerHTML = 'A';
-    this.buttonTwo.innerHTML = 'B';
     this.followMeta = null;
   }
   setFollowMeta() {
@@ -110,19 +109,17 @@ export class StoryApp extends BaseApp {
           );
       */
     }
-    this.buttonOneRed.innerHTML = 'A';
-    this.buttonTwo.innerHTML = 'B Stop follow';
   }
 
-  xButtonPress() {
+  yButtonPress() {
     this.clearFollowMeta();
     this.aimCamera(this.cameraMetaX);
   }
-  yButtonPress() {}
-  aButtonPress() {
+  xButtonPress() {}
+  bButtonPress() {
     this.setFollowMeta();
   }
-  bButtonPress() {
+  aButtonPress() {
     this.clearFollowMeta();
   }
 
@@ -189,7 +186,7 @@ export class StoryApp extends BaseApp {
 
       if (meta.seatIndex !== undefined)
         this.seatMeshes[meta.seatIndex] = assetMesh;
-      if (meta.noClick !== true) {
+      if (meta.noClick !== true && !meta.loadDisabled) {
         meta.appClickable = true;
         meta.masterid = name;
         meta.clickCommand = 'customClick';
@@ -237,10 +234,6 @@ export class StoryApp extends BaseApp {
     Asteroid3D.loadAsteroids(this.scene, this);
 
     this.paintGameData();
-
-    this.addRocket();
-
-
     this.verifyLoaddingComplete = setInterval(() => {
       if (!this.runRender)
         this.paintGameData();
@@ -387,8 +380,6 @@ export class StoryApp extends BaseApp {
     this.lastClickMetaButtonCache = this.lastClickMeta;
 
     let desc = assetMeta.name.replace('.obj', '');
-    this.buttonOneRed.innerHTML = 'A Follow ' + desc;
-    this.buttonTwo.innerHTML = 'B';
 
     if (this.selectedContainerTransform)
       this.selectedContainerTransform.dispose();
@@ -1326,209 +1317,6 @@ export class StoryApp extends BaseApp {
     return mesh;
   }
 
-  async rocketTakeOff(rocketMesh, height, xDelta, timeMS = 2000) {
-    return new Promise((res, rej) => {
-      const id = rocketMesh.id;
-      const frameRate = 60;
-      const endFrame = timeMS * frameRate / 1000;
-
-      const heightAnim = new BABYLON.Animation(id + "heightPos", "position.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
-      const heightKeys = [];
-      heightKeys.push({
-        frame: 0,
-        value: rocketMesh.position.y
-      });
-      heightKeys.push({
-        frame: Math.floor(0.5 * endFrame),
-        value: rocketMesh.position.y + height / 5
-      });
-      heightKeys.push({
-        frame: endFrame,
-        value: rocketMesh.position.y + height
-      });
-      heightAnim.setKeys(heightKeys);
-
-      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.x", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
-      const rotationKeys = [];
-      rotationKeys.push({
-        frame: 0,
-        value: rocketMesh.rotation.x
-      });
-      rotationKeys.push({
-        frame: Math.floor(0.667 * endFrame),
-        value: rocketMesh.rotation.x
-      });
-      rotationKeys.push({
-        frame: Math.floor(0.75 * endFrame),
-        value: rocketMesh.rotation.x + Math.PI / 4
-      });
-      rotationKeys.push({
-        frame: endFrame,
-        value: rocketMesh.rotation.x + Math.PI / 2
-      });
-      rotationAnim.setKeys(rotationKeys);
-
-      const positionAnim = new BABYLON.Animation(id + "positionAnim", "position.z", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
-      const positionKeys = [];
-      positionKeys.push({
-        frame: 0,
-        value: rocketMesh.position.z
-      });
-      positionKeys.push({
-        frame: Math.floor(0.667 * endFrame),
-        value: rocketMesh.position.z
-      });
-      positionKeys.push({
-        frame: endFrame,
-        value: rocketMesh.position.z + xDelta
-      });
-      positionAnim.setKeys(positionKeys);
-
-
-      rocketMesh.animations.push(heightAnim);
-      rocketMesh.animations.push(rotationAnim);
-      rocketMesh.animations.push(positionAnim);
-
-      let rocketAnim = this.scene.beginAnimation(rocketMesh, 0, endFrame, true);
-
-      let animArray = rocketMesh.animations;
-      setTimeout(() => {
-        rocketAnim.stop();
-        animArray.splice(animArray.indexOf(heightAnim), 1);
-        animArray.splice(animArray.indexOf(rotationAnim), 1);
-        animArray.splice(animArray.indexOf(positionAnim), 1);
-        res();
-      }, timeMS);
-    });
-  }
-  async rocketLand(rocketMesh, endPosition, timeMS = 1500) {
-    return new Promise((res, rej) => {
-      const id = rocketMesh.id;
-      const frameRate = 60;
-      const endFrame = timeMS * frameRate / 1000;
-
-      const positionAnim = new BABYLON.Animation(id + "heightPosLand", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-      const positionKeys = [];
-      positionKeys.push({
-        frame: 0,
-        value: rocketMesh.position
-      });
-      positionKeys.push({
-        frame: endFrame,
-        value: endPosition
-      });
-      positionAnim.setKeys(positionKeys);
-
-      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.x", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
-      const rotationKeys = [];
-      rotationKeys.push({
-        frame: 0,
-        value: rocketMesh.rotation.x
-      });
-      rotationKeys.push({
-        frame: endFrame,
-        value: rocketMesh.rotation.x + Math.PI / 3
-      });
-      rotationAnim.setKeys(rotationKeys);
-
-      let origScaling = U3D.vector(rocketMesh.scaling);
-      const scalingAnim = new BABYLON.Animation(id + "scaleLand", "scaling", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-      const scalingKeys = [];
-      scalingKeys.push({
-        frame: 0,
-        value: origScaling
-      });
-      scalingKeys.push({
-        frame: endFrame,
-        value: U3D.v(origScaling.x * 0.25, origScaling.y * 0.25, origScaling.z * 0.25)
-      });
-      scalingAnim.setKeys(scalingKeys);
-
-      rocketMesh.animations.push(rotationAnim);
-      rocketMesh.animations.push(positionAnim);
-      rocketMesh.animations.push(scalingAnim);
-
-      let rocketAnim = this.scene.beginAnimation(rocketMesh, 0, endFrame, true);
-
-      let animArray = rocketMesh.animations;
-      setTimeout(() => {
-        rocketAnim.stop();
-        animArray.splice(animArray.indexOf(rotationAnim), 1);
-        animArray.splice(animArray.indexOf(positionAnim), 1);
-        animArray.splice(animArray.indexOf(scalingAnim), 1);
-        rocketMesh.scaling.copyFrom(origScaling);
-        res();
-      }, timeMS);
-    });
-  }
-  async rocketTravelTo(rocket, endPosition, travelTime, landingDelay = 1500) {
-    return new Promise((res, rej) => {
-      let startPosition = U3D.vector(rocket.position);
-      const id = rocket.id;
-      const frameRate = 60;
-      const endFrame = Math.floor((travelTime + landingDelay) * frameRate / 1000);
-      const delayFrame = Math.floor((travelTime) * frameRate / 1000);
-
-      const positionAnimation = new BABYLON.Animation(id + "positionAnim", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-      const positionKeys = [];
-      positionKeys.push({
-        frame: 0,
-        value: U3D.v(startPosition.x, startPosition.y, startPosition.z)
-      });
-      positionKeys.push({
-        frame: delayFrame,
-        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
-      });
-      positionKeys.push({
-        frame: endFrame,
-        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
-      });
-      positionAnimation.setKeys(positionKeys);
-
-      rocket.animations.push(positionAnimation);
-      let rocketAnim = this.scene.beginAnimation(rocket, 0, travelTime, true);
-
-      let animArray = rocket.animations;
-      setTimeout(() => {
-        rocketAnim.stop();
-        animArray.splice(animArray.indexOf(positionAnimation), 1);
-        res();
-      }, (travelTime - landingDelay));
-    });
-  }
-  async shootRocket(startPos, startRotation, endPosition) {
-    if (this.rocketRunning)
-      return;
-
-    let newRocket = window.staticAssetMeshes['rocket_atlasv'];
-    if (!this.createdFireParticles) {
-      this.createdFireParticles = true;
-      this.createdFireParticles = U3D.createFireParticles(window.staticAssetMeshes['rocket_atlasv'].assetMeta, window.staticAssetMeshes['rocket_atlasv'], 'rocket_atlasv', this.scene);
-    }
-
-    this.rocketRunning = true;
-    this.createdFireParticles.start();
-
-    newRocket.position.copyFrom(startPos);
-    newRocket.rotation.copyFrom(startRotation);
-    newRocket.setEnabled(true);
-
-    await this.rocketTakeOff(newRocket, 6, 10, 2500);
-    await this.rocketTravelTo(newRocket, endPosition, 8000, 1500);
-    this.createdFireParticles.stop();
-    await this.rocketLand(newRocket, endPosition, 1500);
-
-    newRocket.setEnabled(false);
-    newRocket.position.copyFrom(startPos);
-    newRocket.rotation.copyFrom(startRotation);
-    this.rocketRunning = false;
-  }
-
-  async addRocket() {
-
-    //var input5 = new BABYLON.GUI.InputText();
-  }
-
   async initOptionsTab() {
     let iconName = 'rocket';
     let mascotsBtn = this._addOptionButton('https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg', 'button2');
@@ -1536,11 +1324,15 @@ export class StoryApp extends BaseApp {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
+        if (this.rocketRunning)
+          return;
+        this.rocketRunning = true;
         let rotation = new BABYLON.Vector3(0, 0, 0);
-
         let endPosition = U3D.vector(window.staticAssetMeshes['mars'].position);
         let startPosition = U3D.vector(window.staticAssetMeshes['neptune'].position);
-        this.shootRocket(startPosition, rotation, endPosition);
+        await R3D.shootRocket(this.scene, startPosition, rotation, endPosition);
+
+        setTimeout(() => this.rocketRunning = false, 1000);
       }
     };
     mascotsBtn.parent = this.optionsMenuTab;

@@ -1,0 +1,196 @@
+import U3D from '/models/utility3d.js';
+
+export default class Rocket3D {
+  static async rocketTakeOff(scene, rocketMesh, height, xDelta, timeMS = 2000) {
+    return new Promise((res, rej) => {
+      const id = rocketMesh.id;
+      const frameRate = 60;
+      const endFrame = timeMS * frameRate / 1000;
+
+      const heightAnim = new BABYLON.Animation(id + "heightPos", "position.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const heightKeys = [];
+      heightKeys.push({
+        frame: 0,
+        value: rocketMesh.position.y
+      });
+      heightKeys.push({
+        frame: Math.floor(0.5 * endFrame),
+        value: rocketMesh.position.y + height / 5
+      });
+      heightKeys.push({
+        frame: endFrame,
+        value: rocketMesh.position.y + height
+      });
+      heightAnim.setKeys(heightKeys);
+
+      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const rotationKeys = [];
+      rotationKeys.push({
+        frame: 0,
+        value: rocketMesh.rotation.y
+      });
+      rotationKeys.push({
+        frame: Math.floor(0.667 * endFrame),
+        value: rocketMesh.rotation.y
+      });
+      rotationKeys.push({
+        frame: Math.floor(0.75 * endFrame),
+        value: rocketMesh.rotation.y + Math.PI / 4
+      });
+      rotationKeys.push({
+        frame: endFrame,
+        value: rocketMesh.rotation.y + Math.PI / 2
+      });
+      rotationAnim.setKeys(rotationKeys);
+
+      const positionAnim = new BABYLON.Animation(id + "positionAnim", "position.z", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const positionKeys = [];
+      positionKeys.push({
+        frame: 0,
+        value: rocketMesh.position.z
+      });
+      positionKeys.push({
+        frame: Math.floor(0.667 * endFrame),
+        value: rocketMesh.position.z
+      });
+      positionKeys.push({
+        frame: endFrame,
+        value: rocketMesh.position.z + xDelta
+      });
+      positionAnim.setKeys(positionKeys);
+
+
+      rocketMesh.animations.push(heightAnim);
+      rocketMesh.animations.push(rotationAnim);
+      rocketMesh.animations.push(positionAnim);
+
+      let rocketAnim = scene.beginAnimation(rocketMesh, 0, endFrame, true);
+
+      let animArray = rocketMesh.animations;
+      setTimeout(() => {
+        rocketAnim.stop();
+        animArray.splice(animArray.indexOf(heightAnim), 1);
+        animArray.splice(animArray.indexOf(rotationAnim), 1);
+        animArray.splice(animArray.indexOf(positionAnim), 1);
+        res();
+      }, timeMS);
+    });
+  }
+  static async rocketLand(scene, rocketMesh, endPosition, timeMS = 1500) {
+    return new Promise((res, rej) => {
+      const id = rocketMesh.id;
+      const frameRate = 60;
+      const endFrame = timeMS * frameRate / 1000;
+
+      const positionAnim = new BABYLON.Animation(id + "heightPosLand", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      const positionKeys = [];
+      positionKeys.push({
+        frame: 0,
+        value: rocketMesh.position
+      });
+      positionKeys.push({
+        frame: endFrame,
+        value: endPosition
+      });
+      positionAnim.setKeys(positionKeys);
+
+      const rotationAnim = new BABYLON.Animation(id + "rotationAnim", "rotation.x", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+      const rotationKeys = [];
+      rotationKeys.push({
+        frame: 0,
+        value: rocketMesh.rotation.x
+      });
+      rotationKeys.push({
+        frame: endFrame,
+        value: rocketMesh.rotation.x + Math.PI / 3
+      });
+      rotationAnim.setKeys(rotationKeys);
+
+      let origScaling = U3D.vector(rocketMesh.scaling);
+      const scalingAnim = new BABYLON.Animation(id + "scaleLand", "scaling", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      const scalingKeys = [];
+      scalingKeys.push({
+        frame: 0,
+        value: origScaling
+      });
+      scalingKeys.push({
+        frame: endFrame,
+        value: U3D.v(origScaling.x * 0.25, origScaling.y * 0.25, origScaling.z * 0.25)
+      });
+      scalingAnim.setKeys(scalingKeys);
+
+      rocketMesh.animations.push(rotationAnim);
+      rocketMesh.animations.push(positionAnim);
+      rocketMesh.animations.push(scalingAnim);
+
+      let rocketAnim = scene.beginAnimation(rocketMesh, 0, endFrame, true);
+
+      let animArray = rocketMesh.animations;
+      setTimeout(() => {
+        rocketAnim.stop();
+        animArray.splice(animArray.indexOf(rotationAnim), 1);
+        animArray.splice(animArray.indexOf(positionAnim), 1);
+        animArray.splice(animArray.indexOf(scalingAnim), 1);
+        rocketMesh.scaling.copyFrom(origScaling);
+        res();
+      }, timeMS);
+    });
+  }
+  static async rocketTravelTo(scene, rocket, endPosition, travelTime, landingDelay = 1500) {
+    return new Promise((res, rej) => {
+      let startPosition = U3D.vector(rocket.position);
+      const id = rocket.id;
+      const frameRate = 60;
+      const endFrame = Math.floor((travelTime + landingDelay) * frameRate / 1000);
+      const delayFrame = Math.floor((travelTime) * frameRate / 1000);
+
+      const positionAnimation = new BABYLON.Animation(id + "positionAnim", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      const positionKeys = [];
+      positionKeys.push({
+        frame: 0,
+        value: U3D.v(startPosition.x, startPosition.y, startPosition.z)
+      });
+      positionKeys.push({
+        frame: delayFrame,
+        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
+      });
+      positionKeys.push({
+        frame: endFrame,
+        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
+      });
+      positionAnimation.setKeys(positionKeys);
+
+      rocket.animations.push(positionAnimation);
+      let rocketAnim = scene.beginAnimation(rocket, 0, travelTime, true);
+
+      let animArray = rocket.animations;
+      setTimeout(() => {
+        rocketAnim.stop();
+        animArray.splice(animArray.indexOf(positionAnimation), 1);
+        res();
+      }, (travelTime - landingDelay));
+    });
+  }
+  static async shootRocket(scene, startPos, startRotation, endPosition) {
+    let name = 'rocket_atlasv';
+    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
+    meta.extended = U3D.processStaticAssetMeta(meta, {});
+    let mesh = await U3D.loadStaticMesh(scene, meta.extended.glbPath);
+    U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
+
+
+    let particles = U3D.createFireParticles(meta, mesh, scene);
+
+    mesh.position.copyFrom(startPos);
+    mesh.rotation.copyFrom(startRotation);
+    particles.start();
+
+    await this.rocketTakeOff(scene, mesh, 6, 10, 2500);
+    await this.rocketTravelTo(scene, mesh, endPosition, 8000, 1500);
+    particles.stop();
+    await this.rocketLand(scene, mesh, endPosition, 1500);
+
+    mesh.dispose();
+    setTimeout(() => particles.dispose(), 2000);
+  }
+}

@@ -319,8 +319,8 @@ export default class Utility3D {
 
     return asteroidNameMesh;
   }
-  static createFireParticles(meta, wrapper, name, scene) {
-    let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + name, scene);
+  static createFireParticles(meta, wrapper, scene) {
+    let particlePivot = new BABYLON.TransformNode("staticpivotparticle", scene);
     particlePivot.position.x = meta.px;
     particlePivot.position.y = meta.py;
     particlePivot.position.z = meta.pz;
@@ -924,13 +924,15 @@ export default class Utility3D {
     return v;
   }
 
-  static async loadStaticMesh(scene, path) {
+  static async loadStaticMesh(scene, path, containerOnly) {
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
 
     if (!window.staticMeshContainer[path])
       window.staticMeshContainer[path] = await this.loadContainer(scene, path);
 
+    if (containerOnly)
+      return null;
 
     let result = window.staticMeshContainer[path].instantiateModelsToScene();
     scene.baseShadowGenerator.addShadowCaster(result.rootNodes[0]);
@@ -955,7 +957,12 @@ export default class Utility3D {
     if (meta.sizeBoxFit === undefined)
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
-    let mesh = await this.loadStaticMesh(scene, meta.containerPath);
+    let mesh = await this.loadStaticMesh(scene, meta.containerPath, meta.loadDisabled);
+    if (meta.loadDisabled)
+      return {
+        assetMeta: meta
+      };
+
     this._fitNodeToSize(mesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
@@ -989,9 +996,6 @@ export default class Utility3D {
         meshPivot.parent = window.staticAssetMeshes[meta.parent];
     } else
       meshPivot.parent = sceneParent;
-
-    if (meta.loadDisabled)
-      meshPivot.setEnabled(false);
 
     return window.staticAssetMeshes[name];
   }
