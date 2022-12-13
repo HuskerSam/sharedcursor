@@ -65,10 +65,21 @@ export class StoryApp extends BaseApp {
     this.buttonThree.addEventListener('click', e => this.xButtonPress());
     this.buttonFour = document.querySelector('.choice-button-four');
     this.buttonFour.addEventListener('click', e => this.yButtonPress());
+  }
+  viewSettings() {
+    this.modal.show();
+  }
 
-    this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
-      this.clearFollowMeta();
-    });
+  yButtonPress() {
+    this.clearFollowMeta();
+    this.aimCamera(this.cameraMetaX);
+  }
+  xButtonPress() {}
+  bButtonPress() {
+    this.setFollowMeta();
+  }
+  aButtonPress() {
+    this.clearFollowMeta();
   }
 
   updateAsteroidLabel() {
@@ -145,7 +156,7 @@ export class StoryApp extends BaseApp {
   }
   setFollowMeta() {
     //  this.aimCamera();
-    this.followMeta = this.lastClickMetaButtonCache;
+    this.followMeta = this.menuTab3D.lastClickMetaButtonCache;
     let v = new BABYLON.Vector3(0, 0, 0);
 
     if (this.followMeta.basePivot)
@@ -169,18 +180,6 @@ export class StoryApp extends BaseApp {
     }
   }
 
-  yButtonPress() {
-    this.clearFollowMeta();
-    this.aimCamera(this.cameraMetaX);
-  }
-  xButtonPress() {}
-  bButtonPress() {
-    this.setFollowMeta();
-  }
-  aButtonPress() {
-    this.clearFollowMeta();
-  }
-
   toggleMenuBar() {
     document.body.classList.toggle('menu_bar_expanded');
   }
@@ -196,6 +195,10 @@ export class StoryApp extends BaseApp {
 
   async loadStaticScene() {
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
+
+    this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
+      this.clearFollowMeta();
+    });
 
     let mats = U3D.asteroidMaterial(this.scene);
     window.asteroidMaterial = mats.material;
@@ -256,8 +259,6 @@ export class StoryApp extends BaseApp {
         };
       }
     });
-
-    this.initItemNamePanel(this.scene);
 
     this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
       width: 1,
@@ -321,67 +322,6 @@ export class StoryApp extends BaseApp {
     this.randomizeAnimations();
   }
 
-  showItemNamePanel(meta) {
-    let nameDesc = meta.name;
-    if (meta.solarPosition)
-      nameDesc += ` (${meta.solarPosition})`;
-    if (meta.asteroidType)
-      nameDesc = nameDesc.replace('.obj', '');
-
-    let color = "rgb(200, 0, 0)";
-    if (meta.color)
-      color = meta.color;
-    let nameTexture = U3D.__texture2DText(this.scene, nameDesc, color);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    this.boardWrapper.nameMat.diffuseTexture = nameTexture;
-    this.boardWrapper.nameMat.emissiveTexture = nameTexture;
-    this.boardWrapper.nameMat.ambientTexture = nameTexture;
-  }
-
-  initItemNamePanel(scene) {
-    let size = 1;
-    let name = 'one';
-    this.boardWrapper = new BABYLON.TransformNode('boardpopupwrapper' + name, scene);
-    this.boardWrapper.position.y = -1000;
-
-    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
-      height: size * 5,
-      width: size * 5,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-
-    let factor = -1.8;
-    nameMesh1.position.y = factor;
-
-    let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
-    nameMesh1.material = nameMat;
-    nameMesh1.parent = this.boardWrapper;
-
-    this.boardWrapper.nameMat = nameMat;
-    this.boardWrapper.nameMesh1 = nameMesh1;
-  }
-
-  showBoardWrapper(meta) {
-    this.showItemNamePanel(meta);
-    this.boardWrapper.billboardMode = 7;
-    let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
-    this.boardWrapper.setEnabled(true);
-    this.boardWrapper.position.y = yOffset;
-    this.boardWrapper.parent = meta.basePivot;
-    if (meta.textPivot)
-      meta.textPivot.setEnabled(false);
-  }
-  hideBoardWrapper(meta) {
-    this.boardWrapper.setEnabled(false);
-    this.boardWrapper.parent = null;
-    if (meta.textPivot)
-      meta.textPivot.setEnabled(true);
-  }
-  viewSettings() {
-    this.modal.show();
-  }
   getSeatData(seatIndex) {
     let key = 'seat' + seatIndex.toString();
     let name = '';
@@ -444,53 +384,6 @@ export class StoryApp extends BaseApp {
     }
   }
 
-  async _updateLastClickMeta(assetMeta) {
-    this.lastClickMeta = assetMeta;
-    this.lastClickMetaButtonCache = this.lastClickMeta;
-
-    let desc = assetMeta.name.replace('.obj', '');
-
-    if (this.selectedContainerTransform)
-      this.selectedContainerTransform.dispose();
-
-    this.selectedContainerTransform = new BABYLON.TransformNode('selectedContainerTransform', this.scene);
-    this.selectedContainerTransform.parent = this.menuTab3D.focusPanelTab;
-    this.selectedContainerTransform.position.y = 2.5;
-
-    let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
-    let mesh = result.rootNodes[0];
-    mesh.parent = this.selectedContainerTransform;
-    let factor = 0.7;
-    if (this.inXR)
-      factor *= 0.1;
-    U3D._fitNodeToSize(this.selectedContainerTransform, factor);
-    if (assetMeta.asteroidType)
-      mesh.material = window.selectedAsteroidMaterial;
-
-    U3D.setTextMaterial(this.scene, this.selectedAssetNameMat, desc);
-    this._updateAssetSizeButtons();
-  }
-  _updateAssetSizeButtons() {
-    if (this.lastClickMeta.asteroidType) {
-      this.assetPanelNormalButton.setEnabled(false);
-      this.assetSmallSizeButton.setEnabled(false);
-      this.assetPanelHugeButton.setEnabled(false);
-
-      return;
-    }
-
-    let smallSize = this.lastClickMeta.smallglbpath ? true : false;
-    let hugeSize = this.lastClickMeta.largeglbpath ? true : false;
-
-    let isSmallSize = this.lastClickMeta.extended.smallGlbPath === this.lastClickMeta.extended.glbPath;
-    let isHugeSize = this.lastClickMeta.extended.largeGlbPath === this.lastClickMeta.extended.glbPath;
-    let isNormalSize = this.lastClickMeta.extended.normalGlbPath === this.lastClickMeta.extended.glbPath;
-
-    this.assetPanelNormalButton.setEnabled(!isNormalSize);
-    this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
-    this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
-  }
-
   clickEndTurn() {
     this._endTurn();
   }
@@ -503,7 +396,7 @@ export class StoryApp extends BaseApp {
 
   meshToggleAnimation(meta, stop = false, mesh) {
     if (!stop) {
-      this.showBoardWrapper(meta);
+      this.menuTab3D.showBoardWrapper(meta);
 
       if (meta.rotationAnimation)
         meta.rotationAnimation.pause();
@@ -511,7 +404,7 @@ export class StoryApp extends BaseApp {
       if (meta.orbitAnimation)
         meta.orbitAnimation.pause();
     } else {
-      this.hideBoardWrapper(meta);
+      this.menuTab3D.hideBoardWrapper(meta);
 
       if (meta.rotationAnimation && meta.rotationAnimation._paused)
         meta.rotationAnimation.restart();
@@ -948,108 +841,6 @@ export class StoryApp extends BaseApp {
     */
   }
 
-  nextSelectedObject(previous = false) {
-    let meta = this.lastClickMetaButtonCache;
-    let id = meta.id;
-    let factor = previous ? -1 : 1;
-    if (meta.asteroidType) {
-      let keys = Object.keys(this.loadedAsteroids).sort();
-
-      let index = keys.indexOf(meta.name);
-      let nextIndex = index + factor;
-      if (nextIndex < 0)
-        nextIndex = keys.length - 1;
-      if (nextIndex > keys.length - 1)
-        nextIndex = 0;
-
-      let key = keys[nextIndex];
-      this._updateLastClickMeta(this.loadedAsteroids[key].orbitWrapper.assetMeta);
-    } else {
-      let keys = Object.keys(this.staticAssetMeshes).sort((a, b) => {
-        if (this.staticAssetMeshes[a].assetMeta.name > this.staticAssetMeshes[b].assetMeta.name)
-          return 1;
-        if (this.staticAssetMeshes[a].assetMeta.name < this.staticAssetMeshes[b].assetMeta.name)
-          return -1;
-        return 0;
-      });
-      let index = keys.indexOf(id);
-      let nextIndex = index + factor;
-      if (nextIndex < 0)
-        nextIndex = keys.length - 1;
-      if (nextIndex > keys.length - 1)
-        nextIndex = 0;
-
-      let key = keys[nextIndex];
-      this._updateLastClickMeta(this.staticAssetMeshes[key].assetMeta);
-    }
-  }
-  _initSizePanel() {
-    let buttonBarTransform = new BABYLON.TransformNode('assetPanelButtonTN', this.scene);
-
-    let normalSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelNormalSizeButton', {
-      height: 0.25,
-      width: 1.65,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    normalSizeButton.material = new BABYLON.StandardMaterial('assetPanelNormalSizeButtonMat', this.scene);
-    U3D.setTextMaterial(this.scene, normalSizeButton.material, 'Normal', 'rgb(255, 255, 255)', 'transparent', 180);
-    normalSizeButton.parent = buttonBarTransform;
-    this.assetPanelNormalButton = normalSizeButton;
-
-    let handlePointerDown = async (pointerInfo, mesh, meta) => {
-      normalSizeButton.setEnabled(false);
-      this.updateAssetSize('normal', this.lastClickMetaButtonCache);
-    };
-
-    normalSizeButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown
-    };
-
-    let hugeSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelHugeSizeButton', {
-      height: 0.25,
-      width: 1.65,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    hugeSizeButton.material = new BABYLON.StandardMaterial('assetPanelHugeSizeButtonMat', this.scene);
-    U3D.setTextMaterial(this.scene, hugeSizeButton.material, 'Huge', 'rgb(255, 255, 255)', 'transparent', 180);
-    hugeSizeButton.parent = buttonBarTransform;
-    this.assetPanelHugeButton = hugeSizeButton;
-
-    hugeSizeButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        hugeSizeButton.setEnabled(false);
-        this.updateAssetSize('huge', this.lastClickMetaButtonCache);
-      }
-    };
-    hugeSizeButton.position.x = 2;
-
-    let smallSizeButton = BABYLON.MeshBuilder.CreatePlane('assetPanelSmallSizeButton', {
-      height: 0.25,
-      width: 1.65,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    smallSizeButton.material = new BABYLON.StandardMaterial('assetPanelSmallSizeButtonMat', this.scene);
-    U3D.setTextMaterial(this.scene, smallSizeButton.material, 'Small', 'rgb(255, 255, 255)', 'transparent', 180);
-    smallSizeButton.parent = buttonBarTransform;
-    this.assetSmallSizeButton = smallSizeButton;
-
-    smallSizeButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        smallSizeButton.setEnabled(false);
-        this.updateAssetSize('small', this.lastClickMetaButtonCache);
-      }
-    };
-
-    smallSizeButton.position.x = -2;
-
-    return buttonBarTransform;
-  }
   async updateProfileMeshOverride(id, size) {
     if (!this.profile.assetSizeOverrides)
       this.profile.assetSizeOverrides = {};
@@ -1064,33 +855,6 @@ export class StoryApp extends BaseApp {
     await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
       merge: true
     });
-  }
-  async updateAssetSize(size, meta) {
-    let id = meta.id;
-    if (this.staticAssetMeshes[id]) {
-      if (size === 'huge')
-        meta.containerPath = meta.extended.largeGlbPath;
-      if (size === 'normal')
-        meta.containerPath = meta.extended.normalGlbPath;
-      if (size === 'small')
-        meta.containerPath = meta.extended.smallGlbPath;
-
-      let freshMesh = await U3D.loadStaticMesh(this.scene, meta.containerPath);
-      freshMesh.parent = this.staticAssetMeshes[id].baseMesh.parent;
-      U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-      this.staticAssetMeshes[id].baseMesh.dispose();
-      this.staticAssetMeshes[id].baseMesh = freshMesh;
-    }
-
-    let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
-    if (moonIndex !== -1) {
-      this.loadMoonButton(moonIndex);
-    }
-
-    await this.updateProfileMeshOverride(id, size);
-
-    this.staticAssetMeshes[id].assetMeta.extended = U3D.processStaticAssetMeta(this.staticAssetMeshes[id].assetMeta, this.profile);
-    this._updateLastClickMeta(this.staticAssetMeshes[id].assetMeta);
   }
 
   enterXR() {
@@ -1127,26 +891,25 @@ export class StoryApp extends BaseApp {
   }
 
   pointerMove(pointerInfo) {
-    if (this.lastClickMeta && this.lastClickSpinPaused) {
-      this.__pauseSpinMove(pointerInfo, this.lastClickMeta)
+    if (this.menuTab3D && this.lastClickSpinPaused) {
+      this.__pauseSpinMove(pointerInfo, this.menuTab3D.lastClickMeta)
     }
   }
   pointerUp(pointerInfo) {
     if (this.lastClickSpinPaused) {
       this.lastClickSpinPaused = false;
-      if (this.lastClickMeta) {
-        this.lastClickMeta.basePivot.rotation.copyFrom(this.lastClickMeta.basePivot.originalRotation);
+      if (this.menuTab3D.lastClickMeta) {
+        this.menuTab3D.lastClickMeta.basePivot.rotation.copyFrom(this.menuTab3D.lastClickMeta.basePivot.originalRotation);
       }
     }
-    if (this.lastClickMeta) {
-      this.meshToggleAnimation(this.lastClickMeta, true, null);
-      this.lastClickMeta = null;
+    if (this.menuTab3D.lastClickMeta) {
+      this.meshToggleAnimation(this.menuTab3D.lastClickMeta, true, null);
+      this.menuTab3D.lastClickMeta = null;
       return;
     }
   }
   __pauseSpin(pointerInfo, mesh, meta) {
-    this.lastClickMeta = meta;
-    this.lastClickMetaButtonCache = this.lastClickMeta;
+    this.menuTab3D.setSelectedAsset(meta);
 
     this.lastClickMetaPointerX = this.scene.pointerX;
     this.lastClickMetaPointerY = this.scene.pointerY;
@@ -1154,18 +917,17 @@ export class StoryApp extends BaseApp {
     meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
 
     this.meshToggleAnimation(meta, false, mesh);
-    this._updateLastClickMeta(this.lastClickMetaButtonCache);
   }
   __pauseSpinMove(pointerInfo, meta) {
     let dX = this.scene.pointerX - this.lastClickMetaPointerX;
     let dY = this.scene.pointerY - this.lastClickMetaPointerY;
 
     //debounce so doesn't shake in XR
-    if (Math.abs(dX) + Math.abs(dY) < 5)
+    if (Math.abs(dX) + Math.abs(dY) < 8)
       return;
 
-    meta.basePivot.rotation.y -= dX * 0.01;
-    meta.basePivot.rotation.x -= dY * 0.01;
+    meta.basePivot.rotation.y -= dX * 0.005;
+    meta.basePivot.rotation.x -= dY * 0.005;
     this.lastClickMetaPointerX = this.scene.pointerX;
     this.lastClickMetaPointerY = this.scene.pointerY;
   }
