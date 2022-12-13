@@ -418,7 +418,7 @@ export class StoryApp extends BaseApp {
         if (!this['dockSeatMesh' + seatIndex]) {
           let mesh = await this.renderSeat(seatIndex);
 
-          mesh.parent = this.playerMoonPanelTab;
+          mesh.parent = this.menuTab3D.playerMoonPanelTab;
 
           this['dockSeatMesh' + seatIndex] = mesh;
         } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
@@ -454,7 +454,7 @@ export class StoryApp extends BaseApp {
       this.selectedContainerTransform.dispose();
 
     this.selectedContainerTransform = new BABYLON.TransformNode('selectedContainerTransform', this.scene);
-    this.selectedContainerTransform.parent = this.focusPanelTab;
+    this.selectedContainerTransform.parent = this.menuTab3D.focusPanelTab;
     this.selectedContainerTransform.position.y = 2.5;
 
     let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();

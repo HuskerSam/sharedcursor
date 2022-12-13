@@ -263,8 +263,9 @@ export default class MenuTab3D {
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', scene);
     this.playerMoonPanelTab.parent = panel;
     this.playerMoonPanelTab.position.y = 0;
+    this.playerMoonPanelTab.position.x = -8;
     this.playerMoonPanelTab.setEnabled(false);
-    this._initPlayerMoonsPanel();
+    this.initPlayerMoonsPanel();
 
     this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', scene);
     this.gameStatusPanelTab.parent = panel;
@@ -317,7 +318,11 @@ export default class MenuTab3D {
     if (menuTabToShow)
       menuTabToShow.setEnabled(true);
   }
-  _initPlayerMoonsPanel() {
+  initPlayerMoonsPanel() {
+    this.playerMoonSubPanel = new BABYLON.TransformNode('playerMoonSubPanel', this.app.scene);
+    this.playerMoonSubPanel.parent = this.playerMoonPanelTab;
+    this.playerMoonSubPanel.position.y = 4;
+
     for (let c = 0; c < 4; c++) {
       let result = window.staticMeshContainer[this.app.seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
       let mesh = result.rootNodes[0];
@@ -327,13 +332,11 @@ export default class MenuTab3D {
         appClickable: true,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app._updateLastClickMeta(this.seatMeshes[seatIndex].assetMeta);
+          this.app._updateLastClickMeta(this.app.seatMeshes[seatIndex].assetMeta);
         }
       };
-      mesh.parent = this.playerMoonPanelTab;
+      mesh.parent = this.playerMoonSubPanel;
       U3D._fitNodeToSize(mesh, 1.25);
-
-      //        text: this.seatMeshes[c].assetMeta.name,
     }
   }
 }
