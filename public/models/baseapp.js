@@ -1273,26 +1273,29 @@ export class BaseApp {
     //this.scene.onBeforeRenderObservable.add(() => {});
 
     // Instrumentation
-/*
+    /*
     let instrumentation = new BABYLON.SceneInstrumentation(this.scene);
     instrumentation.captureFrameTime = true;
     setInterval(() => {
       let perfValue = instrumentation.frameTimeCounter.lastSecAverage.toFixed(2);
       console.log(perfValue + "ms per frame");
     }, 300);
-    */
+*/
+//    let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(5, 35, 5), scene);
 
-    let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(18, 10, 5), scene);
-    this.sceneLight = light;
+
+    let light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
+    light.position = new BABYLON.Vector3(6, 15, 3);
+
     this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, light);
     this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
     this.scene.baseShadowGenerator.blurKernel = 16;
 
-    var environment = scene.createDefaultEnvironment({
+    let environment = scene.createDefaultEnvironment({
       createSkybox: false,
       groundSize: 150,
-      enableGroundMirror: true,
-      groundShadowLevel: 0.2
+      groundShadowLevel: 0.4,
+      enableGroundMirror: true
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
     this.env = environment;
@@ -1306,6 +1309,9 @@ export class BaseApp {
     this.camera.maxZ = 750;
     this.camera.panningAxis.y = 0;
     this.camera.panningAxis.z = 1;
+
+    scene.activeCamera.useAutoRotationBehavior = true;
+    scene.activeCamera.beta -= 0.2;
 
     scene.activeCamera.setPosition(this.cameraMetaX.position);
     scene.activeCamera.setTarget(this.cameraMetaX.target);

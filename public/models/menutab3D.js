@@ -4,6 +4,7 @@ import R3D from '/models/rocket3d.js';
 export default class MenuTab3D {
   constructor(app) {
     this.app = app;
+    this.scene = app.scene;
   }
   addIconBtn(scene, iconName, name) {
     //let texturePath = 'https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg';
@@ -17,12 +18,15 @@ export default class MenuTab3D {
     let tex = new BABYLON.Texture(texturePath, scene, false, false);
     tex.hasAlpha = true;
     mat.opacityTexture = tex;
-    mat.emissiveColor = new BABYLON.Color3(1, 0, 1);
-    mat.diffuseColor = new BABYLON.Color3(1, 0, 1);
-    mat.ambientColor = new BABYLON.Color3(1, 0, 1);
+    mat.emissiveColor = new BABYLON.Color3(0.25, 0, 1);
+    mat.diffuseColor = new BABYLON.Color3(0.25, 0, 1);
+    mat.ambientColor = new BABYLON.Color3(0.25, 0, 1);
     mesh.material = mat;
 
     return mesh;
+  }
+  obj(name) {
+    return this.app.staticAssetMeshes[name];
   }
   async initOptionsTab(scene, parent) {
     let shootRocketBtn = this.addIconBtn(scene, 'rocket', 'shootRocketBtn');
@@ -36,8 +40,8 @@ export default class MenuTab3D {
         setTimeout(() => this.rocketRunning = false, 1000);
 
         let rotation = new BABYLON.Vector3(0, 0, 0);
-        let endPosition = U3D.vector(this.app.staticAssetMeshes['mars'].position);
-        let startPosition = U3D.vector(this.app.staticAssetMeshes['neptune'].position);
+        let endPosition = U3D.vector(this.obj('mars').position);
+        let startPosition = U3D.vector(this.obj('neptune').position);
         await R3D.shootRocket(scene, startPosition, rotation, endPosition);
 
       }
@@ -271,7 +275,7 @@ export default class MenuTab3D {
         appClickable: true,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.setSelectedAsset(this.app.seatMeshes[seatIndex].assetMeta);
+          this.setSelectedAsset(this.app.seatMeshes[seatIndex].assetMeta);
         }
       };
       mesh.parent = this.playerMoonSubPanel;
@@ -303,7 +307,7 @@ export default class MenuTab3D {
   async updateAssetSize(size) {
     let meta = this.lastClickMetaButtonCache;
     let id = meta.id;
-    if (this.app.staticAssetMeshes[id]) {
+    if (this.obj(id)) {
       if (size === 'huge')
         meta.containerPath = meta.extended.largeGlbPath;
       if (size === 'normal')
@@ -312,10 +316,10 @@ export default class MenuTab3D {
         meta.containerPath = meta.extended.smallGlbPath;
 
       let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
-      freshMesh.parent = this.app.staticAssetMeshes[id].baseMesh.parent;
+      freshMesh.parent = this.obj(id).baseMesh.parent;
       U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
-      this.app.staticAssetMeshes[id].baseMesh.dispose();
-      this.app.staticAssetMeshes[id].baseMesh = freshMesh;
+      this.obj(id).baseMesh.dispose();
+      this.obj(id).baseMesh = freshMesh;
     }
 
     let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
@@ -324,8 +328,8 @@ export default class MenuTab3D {
     }
 
     await this.app.updateProfileMeshOverride(id, size);
-    this.app.staticAssetMeshes[id].assetMeta.extended = U3D.processStaticAssetMeta(this.app.staticAssetMeshes[id].assetMeta, this.app.profile);
-    this.setSelectedAsset(this.app.staticAssetMeshes[id].assetMeta);
+    this.obj(id).assetMeta.extended = U3D.processStaticAssetMeta(this.obj(id).assetMeta, this.app.profile);
+    this.setSelectedAsset(this.obj(id).assetMeta);
   }
   async initFocusedAssetPanel(parent) {
     let scene = this.app.scene;
@@ -365,7 +369,7 @@ export default class MenuTab3D {
         this.nextSelectedObject();
       }
     };
-    nextSelectedMetaBtn.position.x = 0;
+    nextSelectedMetaBtn.position.x = -4;
     nextSelectedMetaBtn.position.y = 2;
     nextSelectedMetaBtn.position.z = 0;
     nextSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
@@ -379,7 +383,7 @@ export default class MenuTab3D {
         this.nextSelectedObject(true);
       }
     };
-    previousSelectedMetaBtn.position.x = -15;
+    previousSelectedMetaBtn.position.x = -16;
     previousSelectedMetaBtn.position.y = 2;
     previousSelectedMetaBtn.position.z = 0;
     previousSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
@@ -414,7 +418,7 @@ export default class MenuTab3D {
         this.updateAssetSize('normal');
       }
     };
-    this.normalAssetSizeBtn.position.x = -8;
+    this.normalAssetSizeBtn.position.x = -12;
     this.normalAssetSizeBtn.position.y = 4;
     this.normalAssetSizeBtn.position.z = 0;
     this.normalAssetSizeBtn.scaling = U3D.v(1, 1, 1);
@@ -429,7 +433,7 @@ export default class MenuTab3D {
         this.updateAssetSize('huge');
       }
     };
-    this.assetPanelHugeButton.position.x = -4;
+    this.assetPanelHugeButton.position.x = -7;
     this.assetPanelHugeButton.position.y = 4;
     this.assetPanelHugeButton.position.z = 0;
     this.assetPanelHugeButton.scaling = U3D.v(1, 1, 1);
@@ -444,14 +448,14 @@ export default class MenuTab3D {
         this.updateAssetSize('small');
       }
     };
-    this.assetSmallSizeButton.position.x = -12;
+    this.assetSmallSizeButton.position.x = -17;
     this.assetSmallSizeButton.position.y = 4;
     this.assetSmallSizeButton.position.z = 0;
     this.assetSmallSizeButton.scaling = U3D.v(1, 1, 1);
     this.assetSmallSizeButton.parent = parent;
 
 
-    this.setSelectedAsset(this.app.staticAssetMeshes['e1_luna'].assetMeta);
+    this.setSelectedAsset(this.obj('e1_luna').assetMeta);
   }
   async setSelectedAsset(assetMeta) {
     this.lastClickMeta = assetMeta;
@@ -468,7 +472,7 @@ export default class MenuTab3D {
 
     this.selectedContainerTransform = new BABYLON.TransformNode('selectedContainerTransform', this.scene);
     this.selectedContainerTransform.parent = this.focusPanelTab;
-    this.selectedContainerTransform.position.x = -2;
+    this.selectedContainerTransform.position.x = 2;
     this.selectedContainerTransform.position.y = 2.75;
 
     let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
@@ -520,9 +524,9 @@ export default class MenuTab3D {
       this.setSelectedAsset(this.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else {
       let keys = Object.keys(this.app.staticAssetMeshes).sort((a, b) => {
-        if (this.app.staticAssetMeshes[a].assetMeta.name > this.app.staticAssetMeshes[b].assetMeta.name)
+        if (this.obj(a).assetMeta.name > this.obj(b).assetMeta.name)
           return 1;
-        if (this.app.staticAssetMeshes[a].assetMeta.name < this.app.staticAssetMeshes[b].assetMeta.name)
+        if (this.obj(a).assetMeta.name < this.obj(b).assetMeta.name)
           return -1;
         return 0;
       });
@@ -534,7 +538,7 @@ export default class MenuTab3D {
         nextIndex = 0;
 
       let key = keys[nextIndex];
-      this.setSelectedAsset(this.app.staticAssetMeshes[key].assetMeta);
+      this.setSelectedAsset(this.obj(key).assetMeta);
     }
   }
   showBoardWrapper(meta) {

@@ -567,35 +567,6 @@ export class StoryApp extends BaseApp {
 
     this.currentSeatMeshIndex = seatIndex;
   }
-  renderSeatText(mesh, index) {
-    let seatData = this.getSeatData(index);
-    let name = seatData.name;
-    let colors = this.get3DColors(index);
-
-    let name3d = U3D.__createTextMesh('seattext' + index, {
-      text: name,
-      fontFamily: 'Arial',
-      size: 100,
-      depth: .25
-    }, this.scene);
-    name3d.scaling.x = .15;
-    name3d.scaling.y = .15;
-    name3d.scaling.z = .15;
-    name3d.position.y = 2;
-    name3d.rotation.z = -Math.PI / 2;
-    name3d.rotation.y = -Math.PI / 2;
-
-    for (let i in this.scene.meshes) {
-      if (this.scene.meshes[i].parent === name3d)
-        U3D.meshSetVerticeColors(this.scene.meshes[i], colors.r, colors.g, colors.b);
-    }
-
-    U3D.meshSetVerticeColors(name3d, colors.r, colors.g, colors.b);
-    name3d.parent = mesh;
-    mesh.name3d = name3d;
-
-    return name3d;
-  }
   async renderSeatAvatar(wrapper, avatarWrapper, index) {
     let seatData = this.getSeatData(index);
     let colors = this.get3DColors(index);
@@ -632,36 +603,13 @@ export class StoryApp extends BaseApp {
 
     let isOwner = this.uid === this.gameData.createUser;
     if (this.uid === uid || isOwner) {
-      let text = 'X';
-      let intensity = 5;
-      if (this.uid !== uid && isOwner) {
-        intensity = 0;
-        text = 'X';
-      }
-      let x3d = U3D.__createTextMesh('seattextX' + index, {
-        text,
-        fontFamily: 'monospace',
-        size: 100,
-        depth: .25
-      }, this.scene);
-      x3d.scaling.x = 0.5;
-      x3d.scaling.y = 0.5;
-      x3d.scaling.z = 0.5;
-
-      x3d.rotation.z = -Math.PI / 2;
-      x3d.rotation.y = -Math.PI / 2;
-
-      x3d.position.y = 1.9;
-      x3d.position.x = 0.4;
-
-      for (let i in this.scene.meshes) {
-        if (this.scene.meshes[i].parent === x3d)
-          U3D.meshSetVerticeColors(this.scene.meshes[i], intensity, intensity, intensity);
-      }
-
-      U3D.meshSetVerticeColors(x3d, intensity, intensity, intensity);
-      x3d.parent = mesh;
-      x3d.assetMeta = {
+      let color =  (this.uid !== uid && isOwner) ? "#ffffff" : '#000000';
+      let standBtn = U3D.addTextPlane(this.scene, "X", 'seattextX' + index, "Impact", "", color);
+      standBtn.scaling = U3D.v(2, 2, 2);
+      standBtn.position.x = 0.4;
+      standBtn.position.y = 1.9;
+      standBtn.parent = mesh;
+      standBtn.assetMeta = {
         appClickable: true,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
@@ -687,27 +635,20 @@ export class StoryApp extends BaseApp {
       seat.name3d = null;
     }
 
-    if (seat.baseDisc) {
-      seat.baseDisc.dispose();
-      seat.baseDisc = null;
+    if (seat.standButton) {
+      seat.standButton.dispose();
+      seat.standButton = null;
     }
 
     if (seatData.seated) {
-      //    this.renderSeatText(seat, index);
       await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
     } else {
-      let baseDisc = U3D.__createTextMesh("emptyseat" + index.toString(), {
-        text: 'Sit',
-        fontFamily: 'Arial',
-        size: 100,
-        depth: .25
-      }, this.scene);
+      let colors = this.get3DColors(index);
+      let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
-      //  baseDisc.rotation.x = Math.PI / 2;
-      baseDisc.rotation.z = -Math.PI / 2;
-      baseDisc.rotation.y = -Math.PI / 2;
-      baseDisc.position.y = 1;
-      baseDisc.assetMeta = {
+      let standBtn = U3D.addTextPlane(this.scene, "Sit", 'seatsitbtn' + index, "Arial", "", rgb);
+      standBtn.position.y = 1;
+      standBtn.assetMeta = {
         seatIndex: index,
         appClickable: true,
         clickCommand: 'customClick',
@@ -716,11 +657,8 @@ export class StoryApp extends BaseApp {
         }
       };
 
-      let colors = this.get3DColors(index);
-      U3D.meshSetVerticeColors(baseDisc, colors.r, colors.g, colors.b);
-      baseDisc.parent = seat;
-
-      seat.baseDisc = baseDisc;
+      standBtn.parent = seat;
+      seat.standButton = standBtn;
     }
   }
   async renderSeat(index) {
