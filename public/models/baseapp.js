@@ -1282,8 +1282,8 @@ export class BaseApp {
     }, 300);
     */
 
-    var light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
-    light.position = new BABYLON.Vector3(6, 15, 3);
+    let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(18, 10, 5), scene);
+    this.sceneLight = light;
     this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, light);
     this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
     this.scene.baseShadowGenerator.blurKernel = 16;

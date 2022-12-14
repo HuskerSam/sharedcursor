@@ -255,15 +255,6 @@ export default class Utility3D {
 
     return textWrapperMesh;
   }
-  static setTextMaterial(scene, mat, text, rgbColor = 'rgb(255,0,0)', cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
-    let nameTexture = this.__texture2DText(scene, text, rgbColor, cssClearColor, textFontSize, textFontFamily, fontWeight, renderSize);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    mat.diffuseTexture = nameTexture;
-    mat.emissiveTexture = nameTexture;
-    mat.ambientTexture = nameTexture;
-  }
   static asteroidMaterial(scene, name = 'asteroidmaterial') {
     let material = new BABYLON.StandardMaterial(name + 'mat', scene);
     material.wireframe = true;
@@ -924,7 +915,7 @@ export default class Utility3D {
     return v;
   }
 
-  static async loadStaticMesh(scene, path, containerOnly) {
+  static async loadStaticMesh(scene, path, containerOnly, noShadow) {
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
 
@@ -935,7 +926,10 @@ export default class Utility3D {
       return null;
 
     let result = window.staticMeshContainer[path].instantiateModelsToScene();
-    scene.baseShadowGenerator.addShadowCaster(result.rootNodes[0]);
+    if (noShadow) {
+      scene.lights[0].excludedMeshes.push(result.rootNodes[0]);
+    } else
+      scene.baseShadowGenerator.addShadowCaster(result.rootNodes[0]);
     return result.rootNodes[0];
   }
 
@@ -957,8 +951,9 @@ export default class Utility3D {
     if (meta.sizeBoxFit === undefined)
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
-    let mesh = await this.loadStaticMesh(scene, meta.containerPath, meta.loadDisabled);
-    if (meta.loadDisabled)
+    let noShadow = meta.noShadow === true;
+    let mesh = await this.loadStaticMesh(scene, meta.containerPath, meta.containerOnly, noShadow);
+    if (meta.containerOnly)
       return {
         assetMeta: meta
       };
@@ -1179,6 +1174,8 @@ export default class Utility3D {
     }, scene, false);
     var mat = new BABYLON.StandardMaterial(id + "mat", scene);
     mat.diffuseTexture = dynamicTexture;
+    mat.emissiveTexture = dynamicTexture;
+    mat.ambientTexture = dynamicTexture;
     dynamicTexture.hasAlpha = true;
     dynamicTexture.drawText(text, null, null, font, color, backColor, true);
 

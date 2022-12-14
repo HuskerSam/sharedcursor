@@ -76,6 +76,7 @@ export default class Asteroid3D {
     let containerPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await U3D.loadStaticMesh(scene, containerPath);
+    mesh.position.y = -1000;
     U3D._fitNodeToSize(mesh, 1.5);
     mesh.material = window.asteroidMaterial;
 
@@ -101,8 +102,6 @@ export default class Asteroid3D {
     if (startRatio !== 0.0) {
       orbitAnimation.goToFrame(Math.floor(endFrame * startRatio));
     }
-
-    mesh.position.y = 0;
 
     orbitWrapper.assetMeta = {
       appClickable: true,

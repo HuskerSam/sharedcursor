@@ -55,6 +55,124 @@ export class StoryApp extends BaseApp {
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
   }
+  async loadStaticScene() {
+    this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
+
+    this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
+      this.clearFollowMeta();
+    });
+
+    let mats = U3D.asteroidMaterial(this.scene);
+    window.asteroidMaterial = mats.material;
+    window.selectedAsteroidMaterial = mats.selectedMaterial;
+
+    this.addLineToLoading('Loading Assets...<br>');
+    let promises = [];
+    let deck = GameCards.getCardDeck('solarsystem');
+
+    deck.forEach(card => {
+      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+    });
+    deck = GameCards.getCardDeck('moons1');
+    deck.forEach(card => {
+      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+    });
+    deck = GameCards.getCardDeck('moons2');
+    deck.forEach(card => {
+      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+    });
+    let loadingResults = await Promise.all(promises);
+    loadingResults.forEach(assetMesh => {
+      let meta = assetMesh.assetMeta;
+
+      let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
+      let smallLink = '';
+      let largeLink = '';
+      if (meta.largeglbpath)
+        largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
+      if (meta.smallglbpath)
+        smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
+
+      let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
+
+      this.addLineToLoading(`
+        ${meta.name}:
+        &nbsp;
+        ${smallLink}
+        ${normalLink}
+        ${largeLink}
+        <br>
+        <a href="${meta.url}" target="_blank">wiki</a>
+        &nbsp; ${imgHTML}
+        <br>
+      `);
+
+      if (meta.seatIndex !== undefined)
+        this.seatMeshes[meta.seatIndex] = assetMesh;
+      if (meta.noClick !== true) {
+        meta.appClickable = true;
+        meta.masterid = name;
+        meta.clickCommand = 'customClick';
+        meta.handlePointerDown = async (pointerInfo, mesh, meta) => {
+          this.__pauseSpin(pointerInfo, mesh, meta);
+        };
+        meta.handlePointerMove = async (pointerInfo, mesh, meta) => {
+          this.__pauseSpinMove(pointerInfo, mesh, meta);
+        };
+      }
+    });
+
+    this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    this.selectedPlayerPanel.position.y = -1000;
+    let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
+    this.selectedPlayerPanel.material = pm;
+
+    this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    this.selectedMoonPanel.position.y = -1000;
+    this.selectedMoonPanel.material = pm;
+
+    if (this.urlParams.get('showguides'))
+      U3D.createGuides(this.scene);
+
+    this.initCameraToolbar();
+
+    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
+    this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
+    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarLeftTN.billboardMode = 7;
+
+    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
+    this.menuBarRightTN.position = U3D.v(-5, 1, -5);
+    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarRightTN.billboardMode = 7;
+
+    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
+    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
+    this.menuBarTabButtonsTN.position.y = 10;
+
+    await this.menuTab3D.initOptionsBar();
+
+    this.sceneInited = true;
+
+    this.loadAvatars();
+    Asteroid3D.loadAsteroids(this.scene, this);
+
+    this.paintGameData();
+    this.verifyLoaddingComplete = setInterval(() => {
+      if (!this.runRender)
+        this.paintGameData();
+      else
+        clearInterval(this.verifyLoaddingComplete);
+    }, 400);
+  }
 
   initCameraToolbar() {
     this.buttonOneRed = document.querySelector('.choice-button-one');
@@ -193,124 +311,7 @@ export class StoryApp extends BaseApp {
     return div;
   }
 
-  async loadStaticScene() {
-    this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
-    this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
-      this.clearFollowMeta();
-    });
-
-    let mats = U3D.asteroidMaterial(this.scene);
-    window.asteroidMaterial = mats.material;
-    window.selectedAsteroidMaterial = mats.selectedMaterial;
-
-    this.addLineToLoading('Loading Assets...<br>');
-    let promises = [];
-    let deck = GameCards.getCardDeck('solarsystem');
-
-    deck.forEach(card => {
-      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
-    });
-    deck = GameCards.getCardDeck('moons1');
-    deck.forEach(card => {
-      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
-    });
-    deck = GameCards.getCardDeck('moons2');
-    deck.forEach(card => {
-      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
-    });
-    let loadingResults = await Promise.all(promises);
-    loadingResults.forEach(assetMesh => {
-      let meta = assetMesh.assetMeta;
-
-      let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
-      let smallLink = '';
-      let largeLink = '';
-      if (meta.largeglbpath)
-        largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
-      if (meta.smallglbpath)
-        smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
-
-      let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
-
-      this.addLineToLoading(`
-        ${meta.name}:
-        &nbsp;
-        ${smallLink}
-        ${normalLink}
-        ${largeLink}
-        <br>
-        <a href="${meta.url}" target="_blank">wiki</a>
-        &nbsp; ${imgHTML}
-        <br>
-      `);
-
-      if (meta.seatIndex !== undefined)
-        this.seatMeshes[meta.seatIndex] = assetMesh;
-      if (meta.noClick !== true && !meta.loadDisabled) {
-        meta.appClickable = true;
-        meta.masterid = name;
-        meta.clickCommand = 'customClick';
-        meta.handlePointerDown = async (pointerInfo, mesh, meta) => {
-          this.__pauseSpin(pointerInfo, mesh, meta);
-        };
-        meta.handlePointerMove = async (pointerInfo, mesh, meta) => {
-          this.__pauseSpinMove(pointerInfo, mesh, meta);
-        };
-      }
-    });
-
-    this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
-      width: 1,
-      height: 1,
-      depth: 1
-    }, this.scene);
-    this.selectedPlayerPanel.position.y = -1000;
-    let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
-    this.selectedPlayerPanel.material = pm;
-
-    this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
-      width: 1,
-      height: 1,
-      depth: 1
-    }, this.scene);
-    this.selectedMoonPanel.position.y = -1000;
-    this.selectedMoonPanel.material = pm;
-
-    if (this.urlParams.get('showguides'))
-      U3D.createGuides(this.scene);
-
-    this.initCameraToolbar();
-
-    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
-    this.menuBarLeftTN.position = U3D.v(-10, 1, -10);
-    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.billboardMode = 7;
-
-    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
-    this.menuBarRightTN.position = U3D.v(-15, 1, -15);
-    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarRightTN.billboardMode = 7;
-
-    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
-    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-    this.menuBarTabButtonsTN.position.y = 10;
-
-    await this.menuTab3D.initOptionsBar();
-
-    this.sceneInited = true;
-
-    this.loadAvatars();
-    Asteroid3D.loadAsteroids(this.scene, this);
-
-    this.paintGameData();
-    this.verifyLoaddingComplete = setInterval(() => {
-      if (!this.runRender)
-        this.paintGameData();
-      else
-        clearInterval(this.verifyLoaddingComplete);
-    }, 400);
-  }
   async _loadAvatars() {
     if (this.initedAvatars)
       return;
