@@ -148,6 +148,7 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
     this.menuBarLeftTN.billboardMode = 7;
+    this.menuBarLeftTN.position.y = 4;
 
     this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
     this.menuBarRightTN.position = U3D.v(-5, 1, -5);
@@ -156,14 +157,15 @@ export class StoryApp extends BaseApp {
 
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-    this.menuBarTabButtonsTN.position.y = 10;
+    this.menuBarTabButtonsTN.position.y = -3;
 
     await this.menuTab3D.initOptionsBar();
 
     this.sceneInited = true;
 
     this.loadAvatars();
-    Asteroid3D.loadAsteroids(this.scene, this);
+    await Asteroid3D.loadAsteroids(this.scene, this);
+    this.asteroidUpdateMaterial();
 
     this.paintGameData();
     this.verifyLoaddingComplete = setInterval(() => {
@@ -206,10 +208,10 @@ export class StoryApp extends BaseApp {
 
     let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
     this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.menuTab3D.meteorMenuTab;
+    this.asteroidCountLabel.parent = this.menuTab3D.asteroidMenuTab;
     this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
-    this.asteroidCountLabel.position.x = -5;
-    this.asteroidCountLabel.position.y = 3;
+    this.asteroidCountLabel.position.x = -9;
+    this.asteroidCountLabel.position.y = 1;
     this.asteroidCountLabel.position.z = 1;
   }
   async randomizeAnimations() {
@@ -267,6 +269,47 @@ export class StoryApp extends BaseApp {
     if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) { //inxr = 2
       this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
     }
+  }
+  async asteroidChangeMaterial(wireframe, texture) {
+    let updatePacket = {};
+
+    if (wireframe !== null) {
+      window.asteroidMaterial.wireframe = wireframe;
+      updatePacket.asteroidWireframe = wireframe;
+      this.profile.asteroidWireframe = wireframe;
+    }
+    if (texture !== null)
+      updatePacket.asteroidTexture = texture;
+
+    this.asteroidUpdateMaterial();
+
+    await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
+      merge: true
+    });
+
+  }
+  asteroidUpdateMaterial() {
+    let name = 'Wireframe';
+    let wireframe = this.profile.asteroidWireframe === true;
+    if (wireframe)
+      name = 'Solid';
+
+    if (this.asteroidWireframeBtn)
+      this.asteroidWireframeBtn.dispose();
+
+    this.asteroidWireframeBtn = U3D.addTextPlane(this.scene, name, 'asteroidWireframeBtn');
+    this.asteroidWireframeBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.asteroidChangeMaterial(!wireframe, null);
+      }
+    };
+    this.asteroidWireframeBtn.position.x = -9;
+    this.asteroidWireframeBtn.position.y = 3;
+    this.asteroidWireframeBtn.position.z = 1;
+    this.asteroidWireframeBtn.scaling = U3D.v(2, 2, 2);
+    this.asteroidWireframeBtn.parent = this.menuTab3D.asteroidMenuTab;
   }
 
   clearFollowMeta() {
@@ -533,7 +576,6 @@ export class StoryApp extends BaseApp {
 
     this.updateUserPresence();
 
-    this.runRender = true;
     document.body.classList.add('avatars_loaded');
     this.__updateSelectedSeatMesh();
 
