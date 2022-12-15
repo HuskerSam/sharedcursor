@@ -7,7 +7,7 @@ export class MatchApp extends BaseApp {
     super();
     this.apiType = 'match';
 
-    this._initGameCommon();
+    this.initGameOptionsPanel();
 
     this.currentplayer_score_dock = document.querySelector('.currentplayer_score_dock');
     this.match_board_wrapper = document.querySelector('.match_board_wrapper');

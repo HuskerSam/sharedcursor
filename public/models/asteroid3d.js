@@ -3,6 +3,8 @@ import U3D from '/models/utility3d.js';
 export default class Asteroid3D {
   constructor(app) {
     this.app = app;
+    this.asteroidOrbitTime = 300000;
+
     this.initAsteroidMaterials();
   }
   initAsteroidMaterials() {
@@ -38,16 +40,18 @@ export default class Asteroid3D {
     this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
 
   }
-  async loadAsteroids(scene, app) {
+  async loadAsteroids(init) {
+    let app = this.app;
+    let scene = this.app.scene;
     if (app.asteroidLoadingLine1) {
       app.asteroidLoadingLine1.remove();
       app.asteroidLoadingLine2.remove();
 
-      for (let asteroid in app.loadedAsteroids) {
-        app.loadedAsteroids[asteroid].orbitWrapper.dispose();
+      for (let asteroid in this.loadedAsteroids) {
+        this.loadedAsteroids[asteroid].orbitWrapper.dispose();
       }
     }
-    app.loadedAsteroids = {};
+    this.loadedAsteroids = {};
 
     let asteroids = U3D.getAsteroids();
 
@@ -60,7 +64,7 @@ export default class Asteroid3D {
     else if (app.profile.asteroidCount)
       count = Number(app.profile.asteroidCount);
 
-    app.asteroidLoadingLine1 = app.addLineToLoading(`Asteroids - ${count} from ${max} available`);
+    this.asteroidLoadingLine1 = app.addLineToLoading(`Asteroids - ${count} from ${max} available`);
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {
@@ -81,17 +85,17 @@ export default class Asteroid3D {
       if (i % 4 === 3)
         linkNameList += '<br>';
     });
-    app.asteroidLoadingLine2 = app.addLineToLoading(linkNameList);
+    this.asteroidLoadingLine2 = app.addLineToLoading(linkNameList);
 
-    app.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
+    this.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
 
-    app.defaultAsteroidPath = this._buildAsteroidPath(app);
-    let endFrame = app.asteroidOrbitTime / 1000 * 60;
-    app.defaultAsteroidPositionKeys = [];
+    this.defaultAsteroidPath = this._buildAsteroidPath(app);
+    let endFrame = this.asteroidOrbitTime / 1000 * 60;
+    this.defaultAsteroidPositionKeys = [];
 
-    let ptCount = app.defaultAsteroidPath.length - 1;
-    app.defaultAsteroidPath.forEach((value, index) => {
-      app.defaultAsteroidPositionKeys.push({
+    let ptCount = this.defaultAsteroidPath.length - 1;
+    this.defaultAsteroidPath.forEach((value, index) => {
+      this.defaultAsteroidPositionKeys.push({
         frame: Math.floor(endFrame * index / ptCount),
         value
       });
@@ -99,13 +103,15 @@ export default class Asteroid3D {
 
     this.asteroidUpdateMaterial();
 
-    app.runRender = false;
+  //  if (!init)
+  //    app.runRender = false;
     let promises = [];
     for (let c = 0; c < count; c++)
       promises.push(this._loadAsteroid(asteroids[randomArray[c]], c, count, scene, app));
 
     await Promise.all(promises);
-    app.runRender = true;
+  //  if (!init)
+  //    app.runRender = true;
     this.updateAsteroidLabel();
   }
   async _loadAsteroid(asteroid, index, count, scene, app) {
@@ -129,8 +135,8 @@ export default class Asteroid3D {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
     orbitWrapper.position.y = -1000;
-    let endFrame = app.asteroidOrbitTime / 1000 * 60;
-    positionAnim.setKeys(app.defaultAsteroidPositionKeys);
+    let endFrame = this.asteroidOrbitTime / 1000 * 60;
+    positionAnim.setKeys(this.defaultAsteroidPositionKeys);
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];
     orbitWrapper.animations.push(positionAnim);
@@ -157,7 +163,7 @@ export default class Asteroid3D {
     };
 
 
-    app.loadedAsteroids[asteroid] = {
+    this.loadedAsteroids[asteroid] = {
       orbitWrapper,
       mesh
     };

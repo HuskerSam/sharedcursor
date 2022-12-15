@@ -3,6 +3,7 @@ import GameCards from '/models/gamecards.js';
 import U3D from '/models/utility3d.js';
 import MenuTab3D from '/models/menutab3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
+import Avatar3D from '/models/avatar3d.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -10,9 +11,15 @@ export class StoryApp extends BaseApp {
     this.apiType = 'story';
     this.cache = {};
     this.staticAssetMeshes = {};
-    this.seatMeshes = {};
-    this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
 
+    this.initGameOptionsPanel();
+    this._initMenuBar2D();
+
+    this.alertErrors = false;
+    this.debounceBusy = false;
+  }
+  async _initMenuBar2D() {
+    this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
     this.hide_loading_screen = document.querySelector('.hide_loading_screen');
     this.hide_loading_screen.addEventListener('click', e => {
       document.body.classList.remove('show_loading_banner');
@@ -22,8 +29,6 @@ export class StoryApp extends BaseApp {
     this.show_loading_screen.addEventListener('click', e => {
       document.body.classList.add('show_loading_banner');
     });
-
-    this._initGameCommon();
 
     this.currentplayer_score_dock = document.querySelector('.currentplayer_score_dock');
     this.match_board_wrapper = document.querySelector('.match_board_wrapper');
@@ -36,14 +41,8 @@ export class StoryApp extends BaseApp {
 
     this.game_header_panel = document.querySelector('.game_header_panel');
 
-    this.alertErrors = false;
-    this.debounceBusy = false;
-
-    this.asteroidOrbitTime = 300000;
-    this.dockDiscRadius = .6;
-
     this.settings_button = document.querySelector('.settings_button');
-    this.settings_button.addEventListener('click', e => this.viewSettings());
+    this.settings_button.addEventListener('click', e => this.modal.show());
 
     this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
@@ -53,17 +52,26 @@ export class StoryApp extends BaseApp {
 
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
+
+    this.buttonOneRed = document.querySelector('.choice-button-one');
+    this.buttonOneRed.addEventListener('click', e => this.aButtonPress());
+    this.buttonTwo = document.querySelector('.choice-button-two');
+    this.buttonTwo.addEventListener('click', e => this.bButtonPress());
+    this.buttonThree = document.querySelector('.choice-button-three');
+    this.buttonThree.addEventListener('click', e => this.xButtonPress());
+    this.buttonFour = document.querySelector('.choice-button-four');
+    this.buttonFour.addEventListener('click', e => this.yButtonPress());
   }
-  async loadStaticScene() {
-    this.menuTab3D = new MenuTab3D(this);
+  async _initContent3D() {
+    this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
     this.asteroidHelper = new Asteroid3D(this);
 
-    this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
+    if (this.urlParams.get('showguides'))
+      U3D.createGuides(this.scene);
 
     this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
       this.clearFollowMeta();
     });
-
 
     this.addLineToLoading('Loading Assets...<br>');
     let promises = [];
@@ -106,8 +114,6 @@ export class StoryApp extends BaseApp {
         <br>
       `);
 
-      if (meta.seatIndex !== undefined)
-        this.seatMeshes[meta.seatIndex] = assetMesh;
       if (meta.noClick !== true) {
         meta.appClickable = true;
         meta.masterid = name;
@@ -138,11 +144,6 @@ export class StoryApp extends BaseApp {
     this.selectedMoonPanel.position.y = -1000;
     this.selectedMoonPanel.material = pm;
 
-    if (this.urlParams.get('showguides'))
-      U3D.createGuides(this.scene);
-
-    this.initCameraToolbar();
-
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
@@ -158,34 +159,78 @@ export class StoryApp extends BaseApp {
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = -3;
 
+    this.avatarHelper = new Avatar3D(this);
+    this.menuTab3D = new MenuTab3D(this);
+
     await this.menuTab3D.initOptionsBar();
+    await this.asteroidHelper.loadAsteroids(true);
 
-    this.sceneInited = true;
+    this.runRender = true;
 
-    this.loadAvatars();
-    await this.asteroidHelper.loadAsteroids(this.scene, this);
+    await this.avatarHelper.updateAvatarStatus();
 
     this.paintGameData();
-    this.verifyLoaddingComplete = setInterval(() => {
-      if (!this.runRender)
-        this.paintGameData();
-      else
-        clearInterval(this.verifyLoaddingComplete);
-    }, 400);
   }
+  async loadStaticAsset(name, sceneParent, profile, scene) {
+    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
+    meta.extended = U3D.processStaticAssetMeta(meta, profile);
 
-  initCameraToolbar() {
-    this.buttonOneRed = document.querySelector('.choice-button-one');
-    this.buttonOneRed.addEventListener('click', e => this.aButtonPress());
-    this.buttonTwo = document.querySelector('.choice-button-two');
-    this.buttonTwo.addEventListener('click', e => this.bButtonPress());
-    this.buttonThree = document.querySelector('.choice-button-three');
-    this.buttonThree.addEventListener('click', e => this.xButtonPress());
-    this.buttonFour = document.querySelector('.choice-button-four');
-    this.buttonFour.addEventListener('click', e => this.yButtonPress());
-  }
-  viewSettings() {
-    this.modal.show();
+    if (meta.sizeBoxFit === undefined)
+      meta.sizeBoxFit = 2;
+    meta.containerPath = meta.extended.glbPath;
+    let noShadow = meta.noShadow === true;
+    let mesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta.containerOnly, noShadow);
+    if (meta.containerOnly)
+      return {
+        assetMeta: meta
+      };
+
+    U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
+
+    if (meta.wireframe) {
+      mesh.material = this.asteroidHelper.selectedAsteroidMaterial;
+      mesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);
+    }
+
+    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
+    mesh.parent = meshPivot;
+    meta.basePivot = meshPivot;
+
+    if (meta.symbol)
+      meshPivot = U3D.infoPanel(name, meta, meshPivot, scene);
+
+    if (meta.rotationTime)
+      meshPivot = U3D.__rotationAnimation(name, meta, meshPivot, scene);
+    if (meta.orbitTime)
+      meshPivot = U3D.__orbitAnimation(name, meta, meshPivot, scene);
+
+    meshPivot = U3D.positionPivot(name, meta, meshPivot, scene);
+
+    meshPivot.assetMeta = meta;
+    meshPivot.baseMesh = mesh;
+    this.staticAssetMeshes[name] = meshPivot;
+
+    let ___awaitAssetLoad = async (name) => {
+      return new Promise((res, rej) => {
+        let awaitInterval = setInterval(() => {
+          if (this.staticAssetMeshes[name]) {
+            clearInterval(awaitInterval);
+            res(this.staticAssetMeshes[name]);
+          }
+        }, 50);
+      });
+    };
+
+    if (meta.parent) {
+      await ___awaitAssetLoad(meta.parent);
+      if (meta.parentType === 'basePivot')
+        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+      else
+        meshPivot.parent = this.staticAssetMeshes[meta.parent];
+    } else
+      meshPivot.parent = sceneParent;
+
+    return this.staticAssetMeshes[name];
   }
 
   yButtonPress() {
@@ -200,22 +245,6 @@ export class StoryApp extends BaseApp {
     this.clearFollowMeta();
   }
 
-  async randomizeAnimations() {
-    if (this.initedAvatars === 'loading')
-      return;
-
-    if (!this.initedAvatars) {
-      await this._loadAvatars();
-      return;
-    }
-
-    this.initedAvatars.forEach(container => {
-      let arr = container.animContainer.animationGroups;
-      let index = Math.floor(Math.random() * arr.length);
-
-      U3D.avatarSequence(container, index, this.scene);
-    })
-  }
   async _nextSkybox() {
     let index = this.menuTab3D.skyboxList().indexOf(this.profile.skyboxPath);
     if (index < this.menuTab3D.skyboxList().length - 1)
@@ -254,7 +283,7 @@ export class StoryApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
-    this.asteroidHelper.loadAsteroids(this.scene, this);
+    this.asteroidHelper.loadAsteroids();
   }
   async asteroidChangeMaterial(wireframe, texture) {
     let updatePacket = {};
@@ -273,6 +302,7 @@ export class StoryApp extends BaseApp {
       merge: true
     });
   }
+
   clearFollowMeta() {
     this.followMeta = null;
   }
@@ -313,79 +343,6 @@ export class StoryApp extends BaseApp {
     this.loading_dynamic_area.scrollIntoView(false);
 
     return div;
-  }
-
-  async _loadAvatars() {
-    if (this.initedAvatars)
-      return;
-    this.initedAvatars = 'loading';
-    let result = await U3D._initAvatars(this.scene);
-    this.initedAvatars = result.initedAvatars;
-    this.avatarContainers = result.avatarContainers;
-
-    this.randomizeAnimations();
-  }
-
-  getSeatData(seatIndex) {
-    let key = 'seat' + seatIndex.toString();
-    let name = '';
-    let avatar = '';
-    let uid = '';
-    let image = '';
-    let seated = false;
-    if (this.gameData[key]) {
-      name = this.gameData.memberNames[this.gameData[key]];
-      if (!name) name = "Anonymous";
-      avatar = this.gameData.memberAvatars[this.gameData[key]];
-      if (!avatar) avatar = "male1";
-      image = this.gameData.memberImages[this.gameData[key]];
-      if (!image) image = "";
-
-      uid = this.gameData[key];
-      seated = true;
-    }
-
-    return {
-      seated,
-      name,
-      key,
-      avatar,
-      image,
-      uid: this.gameData[key]
-    };
-  }
-  async loadAvatars() {
-    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      if (seatIndex < this.runningSeatCount) {
-        let data = this.getSeatData(seatIndex);
-        let cacheValue = data.name + data.image + data.seated.toString();
-        if (!this['dockSeatMesh' + seatIndex]) {
-          let mesh = await this.renderSeat(seatIndex);
-
-          mesh.parent = this.menuTab3D.playerMoonPanelTab;
-
-          this['dockSeatMesh' + seatIndex] = mesh;
-        } else if (this['dockSeatCache' + seatIndex] !== cacheValue) {
-          if (this.sceneInited) {
-            await this._updateSeat(seatIndex);
-            this['dockSeatCache' + seatIndex] = cacheValue;
-          }
-        }
-      } else {
-        if (this['dockSeatMesh' + seatIndex]) {
-          this['dockSeatMesh' + seatIndex].dispose();
-          this['dockSeatMesh' + seatIndex] = null;
-          this['dockSeatCache' + seatIndex] = '';
-        }
-      }
-    }
-
-    if (this.sceneInited) {
-      this.updateUserPresence();
-      this.__updateSelectedSeatMesh();
-
-      this.avatarsLoaded = true;
-    }
   }
 
   clickEndTurn() {
@@ -445,10 +402,15 @@ export class StoryApp extends BaseApp {
     window.allStaticAssetMeta = await GameCards.loadDecks();
     await super.load();
   }
-  paintDock() {
-    super.paintDock();
+  async _initGameDataBasedContent() {
+    if (this.initedGameBasedContent)
+      return;
 
-    this.loadAvatars();
+    this.initedGameBasedContent = true;
+
+    await this.initGraphics();
+    await this._initContent3D();
+    this.initGameMessageFeed();
   }
   async paintGameData(gameDoc = null) {
     if (gameDoc)
@@ -457,9 +419,7 @@ export class StoryApp extends BaseApp {
     if (!this.gameData)
       return;
 
-    await this.initGraphics();
-
-    this.initGameMessageFeed();
+    this._initGameDataBasedContent();
 
     document.body.classList.add('game_loaded');
 
@@ -529,152 +489,20 @@ export class StoryApp extends BaseApp {
     let name = this.gameData.name.replace(' Avenue', '').replace(' Street', '');
     this.game_header_panel.innerHTML = `${name}`;
 
-    document.body.classList.add('show_game_table');
-
-    if (!this.avatarsLoaded)
+    if (!this.avatarHelper || !this.avatarHelper.avatarsLoaded)
       return;
 
     this.updateUserPresence();
 
     document.body.classList.add('avatars_loaded');
-    this.__updateSelectedSeatMesh();
+    this.avatarHelper.updateSelectedSeatMesh();
 
     this.updateScoreboard();
   }
-  __updateSelectedSeatMesh() {
-    let seatIndex = this.gameData.currentSeat;
-    if (this.currentSeatMeshIndex === seatIndex)
-      return;
-
-    if (!this.runRender)
-      return;
-
-    let seatWrapperMesh = this['dockSeatMesh' + seatIndex];
-
-    if (!seatWrapperMesh)
-      return;
-
-    let seatMesh = this.seatMeshes[seatIndex];
-    this.currentSeatMesh = seatMesh;
-
-    this.selectedPlayerPanel.parent = seatWrapperMesh;
-    this.selectedMoonPanel.parent = this.seatMeshes[seatIndex].assetMeta.basePivot;
-    this.selectedPlayerPanel.position.y = 4;
-    this.selectedMoonPanel.position.y = 3;
-
-    let colors = this.get3DColors(seatIndex);
-    this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    this.selectedPlayerPanel.material.ambientColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    this.selectedPlayerPanel.material.emissiveColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
-
-    this.currentSeatMeshIndex = seatIndex;
-  }
-  async renderSeatAvatar(wrapper, avatarWrapper, index) {
-    let seatData = this.getSeatData(index);
-    let colors = this.get3DColors(index);
-    let uid = seatData.uid;
-
-    let mesh = new BABYLON.TransformNode("seatmeshtn" + index, this.scene);
-    mesh.position.x = 0;
-    mesh.position.y = 0;
-    mesh.position.z = 0;
-    mesh.parent = avatarWrapper;
-    wrapper.avatarMesh = mesh;
-    seatData.avatarMesh = mesh;
-
-    const plane = BABYLON.MeshBuilder.CreatePlane("avatarimage" + index, {
-        height: 2,
-        width: 1,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      },
-      this.scene);
-    plane.parent = mesh;
-    plane.position.y = 1;
-
-    let m = new BABYLON.StandardMaterial('avatarshowmat' + name, this.scene);
-    let t = new BABYLON.Texture(seatData.image, this.scene);
-    t.vScale = 1;
-    t.uScale = 1;
-    t.hasAlpha = true;
-
-    m.diffuseTexture = t;
-    m.emissiveTexture = t;
-    m.ambientTexture = t;
-
-    plane.material = m;
-
-    let isOwner = this.uid === this.gameData.createUser;
-    if (this.uid === uid || isOwner) {
-      let color =  (this.uid !== uid && isOwner) ? "#ffffff" : '#000000';
-      let standBtn = U3D.addTextPlane(this.scene, "X", 'seattextX' + index, "Impact", "", color);
-      standBtn.scaling = U3D.v(2, 2, 2);
-      standBtn.position.x = 0.4;
-      standBtn.position.y = 1.9;
-      standBtn.parent = mesh;
-      standBtn.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this._gameAPIStand(index);
-        }
-      };
-    }
-  }
-
-  async _updateSeat(index) {
-    let seatData = this.getSeatData(index);
-    let colors = this.get3DColors(index);
-
-    let seat = this['dockSeatMesh' + index];
-    let meta = seat.assetMeta;
-    if (seat.avatarMesh) {
-      seat.avatarMesh.dispose();
-      seat.avatarMesh = null;
-    }
-
-    if (seat.name3d) {
-      seat.name3d.dispose();
-      seat.name3d = null;
-    }
-
-    if (seat.standButton) {
-      seat.standButton.dispose();
-      seat.standButton = null;
-    }
-
-    if (seatData.seated) {
-      await this.renderSeatAvatar(seat, seat.avatarWrapper, index);
-    } else {
-      let colors = this.get3DColors(index);
-      let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
-
-      let standBtn = U3D.addTextPlane(this.scene, "Sit", 'seatsitbtn' + index, "Arial", "", rgb);
-      standBtn.position.y = 1;
-      standBtn.assetMeta = {
-        seatIndex: index,
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.dockSit(index);
-        }
-      };
-
-      standBtn.parent = seat;
-      seat.standButton = standBtn;
-    }
-  }
-  async renderSeat(index) {
-    let wrapper = new BABYLON.TransformNode('seatwrapper' + index, this.scene);
-
-    let avatarWrapper = new BABYLON.TransformNode('seatavatarwrapper' + index, this.scene);
-    avatarWrapper.rotation.y = Math.PI;
-    avatarWrapper.parent = wrapper;
-    wrapper.avatarWrapper = avatarWrapper;
-
-
-    wrapper.position.x = 2 - (index * 1.5);
-
-    return wrapper;
+  paintDock() {
+    super.paintDock();
+    if (this.avatarHelper)
+      this.avatarHelper.updateAvatarStatus();
   }
 
   get3DColors(index) {
@@ -701,39 +529,8 @@ export class StoryApp extends BaseApp {
   }
   updateUserPresence() {
     super.updateUserPresence();
-
-    for (let c = 0; c < 4; c++) {
-      let seat = this['dockSeatMesh' + c];
-      if (seat) {
-        if (seat.onlineSphere) {
-          seat.onlineSphere.dispose();
-          seat.onlineSphere = null;
-        }
-
-        let seatData = this.getSeatData(c);
-        if (seatData.seated) {
-          let online = this.userPresenceStatus[seatData.uid] === true;
-          let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + c, this.scene);
-          let color = new BABYLON.Color3(1, 1, 1);
-          if (online) {
-            color = new BABYLON.Color3(0, 2, 0)
-            //  mat1.emissiveColor = color;
-            mat1.ambientColor = color;
-          }
-          mat1.diffuseColor = color;
-
-          let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + c, {
-            diameter: .25,
-            segments: 16
-          }, this.scene);
-          sphere.position.y = 1.85;
-          sphere.position.x = .25;
-          sphere.material = mat1;
-          sphere.parent = seat;
-          seat.onlineSphere = sphere;
-        }
-      }
-    }
+    if (this.avatarHelper)
+      this.avatarHelper.updateUserPresence();
   }
   async _endTurn() {
     if (this.debounce())
@@ -872,65 +669,5 @@ export class StoryApp extends BaseApp {
     this.lastClickMetaPointerX = this.scene.pointerX;
     this.lastClickMetaPointerY = this.scene.pointerY;
   }
-  async loadStaticAsset(name, sceneParent, profile, scene) {
-    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
-    meta.extended = U3D.processStaticAssetMeta(meta, profile);
 
-    if (meta.sizeBoxFit === undefined)
-      meta.sizeBoxFit = 2;
-    meta.containerPath = meta.extended.glbPath;
-    let noShadow = meta.noShadow === true;
-    let mesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta.containerOnly, noShadow);
-    if (meta.containerOnly)
-      return {
-        assetMeta: meta
-      };
-
-    U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
-
-    if (meta.wireframe) {
-      mesh.material = this.asteroidHelper.selectedAsteroidMaterial;
-      mesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);
-    }
-
-    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
-    mesh.parent = meshPivot;
-    meta.basePivot = meshPivot;
-
-    if (meta.symbol)
-      meshPivot = U3D.infoPanel(name, meta, meshPivot, scene);
-
-    if (meta.rotationTime)
-      meshPivot = U3D.__rotationAnimation(name, meta, meshPivot, scene);
-    if (meta.orbitTime)
-      meshPivot = U3D.__orbitAnimation(name, meta, meshPivot, scene);
-
-    meshPivot = U3D.positionPivot(name, meta, meshPivot, scene);
-
-    meshPivot.assetMeta = meta;
-    meshPivot.baseMesh = mesh;
-    this.staticAssetMeshes[name] = meshPivot;
-
-    let ___awaitAssetLoad = async(name) => {
-      return new Promise((res, rej) => {
-        let awaitInterval = setInterval(() => {
-          if (this.staticAssetMeshes[name]) {
-            clearInterval(awaitInterval);
-            res(this.staticAssetMeshes[name]);
-          }
-        }, 50);
-      });
-    };
-
-    if (meta.parent) {
-      await ___awaitAssetLoad(meta.parent);
-      if (meta.parentType === 'basePivot')
-        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
-      else
-        meshPivot.parent = this.staticAssetMeshes[meta.parent];
-    } else
-      meshPivot.parent = sceneParent;
-
-    return this.staticAssetMeshes[name];
-  }
 }

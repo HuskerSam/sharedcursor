@@ -349,8 +349,7 @@ export class BaseApp {
     e.preventDefault();
     return true;
   }
-
-  _initGameCommon() {
+  initGameOptionsPanel() {
     document.querySelector('.player_dock .dock_pos_0 .sit_button')
       .addEventListener('click', e => this.dockSit(0, e));
     document.querySelector('.player_dock .dock_pos_1 .sit_button')
@@ -445,26 +444,6 @@ export class BaseApp {
     this.tab_panes[i].classList.add('show');
     btn.classList.add('active');
   }
-  applyAutoSizeToParagraph(query = '.paragraphfit_auto', startFontSize = 40) {
-    let elements = document.querySelectorAll(query);
-
-    let results = [];
-
-    elements.forEach(el => {
-      let fontSize = startFontSize;
-      el.style.fontSize = fontSize + 'px';
-      let overflow = el.style.overflow;
-      el.style.overflow = 'auto';
-      while (el.scrollHeight > el.offsetHeight) {
-        fontSize -= .5;
-        if (fontSize < 6)
-          break;
-        el.style.fontSize = fontSize + 'px';
-      }
-      el.style.overflow = overflow;
-    });
-  }
-
   refreshOnlinePresence() {
     if (this.userStatusDatabaseRef)
       this.userStatusDatabaseRef.set({
@@ -974,7 +953,7 @@ export class BaseApp {
         let name = this.gameData.memberNames[this.gameData[key]];
         if (!name) name = "Anonymous";
         let nEle = seat.parentElement.querySelector('.score_panel .name');
-        nEle.innerHTML = name;
+        nEle.innerHTML = name.slice(0, 8);
 
         spans[0].style.backgroundImage = 'url(' + this._gameMemberData(this.gameData[key]).img + ")";
         seat.parentElement.classList.remove('dock_seat_open');
@@ -1007,10 +986,6 @@ export class BaseApp {
       seat.parentElement.classList.remove('dock_seat_stand');
       seat.parentElement.classList.remove('dock_seat_open');
     }
-
-    setTimeout(() => {
-      this.applyAutoSizeToParagraph('.dock_container .score_panel .name');
-    }, 1);
   }
   paintDock() {
     document.body.classList.remove('seatcount_1');
@@ -1257,10 +1232,7 @@ export class BaseApp {
       target: new BABYLON.Vector3(-10, 1, -10)
     };
 
-
     await this.initBabylonEngine(".popup-canvas", true);
-    if (this.loadStaticScene)
-      await this.loadStaticScene();
   }
   async createScene() {
     let scene = new BABYLON.Scene(this.engine);

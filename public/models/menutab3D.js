@@ -155,7 +155,7 @@ export default class MenuTab3D {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.randomizeAnimations();
+        this.app.avatarHelper.randomizeAnimations();
       }
     };
     cycleRandomAvatarAnimations.position.x = -7.5;
@@ -267,8 +267,9 @@ export default class MenuTab3D {
     this.playerMoonSubPanel.parent = this.playerMoonPanelTab;
     this.playerMoonSubPanel.position.y = 4;
 
+    let seatMeshes = this.app.avatarHelper.seatMeshes;
     for (let c = 0; c < 4; c++) {
-      let result = window.staticMeshContainer[this.app.seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
+      let result = window.staticMeshContainer[seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
       let mesh = result.rootNodes[0];
       mesh.position = U3D.v(2 - (c * 1.5), 2, 0);
       let seatIndex = c;
