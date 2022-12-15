@@ -212,7 +212,7 @@ export default class Avatar3D {
 
     if (!this.initedAvatars) {
       this.initedAvatars = true;
-      let result = await U3D._initAvatars(this.scene);
+      let result = await U3D._initAvatars(this.app.scene);
       this.initedAvatars = result.initedAvatars;
       this.avatarContainers = result.avatarContainers;
     }
