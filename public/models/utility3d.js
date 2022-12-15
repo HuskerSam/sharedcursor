@@ -163,35 +163,6 @@ export default class Utility3D {
 
     return 'rgb(' + (bC.r * 255.0).toFixed(0) + ',' + (bC.g * 255.0).toFixed(0) + ',' + (bC.b * 255.0).toFixed(0) + ')'
   }
-  static asteroidMaterial(scene, name = 'asteroidmaterial') {
-    let material = new BABYLON.StandardMaterial(name + 'mat', scene);
-    material.wireframe = true;
-    let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
-    material.diffuseTexture = at;
-    //material.ambientTexture = at;
-    //material.emissiveTexture = at;
-    material.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-    material.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-    at.vScale = 1;
-    at.uScale = 1;
-
-    let selectedMaterial = new BABYLON.StandardMaterial(name + 'selectedmat', scene)
-    let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
-    selectedMaterial.diffuseTexture = t;
-    //  selectedMaterial.ambientTexture = t;
-    //selectedMaterial.emissiveTexture = t;
-    //selectedMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
-    t.vScale = 1;
-    t.uScale = 1;
-    selectedMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
-    selectedMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-    selectedMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-
-    return {
-      material: selectedMaterial,
-      selectedMaterial: material
-    }
-  }
   static generateNameMesh(scene, name = 'asteroidnamemesh') {
     let alphaMat = new BABYLON.StandardMaterial(name + 'mat1alpha', scene);
     alphaMat.alpha = 0;
@@ -839,68 +810,6 @@ export default class Utility3D {
     } else
       scene.baseShadowGenerator.addShadowCaster(result.rootNodes[0]);
     return result.rootNodes[0];
-  }
-
-
-  static async ___awaitAssetLoad(name) {
-    return new Promise((res, rej) => {
-      let awaitInterval = setInterval(() => {
-        if (window.App3D.staticAssetMeshes[name]) {
-          clearInterval(awaitInterval);
-          res(window.App3D.staticAssetMeshes[name]);
-        }
-      }, 50);
-    });
-  }
-  static async loadStaticAsset(name, sceneParent, profile, scene) {
-    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
-    meta.extended = this.processStaticAssetMeta(meta, profile);
-
-    if (meta.sizeBoxFit === undefined)
-      meta.sizeBoxFit = 2;
-    meta.containerPath = meta.extended.glbPath;
-    let noShadow = meta.noShadow === true;
-    let mesh = await this.loadStaticMesh(scene, meta.containerPath, meta.containerOnly, noShadow);
-    if (meta.containerOnly)
-      return {
-        assetMeta: meta
-      };
-
-    this._fitNodeToSize(mesh, meta.sizeBoxFit);
-
-    if (meta.wireframe) {
-      mesh.material = window.selectedAsteroidMaterial;
-      mesh.getChildMeshes().forEach(mesh => mesh.material = window.selectedAsteroidMaterial);
-    }
-
-    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
-    mesh.parent = meshPivot;
-    meta.basePivot = meshPivot;
-
-    if (meta.symbol)
-      meshPivot = this.infoPanel(name, meta, meshPivot, scene);
-
-    if (meta.rotationTime)
-      meshPivot = this.__rotationAnimation(name, meta, meshPivot, scene);
-    if (meta.orbitTime)
-      meshPivot = this.__orbitAnimation(name, meta, meshPivot, scene);
-
-    meshPivot = this.positionPivot(name, meta, meshPivot, scene);
-
-    meshPivot.assetMeta = meta;
-    meshPivot.baseMesh = mesh;
-    window.App3D.staticAssetMeshes[name] = meshPivot;
-
-    if (meta.parent) {
-      await this.___awaitAssetLoad(meta.parent);
-      if (meta.parentType === 'basePivot')
-        meshPivot.parent = window.App3D.staticAssetMeshes[meta.parent].assetMeta.basePivot;
-      else
-        meshPivot.parent = window.App3D.staticAssetMeshes[meta.parent];
-    } else
-      meshPivot.parent = sceneParent;
-
-    return window.App3D.staticAssetMeshes[name];
   }
   static processStaticAssetMeta(meta, profile) {
 

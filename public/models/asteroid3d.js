@@ -1,7 +1,44 @@
 import U3D from '/models/utility3d.js';
 
 export default class Asteroid3D {
-  static async loadAsteroids(scene, app) {
+  constructor(app) {
+    this.app = app;
+    this.initAsteroidMaterials();
+  }
+  initAsteroidMaterials() {
+    let name = 'asteroidmaterial';
+    let scene = this.app.scene;
+
+    if (!this.asteroidMaterial)
+      this.asteroidMaterial = new BABYLON.StandardMaterial(name + 'mat', scene);
+    if (!this.selectedAsteroidMaterial)
+      this.selectedAsteroidMaterial =  new BABYLON.StandardMaterial(name + 'selectedmat', scene);
+
+
+    this.asteroidMaterial.wireframe = true;
+    let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
+    this.asteroidMaterial.diffuseTexture = at;
+    //material.ambientTexture = at;
+    //material.emissiveTexture = at;
+//    this.asteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+//    this.asteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+    at.vScale = 1;
+    at.uScale = 1;
+    // this.app.profile.asteroidWireframe
+
+    let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
+    this.selectedAsteroidMaterial.diffuseTexture = t;
+    //  selectedMaterial.ambientTexture = t;
+    //selectedMaterial.emissiveTexture = t;
+    //selectedMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    t.vScale = 1;
+    t.uScale = 1;
+    this.selectedAsteroidMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+    this.selectedAsteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+    this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+
+  }
+  async loadAsteroids(scene, app) {
     if (app.asteroidLoadingLine1) {
       app.asteroidLoadingLine1.remove();
       app.asteroidLoadingLine2.remove();
@@ -60,6 +97,8 @@ export default class Asteroid3D {
       });
     });
 
+    this.asteroidUpdateMaterial();
+
     app.runRender = false;
     let promises = [];
     for (let c = 0; c < count; c++)
@@ -67,16 +106,16 @@ export default class Asteroid3D {
 
     await Promise.all(promises);
     app.runRender = true;
-
+    this.updateAsteroidLabel();
   }
-  static async _loadAsteroid(asteroid, index, count, scene, app) {
+  async _loadAsteroid(asteroid, index, count, scene, app) {
     let startRatio = index / count;
 
     let containerPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await U3D.loadStaticMesh(scene, containerPath);
     U3D._fitNodeToSize(mesh, 1.5);
-    mesh.material = window.asteroidMaterial;
+    mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, scene);
     orbitWrapper.parent = mesh.parent;
@@ -89,7 +128,7 @@ export default class Asteroid3D {
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
-
+    orbitWrapper.position.y = -1000;
     let endFrame = app.asteroidOrbitTime / 1000 * 60;
     positionAnim.setKeys(app.defaultAsteroidPositionKeys);
     if (!orbitWrapper.animations)
@@ -117,12 +156,13 @@ export default class Asteroid3D {
       containerPath
     };
 
+
     app.loadedAsteroids[asteroid] = {
       orbitWrapper,
       mesh
     };
   }
-  static _buildAsteroidPath() {
+  _buildAsteroidPath() {
     let y = 2;
 
     let xMin = -60;
@@ -161,7 +201,7 @@ export default class Asteroid3D {
 
     return path;
   }
-  static curvePointsMerge(keyPoints) {
+  curvePointsMerge(keyPoints) {
     let count = keyPoints.length;
     let fullCurve;
 
@@ -186,7 +226,7 @@ export default class Asteroid3D {
 
     return fullCurve;
   }
-  static curveV(v1, v2) {
+  curveV(v1, v2) {
     let x = v1.x;
     let z = v1.z;
     if (Math.abs(v2.x) > Math.abs(v1.x))
@@ -196,18 +236,18 @@ export default class Asteroid3D {
 
     return U3D.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
   }
-  static v4(x, y, z, weight) {
+  v4(x, y, z, weight) {
     return {
       v: new BABYLON.Vector3(x, y, z),
       weight: weight * 2
     };
   }
-  static vector(vector) {
+  vector(vector) {
     let v = new BABYLON.Vector3();
     v.copyFrom(vector);
     return v;
   }
-  static retargetAnimationGroup(animationGroup, targetSkeleton) {
+  retargetAnimationGroup(animationGroup, targetSkeleton) {
     //console.log("Retargeting animation group: " + animationGroup.name);
     animationGroup.targetedAnimations.forEach((targetedAnimation) => {
       const newTargetBone = targetSkeleton.bones.filter((bone) => {
@@ -217,7 +257,7 @@ export default class Asteroid3D {
       targetedAnimation.target = newTargetBone ? newTargetBone.getTransformNode() : null;
     });
   }
-  static getAsteroidCount(profileString) {
+  getAsteroidCount(profileString) {
     if (!profileString)
       profileString = 20;
     let count = Number(profileString);
@@ -226,5 +266,40 @@ export default class Asteroid3D {
     if (count < 20)
       count = 20;
     return count;
+  }
+  updateAsteroidLabel() {
+    if (this.asteroidCountLabel)
+      this.asteroidCountLabel.dispose();
+
+    let count = this.getAsteroidCount(this.app.profile.asteroidCount);
+    this.asteroidCountLabel = U3D.addTextPlane(this.app.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
+    this.asteroidCountLabel.parent = this.app.menuTab3D.asteroidMenuTab;
+    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
+    this.asteroidCountLabel.position.x = -9;
+    this.asteroidCountLabel.position.y = 1;
+    this.asteroidCountLabel.position.z = 1;
+  }
+  asteroidUpdateMaterial() {
+    let name = 'Wireframe';
+    let wireframe = this.app.profile.asteroidWireframe === true;
+    if (wireframe)
+      name = 'Solid';
+
+    if (this.asteroidWireframeBtn)
+      this.asteroidWireframeBtn.dispose();
+
+    this.asteroidWireframeBtn = U3D.addTextPlane(this.scene, name, 'asteroidWireframeBtn');
+    this.asteroidWireframeBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.asteroidChangeMaterial(!wireframe, null);
+      }
+    };
+    this.asteroidWireframeBtn.position.x = -9;
+    this.asteroidWireframeBtn.position.y = 3;
+    this.asteroidWireframeBtn.position.z = 1;
+    this.asteroidWireframeBtn.scaling = U3D.v(2, 2, 2);
+    this.asteroidWireframeBtn.parent = this.app.menuTab3D.asteroidMenuTab;
   }
 }

@@ -7,7 +7,6 @@ import Asteroid3D from '/models/asteroid3d.js';
 export class StoryApp extends BaseApp {
   constructor() {
     super();
-    this.menuTab3D = new MenuTab3D(this);
     this.apiType = 'story';
     this.cache = {};
     this.staticAssetMeshes = {};
@@ -56,30 +55,30 @@ export class StoryApp extends BaseApp {
     this.end_turn_button.addEventListener('click', e => this._endTurn());
   }
   async loadStaticScene() {
+    this.menuTab3D = new MenuTab3D(this);
+    this.asteroidHelper = new Asteroid3D(this);
+
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
 
     this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
       this.clearFollowMeta();
     });
 
-    let mats = U3D.asteroidMaterial(this.scene);
-    window.asteroidMaterial = mats.material;
-    window.selectedAsteroidMaterial = mats.selectedMaterial;
 
     this.addLineToLoading('Loading Assets...<br>');
     let promises = [];
     let deck = GameCards.getCardDeck('solarsystem');
 
     deck.forEach(card => {
-      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
     deck = GameCards.getCardDeck('moons1');
     deck.forEach(card => {
-      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
     deck = GameCards.getCardDeck('moons2');
     deck.forEach(card => {
-      promises.push(U3D.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
     let loadingResults = await Promise.all(promises);
     loadingResults.forEach(assetMesh => {
@@ -164,8 +163,7 @@ export class StoryApp extends BaseApp {
     this.sceneInited = true;
 
     this.loadAvatars();
-    await Asteroid3D.loadAsteroids(this.scene, this);
-    this.asteroidUpdateMaterial();
+    await this.asteroidHelper.loadAsteroids(this.scene, this);
 
     this.paintGameData();
     this.verifyLoaddingComplete = setInterval(() => {
@@ -202,18 +200,6 @@ export class StoryApp extends BaseApp {
     this.clearFollowMeta();
   }
 
-  updateAsteroidLabel() {
-    if (this.asteroidCountLabel)
-      this.asteroidCountLabel.dispose();
-
-    let count = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
-    this.asteroidCountLabel = U3D.addTextPlane(this.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.menuTab3D.asteroidMenuTab;
-    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
-    this.asteroidCountLabel.position.x = -9;
-    this.asteroidCountLabel.position.y = 1;
-    this.asteroidCountLabel.position.z = 1;
-  }
   async randomizeAnimations() {
     if (this.initedAvatars === 'loading')
       return;
@@ -230,20 +216,6 @@ export class StoryApp extends BaseApp {
       U3D.avatarSequence(container, index, this.scene);
     })
   }
-  async asteroidCountChange(delta) {
-    let asteroidCount = Asteroid3D.getAsteroidCount(this.profile.asteroidCount);
-    asteroidCount = Asteroid3D.getAsteroidCount(asteroidCount + delta);
-
-    let updatePacket = {
-      asteroidCount
-    };
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-
-    this.profile.asteroidCount = updatePacket.asteroidCount;
-    Asteroid3D.loadAsteroids(this.scene, this);
-    this.updateAsteroidLabel();
-  }
   async _nextSkybox() {
     let index = this.menuTab3D.skyboxList().indexOf(this.profile.skyboxPath);
     if (index < this.menuTab3D.skyboxList().length - 1)
@@ -251,7 +223,7 @@ export class StoryApp extends BaseApp {
     else
       index = 0;
     this.profile.skyboxPath = this.menuTab3D.skyboxList()[index];
-    window.App3D.initSkybox();
+    this.initSkybox();
 
     let updatePacket = {
       skyboxPath: this.profile.skyboxPath
@@ -270,48 +242,37 @@ export class StoryApp extends BaseApp {
       this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
     }
   }
+
+  async asteroidCountChange(delta) {
+    let asteroidCount = this.asteroidHelper.getAsteroidCount(this.profile.asteroidCount);
+    asteroidCount = this.asteroidHelper.getAsteroidCount(asteroidCount + delta);
+
+    let updatePacket = {
+      asteroidCount
+    };
+    if (this.fireToken)
+      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
+
+    this.profile.asteroidCount = updatePacket.asteroidCount;
+    this.asteroidHelper.loadAsteroids(this.scene, this);
+  }
   async asteroidChangeMaterial(wireframe, texture) {
     let updatePacket = {};
 
     if (wireframe !== null) {
-      window.asteroidMaterial.wireframe = wireframe;
+      this.asteroidHelper.asteroidMaterial.wireframe = wireframe;
       updatePacket.asteroidWireframe = wireframe;
       this.profile.asteroidWireframe = wireframe;
     }
     if (texture !== null)
       updatePacket.asteroidTexture = texture;
 
-    this.asteroidUpdateMaterial();
+    this.asteroidHelper.asteroidUpdateMaterial();
 
     await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
       merge: true
     });
-
   }
-  asteroidUpdateMaterial() {
-    let name = 'Wireframe';
-    let wireframe = this.profile.asteroidWireframe === true;
-    if (wireframe)
-      name = 'Solid';
-
-    if (this.asteroidWireframeBtn)
-      this.asteroidWireframeBtn.dispose();
-
-    this.asteroidWireframeBtn = U3D.addTextPlane(this.scene, name, 'asteroidWireframeBtn');
-    this.asteroidWireframeBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.asteroidChangeMaterial(!wireframe, null);
-      }
-    };
-    this.asteroidWireframeBtn.position.x = -9;
-    this.asteroidWireframeBtn.position.y = 3;
-    this.asteroidWireframeBtn.position.z = 1;
-    this.asteroidWireframeBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidWireframeBtn.parent = this.menuTab3D.asteroidMenuTab;
-  }
-
   clearFollowMeta() {
     this.followMeta = null;
   }
@@ -353,7 +314,6 @@ export class StoryApp extends BaseApp {
 
     return div;
   }
-
 
   async _loadAvatars() {
     if (this.initedAvatars)
@@ -911,5 +871,66 @@ export class StoryApp extends BaseApp {
     meta.basePivot.rotation.x -= dY * 0.005;
     this.lastClickMetaPointerX = this.scene.pointerX;
     this.lastClickMetaPointerY = this.scene.pointerY;
+  }
+  async loadStaticAsset(name, sceneParent, profile, scene) {
+    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
+    meta.extended = U3D.processStaticAssetMeta(meta, profile);
+
+    if (meta.sizeBoxFit === undefined)
+      meta.sizeBoxFit = 2;
+    meta.containerPath = meta.extended.glbPath;
+    let noShadow = meta.noShadow === true;
+    let mesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta.containerOnly, noShadow);
+    if (meta.containerOnly)
+      return {
+        assetMeta: meta
+      };
+
+    U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
+
+    if (meta.wireframe) {
+      mesh.material = this.asteroidHelper.selectedAsteroidMaterial;
+      mesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);
+    }
+
+    let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
+    mesh.parent = meshPivot;
+    meta.basePivot = meshPivot;
+
+    if (meta.symbol)
+      meshPivot = U3D.infoPanel(name, meta, meshPivot, scene);
+
+    if (meta.rotationTime)
+      meshPivot = U3D.__rotationAnimation(name, meta, meshPivot, scene);
+    if (meta.orbitTime)
+      meshPivot = U3D.__orbitAnimation(name, meta, meshPivot, scene);
+
+    meshPivot = U3D.positionPivot(name, meta, meshPivot, scene);
+
+    meshPivot.assetMeta = meta;
+    meshPivot.baseMesh = mesh;
+    this.staticAssetMeshes[name] = meshPivot;
+
+    let ___awaitAssetLoad = async(name) => {
+      return new Promise((res, rej) => {
+        let awaitInterval = setInterval(() => {
+          if (this.staticAssetMeshes[name]) {
+            clearInterval(awaitInterval);
+            res(this.staticAssetMeshes[name]);
+          }
+        }, 50);
+      });
+    };
+
+    if (meta.parent) {
+      await ___awaitAssetLoad(meta.parent);
+      if (meta.parentType === 'basePivot')
+        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+      else
+        meshPivot.parent = this.staticAssetMeshes[meta.parent];
+    } else
+      meshPivot.parent = sceneParent;
+
+    return this.staticAssetMeshes[name];
   }
 }

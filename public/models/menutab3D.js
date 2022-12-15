@@ -28,7 +28,6 @@ export default class MenuTab3D {
     this.asteroidMenuTab.position.y = 0;
     this.asteroidMenuTab.setEnabled(false);
     this.initAsteroidsTab(scene, this.asteroidMenuTab);
-    this.app.updateAsteroidLabel();
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', scene);
     this.focusPanelTab.parent = panel;
@@ -487,7 +486,7 @@ export default class MenuTab3D {
     U3D._fitNodeToSize(mesh, factor);
 
     if (assetMeta.asteroidType)
-      mesh.material = window.selectedAsteroidMaterial;
+      mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;
 
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose();
@@ -513,7 +512,7 @@ export default class MenuTab3D {
     let id = meta.id;
     let factor = previous ? -1 : 1;
     if (meta.asteroidType) {
-      let keys = Object.keys(this.loadedAsteroids).sort();
+      let keys = Object.keys(this.app.loadedAsteroids).sort();
 
       let index = keys.indexOf(meta.name);
       let nextIndex = index + factor;
@@ -523,7 +522,7 @@ export default class MenuTab3D {
         nextIndex = 0;
 
       let key = keys[nextIndex];
-      this.setSelectedAsset(this.loadedAsteroids[key].orbitWrapper.assetMeta);
+      this.setSelectedAsset(this.app.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else {
       let keys = Object.keys(this.app.staticAssetMeshes).sort((a, b) => {
         if (this.obj(a).assetMeta.name > this.obj(b).assetMeta.name)
