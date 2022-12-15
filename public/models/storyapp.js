@@ -64,6 +64,8 @@ export class StoryApp extends BaseApp {
   }
   async _initContent3D() {
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
+    this._createMenu3DWrapper();
+    this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
 
     if (this.urlParams.get('showguides'))
@@ -127,40 +129,7 @@ export class StoryApp extends BaseApp {
       }
     });
 
-    this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
-      width: 1,
-      height: 1,
-      depth: 1
-    }, this.scene);
-    this.selectedPlayerPanel.position.y = -1000;
-    let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
-    this.selectedPlayerPanel.material = pm;
-
-    this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
-      width: 1,
-      height: 1,
-      depth: 1
-    }, this.scene);
-    this.selectedMoonPanel.position.y = -1000;
-    this.selectedMoonPanel.material = pm;
-
-    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
-    this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
-    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.billboardMode = 7;
-    this.menuBarLeftTN.position.y = 4;
-
-    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
-    this.menuBarRightTN.position = U3D.v(-5, 1, -5);
-    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarRightTN.billboardMode = 7;
-
-    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
-    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-    this.menuBarTabButtonsTN.position.y = -3;
-
     this.avatarHelper = new Avatar3D(this);
-    this.menuTab3D = new MenuTab3D(this);
 
     await this.menuTab3D.initOptionsBar();
     await this.asteroidHelper.loadAsteroids(true);
@@ -170,6 +139,39 @@ export class StoryApp extends BaseApp {
     await this.avatarHelper.updateAvatarStatus();
 
     this.paintGameData();
+  }
+  _createMenu3DWrapper() {
+      this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
+        width: 1,
+        height: 1,
+        depth: 1
+      }, this.scene);
+      this.selectedPlayerPanel.position.y = -1000;
+      let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
+      this.selectedPlayerPanel.material = pm;
+
+      this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
+        width: 1,
+        height: 1,
+        depth: 1
+      }, this.scene);
+      this.selectedMoonPanel.position.y = -1000;
+      this.selectedMoonPanel.material = pm;
+
+      this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
+      this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
+      this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
+      this.menuBarLeftTN.billboardMode = 7;
+      this.menuBarLeftTN.position.y = 4;
+
+      this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
+      this.menuBarRightTN.position = U3D.v(-5, 1, -5);
+      this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
+      this.menuBarRightTN.billboardMode = 7;
+
+      this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
+      this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
+      this.menuBarTabButtonsTN.position.y = -3;
   }
   async loadStaticAsset(name, sceneParent, profile, scene) {
     let meta = Object.assign({}, window.allStaticAssetMeta[name]);
@@ -289,14 +291,15 @@ export class StoryApp extends BaseApp {
     let updatePacket = {};
 
     if (wireframe !== null) {
-      this.asteroidHelper.asteroidMaterial.wireframe = wireframe;
       updatePacket.asteroidWireframe = wireframe;
       this.profile.asteroidWireframe = wireframe;
     }
-    if (texture !== null)
+    if (texture !== null) {
       updatePacket.asteroidTexture = texture;
+      this.profile.asteroidTexture = texture;
+    }
 
-    this.asteroidHelper.asteroidUpdateMaterial();
+    this.asteroidHelper.asteroidUpdateMaterials();
 
     await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
       merge: true
@@ -505,28 +508,6 @@ export class StoryApp extends BaseApp {
       this.avatarHelper.updateAvatarStatus();
   }
 
-  get3DColors(index) {
-    let r = 220 / 255,
-      g = 220 / 255,
-      b = 0;
-    if (index === 1) {
-      r = 0;
-      g = 220 / 255;
-      b = 210 / 255;
-    }
-    if (index === 2) {
-      r = 230 / 255;
-      g = 0;
-      b = 230 / 255;
-    }
-    if (index === 3) {
-      r = 150 / 255;
-      g = 130 / 255;
-      b = 255 / 255;
-    }
-
-    return new BABYLON.Color3(r, g, b);
-  }
   updateUserPresence() {
     super.updateUserPresence();
     if (this.avatarHelper)

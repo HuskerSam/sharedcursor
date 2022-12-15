@@ -4,41 +4,6 @@ export default class Asteroid3D {
   constructor(app) {
     this.app = app;
     this.asteroidOrbitTime = 300000;
-
-    this.initAsteroidMaterials();
-  }
-  initAsteroidMaterials() {
-    let name = 'asteroidmaterial';
-    let scene = this.app.scene;
-
-    if (!this.asteroidMaterial)
-      this.asteroidMaterial = new BABYLON.StandardMaterial(name + 'mat', scene);
-    if (!this.selectedAsteroidMaterial)
-      this.selectedAsteroidMaterial =  new BABYLON.StandardMaterial(name + 'selectedmat', scene);
-
-
-    this.asteroidMaterial.wireframe = true;
-    let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
-    this.asteroidMaterial.diffuseTexture = at;
-    //material.ambientTexture = at;
-    //material.emissiveTexture = at;
-//    this.asteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-//    this.asteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-    at.vScale = 1;
-    at.uScale = 1;
-    // this.app.profile.asteroidWireframe
-
-    let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
-    this.selectedAsteroidMaterial.diffuseTexture = t;
-    //  selectedMaterial.ambientTexture = t;
-    //selectedMaterial.emissiveTexture = t;
-    //selectedMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
-    t.vScale = 1;
-    t.uScale = 1;
-    this.selectedAsteroidMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
-    this.selectedAsteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-    this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-
   }
   async loadAsteroids(init) {
     let app = this.app;
@@ -53,6 +18,7 @@ export default class Asteroid3D {
     }
     this.loadedAsteroids = {};
 
+    this.asteroidUpdateMaterials();
     let asteroids = U3D.getAsteroids();
 
     let ratio = 0;
@@ -101,17 +67,15 @@ export default class Asteroid3D {
       });
     });
 
-    this.asteroidUpdateMaterial();
-
-  //  if (!init)
-  //    app.runRender = false;
+    if (!init)
+      app.runRender = false;
     let promises = [];
     for (let c = 0; c < count; c++)
       promises.push(this._loadAsteroid(asteroids[randomArray[c]], c, count, scene, app));
 
     await Promise.all(promises);
-  //  if (!init)
-  //    app.runRender = true;
+    if (!init)
+      app.runRender = true;
     this.updateAsteroidLabel();
   }
   async _loadAsteroid(asteroid, index, count, scene, app) {
@@ -285,7 +249,7 @@ export default class Asteroid3D {
     this.asteroidCountLabel.position.y = 1;
     this.asteroidCountLabel.position.z = 1;
   }
-  asteroidUpdateMaterial() {
+  asteroidUpdateMaterials() {
     let name = 'Wireframe';
     let wireframe = this.app.profile.asteroidWireframe === true;
     if (wireframe)
@@ -306,6 +270,30 @@ export default class Asteroid3D {
     this.asteroidWireframeBtn.position.y = 3;
     this.asteroidWireframeBtn.position.z = 1;
     this.asteroidWireframeBtn.scaling = U3D.v(2, 2, 2);
+
     this.asteroidWireframeBtn.parent = this.app.menuTab3D.asteroidMenuTab;
+
+    name = 'asteroidmaterial';
+    let scene = this.app.scene;
+
+    if (!this.asteroidMaterial)
+      this.asteroidMaterial = new BABYLON.StandardMaterial(name + 'mat', scene);
+    if (!this.selectedAsteroidMaterial)
+      this.selectedAsteroidMaterial =  new BABYLON.StandardMaterial(name + 'selectedmat', scene);
+
+    this.asteroidMaterial.wireframe = this.app.profile.asteroidWireframe === true;
+    let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
+    this.asteroidMaterial.diffuseTexture = at;
+    //material.ambientTexture = at;
+    //material.emissiveTexture = at;
+//    this.asteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+//    this.asteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+
+    let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
+    this.selectedAsteroidMaterial.diffuseTexture = t;
+    this.selectedAsteroidMaterial.wireframe = this.app.profile.asteroidWireframe !== true;
+    this.selectedAsteroidMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+    this.selectedAsteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
+    this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
   }
 }
