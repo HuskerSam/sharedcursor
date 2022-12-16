@@ -287,16 +287,20 @@ export class StoryApp extends BaseApp {
     this.profile.asteroidCount = updatePacket.asteroidCount;
     this.asteroidHelper.loadAsteroids();
   }
-  async asteroidChangeMaterial(wireframe, texture) {
+  async asteroidChangeMaterial(wireframe, colorOnly, excludeLogos) {
     let updatePacket = {};
 
     if (wireframe !== null) {
       updatePacket.asteroidWireframe = wireframe;
       this.profile.asteroidWireframe = wireframe;
     }
-    if (texture !== null) {
-      updatePacket.asteroidTexture = texture;
-      this.profile.asteroidTexture = texture;
+    if (colorOnly !== null) {
+      updatePacket.asteroidColorOnly = colorOnly;
+      this.profile.asteroidColorOnly = colorOnly;
+    }
+    if (excludeLogos !== null) {
+      updatePacket.asteroidExcludeLogos = excludeLogos;
+      this.profile.asteroidExcludeLogos = excludeLogos;
     }
 
     this.asteroidHelper.asteroidUpdateMaterials();
