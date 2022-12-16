@@ -1301,7 +1301,7 @@ export class BaseApp {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
           if (pointerInfo.pickInfo.hit) {
-            if (U3D.pointerDown(pointerInfo))
+            if (this.pointerDown(pointerInfo))
               break;
           }
           if (pointerInfo.pickInfo.pickedMesh === this.env.ground) {

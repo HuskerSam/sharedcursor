@@ -118,7 +118,6 @@ export class StoryApp extends BaseApp {
 
       if (meta.noClick !== true) {
         meta.appClickable = true;
-        meta.masterid = name;
         meta.clickCommand = 'customClick';
         meta.handlePointerDown = async (pointerInfo, mesh, meta) => {
           this.__pauseSpin(pointerInfo, mesh, meta);
@@ -141,38 +140,38 @@ export class StoryApp extends BaseApp {
     this.paintGameData();
   }
   _createMenu3DWrapper() {
-      this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
-        width: 1,
-        height: 1,
-        depth: 1
-      }, this.scene);
-      this.selectedPlayerPanel.position.y = -1000;
-      let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
-      this.selectedPlayerPanel.material = pm;
+    this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    this.selectedPlayerPanel.position.y = -1000;
+    let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
+    this.selectedPlayerPanel.material = pm;
 
-      this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
-        width: 1,
-        height: 1,
-        depth: 1
-      }, this.scene);
-      this.selectedMoonPanel.position.y = -1000;
-      this.selectedMoonPanel.material = pm;
+    this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
+      width: 1,
+      height: 1,
+      depth: 1
+    }, this.scene);
+    this.selectedMoonPanel.position.y = -1000;
+    this.selectedMoonPanel.material = pm;
 
-      this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
-      this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
-      this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-      this.menuBarLeftTN.billboardMode = 7;
-      this.menuBarLeftTN.position.y = 5;
-      this.menuBarLeftTN.position.z = 3;
+    this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
+    this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
+    this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarLeftTN.billboardMode = 7;
+    this.menuBarLeftTN.position.y = 5;
+    this.menuBarLeftTN.position.z = 3;
 
-      this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
-      this.menuBarRightTN.position = U3D.v(-5, 1, -5);
-      this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
-      this.menuBarRightTN.billboardMode = 7;
+    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
+    this.menuBarRightTN.position = U3D.v(-5, 1, -5);
+    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
+    this.menuBarRightTN.billboardMode = 7;
 
-      this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
-      this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-      this.menuBarTabButtonsTN.position.y = -3;
+    this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
+    this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
+    this.menuBarTabButtonsTN.position.y = -3;
   }
   async loadStaticAsset(name, sceneParent, profile, scene) {
     let meta = Object.assign({}, window.allStaticAssetMeta[name]);
@@ -316,7 +315,7 @@ export class StoryApp extends BaseApp {
   }
   setFollowMeta() {
     //  this.aimCamera();
-    this.followMeta = this.menuTab3D.lastClickMetaButtonCache;
+    this.followMeta = this.menuTab3D.selectedObjectMeta;
     let v = new BABYLON.Vector3(0, 0, 0);
 
     if (this.followMeta.basePivot)
@@ -361,26 +360,6 @@ export class StoryApp extends BaseApp {
   }
   clickEndGame() {
 
-  }
-
-  meshToggleAnimation(meta, stop = false, mesh) {
-    if (!stop) {
-      this.menuTab3D.showBoardWrapper(meta);
-
-      if (meta.rotationAnimation)
-        meta.rotationAnimation.pause();
-
-      if (meta.orbitAnimation)
-        meta.orbitAnimation.pause();
-    } else {
-      this.menuTab3D.hideBoardWrapper(meta);
-
-      if (meta.rotationAnimation && meta.rotationAnimation._paused)
-        meta.rotationAnimation.restart();
-
-      if (meta.orbitAnimation && meta.orbitAnimation._paused)
-        meta.orbitAnimation.restart();
-    }
   }
 
   debounce() {
@@ -616,44 +595,90 @@ export class StoryApp extends BaseApp {
 
   pointerMove(pointerInfo) {
     if (this.menuTab3D && this.lastClickSpinPaused) {
-      this.__pauseSpinMove(pointerInfo, this.menuTab3D.lastClickMeta)
+      this.__pauseSpinMove(pointerInfo, this.menuTab3D.spinPauseMeta)
     }
   }
   pointerUp(pointerInfo) {
     if (this.lastClickSpinPaused) {
       this.lastClickSpinPaused = false;
-      if (this.menuTab3D.lastClickMeta) {
-        this.menuTab3D.lastClickMeta.basePivot.rotation.copyFrom(this.menuTab3D.lastClickMeta.basePivot.originalRotation);
+      if (this.menuTab3D.spinPauseMeta && !this.menuTab3D.spinPauseMeta.activeSelectedObject) {
+        this.menuTab3D.spinPauseMeta.basePivot.rotation.copyFrom(this.menuTab3D.spinPauseMeta.basePivot.originalRotation);
       }
     }
-    if (this.menuTab3D.lastClickMeta) {
-      this.meshToggleAnimation(this.menuTab3D.lastClickMeta, true, null);
-      this.menuTab3D.lastClickMeta = null;
+    if (this.menuTab3D.spinPauseMeta) {
+      this.spinPauseMesh(this.menuTab3D.spinPauseMeta, true, null);
+      this.menuTab3D.spinPauseMeta = null;
       return;
     }
   }
   __pauseSpin(pointerInfo, mesh, meta) {
-    this.menuTab3D.setSelectedAsset(meta);
+    this.menuTab3D.spinPauseMeta = meta;
 
-    this.lastClickMetaPointerX = this.scene.pointerX;
-    this.lastClickMetaPointerY = this.scene.pointerY;
-    this.lastClickSpinPaused = true;
+    if (meta.activeSelectedObject !== true) {
+      this.menuTab3D.setSelectedAsset(meta);
+    }
+
     meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
+    this.lastClickSpinPaused = true;
+    this.spinPauseMetaPointerX = this.scene.pointerX;
+    this.spinPauseMetaPointerY = this.scene.pointerY;
 
-    this.meshToggleAnimation(meta, false, mesh);
+    this.spinPauseMesh(meta, false, mesh);
   }
   __pauseSpinMove(pointerInfo, meta) {
-    let dX = this.scene.pointerX - this.lastClickMetaPointerX;
-    let dY = this.scene.pointerY - this.lastClickMetaPointerY;
+    let dX = this.scene.pointerX - this.spinPauseMetaPointerX;
+    let dY = this.scene.pointerY - this.spinPauseMetaPointerY;
 
     //debounce so doesn't shake in XR
     if (Math.abs(dX) + Math.abs(dY) < 8)
       return;
 
-    meta.basePivot.rotation.y -= dX * 0.005;
-    meta.basePivot.rotation.x -= dY * 0.005;
-    this.lastClickMetaPointerX = this.scene.pointerX;
-    this.lastClickMetaPointerY = this.scene.pointerY;
-  }
+    if (meta.activeSelectedObject) {
+      meta.basePivot.rotation.y -= dX * 0.0035;
+      meta.basePivot.rotation.x -= dY * 0.0035;
+    } else {
+      meta.basePivot.rotation.y -= dX * 0.005;
+      meta.basePivot.rotation.x -= dY * 0.005;
+    }
 
+    this.spinPauseMetaPointerX = this.scene.pointerX;
+    this.spinPauseMetaPointerY = this.scene.pointerY;
+  }
+  spinPauseMesh(meta, stop = false, mesh) {
+    if (!stop) {
+      if (!meta.activeSelectedObject)
+        this.menuTab3D.showBoardWrapper(meta);
+
+      if (meta.rotationAnimation)
+        meta.rotationAnimation.pause();
+
+      if (meta.orbitAnimation)
+        meta.orbitAnimation.pause();
+    } else {
+      if (!meta.activeSelectedObject)
+        this.menuTab3D.hideBoardWrapper(meta);
+
+      if (meta.rotationAnimation && meta.rotationAnimation._paused)
+        meta.rotationAnimation.restart();
+
+      if (meta.orbitAnimation && meta.orbitAnimation._paused)
+        meta.orbitAnimation.restart();
+    }
+  }
+  pointerDown(pointerInfo) {
+    let mesh = pointerInfo.pickInfo.pickedMesh;
+    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
+      mesh = mesh.parent;
+    }
+
+    if (!mesh || !mesh.assetMeta.appClickable)
+      return false;
+
+    let meta = mesh.assetMeta;
+
+    if (meta.clickCommand === 'customClick')
+      meta.handlePointerDown(pointerInfo, mesh, meta);
+
+    return true;
+  }
 }

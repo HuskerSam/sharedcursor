@@ -727,24 +727,6 @@ export default class Utility3D {
 
     mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
-
-
-  static pointerDown(pointerInfo) {
-    let mesh = pointerInfo.pickInfo.pickedMesh;
-    while (mesh && !(mesh.assetMeta && mesh.assetMeta.appClickable)) {
-      mesh = mesh.parent;
-    }
-
-    if (!mesh || !mesh.assetMeta.appClickable)
-      return false;
-
-    let meta = mesh.assetMeta;
-
-    if (meta.clickCommand === 'customClick')
-      meta.handlePointerDown(pointerInfo, mesh, meta);
-
-    return true;
-  }
   static addTextPlane(scene, text, id = "randomid", font_family = "Arial", bold = " bold", color = "#FF00FF", backColor = "transparent") {
     let font_size = 192;
     var font = bold + " " + font_size + "px " + font_family;

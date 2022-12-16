@@ -298,7 +298,7 @@ export default class MenuTab3D {
   }
 
   updateAssetSizeButtons() {
-    let meta = this.lastClickMetaButtonCache;
+    let meta = this.selectedObjectMeta;
     if (meta.asteroidType) {
       this.normalAssetSizeBtn.setEnabled(false);
       this.assetSmallSizeButton.setEnabled(false);
@@ -319,7 +319,7 @@ export default class MenuTab3D {
     this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
   }
   async updateAssetSize(size) {
-    let meta = this.lastClickMetaButtonCache;
+    let meta = this.selectedObjectMeta;
     let id = meta.id;
     if (this.obj(id)) {
       if (size === 'huge')
@@ -472,8 +472,8 @@ export default class MenuTab3D {
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
   }
   async setSelectedAsset(assetMeta) {
-    this.lastClickMeta = assetMeta;
-    this.lastClickMetaButtonCache = this.lastClickMeta;
+    this.spinPauseMeta = assetMeta;
+    this.selectedObjectMeta = this.spinPauseMeta;
 
     let desc = assetMeta.name;
     if (desc.indexOf('.obj') !== -1) {
@@ -492,7 +492,23 @@ export default class MenuTab3D {
 
     let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
     let mesh = result.rootNodes[0];
-    mesh.parent = this.selectedContainerTransform;
+
+    mesh.assetMeta = {
+      activeSelectedObject: true,
+      appClickable: true,
+      baseMesh: mesh,
+      rotationTime: 30000,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.__pauseSpin(pointerInfo, mesh, meta);
+      },
+      handlePointerMove: async (pointerInfo, mesh, meta) => {
+        this.app.__pauseSpinMove(pointerInfo, mesh, meta);
+      }
+    };
+    let meshPivot = U3D.__rotationAnimation('selectionObjectOrbitWrapper', mesh.assetMeta, mesh, this.scene);
+    meshPivot.parent = this.selectedContainerTransform;
+    mesh.assetMeta.basePivot = meshPivot;
 
     let factor = 2.5;
     if (this.app.inXR)
@@ -522,7 +538,7 @@ export default class MenuTab3D {
     this.updateAssetSizeButtons();
   }
   nextSelectedObject(previous = false) {
-    let meta = this.lastClickMetaButtonCache;
+    let meta = this.selectedObjectMeta;
     let id = meta.id;
     let factor = previous ? -1 : 1;
     if (meta.asteroidType) {
