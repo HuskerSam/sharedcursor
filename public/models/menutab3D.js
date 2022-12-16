@@ -49,7 +49,19 @@ export default class MenuTab3D {
     this.initGameStatusPanel();
   }
   addTabButtons(scene, tabBar) {
-    let iconName = 'meteor';
+    let iconName = 'xmark';
+    let closeMenuTabBtn = this.addIconBtn(scene, iconName, 'asteroidMenuTabBtn');
+    closeMenuTabBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(null);
+      }
+    };
+    closeMenuTabBtn.parent = tabBar;
+    closeMenuTabBtn.position.x = -16;
+
+    iconName = 'meteor';
     let asteroidMenuTabBtn = this.addIconBtn(scene, iconName, 'asteroidMenuTabBtn');
     asteroidMenuTabBtn.assetMeta = {
       appClickable: true,
@@ -97,7 +109,7 @@ export default class MenuTab3D {
     playersMoonsMenuBtn.parent = tabBar;
     playersMoonsMenuBtn.position.x = -4;
 
-    iconName = 'edit';
+    iconName = 'eventrepeat';
     let gameStatusMenuBtn = this.addIconBtn(scene, iconName, 'gameStatusMenuBtn');
     gameStatusMenuBtn.assetMeta = {
       appClickable: true,
@@ -474,16 +486,17 @@ export default class MenuTab3D {
 
     this.selectedContainerTransform = new BABYLON.TransformNode('selectedContainerTransform', this.scene);
     this.selectedContainerTransform.parent = this.focusPanelTab;
-    this.selectedContainerTransform.position.x = 2;
-    this.selectedContainerTransform.position.y = 3.25;
+    this.selectedContainerTransform.position.x = 4;
+    this.selectedContainerTransform.position.z = 8;
+    this.selectedContainerTransform.position.y = 5;
 
     let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
     let mesh = result.rootNodes[0];
     mesh.parent = this.selectedContainerTransform;
 
-    let factor = 1.25;
+    let factor = 2.5;
     if (this.app.inXR)
-      factor = 0.4;
+      factor = 0.35;
     U3D._fitNodeToSize(mesh, factor);
 
     if (assetMeta.asteroidType)
