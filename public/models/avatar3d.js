@@ -72,7 +72,7 @@ export default class Avatar3D {
         plane.parent = seatContainer;
 
         if (this.app.uid === seatData.uid || this.app.isOwner) {
-          let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && isOwner);
+          let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
           let color = gameOwnerNotPlayer ? "#ffffff" : '#000000';
           let standBtn = U3D.addTextPlane(this.app.scene, "X", 'standBtn' + seatIndex, "Impact", "", color);
           standBtn.scaling = U3D.v(2, 2, 2);
@@ -114,7 +114,7 @@ export default class Avatar3D {
   }
   async updatePlayerDock() {
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      let active = (seatIndex < this.app.runningSeatCount)
+      let active = (seatIndex < this.app.seatCount)
       let seatData = this.getSeatData(seatIndex);
       let cacheValue = 'empty';
       if (active)
@@ -210,18 +210,18 @@ export default class Avatar3D {
     });
   }
   async updateUserPresence() {
-    for (let c = 0; c < 4; c++) {
-      let seat = this.dockSeatContainers[c];
+    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
+      let seat = this.dockSeatContainers[seatIndex];
       if (seat) {
         if (seat.onlineSphere) {
           seat.onlineSphere.dispose();
           seat.onlineSphere = null;
         }
 
-        let seatData = this.getSeatData(c);
-        if (seatData.seated) {
+        let seatData = this.getSeatData(seatIndex);
+        if (seatData.seated  && seatIndex < this.app.seatCount) {
           let online = this.app.userPresenceStatus[seatData.uid] === true;
-          let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + c, this.app.scene);
+          let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + seatIndex, this.app.scene);
           let color = new BABYLON.Color3(1, 1, 1);
           if (online) {
             color = new BABYLON.Color3(0, 2, 0)
@@ -230,7 +230,7 @@ export default class Avatar3D {
           }
           mat1.diffuseColor = color;
 
-          let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + c, {
+          let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + seatIndex, {
             diameter: .25,
             segments: 16
           }, this.app.scene);

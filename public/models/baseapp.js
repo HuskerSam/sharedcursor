@@ -988,6 +988,12 @@ export class BaseApp {
       seat.parentElement.classList.remove('dock_seat_open');
     }
   }
+  get seatCount() {
+    let numSeats = this.gameData.runningNumberOfSeats;
+    if (this.gameData.mode === 'ready')
+      numSeats = this.gameData.numberOfSeats;
+    return numSeats;
+  }
   paintDock() {
     document.body.classList.remove('seatcount_1');
     document.body.classList.remove('seatcount_2');
@@ -1001,10 +1007,7 @@ export class BaseApp {
     document.body.classList.add('seatcount_' + this.gameData.numberOfSeats.toString());
     if (!this.gameData.runningNumberOfSeats)
       this.gameData.runningNumberOfSeats = 1;
-    let numSeats = this.gameData.runningNumberOfSeats;
-    if (this.gameData.mode === 'ready')
-      numSeats = this.gameData.numberOfSeats;
-    this.runningSeatCount = numSeats;
+    let numSeats = this.seatCount;
     document.body.classList.add('runningseatcount_' + numSeats.toString());
     if (numSeats < 3) {
       document.body.classList.remove('large_board');

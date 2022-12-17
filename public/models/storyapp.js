@@ -238,7 +238,7 @@ export class StoryApp extends BaseApp {
     }
   }
   get isOwner() {
-    return this.app.uid === this.app.gameData.createUser;
+    return this.uid === this.gameData.createUser;
   }
 
   //profile related
