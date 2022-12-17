@@ -7,7 +7,7 @@ export default class MenuTab3D {
     this.scene = app.scene;
   }
   obj(name) {
-    return this.app.staticAssetMeshes[name];
+    return this.app.staticAssets[name];
   }
 
   initOptionsBar() {
@@ -40,13 +40,17 @@ export default class MenuTab3D {
     this.playerMoonPanelTab.position.y = 0;
     this.playerMoonPanelTab.position.x = -10;
     this.playerMoonPanelTab.setEnabled(false);
-    this.initPlayerMoonsPanel();
 
     this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', scene);
     this.gameStatusPanelTab.parent = panel;
     this.gameStatusPanelTab.position.y = 0;
     this.gameStatusPanelTab.setEnabled(false);
     this.initGameStatusPanel();
+
+    this.cardsStatusPanelTab = new BABYLON.TransformNode('cardsStatusPanelTab', scene);
+    this.cardsStatusPanelTab.parent = panel;
+    this.cardsStatusPanelTab.position.y = 0;
+    this.cardsStatusPanelTab.setEnabled(false);
   }
   addTabButtons(scene, tabBar) {
     let iconName = 'xmark';
@@ -85,7 +89,7 @@ export default class MenuTab3D {
     optionsMenuBtn.parent = tabBar;
     optionsMenuBtn.position.x = -10;
 
-    iconName = 'anchor';
+    iconName = 'inspectobject';
     let selectedObjectMenuBtn = this.addIconBtn(scene, iconName, 'selectedObjectMenuBtn');
     selectedObjectMenuBtn.assetMeta = {
       appClickable: true,
@@ -97,7 +101,7 @@ export default class MenuTab3D {
     selectedObjectMenuBtn.parent = tabBar;
     selectedObjectMenuBtn.position.x = -7;
 
-    iconName = 'moon';
+    iconName = 'diversity';
     let playersMoonsMenuBtn = this.addIconBtn(scene, iconName, 'playersMoonsMenuBtn');
     playersMoonsMenuBtn.assetMeta = {
       appClickable: true,
@@ -119,7 +123,21 @@ export default class MenuTab3D {
       }
     };
     gameStatusMenuBtn.parent = tabBar;
-    gameStatusMenuBtn.position.x = -1;
+    gameStatusMenuBtn.position.x = -4;
+    gameStatusMenuBtn.position.y = -3;
+
+    iconName = 'spade';
+    let cardsStatusMenuBtn = this.addIconBtn(scene, iconName, 'cardsStatusMenuBtn');
+    cardsStatusMenuBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.cardsStatusPanelTab);
+      }
+    };
+    cardsStatusMenuBtn.parent = tabBar;
+    cardsStatusMenuBtn.position.x = -7;
+    cardsStatusMenuBtn.position.y = -3;
   }
   addIconBtn(scene, iconName, name) {
     //let texturePath = 'https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg';
@@ -140,7 +158,21 @@ export default class MenuTab3D {
 
     return mesh;
   }
+  selectedMenuBarTab(menuTabToShow) {
+    if (this.asteroidMenuTab)
+      this.asteroidMenuTab.setEnabled(false);
+    if (this.optionsMenuTab)
+      this.optionsMenuTab.setEnabled(false);
+    if (this.focusPanelTab)
+      this.focusPanelTab.setEnabled(false);
+    if (this.playerMoonPanelTab)
+      this.playerMoonPanelTab.setEnabled(false);
+    if (this.gameStatusPanelTab)
+      this.gameStatusPanelTab.setEnabled(false);
 
+    if (menuTabToShow)
+      menuTabToShow.setEnabled(true);
+  }
   async initOptionsTab(scene, parent) {
     let shootRocketBtn = this.addIconBtn(scene, 'rocket', 'shootRocketBtn');
     shootRocketBtn.assetMeta = {
@@ -180,7 +212,7 @@ export default class MenuTab3D {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app._nextSkybox();
+        this.app.switchSkyboxNext();
       }
     };
   }
@@ -248,8 +280,8 @@ export default class MenuTab3D {
     this.endTurnButton = U3D.addTextPlane(this.scene, "End Turn", "endTurnButton", "Arial", "", "#ffffff");
     this.endTurnButton.parent = this.gameStatusPanelTab;
     this.endTurnButton.scaling = U3D.v(2, 2, 2);
-    this.endTurnButton.position.x = 0;
-    this.endTurnButton.position.y = 3;
+    this.endTurnButton.position.x = -5;
+    this.endTurnButton.position.y = 5;
     this.endTurnButton.position.z = 1;
     this.endTurnButton.assetMeta = {
       appClickable: true,
@@ -258,43 +290,6 @@ export default class MenuTab3D {
         this.app.clickEndTurn();
       }
     };
-  }
-  selectedMenuBarTab(menuTabToShow) {
-    if (this.asteroidMenuTab)
-      this.asteroidMenuTab.setEnabled(false);
-    if (this.optionsMenuTab)
-      this.optionsMenuTab.setEnabled(false);
-    if (this.focusPanelTab)
-      this.focusPanelTab.setEnabled(false);
-    if (this.playerMoonPanelTab)
-      this.playerMoonPanelTab.setEnabled(false);
-    if (this.gameStatusPanelTab)
-      this.gameStatusPanelTab.setEnabled(false);
-
-    if (menuTabToShow)
-      menuTabToShow.setEnabled(true);
-  }
-  initPlayerMoonsPanel() {
-    this.playerMoonSubPanel = new BABYLON.TransformNode('playerMoonSubPanel', this.app.scene);
-    this.playerMoonSubPanel.parent = this.playerMoonPanelTab;
-    this.playerMoonSubPanel.position.y = 4;
-
-    let seatMeshes = this.app.avatarHelper.seatMeshes;
-    for (let c = 0; c < 4; c++) {
-      let result = window.staticMeshContainer[seatMeshes[c].assetMeta.containerPath].instantiateModelsToScene();
-      let mesh = result.rootNodes[0];
-      mesh.position = U3D.v(2 - (c * 1.5), 2, 0);
-      let seatIndex = c;
-      mesh.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.setSelectedAsset(this.app.seatMeshes[seatIndex].assetMeta);
-        }
-      };
-      mesh.parent = this.playerMoonSubPanel;
-      U3D._fitNodeToSize(mesh, 1.25);
-    }
   }
 
   updateAssetSizeButtons() {
@@ -500,11 +495,11 @@ export default class MenuTab3D {
       rotationTime: 30000,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.__pauseSpin(pointerInfo, mesh, meta);
-      },
-      handlePointerMove: async (pointerInfo, mesh, meta) => {
-        this.app.__pauseSpinMove(pointerInfo, mesh, meta);
-      }
+          this.app.__pauseSpin(pointerInfo, mesh, meta);
+        },
+        handlePointerMove: async (pointerInfo, mesh, meta) => {
+          this.app.__pauseSpinMove(pointerInfo, mesh, meta);
+        }
     };
     let meshPivot = U3D.__rotationAnimation('selectionObjectOrbitWrapper', mesh.assetMeta, mesh, this.scene);
     meshPivot.parent = this.selectedContainerTransform;
@@ -542,7 +537,7 @@ export default class MenuTab3D {
     let id = meta.id;
     let factor = previous ? -1 : 1;
     if (meta.asteroidType) {
-      let keys = Object.keys(this.app.loadedAsteroids).sort();
+      let keys = Object.keys(this.loadedAsteroids).sort();
 
       let index = keys.indexOf(meta.name);
       let nextIndex = index + factor;
@@ -552,9 +547,9 @@ export default class MenuTab3D {
         nextIndex = 0;
 
       let key = keys[nextIndex];
-      this.setSelectedAsset(this.app.loadedAsteroids[key].orbitWrapper.assetMeta);
+      this.setSelectedAsset(this.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else {
-      let keys = Object.keys(this.app.staticAssetMeshes).sort((a, b) => {
+      let keys = Object.keys(this.app.staticAssets).sort((a, b) => {
         if (this.obj(a).assetMeta.name > this.obj(b).assetMeta.name)
           return 1;
         if (this.obj(a).assetMeta.name < this.obj(b).assetMeta.name)
@@ -572,12 +567,15 @@ export default class MenuTab3D {
       this.setSelectedAsset(this.obj(key).assetMeta);
     }
   }
-  showBoardWrapper(meta) {
+
+  showAssetNamePlate(meta) {
     let nameDesc = meta.name;
     if (meta.solarPosition)
       nameDesc += ` (${meta.solarPosition})`;
-    if (meta.asteroidType)
+    if (meta.asteroidType) {
       nameDesc = nameDesc.replace('.obj', '');
+      nameDesc = nameDesc.charAt(0).toUpperCase() + nameDesc.slice(1);
+    }
 
     let color = "rgb(200, 0, 0)";
     if (meta.color)
@@ -598,7 +596,7 @@ export default class MenuTab3D {
     if (meta.textPivot)
       meta.textPivot.setEnabled(false);
   }
-  hideBoardWrapper(meta) {
+  hideAssetNamePlate(meta) {
     this.boardWrapper.setEnabled(false);
     this.boardWrapper.parent = null;
     if (meta.textPivot)

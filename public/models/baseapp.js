@@ -53,6 +53,7 @@ export class BaseApp {
       });
     }, 10000);
 
+
     this.load();
   }
   async load() {
@@ -1180,6 +1181,7 @@ export class BaseApp {
     }
     this.matchBoardRendered = false;
   }
+
   async initBabylonEngine(canvasQuery = ".popup-canvas", initVR = false) {
     this.canvas = document.querySelector(canvasQuery);
     this.engine = new BABYLON.Engine(this.canvas, true);
@@ -1192,9 +1194,9 @@ export class BaseApp {
       if (this.runRender)
         this.scene.render();
 
-      if (this.followMeta && this.xr.baseExperience.state === 3 && this.followMeta.basePivot) {
+      if (this.activeFollowMeta && this.xr.baseExperience.state === 3 && this.activeFollowMeta.basePivot) {
         let position = new BABYLON.Vector3(0, 0, 0);
-        position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+        position.copyFrom(this.activeFollowMeta.basePivot.getAbsolutePosition());
         position.y += 4;
 
         let mX = position.x - this.scene.activeCamera.position.x;
@@ -1224,7 +1226,7 @@ export class BaseApp {
       return;
 
     this.cameraMetaX = {
-      position: new BABYLON.Vector3(10, 6, 10),
+      position: new BABYLON.Vector3(12, 15, 12),
       target: new BABYLON.Vector3(5, 1, 5)
     };
     this.cameraMetaY = {
@@ -1360,9 +1362,9 @@ export class BaseApp {
       //childForCamera.position.addInPlace(xr.baseExperience.camera.position);
       this.xr.baseExperience.sessionManager.onXRFrameObservable.add(() => {
 
-        if (this.followMeta && this.followMeta.basePivot) {
+        if (this.activeFollowMeta && this.activeFollowMeta.basePivot) {
           let position = new BABYLON.Vector3(0, 0, 0);
-          position.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
+          position.copyFrom(this.activeFollowMeta.basePivot.getAbsolutePosition());
           position.y += 4;
 
           let mX = position.x - this.scene.activeCamera.position.x;
@@ -1387,6 +1389,7 @@ export class BaseApp {
 
     return scene;
   }
+
   enterXR() {}
   enterNotInXR() {}
   pointerMove() {}

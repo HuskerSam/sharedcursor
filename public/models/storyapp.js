@@ -10,13 +10,12 @@ export class StoryApp extends BaseApp {
     super();
     this.apiType = 'story';
     this.cache = {};
-    this.staticAssetMeshes = {};
+    this.staticAssets = {};
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
 
     this.alertErrors = false;
-    this.debounceBusy = false;
   }
   async _initMenuBar2D() {
     this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
@@ -48,7 +47,7 @@ export class StoryApp extends BaseApp {
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
 
     this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
-    this.menu_bar_toggle.addEventListener('click', e => this.toggleMenuBar());
+    this.menu_bar_toggle.addEventListener('click', e => document.body.classList.toggle('menu_bar_expanded'));
 
     this.end_turn_button = document.querySelector('.end_turn_button');
     this.end_turn_button.addEventListener('click', e => this._endTurn());
@@ -64,7 +63,7 @@ export class StoryApp extends BaseApp {
   }
   async _initContent3D() {
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
-    this._createMenu3DWrapper();
+    this.createMenu3DWrapper();
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
 
@@ -72,7 +71,7 @@ export class StoryApp extends BaseApp {
       U3D.createGuides(this.scene);
 
     this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
-      this.clearFollowMeta();
+      this.clearActiveFollowMeta();
     });
 
     this.addLineToLoading('Loading Assets...<br>');
@@ -135,28 +134,9 @@ export class StoryApp extends BaseApp {
 
     this.runRender = true;
 
-    await this.avatarHelper.updateAvatarStatus();
-
     this.paintGameData();
   }
-  _createMenu3DWrapper() {
-    this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
-      width: 1,
-      height: 1,
-      depth: 1
-    }, this.scene);
-    this.selectedPlayerPanel.position.y = -1000;
-    let pm = new BABYLON.StandardMaterial('panelplayershowmat' + name, this.scene);
-    this.selectedPlayerPanel.material = pm;
-
-    this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
-      width: 1,
-      height: 1,
-      depth: 1
-    }, this.scene);
-    this.selectedMoonPanel.position.y = -1000;
-    this.selectedMoonPanel.material = pm;
-
+  createMenu3DWrapper() {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
@@ -210,14 +190,14 @@ export class StoryApp extends BaseApp {
 
     meshPivot.assetMeta = meta;
     meshPivot.baseMesh = mesh;
-    this.staticAssetMeshes[name] = meshPivot;
+    this.staticAssets[name] = meshPivot;
 
     let ___awaitAssetLoad = async (name) => {
       return new Promise((res, rej) => {
         let awaitInterval = setInterval(() => {
-          if (this.staticAssetMeshes[name]) {
+          if (this.staticAssets[name]) {
             clearInterval(awaitInterval);
-            res(this.staticAssetMeshes[name]);
+            res(this.staticAssets[name]);
           }
         }, 50);
       });
@@ -226,28 +206,40 @@ export class StoryApp extends BaseApp {
     if (meta.parent) {
       await ___awaitAssetLoad(meta.parent);
       if (meta.parentType === 'basePivot')
-        meshPivot.parent = this.staticAssetMeshes[meta.parent].assetMeta.basePivot;
+        meshPivot.parent = this.staticAssets[meta.parent].assetMeta.basePivot;
       else
-        meshPivot.parent = this.staticAssetMeshes[meta.parent];
+        meshPivot.parent = this.staticAssets[meta.parent];
     } else
       meshPivot.parent = sceneParent;
 
-    return this.staticAssetMeshes[name];
+    return this.staticAssets[name];
+  }
+  addLineToLoading(str) {
+    let div = document.createElement('div');
+    div.innerHTML = str;
+    this.loading_dynamic_area.appendChild(div);
+
+    this.loading_dynamic_area.scrollIntoView(false);
+
+    return div;
+  }
+  aimCamera(locationMeta) {
+    this.camera.restoreState();
+    if (locationMeta) {
+      this.camera.setPosition(locationMeta.position);
+      this.camera.setTarget(locationMeta.target);
+    }
+
+    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) { //inxr = 2
+      this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
+    }
+  }
+  get isOwner() {
+    return this.app.uid === this.app.gameData.createUser;
   }
 
-  yButtonPress() {
-    this.clearFollowMeta();
-    this.aimCamera(this.cameraMetaX);
-  }
-  xButtonPress() {}
-  bButtonPress() {
-    this.setFollowMeta();
-  }
-  aButtonPress() {
-    this.clearFollowMeta();
-  }
-
-  async _nextSkybox() {
+  //profile related
+  async switchSkyboxNext() {
     let index = this.menuTab3D.skyboxList().indexOf(this.profile.skyboxPath);
     if (index < this.menuTab3D.skyboxList().length - 1)
       index++
@@ -262,18 +254,6 @@ export class StoryApp extends BaseApp {
     if (this.fireToken)
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
   }
-  aimCamera(locationMeta) {
-    this.camera.restoreState();
-    if (locationMeta) {
-      this.camera.setPosition(locationMeta.position);
-      this.camera.setTarget(locationMeta.target);
-    }
-
-    if (this.xr.baseExperience.state === BABYLON.WebXRState.IN_XR) { //inxr = 2
-      this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
-    }
-  }
-
   async asteroidCountChange(delta) {
     let asteroidCount = this.asteroidHelper.getAsteroidCount(this.profile.asteroidCount);
     asteroidCount = this.asteroidHelper.getAsteroidCount(asteroidCount + delta);
@@ -309,49 +289,23 @@ export class StoryApp extends BaseApp {
       merge: true
     });
   }
+  async updateProfileMeshOverride(id, size) {
+    if (!this.profile.assetSizeOverrides)
+      this.profile.assetSizeOverrides = {};
 
-  clearFollowMeta() {
-    this.followMeta = null;
-  }
-  setFollowMeta() {
-    //  this.aimCamera();
-    this.followMeta = this.menuTab3D.selectedObjectMeta;
-    let v = new BABYLON.Vector3(0, 0, 0);
+    this.profile.assetSizeOverrides[id] = size;
 
-    if (this.followMeta.basePivot)
-      v.copyFrom(this.followMeta.basePivot.getAbsolutePosition());
-    else
-      v.copyFrom(this.staticAssetMeshes[this.followMeta.id].getAbsolutePosition());
-    v.y += 4;
-    this.camera.position.copyFrom(v);
-    this.camera.alpha += Math.PI;
-
-    if (this.xr.baseExperience.state === 2) {
-      this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
-      //      this.xr.baseExperience.camera.rotation.y = 0.2;
-      /*
-          const rotation = 3.14;
-          BABYLON.Quaternion.FromEulerAngles(0, rotation, 0).multiplyToRef(
-              this.xr.baseExperience.camera.rotationQuaternion,
-              this.xr.baseExperience.camera.rotationQuaternion
-          );
-      */
-    }
+    let updatePacket = {
+      assetSizeOverrides: {
+        [id]: size
+      }
+    };
+    await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
+      merge: true
+    });
   }
 
-  toggleMenuBar() {
-    document.body.classList.toggle('menu_bar_expanded');
-  }
-  addLineToLoading(str) {
-    let div = document.createElement('div');
-    div.innerHTML = str;
-    this.loading_dynamic_area.appendChild(div);
-
-    this.loading_dynamic_area.scrollIntoView(false);
-
-    return div;
-  }
-
+  //game logic
   clickEndTurn() {
     this._endTurn();
   }
@@ -361,9 +315,31 @@ export class StoryApp extends BaseApp {
   clickEndGame() {
 
   }
+  async _endTurn() {
+    let action = 'endTurn';
+    let body = {
+      gameId: this.currentGame,
+      action
+    };
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
 
-  debounce() {
-    return false;
+    if (!json.success) {
+      console.log('selection send resolve', json);
+      if (this.alertErrors)
+        alert('Failed to resolve selection: ' + json.errorMessage);
+      return;
+    }
   }
   async authUpdateStatusUI() {
     super.authUpdateStatusUI();
@@ -482,82 +458,18 @@ export class StoryApp extends BaseApp {
     this.updateUserPresence();
 
     document.body.classList.add('avatars_loaded');
-    this.avatarHelper.updateSelectedSeatMesh();
 
     this.updateScoreboard();
   }
-  paintDock() {
+  async paintDock() {
     super.paintDock();
     if (this.avatarHelper)
-      this.avatarHelper.updateAvatarStatus();
+      this.avatarHelper.updatePlayerDock();
   }
-
   updateUserPresence() {
     super.updateUserPresence();
     if (this.avatarHelper)
       this.avatarHelper.updateUserPresence();
-  }
-  async _endTurn() {
-    if (this.debounce())
-      return;
-
-    let action = 'endTurn';
-    let body = {
-      gameId: this.currentGame,
-      action
-    };
-    let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-        token
-      },
-      body: JSON.stringify(body)
-    });
-    let json = await f_result.json();
-
-    if (!json.success) {
-      console.log('selection send resolve', json);
-      if (this.alertErrors)
-        alert('Failed to resolve selection: ' + json.errorMessage);
-      return;
-    }
-  }
-  updateScoreboard() {
-    /*
-        let seatIndex = this.gameData.currentSeat;
-
-        let rgb = this.get3DColors(seatIndex);
-        let str = rgb.r + ',' + rgb.g + "," + rgb.b;
-        let backColor = U3D.colorRGB255(str);
-        let color = seatIndex !== 3 ? "rgb(0,0,0)" : "rgb(255,255,255)";
-        let nameTexture = U3D.__texture2DText(this.scene, "Scoreboard Status", color, backColor, 50);
-        nameTexture.vScale = 1;
-        nameTexture.uScale = 1;
-        nameTexture.hasAlpha = true;
-        this.scoreboardNameMaterial.diffuseTexture = nameTexture;
-        this.scoreboardNameMaterial.ambientTexture = nameTexture;
-        this.scoreboardNameMaterial.emissiveTexture = nameTexture;
-    */
-  }
-
-  async updateProfileMeshOverride(id, size) {
-    if (!this.profile.assetSizeOverrides)
-      this.profile.assetSizeOverrides = {};
-
-    this.profile.assetSizeOverrides[id] = size;
-
-    let updatePacket = {
-      assetSizeOverrides: {
-        [id]: size
-      }
-    };
-    await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
-      merge: true
-    });
   }
 
   enterXR() {
@@ -647,7 +559,7 @@ export class StoryApp extends BaseApp {
   spinPauseMesh(meta, stop = false, mesh) {
     if (!stop) {
       if (!meta.activeSelectedObject)
-        this.menuTab3D.showBoardWrapper(meta);
+        this.menuTab3D.showAssetNamePlate(meta);
 
       if (meta.rotationAnimation)
         meta.rotationAnimation.pause();
@@ -656,7 +568,7 @@ export class StoryApp extends BaseApp {
         meta.orbitAnimation.pause();
     } else {
       if (!meta.activeSelectedObject)
-        this.menuTab3D.hideBoardWrapper(meta);
+        this.menuTab3D.hideAssetNamePlate(meta);
 
       if (meta.rotationAnimation && meta.rotationAnimation._paused)
         meta.rotationAnimation.restart();
@@ -680,5 +592,44 @@ export class StoryApp extends BaseApp {
       meta.handlePointerDown(pointerInfo, mesh, meta);
 
     return true;
+  }
+  clearActiveFollowMeta() {
+    this.activeFollowMeta = null;
+  }
+  setActiveFollowMeta() {
+    //  this.aimCamera();
+    this.activeFollowMeta = this.menuTab3D.selectedObjectMeta;
+    let v = new BABYLON.Vector3(0, 0, 0);
+
+    if (this.activeFollowMeta.basePivot)
+      v.copyFrom(this.activeFollowMeta.basePivot.getAbsolutePosition());
+    else
+      v.copyFrom(this.staticAssets[this.activeFollowMeta.id].getAbsolutePosition());
+    v.y += 4;
+    this.camera.position.copyFrom(v);
+    this.camera.alpha += Math.PI;
+
+    if (this.xr.baseExperience.state === 2) {
+      this.xr.baseExperience.camera.setTransformationFromNonVRCamera(this.camera);
+      //      this.xr.baseExperience.camera.rotation.y = 0.2;
+      /*
+          const rotation = 3.14;
+          BABYLON.Quaternion.FromEulerAngles(0, rotation, 0).multiplyToRef(
+              this.xr.baseExperience.camera.rotationQuaternion,
+              this.xr.baseExperience.camera.rotationQuaternion
+          );
+      */
+    }
+  }
+  yButtonPress() {
+    this.clearActiveFollowMeta();
+    this.aimCamera(this.cameraMetaX);
+  }
+  xButtonPress() {}
+  bButtonPress() {
+    this.setActiveFollowMeta();
+  }
+  aButtonPress() {
+    this.clearActiveFollowMeta();
   }
 }

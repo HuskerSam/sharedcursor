@@ -37,8 +37,8 @@ export default class Asteroid3D {
       randomArray.push(c);
     }
     randomArray = app._shuffleArray(randomArray);
-    randomArray = randomArray.slice(0, count).sort();
-
+    randomArray = randomArray.slice(0, count);
+    randomArray = randomArray.sort();
     let linkNameList = '';
     randomArray.forEach((index, i) => {
       let name = asteroids[index];
