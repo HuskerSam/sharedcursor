@@ -458,8 +458,6 @@ export class StoryApp extends BaseApp {
     this.updateUserPresence();
 
     document.body.classList.add('avatars_loaded');
-
-    this.updateScoreboard();
   }
   async paintDock() {
     super.paintDock();
