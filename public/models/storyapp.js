@@ -532,6 +532,7 @@ export class StoryApp extends BaseApp {
     }
 
     meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
+    meta.basePivot.rotation = this.getAbsoluteRotation(meta.basePivot);
     this.lastClickSpinPaused = true;
     this.spinPauseMetaPointerX = this.scene.pointerX;
     this.spinPauseMetaPointerY = this.scene.pointerY;
@@ -632,5 +633,22 @@ export class StoryApp extends BaseApp {
   }
   aButtonPress() {
     this.clearActiveFollowMeta();
+  }
+  getAbsoluteRotation(mesh) {
+    var rotation = BABYLON.Quaternion.Identity()
+    var position = BABYLON.Vector3.Zero()
+
+    mesh.getWorldMatrix().decompose(BABYLON.Vector3.Zero(), rotation, position)
+
+    if (mesh.rotationQuaternion) {
+      mesh.rotationQuaternion.copyFrom(rotation)
+    } else {
+      rotation.toEulerAnglesToRef(mesh.rotation)
+    }
+
+    return rotation;
+    //mesh.position.x = position.x
+    //mesh.position.y = position.y
+    //mesh.position.z = position.z
   }
 }

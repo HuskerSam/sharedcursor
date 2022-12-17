@@ -379,6 +379,24 @@ export default class Asteroid3D {
       m2.emissiveTexture = t2;
       m2.ambientTexture = t2;
       this.asteroidSymbolMesh2.material = m2;
+
+      this.asteroidSymbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid3', {
+        height: 1,
+        width: 1,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      }, this.scene);
+      this.asteroidSymbolMesh3.setEnabled(false);
+
+      let imgPath3 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
+        encodeURIComponent('herbie.png') + '?alt=media';
+      let m3 = new BABYLON.StandardMaterial('symbolshowmatasteroid3', this.app.scene);
+      let t3 = new BABYLON.Texture(imgPath3, this.app.scene);
+      t3.hasAlpha = true;
+
+      m3.diffuseTexture = t3;
+      m3.emissiveTexture = t3;
+      m3.ambientTexture = t3;
+      this.asteroidSymbolMesh3.material = m3;
     }
 
     for (let name in this.loadedAsteroids) {
@@ -389,8 +407,11 @@ export default class Asteroid3D {
 
       if (!includeLogos) {
         let delta = "";
-        if (Math.floor(Math.random() * 2) > 0) {
+        if (Math.floor(Math.random() * 2) === 0) {
           delta = "2";
+        }
+        if (Math.floor(Math.random() * 8) === 0) {
+          delta = "3";
         }
         const asteroidSymbol = this['asteroidSymbolMesh' + delta].clone("symbolshow1asteroid" + delta);
         asteroidSymbol.setEnabled(true);
