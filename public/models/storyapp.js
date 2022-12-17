@@ -129,8 +129,11 @@ export class StoryApp extends BaseApp {
 
     this.avatarHelper = new Avatar3D(this);
 
-    await this.menuTab3D.initOptionsBar();
-    await this.asteroidHelper.loadAsteroids(true);
+    await Promise.all([
+      this.menuTab3D.initOptionsBar(),
+      this.asteroidHelper.loadAsteroids(true),
+      this.avatarHelper.initPlayerPanel()
+    ]);
 
     this.runRender = true;
 

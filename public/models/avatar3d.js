@@ -5,11 +5,10 @@ export default class Avatar3D {
     this.app = app;
     this.app.gameData = this.app.gameData;
 
-    this.dockDiscRadius = .6;
+    this.dockDiscRadius = 0.6;
     this.playerMoonAssets = {};
-    this.initPlayerPanel();
   }
-  initPlayerPanel() {
+  async initPlayerPanel() {
     for (let key in this.app.staticAssets) {
       let assetMesh = this.app.staticAssets[key];
       if (assetMesh.assetMeta.seatIndex !== undefined)
@@ -52,7 +51,7 @@ export default class Avatar3D {
         avatarContainer.position.z = 0;
         avatarContainer.parent = seatContainer;
         seatData.avatarContainer = avatarContainer;
-        this.dockSeatContainers[seatIndex].avatarContainer = avatarContainer;
+        seatContainer.avatarContainer = avatarContainer;
 
         const plane = BABYLON.MeshBuilder.CreatePlane("avatarimage" + seatIndex, {
             height: 2,
@@ -60,7 +59,7 @@ export default class Avatar3D {
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
           },
           this.app.scene);
-        plane.position.y = 1;
+        plane.position.y = 3;
         let m = new BABYLON.StandardMaterial('avatarshowmat' + name, this.app.scene);
         let t = new BABYLON.Texture(seatData.image, this.app.scene);
         t.vScale = 1;
@@ -70,7 +69,7 @@ export default class Avatar3D {
         m.emissiveTexture = t;
         m.ambientTexture = t;
         plane.material = m;
-        plane.parent = avatarContainer;
+        plane.parent = seatContainer;
 
         if (this.app.uid === seatData.uid || this.app.isOwner) {
           let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && isOwner);
@@ -79,31 +78,36 @@ export default class Avatar3D {
           standBtn.scaling = U3D.v(2, 2, 2);
           standBtn.position.x = 0.4;
           standBtn.position.y = 1.9;
-          standBtn.parent = avatarContainer;
+          standBtn.parent = seatContainer;
           standBtn.assetMeta = {
             appClickable: true,
             clickCommand: 'customClick',
             handlePointerDown: async (pointerInfo, mesh, meta) => {
-              this.app._gameAPIStand(index);
+              this.app._gameAPIStand(seatIndex);
+              seatContainer.sitStandButton.dispose();
+              seatContainer.sitStandButton = null;
             }
           };
+          seatContainer.sitStandButton = standBtn;
         }
       } else {
         let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
-        let standBtn = U3D.addTextPlane(this.app.scene, "Sit", 'seatsitbtn' + index, "Arial", "", rgb);
-        standBtn.position.y = 1;
-        standBtn.assetMeta = {
-          seatIndex: index,
+        let sitBtn = U3D.addTextPlane(this.app.scene, "Sit", 'seatsitbtn' + seatIndex, "Arial", "", rgb);
+        sitBtn.position.y = 1;
+        sitBtn.assetMeta = {
+          seatIndex,
           appClickable: true,
           clickCommand: 'customClick',
           handlePointerDown: async (pointerInfo, mesh, meta) => {
-            this.app.dockSit(index);
+            this.app.dockSit(seatIndex);
+            seatContainer.sitStandButton.dispose();
+            seatContainer.sitStandButton = null;
           }
         };
 
-        standBtn.parent = seatContainer;
-        seat.sitStandButton = standBtn;
+        sitBtn.parent = seatContainer;
+        seatContainer.sitStandButton = sitBtn;
       }
     }
 
@@ -239,21 +243,21 @@ export default class Avatar3D {
       }
     }
   }
-  get3DColors(index) {
+  get3DColors(seatIndex) {
     let r = 220 / 255,
       g = 220 / 255,
       b = 0;
-    if (index === 1) {
+    if (seatIndex === 1) {
       r = 0;
       g = 220 / 255;
       b = 210 / 255;
     }
-    if (index === 2) {
+    if (seatIndex === 2) {
       r = 230 / 255;
       g = 0;
       b = 230 / 255;
     }
-    if (index === 3) {
+    if (seatIndex === 3) {
       r = 150 / 255;
       g = 130 / 255;
       b = 255 / 255;

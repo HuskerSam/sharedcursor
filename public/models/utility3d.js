@@ -756,7 +756,8 @@ export default class Utility3D {
     //Create plane and set dynamic texture as material
     var plane = BABYLON.MeshBuilder.CreatePlane(id + "textplane", {
       width: planeWidth,
-      height: planeHeight
+      height: planeHeight,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
     plane.material = mat;
 
