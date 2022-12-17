@@ -38,7 +38,6 @@ export default class MenuTab3D {
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', scene);
     this.playerMoonPanelTab.parent = panel;
     this.playerMoonPanelTab.position.y = 0;
-    this.playerMoonPanelTab.position.x = -10;
     this.playerMoonPanelTab.setEnabled(false);
 
     this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', scene);

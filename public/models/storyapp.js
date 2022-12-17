@@ -515,13 +515,13 @@ export class StoryApp extends BaseApp {
     if (this.lastClickSpinPaused) {
       this.lastClickSpinPaused = false;
       if (this.menuTab3D.spinPauseMeta && !this.menuTab3D.spinPauseMeta.activeSelectedObject) {
-        this.menuTab3D.spinPauseMeta.basePivot.rotation.copyFrom(this.menuTab3D.spinPauseMeta.basePivot.originalRotation);
+        if (!this.menuTab3D.spinPauseMeta.activeSelectedObject)
+          this.menuTab3D.spinPauseMeta.basePivot.rotation.copyFrom(this.menuTab3D.spinPauseMeta.basePivot.originalRotation);
       }
     }
     if (this.menuTab3D.spinPauseMeta) {
       this.spinPauseMesh(this.menuTab3D.spinPauseMeta, true, null);
       this.menuTab3D.spinPauseMeta = null;
-      return;
     }
   }
   __pauseSpin(pointerInfo, mesh, meta) {
@@ -532,7 +532,8 @@ export class StoryApp extends BaseApp {
     }
 
     meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
-    meta.basePivot.rotation = this.getAbsoluteRotation(meta.basePivot);
+    if (meta.asteroidType)
+      meta.basePivot.rotation = this.getAbsoluteRotation(meta.basePivot);
     this.lastClickSpinPaused = true;
     this.spinPauseMetaPointerX = this.scene.pointerX;
     this.spinPauseMetaPointerY = this.scene.pointerY;
@@ -647,8 +648,5 @@ export class StoryApp extends BaseApp {
     }
 
     return rotation;
-    //mesh.position.x = position.x
-    //mesh.position.y = position.y
-    //mesh.position.z = position.z
   }
 }

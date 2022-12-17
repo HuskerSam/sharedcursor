@@ -134,7 +134,7 @@ export default class Asteroid3D {
     };
   }
   _buildAsteroidPath() {
-    let y = 2;
+    let y = 1;
 
     let xMin = -60;
     let xMax = 35;
@@ -143,7 +143,7 @@ export default class Asteroid3D {
 
     let keyPoints = [];
 
-    keyPoints.push(this.v4(xMax, y, 0, 128));
+    keyPoints.push(this.v4(xMax, y, -5, 128));
     keyPoints.push(this.v4(0, y, zMax, 128));
     keyPoints.push(this.v4(xMin, y, 0, 128));
     keyPoints.push(this.v4(0, y, zMin, 128));
