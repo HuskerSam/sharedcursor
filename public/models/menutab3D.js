@@ -575,7 +575,6 @@ export default class MenuTab3D {
     this.displayedNamePlate = U3D.getTextPlane(nameDesc, 'seletecedAssetNamePlate', this.scene, width, height, color, 'transparent');
     this.displayedNamePlate.billboardMode = 7;
     this.displayedNamePlate.position.y = yOffset;
-  //  this.displayedNamePlate.position.z = 1;
     this.displayedNamePlate.parent = meta.basePivot;
     if (meta.textPivot)
       meta.textPivot.setEnabled(false);

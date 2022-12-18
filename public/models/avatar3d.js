@@ -46,9 +46,13 @@ export default class Avatar3D {
       seatContainer.avatarContainer = null;
     }
 
-    if (seatContainer.namePlate) {
-      seatContainer.namePlate.dispose();
-      seatContainer.namePlate = null;
+    if (seatContainer.namePlate1) {
+      seatContainer.namePlate1.dispose();
+      seatContainer.namePlate1 = null;
+    }
+    if (seatContainer.namePlate2) {
+      seatContainer.namePlate2.dispose();
+      seatContainer.namePlate2 = null;
     }
 
     if (seatContainer.sitStandButton) {
@@ -64,6 +68,7 @@ export default class Avatar3D {
     if (active) {
       let colors = this.get3DColors(seatIndex);
       let meta = seatContainer.assetMeta;
+      let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
       if (seatData.seated) {
         let avatarContainer = new BABYLON.TransformNode("avatarContainer" + seatIndex, this.app.scene);
@@ -92,15 +97,26 @@ export default class Avatar3D {
         seatContainer.playerImage.material = m;
         seatContainer.playerImage.parent = seatContainer;
 
-        //seatContainer.namePlate =
+        let names = seatData.name.split(' ');
+        seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], 'playerName' + seatIndex, "Georgia", "", rgb);
+        seatContainer.namePlate1.position.z = 1;
+        seatContainer.namePlate1.position.y = 1.4;
+        seatContainer.namePlate1.parent = seatContainer;
+
+        if (names[1]) {
+          seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, names[1], 'playerNameLine2' + seatIndex, "Georgia", "", rgb);
+          seatContainer.namePlate2.position.z = 1;
+          seatContainer.namePlate2.position.y = 0.8;
+          seatContainer.namePlate2.parent = seatContainer;
+        }
 
         if (this.app.uid === seatData.uid || this.app.isOwner) {
           let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
           let color = gameOwnerNotPlayer ? "#000000" : '#ffffff';
           let standBtn = U3D.addTextPlane(this.app.scene, "X", 'standBtn' + seatIndex, "Impact", "", color);
-          standBtn.scaling = U3D.v(1.5, 1.5, 1.5);
+          standBtn.scaling = U3D.v(1.25, 1.25, 1.25);
           standBtn.position.x = 1;
-          standBtn.position.y = 2;
+          standBtn.position.y = 2.25;
           standBtn.parent = seatContainer;
           standBtn.assetMeta = {
             appClickable: true,
@@ -114,8 +130,6 @@ export default class Avatar3D {
           seatContainer.sitStandButton = standBtn;
         }
       } else {
-        let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
-
         let sitBtn = U3D.addTextPlane(this.app.scene, "Sit", 'seatsitbtn' + seatIndex, "Arial", "", rgb);
         sitBtn.position.y = 1;
         sitBtn.scaling = U3D.v(2, 2, 2);
@@ -133,8 +147,17 @@ export default class Avatar3D {
         sitBtn.parent = seatContainer;
         seatContainer.sitStandButton = sitBtn;
       }
-    }
+    } else {
+      seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, 'Computer', 'playerName' + seatIndex, "Impact", "", 'rgb(255,255,255)');
+      seatContainer.namePlate1.position.z = 1;
+      seatContainer.namePlate1.position.y = 1.4;
+      seatContainer.namePlate1.parent = seatContainer;
 
+      seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, 'Player', 'playerNameLine2' + seatIndex, "Impact", "", 'rgb(255,255,255)');
+      seatContainer.namePlate2.position.z = 1;
+      seatContainer.namePlate2.position.y = 0.8;
+      seatContainer.namePlate2.parent = seatContainer;
+    }
   }
   async updatePlayerDock() {
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
@@ -243,25 +266,22 @@ export default class Avatar3D {
         }
 
         let seatData = this.getSeatData(seatIndex);
-        if (seatData.seated  && seatIndex < this.app.seatCount) {
+        if (seatData.seated && seatIndex < this.app.seatCount) {
           let online = this.app.userPresenceStatus[seatData.uid] === true;
           let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + seatIndex, this.app.scene);
           let color = new BABYLON.Color3(1, 1, 1);
           if (online) {
             color = new BABYLON.Color3(0, 2, 0)
-            //  mat1.emissiveColor = color;
             mat1.ambientColor = color;
           }
           mat1.diffuseColor = color;
-          mat1.ambientColor = color;
-          mat1.emissiveColor = color;
 
           let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + seatIndex, {
             diameter: 0.5,
             segments: 16
           }, this.app.scene);
           sphere.position.y = 2.5;
-          sphere.position.x = -1.5;
+          sphere.position.x = -1;
           sphere.material = mat1;
           sphere.parent = seat;
           seat.onlineSphere = sphere;
