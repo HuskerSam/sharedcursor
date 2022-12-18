@@ -199,8 +199,12 @@ export class MatchApp extends BaseApp {
     let extendedMetaData = U3D.processStaticAssetMeta(cardMeta, this.profile);
     this.runRender = true;
 
-    let mesh = U3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
-    U3D._fitNodeToSize(mesh, 2.5);
+    if (this.finalLoadedMesh)
+      this.finalLoadedMesh.dispose();
+
+    this.finalLoadedMesh = await U3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
+    this.finalLoadedMesh.position.y = 2;
+    U3D._fitNodeToSize(this.finalLoadedMesh, 2.5);
     this.engine.resize();
 
     this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.name;

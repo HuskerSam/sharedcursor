@@ -323,7 +323,6 @@ export default class MenuTab3D {
     asteroidUpCountBtn.parent = parent;
   }
 
-
   initGameStatusPanel() {
     this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
     this.startGameButton.parent = this.gameStatusPanelTab;

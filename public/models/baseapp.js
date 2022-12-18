@@ -1266,7 +1266,8 @@ export class BaseApp {
       this.mainLight = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
       this.mainLight.position = new BABYLON.Vector3(6, 15, 3);
     }
-    this.mainLight.intensity = this._getLightLevel(this.profile.sceneLightLevel);
+    if (this.profile)
+      this.mainLight.intensity = this._getLightLevel(this.profile.sceneLightLevel);
 
     this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, this.mainLight);
     this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
@@ -1407,17 +1408,9 @@ export class BaseApp {
 
     return value;
   }
-
-  enterXR() {}
-  enterNotInXR() {}
-  pointerMove() {}
-  xButtonPress() {}
-  yButtonPress() {}
-  aButtonPress() {}
-  bButtonPress() {}
   initSkybox() {
     let skyboxname = 'nebula_orange_blue';
-    if (this.profile.skyboxPath)
+    if (this.profile && this.profile.skyboxPath)
       skyboxname = this.profile.skyboxPath;
     let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
 
@@ -1439,6 +1432,15 @@ export class BaseApp {
       this.photoDome.photoTexture = new BABYLON.Texture(equipath, this.scene, false, true);
     }
   }
+
+  enterXR() {}
+  enterNotInXR() {}
+  pointerMove() {}
+  xButtonPress() {}
+  yButtonPress() {}
+  aButtonPress() {}
+  bButtonPress() {}
+
   pointerUp() {}
   pointerDown() {}
   async loadAvatarMesh(path, file, scale, x, y, z, noLoadWalk = false) {
