@@ -397,26 +397,6 @@ export default class MenuTab3D {
     previousSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
     previousSelectedMetaBtn.parent = parent;
 
-    let name = 'one';
-    this.boardWrapper = new BABYLON.TransformNode('boardpopupwrapper' + name, this.scene);
-    this.boardWrapper.position.y = -1000;
-
-    let nameMesh1 = BABYLON.MeshBuilder.CreatePlane('nameshow1' + name, {
-      height: 5,
-      width: 5,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-
-    let factor = -1.8;
-    nameMesh1.position.y = factor;
-
-    let nameMat = new BABYLON.StandardMaterial('nameshowmat' + name, this.scene);
-    nameMesh1.material = nameMat;
-    nameMesh1.parent = this.boardWrapper;
-
-    this.boardWrapper.nameMat = nameMat;
-    this.boardWrapper.nameMesh1 = nameMesh1;
-
     this.normalAssetSizeBtn = U3D.addTextPlane(scene, 'Better', 'normalAssetSizeBtn');
     this.normalAssetSizeBtn.assetMeta = {
       appClickable: true,
@@ -568,6 +548,9 @@ export default class MenuTab3D {
   }
 
   showAssetNamePlate(meta) {
+    if (this.displayedNamePlate)
+      this.displayedNamePlate.dispose();
+
     let nameDesc = meta.name;
     if (meta.solarPosition)
       nameDesc += ` (${meta.solarPosition})`;
@@ -579,25 +562,30 @@ export default class MenuTab3D {
     let color = "rgb(200, 0, 0)";
     if (meta.color)
       color = meta.color;
-    let nameTexture = U3D.__texture2DText(this.scene, nameDesc, color);
-    nameTexture.vScale = 1;
-    nameTexture.uScale = 1;
-    nameTexture.hasAlpha = true;
-    this.boardWrapper.nameMat.diffuseTexture = nameTexture;
-    this.boardWrapper.nameMat.emissiveTexture = nameTexture;
-    this.boardWrapper.nameMat.ambientTexture = nameTexture;
 
-    this.boardWrapper.billboardMode = 7;
+    let width = 3;
+    let height = 2;
+    if (nameDesc.length > 6) {
+    //  height = 2;
+      width = 6;
+    }
+
     let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
-    this.boardWrapper.setEnabled(true);
-    this.boardWrapper.position.y = yOffset;
-    this.boardWrapper.parent = meta.basePivot;
+
+    this.displayedNamePlate = U3D.getTextPlane(nameDesc, 'seletecedAssetNamePlate', this.scene, width, height, color, 'transparent');
+    this.displayedNamePlate.billboardMode = 7;
+    this.displayedNamePlate.position.y = yOffset;
+  //  this.displayedNamePlate.position.z = 1;
+    this.displayedNamePlate.parent = meta.basePivot;
     if (meta.textPivot)
       meta.textPivot.setEnabled(false);
   }
   hideAssetNamePlate(meta) {
-    this.boardWrapper.setEnabled(false);
-    this.boardWrapper.parent = null;
+    if (this.displayedNamePlate) {
+      this.displayedNamePlate.dispose();
+      this.displayedNamePlate = null;
+    }
+
     if (meta.textPivot)
       meta.textPivot.setEnabled(true);
   }

@@ -46,9 +46,9 @@ export default class Avatar3D {
       seatContainer.avatarContainer = null;
     }
 
-    if (seatContainer.name3d) {
-      seatContainer.name3d.dispose();
-      seatContainer.name3d = null;
+    if (seatContainer.namePlate) {
+      seatContainer.namePlate.dispose();
+      seatContainer.namePlate = null;
     }
 
     if (seatContainer.sitStandButton) {
@@ -56,9 +56,9 @@ export default class Avatar3D {
       seatContainer.sitStandButton = null;
     }
 
-    if (this.playerImage) {
-      this.playerImage.dispose();
-      this.playerImage = null;
+    if (seatContainer.playerImage) {
+      seatContainer.playerImage.dispose();
+      seatContainer.playerImage = null;
     }
 
     if (active) {
@@ -74,13 +74,13 @@ export default class Avatar3D {
         seatData.avatarContainer = avatarContainer;
         seatContainer.avatarContainer = avatarContainer;
 
-        this.playerImage = BABYLON.MeshBuilder.CreatePlane("avatarimage" + seatIndex, {
+        seatContainer.playerImage = BABYLON.MeshBuilder.CreatePlane("avatarimage" + seatIndex, {
             height: 2,
             width: 2,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
           },
           this.app.scene);
-        this.playerImage.position.y = -1;
+        seatContainer.playerImage.position.y = -1;
         let m = new BABYLON.StandardMaterial('avatarshowmat' + name, this.app.scene);
         let t = new BABYLON.Texture(seatData.image, this.app.scene);
         t.vScale = 1;
@@ -89,8 +89,10 @@ export default class Avatar3D {
         m.diffuseTexture = t;
         m.emissiveTexture = t;
         m.ambientTexture = t;
-        this.playerImage.material = m;
-        this.playerImage.parent = seatContainer;
+        seatContainer.playerImage.material = m;
+        seatContainer.playerImage.parent = seatContainer;
+
+        //seatContainer.namePlate =
 
         if (this.app.uid === seatData.uid || this.app.isOwner) {
           let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);

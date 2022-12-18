@@ -107,27 +107,6 @@ export default class Utility3D {
     return rotationPivot;
   }
 
-  static __texture2DText(scene, textureText, cssColor, cssClearColor, textFontSize = 90, textFontFamily = 'Geneva', fontWeight = 'normal', renderSize = 512) {
-    let texture = new BABYLON.DynamicTexture("dynamic texture", renderSize, scene, true);
-    let numChar = textureText.length;
-    let minFontSize = Math.ceil(renderSize * 1.5 / numChar);
-
-    let font = fontWeight + ' ' + textFontSize + 'px ' + textFontFamily;
-    let invertY = true;
-
-    let color = cssColor ? cssColor : "white";
-    let clearColor = cssClearColor ? cssClearColor : 'transparent';
-    let x = 0;
-    let y = textFontSize;
-
-    texture._context.font = font;
-    let wResult = texture.getContext().measureText(textureText);
-    let text1Width = wResult.width;
-    let leftOffset = (renderSize - text1Width) / 2.0;
-    texture.drawText(textureText, x + leftOffset, y, font, color, clearColor);
-
-    return texture;
-  }
   static color(str) {
     if (!str) {
       str = '1,1,1';
