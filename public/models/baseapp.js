@@ -1397,7 +1397,7 @@ export class BaseApp {
   }
   _getLightLevel(value) {
     value = Number(value);
-    if (!value)
+    if (isNaN(value))
       value = 0.7;
     if (value < 0.1)
       value = 0.1;
@@ -1415,11 +1415,13 @@ export class BaseApp {
   aButtonPress() {}
   bButtonPress() {}
   initSkybox() {
-    if (this.skyBox)
-      this.skyBox.dispose();
-    let skybox = BABYLON.Mesh.CreateBox("skyBox", 200, this.scene, false);
-    this.skyBox = skybox;
-    skybox.isPickable = false;
+    if (!this.skyBox) {
+      this.skyBox = BABYLON.Mesh.CreateBox("skyBox", 200, this.scene, false);
+      this.scene.autoClear = true;
+      this.scene.autoClearDepthAndStencil = true;
+    }
+
+    this.skyBox.isPickable = false;
 
     let skyboxname = 'nebula_orange_blue';
     if (this.profile.skyboxPath)
@@ -1429,12 +1431,22 @@ export class BaseApp {
     let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
     skyboxMaterial.backFaceCulling = false;
 
-    skyboxMaterial.reflectionTexture = new BABYLON.EquiRectangularCubeTexture(equipath, this.scene, 800);
+    skyboxMaterial.reflectionTexture = new BABYLON.EquiRectangularCubeTexture(equipath, this.scene, 200);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.disableLighting = true;
-    skybox.material = skyboxMaterial;
+
+    if (this.skyBox.material)
+      this.skyBox.material.dispose();
+
+    setTimeout(() => {
+      this.skyBox.material = skyboxMaterial;
+      setTimeout(() => {
+        this.scene.autoClear = false;
+        this.scene.autoClearDepthAndStencil = false;        
+      }, 500);
+    }, 500);
   }
   pointerUp() {}
   pointerDown() {}

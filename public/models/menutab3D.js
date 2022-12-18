@@ -204,17 +204,6 @@ export default class MenuTab3D {
     cycleRandomAvatarAnimations.position.x = -7.5;
     cycleRandomAvatarAnimations.parent = parent;
 
-    let cycleSkyboxBtn = this.addIconBtn(scene, 'eye', 'cycleSkyboxBtn');
-    cycleSkyboxBtn.position.x = -2.5;
-    cycleSkyboxBtn.parent = parent;
-    cycleSkyboxBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.switchSkyboxNext();
-      }
-    };
-
     let lightDnBtn = U3D.addTextPlane(scene, '-', 'lightDnBtn');
     lightDnBtn.position.x = -11;
     lightDnBtn.position.y = 3;
@@ -237,13 +226,26 @@ export default class MenuTab3D {
         this.app.sceneLightChange(0.1);
       }
     };
-    lightUpBtn.position.x = -7;
+    lightUpBtn.position.x = -9;
     lightUpBtn.position.y = 3;
     lightUpBtn.position.z = 1;
     lightUpBtn.scaling = U3D.v(3, 3, 3);
     lightUpBtn.parent = parent;
 
     this._updateLightIntensityPanel();
+
+    let cycleSkyboxBtn = this.addIconBtn(scene, 'eye', 'cycleSkyboxBtn');
+    cycleSkyboxBtn.position.x = -16;
+    cycleSkyboxBtn.position.y = 5;
+    cycleSkyboxBtn.parent = parent;
+    cycleSkyboxBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.switchSkyboxNext();
+      }
+    };
+    this._updateSkyboxNamePanel();
   }
   _updateLightIntensityPanel() {
     if (this.lightLevelPanel)
@@ -251,12 +253,46 @@ export default class MenuTab3D {
 
     let level = Number(this.app.profile.sceneLightLevel).toFixed(1);
     this.lightLevelPanel = U3D.addTextPlane(this.app.scene, level, 'lightLevelPanel');
-    this.lightLevelPanel.position.x = -9;
+    this.lightLevelPanel.position.x = -7;
     this.lightLevelPanel.position.y = 3;
     this.lightLevelPanel.position.z = 1;
     this.lightLevelPanel.scaling = U3D.v(2, 2, 2);
     this.lightLevelPanel.parent = this.optionsMenuTab;
   }
+  _updateSkyboxNamePanel() {
+    if (this.skyboxNamePanel)
+      this.skyboxNamePanel.dispose();
+
+    let skybox = this.app.profile.skyboxPath;
+    let pieces = skybox.split('_');
+    pieces.forEach((piece, i) => {
+      piece = piece.charAt(0).toUpperCase() + piece.slice(1);
+      pieces[i] = piece;
+    })
+    skybox = pieces.join(' ');
+    this.skyboxNamePanel = U3D.addTextPlane(this.app.scene, skybox, 'skyboxNamePanel');
+    this.skyboxNamePanel.position.x = -6;
+    this.skyboxNamePanel.position.y = 5;
+    this.skyboxNamePanel.position.z = 1;
+    this.skyboxNamePanel.scaling = U3D.v(2, 2, 2);
+    this.skyboxNamePanel.parent = this.optionsMenuTab;
+  }
+  skyboxList() {
+    return [
+      'nebula_orange_blue',
+      'moon_high_clear',
+      'moonless_2',
+      'nebula_black',
+      'nebula_blue_red',
+      'nebula_cold',
+      'nebula_glow',
+      'nebula_green',
+      'nebula_red',
+      'neon_starless',
+      'vortex_starless'
+    ];
+  }
+
   initAsteroidsTab(scene, parent) {
     let asteroidDownCountBtn = U3D.addTextPlane(scene, '-', 'asteroidDownCountBtn');
     asteroidDownCountBtn.position.x = -11;
@@ -286,21 +322,7 @@ export default class MenuTab3D {
     asteroidUpCountBtn.scaling = U3D.v(3, 3, 3);
     asteroidUpCountBtn.parent = parent;
   }
-  skyboxList() {
-    return [
-      'nebula_orange_blue',
-      'moon_high_clear',
-      'moonless_2',
-      'nebula_black',
-      'nebula_blue_red',
-      'nebula_cold',
-      'nebula_glow',
-      'nebula_green',
-      'nebula_red',
-      'neon_starless',
-      'vortex_starless'
-    ];
-  }
+
 
   initGameStatusPanel() {
     this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
