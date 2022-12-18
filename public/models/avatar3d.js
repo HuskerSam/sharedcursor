@@ -16,6 +16,7 @@ export default class Avatar3D {
     }
 
     this.dockSeatContainers = [];
+    this.menuBarAvatars = [];
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
       this.dockSeatContainers.push(dockSeatContainer);
@@ -37,6 +38,37 @@ export default class Avatar3D {
       };
       mesh.parent = this.dockSeatContainers[seatIndex];
       U3D._fitNodeToSize(mesh, 1.75);
+
+      let newModel;
+      let avatarMeta = this.getAvatarData()[seatIndex];
+      if (avatarMeta.cloneAnimations) {
+        newModel = this.avatarContainers[avatarMeta.cloneAnimations].instantiateModelsToScene();
+        let newSkin = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
+
+        this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
+        newModel.rootNodes[0].setEnabled(false);
+
+        newSkin.animContainer = newModel;
+        newModel = newSkin;
+      } else {
+        newModel = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
+        newModel.animContainer = newModel;
+      }
+      this.menuBarAvatars.push(newModel);
+      this.menuBarAvatars[seatIndex].animContainer.animationGroups[0].stop();
+
+      let t = new BABYLON.TransformNode("tnavatartoolbar" + seatIndex);
+      let t2n = new BABYLON.TransformNode("tnavatartoolbar2" + seatIndex);
+      t2n.scaling = U3D.v(2, 2, 2);
+      t2n.position.y = -1;
+      t2n.position.z = 3;
+      t2n.rotation.y = Math.PI;
+      this.menuBarAvatars[seatIndex].rootNodes[0].parent = t;
+
+      this.menuBarAvatars[seatIndex].TN = t;
+      this.menuBarAvatars[seatIndex].TN.avatarMeta = avatarMeta;
+      t.parent = t2n;
+      t2n.parent = this.dockSeatContainers[seatIndex];
     }
   }
   _renderPlayerSeat(seatIndex, seatData, active) {
@@ -85,7 +117,8 @@ export default class Avatar3D {
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
           },
           this.app.scene);
-        seatContainer.playerImage.position.y = -1;
+        seatContainer.playerImage.position.y = 5.5;
+        seatContainer.playerImage.position.z = 5;
         let m = new BABYLON.StandardMaterial('avatarshowmat' + name, this.app.scene);
         let t = new BABYLON.Texture(seatData.image, this.app.scene);
         t.vScale = 1;
@@ -100,13 +133,13 @@ export default class Avatar3D {
         let names = seatData.name.split(' ');
         seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], 'playerName' + seatIndex, "Georgia", "", rgb);
         seatContainer.namePlate1.position.z = 1;
-        seatContainer.namePlate1.position.y = 1.4;
+        seatContainer.namePlate1.position.y = 4.2;
         seatContainer.namePlate1.parent = seatContainer;
 
         if (names[1]) {
           seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, names[1], 'playerNameLine2' + seatIndex, "Georgia", "", rgb);
           seatContainer.namePlate2.position.z = 1;
-          seatContainer.namePlate2.position.y = 0.8;
+          seatContainer.namePlate2.position.y = 3.6;
           seatContainer.namePlate2.parent = seatContainer;
         }
 
@@ -150,12 +183,12 @@ export default class Avatar3D {
     } else {
       seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, 'Computer', 'playerName' + seatIndex, "Impact", "", 'rgb(255,255,255)');
       seatContainer.namePlate1.position.z = 1;
-      seatContainer.namePlate1.position.y = 1.4;
+      seatContainer.namePlate1.position.y = 4.2;
       seatContainer.namePlate1.parent = seatContainer;
 
       seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, 'Player', 'playerNameLine2' + seatIndex, "Impact", "", 'rgb(255,255,255)');
       seatContainer.namePlate2.position.z = 1;
-      seatContainer.namePlate2.position.y = 0.8;
+      seatContainer.namePlate2.position.y = 3.6;
       seatContainer.namePlate2.parent = seatContainer;
     }
   }
@@ -244,12 +277,17 @@ export default class Avatar3D {
     };
   }
   async randomizeAnimations() {
-    if (!this._initedAvatars) {
-      await this._initAvatars();
-      this._initedAvatars = true;
-    }
+    if (!this.initedAvatars)
+      return;
 
     this.initedAvatars.forEach(container => {
+      let arr = container.animContainer.animationGroups;
+      let index = Math.floor(Math.random() * arr.length);
+
+      this.avatarSequence(container, index);
+    });
+
+    this.menuBarAvatars.forEach(container => {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
 
@@ -312,7 +350,7 @@ export default class Avatar3D {
     return new BABYLON.Color3(r, g, b);
   }
 
-  async _initAvatars() {
+  async loadAndInitAvatars() {
     let scene = this.app.scene;
     let initedAvatars = [];
     let avatarContainers = {};
@@ -349,14 +387,14 @@ export default class Avatar3D {
       initedAvatars[c].animContainer.animationGroups[0].stop();
 
       let mesh = initedAvatars[c].rootNodes[0];
-      let t = new BABYLON.TransformNode("tn" + mesh.id);
-      t.position.x = avatarMeta.x;
-      t.position.z = avatarMeta.z;
-      //t.scaling = U3D.v(2, 2, 2);
-      mesh.parent = t;
+      let t = new BABYLON.TransformNode("tnavatar1floor" + mesh.id);
+      let t2n = new BABYLON.TransformNode("tnavatarfloor2" + mesh.id);
+      t2n.position.x = avatarMeta.x;
+      t2n.position.z = avatarMeta.z;
+      t2n.parent = t;
+      mesh.parent = t2n;
       newModel.TN = t;
       newModel.TN.avatarMeta = avatarMeta;
-
 
       scene.baseShadowGenerator.addShadowCaster(mesh);
     }
@@ -429,9 +467,9 @@ export default class Avatar3D {
       );
 
       let mesh = avatarContainer.TN;
-      let x = mesh.avatarMeta.x;
+      let x = 0; //mesh.avatarMeta.x;
       let y = 0;
-      let z = mesh.avatarMeta.z;
+      let z = 0; //mesh.avatarMeta.z;
       let keys = [];
       let endFrame = offsetInfo.frames;
 
@@ -466,16 +504,15 @@ export default class Avatar3D {
       arr[animationIndex].reset();
       arr[animationIndex].start(true);
 
-      mesh.position.x = mesh.avatarMeta.x;
-      mesh.position.z = mesh.avatarMeta.z;
+      mesh.position.x = 0;//mesh.avatarMeta.x;
+      mesh.position.z = 0;//mesh.avatarMeta.z;
     } else {
       arr[animationIndex].reset();
       arr[animationIndex].start(true);
 
-
       let mesh = avatarContainer.TN;
-      mesh.position.x = mesh.avatarMeta.x;
-      mesh.position.z = mesh.avatarMeta.z;
+      mesh.position.x = 0;// mesh.avatarMeta.x;
+      mesh.position.z = 0; //mesh.avatarMeta.z;
     }
   }
   getAvatarData() {

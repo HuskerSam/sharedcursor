@@ -16,6 +16,8 @@ export class BaseApp {
       this.basePath = `http://localhost:5001/${this.projectId}/us-central1/`;
 
     this.urlParams = new URLSearchParams(window.location.search);
+    if (this.urlParams.get('instrumentation'))
+      this.instrumentationOn = true;
 
     this.muted = false;
 
@@ -1249,8 +1251,7 @@ export class BaseApp {
 
     //this.scene.onBeforeRenderObservable.add(() => {});
 
-    // Instrumentation
-    if (this.urlParams.get('instrumentation')) {
+    if (this.instrumentationOn) {
       let instrumentation = new BABYLON.SceneInstrumentation(this.scene);
       instrumentation.captureFrameTime = true;
       setInterval(() => {

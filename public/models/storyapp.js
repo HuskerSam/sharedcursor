@@ -62,6 +62,7 @@ export class StoryApp extends BaseApp {
     this.buttonFour.addEventListener('click', e => this.yButtonPress());
   }
   async _initContent3D() {
+    let startTime = new Date();
     this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
     this.createMenu3DWrapper();
     this.menuTab3D = new MenuTab3D(this);
@@ -128,12 +129,19 @@ export class StoryApp extends BaseApp {
     });
 
     this.avatarHelper = new Avatar3D(this);
+    await this.avatarHelper.loadAndInitAvatars();
 
     await Promise.all([
       this.menuTab3D.initOptionsBar(),
       this.asteroidHelper.loadAsteroids(true),
       this.avatarHelper.initPlayerPanel()
     ]);
+
+    if (this.instrumentationOn) {
+      let delta = new Date().getTime() - startTime.getTime();
+      console.log('init3D', delta);
+      this.addLineToLoading(`${delta} ms to load 3D content<br>`);
+    }
 
     this.paintGameData();
 
