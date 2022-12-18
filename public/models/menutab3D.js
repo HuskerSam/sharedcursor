@@ -214,6 +214,48 @@ export default class MenuTab3D {
         this.app.switchSkyboxNext();
       }
     };
+
+    let lightDnBtn = U3D.addTextPlane(scene, '-', 'lightDnBtn');
+    lightDnBtn.position.x = -11;
+    lightDnBtn.position.y = 3;
+    lightDnBtn.position.z = 1;
+    lightDnBtn.scaling = U3D.v(3, 3, 3);
+    lightDnBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.sceneLightChange(-0.1);
+      }
+    };
+    lightDnBtn.parent = parent;
+
+    let lightUpBtn = U3D.addTextPlane(scene, '+', 'lightUpBtn');
+    lightUpBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.sceneLightChange(0.1);
+      }
+    };
+    lightUpBtn.position.x = -7;
+    lightUpBtn.position.y = 3;
+    lightUpBtn.position.z = 1;
+    lightUpBtn.scaling = U3D.v(3, 3, 3);
+    lightUpBtn.parent = parent;
+
+    this._updateLightIntensityPanel();
+  }
+  _updateLightIntensityPanel() {
+    if (this.lightLevelPanel)
+      this.lightLevelPanel.dispose();
+
+    let level = Number(this.app.profile.sceneLightLevel).toFixed(1);
+    this.lightLevelPanel = U3D.addTextPlane(scene, level, 'lightLevelPanel');
+    this.lightLevelPanel.position.x = -9;
+    this.lightLevelPanel.position.y = 3;
+    this.lightLevelPanel.position.z = 1;
+    this.lightLevelPanel.scaling = U3D.v(2, 2, 2);
+    this.lightLevelPanel.parent = this.optionsMenuTab;
   }
   initAsteroidsTab(scene, parent) {
     let asteroidDownCountBtn = U3D.addTextPlane(scene, '-', 'asteroidDownCountBtn');

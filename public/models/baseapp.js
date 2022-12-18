@@ -1265,6 +1265,7 @@ export class BaseApp {
       this.mainLight = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
       this.mainLight.position = new BABYLON.Vector3(6, 15, 3);
     }
+    this.mainLight.intensity = this._getLightLevel(this.profile.sceneLightLevel);
 
     this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, this.mainLight);
     this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
@@ -1393,6 +1394,17 @@ export class BaseApp {
     });
 
     return scene;
+  }
+  _getLightLevel(value) {
+    value = Number(value);
+    if (!value)
+      value = 0.7;
+    if (value < 0.1)
+      value = 0.1;
+    if (value > 1.5)
+      value = 1.5;
+
+    return value;
   }
 
   enterXR() {}
