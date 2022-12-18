@@ -6,11 +6,10 @@ export default class Asteroid3D {
     this.asteroidOrbitTime = 300000;
   }
   async loadAsteroids(init) {
-    let app = this.app;
     let scene = this.app.scene;
-    if (app.asteroidLoadingLine1) {
-      app.asteroidLoadingLine1.remove();
-      app.asteroidLoadingLine2.remove();
+    if (this.asteroidLoadingLine1) {
+      this.asteroidLoadingLine1.remove();
+      this.asteroidLoadingLine2.remove();
 
       for (let asteroid in this.loadedAsteroids) {
         this.loadedAsteroids[asteroid].orbitWrapper.dispose();
@@ -25,18 +24,18 @@ export default class Asteroid3D {
     let max = asteroids.length;
 
     let count = 20;
-    if (app.profile.asteroidCount === 'all')
+    if (this.app.profile.asteroidCount === 'all')
       count = max;
-    else if (app.profile.asteroidCount)
-      count = Number(app.profile.asteroidCount);
+    else if (this.app.profile.asteroidCount)
+      count = Number(this.app.profile.asteroidCount);
 
-    this.asteroidLoadingLine1 = app.addLineToLoading(`Asteroids - ${count} from ${max} available`);
+    this.asteroidLoadingLine1 = this.app.addLineToLoading(`Asteroids - ${count} from ${max} available`);
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {
       randomArray.push(c);
     }
-    randomArray = app._shuffleArray(randomArray);
+    randomArray = this.app._shuffleArray(randomArray);
     randomArray = randomArray.slice(0, count);
     randomArray = randomArray.sort();
     let linkNameList = '';
@@ -50,11 +49,11 @@ export default class Asteroid3D {
       if (i % 4 === 3)
         linkNameList += '<br>';
     });
-    this.asteroidLoadingLine2 = app.addLineToLoading(linkNameList);
+    this.asteroidLoadingLine2 = this.app.addLineToLoading(linkNameList);
 
     this.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
 
-    this.defaultAsteroidPath = this._buildAsteroidPath(app);
+    this.defaultAsteroidPath = this.buildAsteroidPath();
     let endFrame = this.asteroidOrbitTime / 1000 * 60;
     this.defaultAsteroidPositionKeys = [];
 
@@ -67,19 +66,20 @@ export default class Asteroid3D {
     });
 
     if (!init)
-      app.runRender = false;
+      this.app.runRender = false;
     let promises = [];
     for (let c = 0; c < count; c++)
-      promises.push(this._loadAsteroid(asteroids[randomArray[c]], c, count, scene, app));
+      promises.push(this.loadAsteroid(asteroids[randomArray[c]], c, count));
 
     await Promise.all(promises);
     this.__addLogosToAsteroids();
 
     if (!init)
-      app.runRender = true;
+      this.app.runRender = true;
     this.updateAsteroidLabel();
   }
-  async _loadAsteroid(asteroid, index, count, scene, app) {
+  async loadAsteroid(asteroid, index, count) {
+    let scene = this.app.scene;
     let startRatio = index / count;
 
     let containerPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
@@ -115,7 +115,7 @@ export default class Asteroid3D {
       appClickable: true,
       clickCommand: "customClick",
       handlePointerDown: (pointerInfo, mesh, meta) => {
-        app.__pauseSpin(pointerInfo, mesh, meta);
+        this.app.__pauseSpin(pointerInfo, mesh, meta);
       },
       name: asteroid,
       asteroidType: true,
@@ -133,7 +133,7 @@ export default class Asteroid3D {
       mesh
     };
   }
-  _buildAsteroidPath() {
+  buildAsteroidPath() {
     let y = 1;
 
     let xMin = -60;

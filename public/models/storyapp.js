@@ -135,9 +135,9 @@ export class StoryApp extends BaseApp {
       this.avatarHelper.initPlayerPanel()
     ]);
 
-    this.runRender = true;
-
     this.paintGameData();
+
+    this.runRender = true;
   }
   createMenu3DWrapper() {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
@@ -268,6 +268,7 @@ export class StoryApp extends BaseApp {
       await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
 
     this.profile.asteroidCount = updatePacket.asteroidCount;
+    this.clearActiveFollowMeta();
     this.asteroidHelper.loadAsteroids();
   }
   async asteroidChangeMaterial(wireframe, colorOnly, excludeLogos) {

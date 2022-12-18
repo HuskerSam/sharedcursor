@@ -1250,21 +1250,23 @@ export class BaseApp {
     //this.scene.onBeforeRenderObservable.add(() => {});
 
     // Instrumentation
-    /*
-    let instrumentation = new BABYLON.SceneInstrumentation(this.scene);
-    instrumentation.captureFrameTime = true;
-    setInterval(() => {
-      let perfValue = instrumentation.frameTimeCounter.lastSecAverage.toFixed(2);
-      console.log(perfValue + "ms per frame");
-    }, 300);
-*/
-//    let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(5, 35, 5), scene);
+    if (this.urlParams.get('instrumentation')) {
+      let instrumentation = new BABYLON.SceneInstrumentation(this.scene);
+      instrumentation.captureFrameTime = true;
+      setInterval(() => {
+        let perfValue = instrumentation.frameTimeCounter.lastSecAverage.toFixed(2);
+        console.log(perfValue + "ms per frame");
+      }, 300);
+    }
 
+    if (this.urlParams.get('pointlight')) {
+      this.mainLight = new BABYLON.PointLight("light1", new BABYLON.Vector3(5, 35, 5), scene);
+    } else {
+      this.mainLight = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
+      this.mainLight.position = new BABYLON.Vector3(6, 15, 3);
+    }
 
-    let light = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
-    light.position = new BABYLON.Vector3(6, 15, 3);
-
-    this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, light);
+    this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, this.mainLight);
     this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
     this.scene.baseShadowGenerator.blurKernel = 16;
 
