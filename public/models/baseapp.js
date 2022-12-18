@@ -1415,38 +1415,28 @@ export class BaseApp {
   aButtonPress() {}
   bButtonPress() {}
   initSkybox() {
-    if (!this.skyBox) {
-      this.skyBox = BABYLON.Mesh.CreateBox("skyBox", 200, this.scene, false);
-      this.scene.autoClear = true;
-      this.scene.autoClearDepthAndStencil = true;
-    }
-
-    this.skyBox.isPickable = false;
-
     let skyboxname = 'nebula_orange_blue';
     if (this.profile.skyboxPath)
       skyboxname = this.profile.skyboxPath;
-
     let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
-    let skyboxMaterial = new BABYLON.StandardMaterial(equipath, this.scene);
-    skyboxMaterial.backFaceCulling = false;
 
-    skyboxMaterial.reflectionTexture = new BABYLON.EquiRectangularCubeTexture(equipath, this.scene, 200);
-    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMaterial.disableLighting = true;
-
-    if (this.skyBox.material)
-      this.skyBox.material.dispose();
-
-    setTimeout(() => {
-      this.skyBox.material = skyboxMaterial;
-      setTimeout(() => {
-        this.scene.autoClear = false;
-        this.scene.autoClearDepthAndStencil = false;        
-      }, 500);
-    }, 500);
+    if (!this.photoDome) {
+      this.photoDome = new BABYLON.PhotoDome(
+        "photoDome",
+        equipath, {
+          resolution: 32,
+          size: 1000
+        },
+        this.scene
+      );
+      this.photoDome.imageMode = BABYLON.PhotoDome.MODE_MONOSCOPIC;
+      this.photoDome.fovMultiplier = 2.0;
+      this.photoDome.isPickable = false;
+    } else {
+      if (this.photoDome.photoTexture)
+        this.photoDome.photoTexture.dispose();
+      this.photoDome.photoTexture = new BABYLON.Texture(equipath, this.scene, false, true);
+    }
   }
   pointerUp() {}
   pointerDown() {}
