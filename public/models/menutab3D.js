@@ -250,7 +250,7 @@ export default class MenuTab3D {
       this.lightLevelPanel.dispose();
 
     let level = Number(this.app.profile.sceneLightLevel).toFixed(1);
-    this.lightLevelPanel = U3D.addTextPlane(scene, level, 'lightLevelPanel');
+    this.lightLevelPanel = U3D.addTextPlane(this.app.scene, level, 'lightLevelPanel');
     this.lightLevelPanel.position.x = -9;
     this.lightLevelPanel.position.y = 3;
     this.lightLevelPanel.position.z = 1;
