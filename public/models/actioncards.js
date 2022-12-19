@@ -32,9 +32,23 @@ export default class ActionCards {
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
       U3D._fitNodeToSize(mesh, 4.5);
 
-      let tn = new BABYLON.TransformNode('tnplayercardmeshholder' + cardIndex, this.app.scene);
-      mesh.parent = tn;
-      tn.parent = this.cardHolders[cardIndex];
+      let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
+      mesh.parent = animDetails.rotationPivot;
+      animDetails.rotationPivot.parent = this.cardHolders[cardIndex];
+
+      mesh.assetMeta = {
+        name: cardMeta.name,
+        containerPath: meta.extended.glbPath,
+        extended: {},
+        appClickable: true,
+        baseMesh: mesh,
+        basePivot: animDetails.rotationPivot,
+        clickCommand: 'customClick',
+        rotationAnimation: animDetails.runningAnimation,
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.app.__pauseSpin(pointerInfo, mesh, meta);
+        }
+      };
     }
   }
 }

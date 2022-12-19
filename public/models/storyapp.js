@@ -123,9 +123,6 @@ export class StoryApp extends BaseApp {
         meta.handlePointerDown = async (pointerInfo, mesh, meta) => {
           this.__pauseSpin(pointerInfo, mesh, meta);
         };
-        meta.handlePointerMove = async (pointerInfo, mesh, meta) => {
-          this.__pauseSpinMove(pointerInfo, mesh, meta);
-        };
       }
     });
 

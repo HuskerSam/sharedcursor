@@ -106,6 +106,36 @@ export default class Utility3D {
 
     return rotationPivot;
   }
+  static selectedRotationAnimation(node, scene) {
+    let rotationPivot = new BABYLON.TransformNode("tnselectionrotation" + node.id, scene);
+    let rotationAnimation = new BABYLON.Animation(
+      "selectedRotationAnimation" + name,
+      "rotation",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let endFrame = 36 * 30;
+    let keys = [{
+      frame: 0,
+      value: this.v(0, 0, 0)
+    },
+    {
+      frame: endFrame,
+      value: this.v(2 * Math.PI, 4 * Math.PI, 8 * Math.PI)
+    }];
+    rotationAnimation.setKeys(keys);
+    rotationPivot.animations.push(rotationAnimation);
+    let runningAnimation = scene.beginAnimation(rotationPivot, 0, endFrame, true);
+    runningAnimation.goToFrame(Math.floor(Math.random() * endFrame));
+
+    return {
+      rotationPivot,
+      rotationAnimation,
+      runningAnimation
+    };
+  }
 
   static color(str) {
     if (!str) {

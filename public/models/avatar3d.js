@@ -8,6 +8,41 @@ export default class Avatar3D {
     this.dockDiscRadius = 0.6;
     this.playerMoonAssets = {};
   }
+  async updateUserPresence() {
+    if (!this.dockSeatContainers)
+      return;
+    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
+      let seat = this.dockSeatContainers[seatIndex];
+      if (seat) {
+        if (seat.onlineSphere) {
+          seat.onlineSphere.dispose();
+          seat.onlineSphere = null;
+        }
+
+        let seatData = this.getSeatData(seatIndex);
+        if (seatData.seated && seatIndex < this.app.seatCount) {
+          let online = this.app.userPresenceStatus[seatData.uid] === true;
+          let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + seatIndex, this.app.scene);
+          let color = new BABYLON.Color3(1, 1, 1);
+          if (online) {
+            color = new BABYLON.Color3(0, 2, 0)
+            mat1.ambientColor = color;
+          }
+          mat1.diffuseColor = color;
+
+          let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + seatIndex, {
+            diameter: 0.5,
+            segments: 16
+          }, this.app.scene);
+          sphere.position.y = 2.5;
+          sphere.position.x = -1;
+          sphere.material = mat1;
+          sphere.parent = seat;
+          seat.onlineSphere = sphere;
+        }
+      }
+    }
+  }
   async initPlayerPanel() {
     for (let key in this.app.staticAssets) {
       let assetMesh = this.app.staticAssets[key];
@@ -293,39 +328,6 @@ export default class Avatar3D {
 
       this.avatarSequence(container, index);
     });
-  }
-  async updateUserPresence() {
-    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      let seat = this.dockSeatContainers[seatIndex];
-      if (seat) {
-        if (seat.onlineSphere) {
-          seat.onlineSphere.dispose();
-          seat.onlineSphere = null;
-        }
-
-        let seatData = this.getSeatData(seatIndex);
-        if (seatData.seated && seatIndex < this.app.seatCount) {
-          let online = this.app.userPresenceStatus[seatData.uid] === true;
-          let mat1 = new BABYLON.StandardMaterial('onlinespheremat' + seatIndex, this.app.scene);
-          let color = new BABYLON.Color3(1, 1, 1);
-          if (online) {
-            color = new BABYLON.Color3(0, 2, 0)
-            mat1.ambientColor = color;
-          }
-          mat1.diffuseColor = color;
-
-          let sphere = BABYLON.MeshBuilder.CreateSphere("onlinesphere" + seatIndex, {
-            diameter: 0.5,
-            segments: 16
-          }, this.app.scene);
-          sphere.position.y = 2.5;
-          sphere.position.x = -1;
-          sphere.material = mat1;
-          sphere.parent = seat;
-          seat.onlineSphere = sphere;
-        }
-      }
-    }
   }
   get3DColors(seatIndex) {
     let r = 220 / 255,

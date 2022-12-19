@@ -528,23 +528,21 @@ export default class MenuTab3D {
     let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
     let mesh = result.rootNodes[0];
 
+    let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
+    mesh.parent = animDetails.rotationPivot;
+    animDetails.rotationPivot.parent = this.selectedContainerTransform;
+
     mesh.assetMeta = {
       activeSelectedObject: true,
       appClickable: true,
       baseMesh: mesh,
-      rotationTime: 30000,
+      basePivot: animDetails.rotationPivot,
       clickCommand: 'customClick',
+      rotationAnimation: animDetails.runningAnimation,
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.__pauseSpin(pointerInfo, mesh, meta);
-        },
-        handlePointerMove: async (pointerInfo, mesh, meta) => {
-          this.app.__pauseSpinMove(pointerInfo, mesh, meta);
-        }
+        this.app.__pauseSpin(pointerInfo, mesh, meta);
+      }
     };
-    let meshPivot = U3D.__rotationAnimation('selectionObjectOrbitWrapper', mesh.assetMeta, mesh, this.scene);
-    meshPivot.parent = this.selectedContainerTransform;
-    mesh.assetMeta.basePivot = meshPivot;
-
     let factor = 2.5;
     if (this.app.inXR)
       factor = 0.35;
