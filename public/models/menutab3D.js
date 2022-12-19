@@ -10,7 +10,7 @@ export default class MenuTab3D {
     return this.app.staticAssets[name];
   }
 
-  initOptionsBar() {
+  async initOptionsBar() {
     let scene = this.app.scene;
     let parent = this.app.menuBarTabButtonsTN;
     let panel = this.app.menuBarLeftTN;
@@ -50,6 +50,7 @@ export default class MenuTab3D {
     this.cardsStatusPanelTab.parent = panel;
     this.cardsStatusPanelTab.position.y = 0;
     this.cardsStatusPanelTab.setEnabled(false);
+    this.app.actionCardHelper.init();
   }
   addTabButtons(scene, tabBar) {
     let iconName = 'xmark';
@@ -158,21 +159,18 @@ export default class MenuTab3D {
     return mesh;
   }
   selectedMenuBarTab(menuTabToShow) {
-    if (this.asteroidMenuTab)
-      this.asteroidMenuTab.setEnabled(false);
-    if (this.optionsMenuTab)
-      this.optionsMenuTab.setEnabled(false);
-    if (this.focusPanelTab)
-      this.focusPanelTab.setEnabled(false);
-    if (this.playerMoonPanelTab)
-      this.playerMoonPanelTab.setEnabled(false);
-    if (this.gameStatusPanelTab)
-      this.gameStatusPanelTab.setEnabled(false);
+    if (this.currentSelectedTab)
+      this.currentSelectedTab.setEnabled(false);
 
-    if (menuTabToShow)
-      menuTabToShow.setEnabled(true);
+    if (this.currentSelectedTab === menuTabToShow) {
+      this.currentSelectedTab = null;
+    } else {
+      if (menuTabToShow)
+        menuTabToShow.setEnabled(true);
+      this.currentSelectedTab = menuTabToShow;
+    }
   }
-  async initOptionsTab(scene, parent) {
+  initOptionsTab(scene, parent) {
     let shootRocketBtn = this.addIconBtn(scene, 'rocket', 'shootRocketBtn');
     shootRocketBtn.assetMeta = {
       appClickable: true,
@@ -629,7 +627,7 @@ export default class MenuTab3D {
     let width = 3;
     let height = 2;
     if (nameDesc.length > 6) {
-    //  height = 2;
+      //  height = 2;
       width = 6;
     }
 

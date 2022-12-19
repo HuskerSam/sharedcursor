@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Rocket",
+    "gameCard": "rocket_atlasv"
+  },
+  {
+    "name": "Lunar Lander",
+    "gameCard": "probe_lunar_lander"
+  },
+  {
+    "name": "Deep Space Probe",
+    "gameCard": "probe_newhorizons"
+  },
+  {
+    "name": "Sun Probe",
+    "gameCard": "probe_psp"
+  },
+  {
+    "name": "Planet Probe",
+    "gameCard": "probe_tgo"
+  }
+]

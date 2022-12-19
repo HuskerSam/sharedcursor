@@ -356,11 +356,57 @@
     "id": "rocket_atlasv",
     "name": "Atlas V",
     "objectType": "rocket",
+    "image": "/cardimages/atlasv.jpg",
+    "url": "https://en.wikipedia.org/wiki/Atlas_V",
+    "symbol": "/symbol/bird.png",
     "glbpath": "/mascots/atlasv.glb",
     "sizeBoxFit": 5,
     "px": 0,
     "py": -1,
     "pz": 0,
+    "containerOnly": true
+  },
+  {
+    "id": "probe_lunar_lander",
+    "name": "Lunar Lander",
+    "image": "/cardimages/lunarlander.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/solar/lk_lander.glb",
+    "sizeBoxFit": 1.5,
+    "url": "https://en.wikipedia.org/wiki/Lunar_lander",
+    "containerOnly": true
+  },
+  {
+    "id": "probe_newhorizons",
+    "name": "New Horizons Probe",
+    "objectType": "probe",
+    "image": "/cardimages/probenewhorizons.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/mascots/newhorizon.glb",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/New_Horizons",
+    "containerOnly": true
+  },
+  {
+    "id": "probe_psp",
+    "name": "Parker Solar Probe",
+    "objectType": "probe",
+    "image": "/cardimages/probepsp.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/mascots/probepsp.glb",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/Parker_Solar_Probe",
+    "containerOnly": true
+  },
+  {
+    "id": "probe_tgo",
+    "name": "Trace Gas Orbiter Probe",
+    "objectType": "probe",
+    "image": "/cardimages/probetgo.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/solar/probetgo.glb",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/Trace_Gas_Orbiter",
     "containerOnly": true
   }
 ]

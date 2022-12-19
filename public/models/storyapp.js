@@ -4,6 +4,7 @@ import U3D from '/models/utility3d.js';
 import MenuTab3D from '/models/menutab3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
+import ActionCards from '/models/actioncards.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -131,6 +132,8 @@ export class StoryApp extends BaseApp {
     this.avatarHelper = new Avatar3D(this);
     await this.avatarHelper.loadAndInitAvatars();
 
+    this.actionCardHelper = new ActionCards(this);
+
     await Promise.all([
       this.menuTab3D.initOptionsBar(),
       this.asteroidHelper.loadAsteroids(true),
@@ -248,6 +251,35 @@ export class StoryApp extends BaseApp {
   get isOwner() {
     return this.uid === this.gameData.createUser;
   }
+  async authUpdateStatusUI() {
+    super.authUpdateStatusUI();
+    if (!this.profile)
+      return;
+
+    this.currentGame = null;
+    this.initRTDBPresence();
+
+    let gameId = this.urlParams.get('game');
+    if (gameId) {
+      await this.gameAPIJoin(gameId);
+      this.currentGame = gameId;
+      this.gameid_span.innerHTML = 'id: <span class="impact-font">' + this.currentGame + '</span>';
+
+      if (this.gameSubscription)
+        this.gameSubscription();
+      this.gameSubscription = firebase.firestore().doc(`Games/${this.currentGame}`)
+        .onSnapshot((doc) => this.paintGameData(doc));
+    }
+  }
+  async getJSONFile(path) {
+    let response = await fetch(path);
+    return await response.json();
+  }
+  async load() {
+    window.allStaticAssetMeta = await GameCards.loadDecks();
+    this.actionCards = await this.getJSONFile('/story/actioncards.json');
+    await super.load();
+  }
 
   //profile related
   async switchSkyboxNext() {
@@ -363,30 +395,6 @@ export class StoryApp extends BaseApp {
         alert('Failed to resolve selection: ' + json.errorMessage);
       return;
     }
-  }
-  async authUpdateStatusUI() {
-    super.authUpdateStatusUI();
-    if (!this.profile)
-      return;
-
-    this.currentGame = null;
-    this.initRTDBPresence();
-
-    let gameId = this.urlParams.get('game');
-    if (gameId) {
-      await this.gameAPIJoin(gameId);
-      this.currentGame = gameId;
-      this.gameid_span.innerHTML = 'id: <span class="impact-font">' + this.currentGame + '</span>';
-
-      if (this.gameSubscription)
-        this.gameSubscription();
-      this.gameSubscription = firebase.firestore().doc(`Games/${this.currentGame}`)
-        .onSnapshot((doc) => this.paintGameData(doc));
-    }
-  }
-  async load() {
-    window.allStaticAssetMeta = await GameCards.loadDecks();
-    await super.load();
   }
   async _initGameDataBasedContent() {
     if (this.initedGameBasedContent)
