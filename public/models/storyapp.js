@@ -121,7 +121,7 @@ export class StoryApp extends BaseApp {
         meta.appClickable = true;
         meta.clickCommand = 'customClick';
         meta.handlePointerDown = async (pointerInfo, mesh, meta) => {
-          this.__pauseSpin(pointerInfo, mesh, meta);
+          this.pauseAssetSpin(pointerInfo, mesh, meta);
         };
       }
     });
@@ -533,7 +533,7 @@ export class StoryApp extends BaseApp {
 
   pointerMove(pointerInfo) {
     if (this.menuTab3D && this.lastClickSpinPaused) {
-      this.__pauseSpinMove(pointerInfo, this.menuTab3D.spinPauseMeta)
+      this.pauseAssetSpinMove(pointerInfo, this.menuTab3D.spinPauseMeta)
     }
   }
   pointerUp(pointerInfo) {
@@ -549,7 +549,7 @@ export class StoryApp extends BaseApp {
       this.menuTab3D.spinPauseMeta = null;
     }
   }
-  __pauseSpin(pointerInfo, mesh, meta) {
+  pauseAssetSpin(pointerInfo, mesh, meta) {
     this.menuTab3D.spinPauseMeta = meta;
 
     if (meta.activeSelectedObject !== true) {
@@ -565,7 +565,7 @@ export class StoryApp extends BaseApp {
 
     this.spinPauseMesh(meta, false, mesh);
   }
-  __pauseSpinMove(pointerInfo, meta) {
+  pauseAssetSpinMove(pointerInfo, meta) {
     let dX = this.scene.pointerX - this.spinPauseMetaPointerX;
     let dY = this.scene.pointerY - this.spinPauseMetaPointerY;
 

@@ -46,7 +46,7 @@ export default class ActionCards {
         clickCommand: 'customClick',
         rotationAnimation: animDetails.runningAnimation,
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.__pauseSpin(pointerInfo, mesh, meta);
+          this.app.pauseAssetSpin(pointerInfo, mesh, meta);
         }
       };
     }

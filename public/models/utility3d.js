@@ -106,7 +106,7 @@ export default class Utility3D {
 
     return rotationPivot;
   }
-  static selectedRotationAnimation(node, scene) {
+  static selectedRotationAnimation(node, scene, noAnim) {
     let rotationPivot = new BABYLON.TransformNode("tnselectionrotation" + node.id, scene);
     let rotationAnimation = new BABYLON.Animation(
       "selectedRotationAnimation" + name,
@@ -120,11 +120,13 @@ export default class Utility3D {
     let keys = [{
       frame: 0,
       value: this.v(0, 0, 0)
-    },
-    {
-      frame: endFrame,
-      value: this.v(2 * Math.PI, 4 * Math.PI, 8 * Math.PI)
     }];
+
+    if (noAnim !== true)
+      keys.push({
+        frame: endFrame,
+        value: this.v(2 * Math.PI, 0, 8 * Math.PI)
+      });
     rotationAnimation.setKeys(keys);
     rotationPivot.animations.push(rotationAnimation);
     let runningAnimation = scene.beginAnimation(rotationPivot, 0, endFrame, true);
@@ -687,7 +689,7 @@ export default class Utility3D {
     return symbolPivot;
   }
 
-  static createGuides(scene,size = 30) {
+  static createGuides(scene, size = 30) {
     var makeTextPlane = function(text, color, size) {
       var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
       dynamicTexture.hasAlpha = true;

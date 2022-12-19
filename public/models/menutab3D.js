@@ -354,7 +354,7 @@ export default class MenuTab3D {
 
   updateAssetSizeButtons() {
     let meta = this.selectedObjectMeta;
-    if (meta.asteroidType) {
+    if (meta.asteroidType || meta.avatarType) {
       this.normalAssetSizeBtn.setEnabled(false);
       this.assetSmallSizeButton.setEnabled(false);
       this.assetPanelHugeButton.setEnabled(false);
@@ -524,11 +524,20 @@ export default class MenuTab3D {
     this.selectedContainerTransform.position.x = 4;
     this.selectedContainerTransform.position.z = 8;
     this.selectedContainerTransform.position.y = 5;
+    this.selectedContainerTransform.rotation.y = Math.PI;
 
-    let result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
-    let mesh = result.rootNodes[0];
+    let result, mesh;
+    if (assetMeta.avatarType) {
+      result = this.app.avatarHelper.avatarContainers[assetMeta.name].instantiateModelsToScene();
+      mesh = result.rootNodes[0];
+      result.animationGroups[0].stop();
+      result.skeletons[0].returnToRest();
+    } else {
+      result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
+      mesh = result.rootNodes[0];
+    }
 
-    let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
+    let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);
     mesh.parent = animDetails.rotationPivot;
     animDetails.rotationPivot.parent = this.selectedContainerTransform;
 
@@ -540,7 +549,7 @@ export default class MenuTab3D {
       clickCommand: 'customClick',
       rotationAnimation: animDetails.runningAnimation,
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.__pauseSpin(pointerInfo, mesh, meta);
+        this.app.pauseAssetSpin(pointerInfo, mesh, meta);
       }
     };
     let factor = 2.5;

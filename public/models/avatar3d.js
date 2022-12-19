@@ -11,6 +11,7 @@ export default class Avatar3D {
   async updateUserPresence() {
     if (!this.dockSeatContainers)
       return;
+
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let seat = this.dockSeatContainers[seatIndex];
       if (seat) {
@@ -104,6 +105,17 @@ export default class Avatar3D {
       this.menuBarAvatars[seatIndex].TN.avatarMeta = avatarMeta;
       t.parent = t2n;
       t2n.parent = this.dockSeatContainers[seatIndex];
+
+      t2n.assetMeta = {
+        name: avatarMeta.name,
+        extended: {},
+        appClickable: true,
+        avatarType: true,
+        clickCommand: 'customClick',
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.app.menuTab3D.setSelectedAsset(meta);
+        }
+      };
     }
   }
   _renderPlayerSeat(seatIndex, seatData, active) {
@@ -399,6 +411,17 @@ export default class Avatar3D {
       newModel.TN.avatarMeta = avatarMeta;
 
       scene.baseShadowGenerator.addShadowCaster(mesh);
+
+      t2n.assetMeta = {
+        name: avatarMeta.name,
+        extended: {},
+        appClickable: true,
+        avatarType: true,
+        clickCommand: 'customClick',
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.app.menuTab3D.setSelectedAsset(meta);
+        }
+      };
     }
 
     this.initedAvatars = initedAvatars;

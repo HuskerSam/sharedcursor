@@ -115,7 +115,7 @@ export default class Asteroid3D {
       appClickable: true,
       clickCommand: "customClick",
       handlePointerDown: (pointerInfo, mesh, meta) => {
-        this.app.__pauseSpin(pointerInfo, mesh, meta);
+        this.app.pauseAssetSpin(pointerInfo, mesh, meta);
       },
       name: asteroid,
       asteroidType: true,
