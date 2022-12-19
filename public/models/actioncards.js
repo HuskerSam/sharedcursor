@@ -7,36 +7,34 @@ export default class ActionCards {
   async init() {
     this.cardPanel = this.app.menuTab3D.cardsStatusPanelTab;
 
-    let iconName = 'spade';
-    let playerCard1 = this.addCardHolder(this.app.scene, iconName, 'playerCard1');
-    playerCard1.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-
+    this.cardHolders = [];
+    for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
+      let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
+      cardHolder.parent = this.cardPanel;
+      cardHolder.position.x = (cardIndex % 3) * -5 - 4;
+      if (cardIndex > 2) {
+        cardHolder.position.y = 8;
+        cardHolder.position.z = 5;
       }
-    };
-    playerCard1.parent = this.cardPanel;
-    playerCard1.position.x = -7;
-    playerCard1.position.y = 1;
+
+      this.cardHolders.push(cardHolder);
+    }
+
+    this.updatePlayerCards();
   }
-  addCardHolder(scene, iconName, name) {
-    //let texturePath = 'https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg';
-    let texturePath = '/fontcons/' + iconName + '.svg';
-    let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
-      radius: 1,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-    let mat = new BABYLON.StandardMaterial(name + 'disc-mat', scene);
+  async updatePlayerCards(actionCards) {
+    actionCards = this.app.actionCards;
 
-    let tex = new BABYLON.Texture(texturePath, scene, false, false);
-    tex.hasAlpha = true;
-    mat.opacityTexture = tex;
-    mat.emissiveColor = new BABYLON.Color3(0.25, 0, 1);
-    mat.diffuseColor = new BABYLON.Color3(0.25, 0, 1);
-    mat.ambientColor = new BABYLON.Color3(0.25, 0, 1);
-    mesh.material = mat;
+    for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
+      let cardMeta = actionCards[cardIndex];
+      let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
+      meta.extended = U3D.processStaticAssetMeta(meta, {});
+      let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
+      U3D._fitNodeToSize(mesh, 4.5);
 
-    return mesh;
+      let tn = new BABYLON.TransformNode('tnplayercardmeshholder' + cardIndex, this.app.scene);
+      mesh.parent = tn;
+      tn.parent = this.cardHolders[cardIndex];
+    }
   }
 }

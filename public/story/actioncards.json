@@ -1,6 +1,6 @@
 [
   {
-    "name": "Rocket",
+    "name": "Heavy Rocket",
     "gameCard": "rocket_atlasv"
   },
   {
@@ -18,5 +18,9 @@
   {
     "name": "Planet Probe",
     "gameCard": "probe_tgo"
+  },
+  {
+    "name": "Planet Orbiter",
+    "gameCard": "probe_shuttle"
   }
 ]

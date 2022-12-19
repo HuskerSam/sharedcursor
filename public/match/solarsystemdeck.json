@@ -408,5 +408,16 @@
     "sizeBoxFit": 1,
     "url": "https://en.wikipedia.org/wiki/Trace_Gas_Orbiter",
     "containerOnly": true
+  },
+  {
+    "id": "probe_shuttle",
+    "name": "Space Shuttle Orbiter",
+    "objectType": "probe",
+    "image": "/cardimages/probeshuttle.jpg",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/solar/shuttle.glb",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter",
+    "containerOnly": true
   }
 ]
