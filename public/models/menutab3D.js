@@ -1,5 +1,4 @@
 import U3D from '/models/utility3d.js';
-import R3D from '/models/rocket3d.js';
 
 export default class MenuTab3D {
   constructor(app) {
@@ -171,37 +170,6 @@ export default class MenuTab3D {
     }
   }
   initOptionsTab(scene, parent) {
-    let shootRocketBtn = this.addIconBtn(scene, 'rocket', 'shootRocketBtn');
-    shootRocketBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        if (this.rocketRunning)
-          return;
-        this.rocketRunning = true;
-        setTimeout(() => this.rocketRunning = false, 1000);
-
-        let rotation = new BABYLON.Vector3(0, 0, 0);
-        let endPosition = U3D.vector(this.obj('mars').position);
-        let startPosition = U3D.vector(this.obj('neptune').position);
-        await R3D.shootRocket(scene, startPosition, rotation, endPosition);
-
-      }
-    };
-    shootRocketBtn.parent = parent;
-    shootRocketBtn.position.x = -5;
-
-    let cycleRandomAvatarAnimations = this.addIconBtn(scene, 'robot', 'cycleRandomAvatarAnimations');
-    cycleRandomAvatarAnimations.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.avatarHelper.randomizeAnimations();
-      }
-    };
-    cycleRandomAvatarAnimations.position.x = -7.5;
-    cycleRandomAvatarAnimations.parent = parent;
-
     let lightDnBtn = U3D.addTextPlane(scene, '-', 'lightDnBtn');
     lightDnBtn.position.x = -11;
     lightDnBtn.position.y = 3;

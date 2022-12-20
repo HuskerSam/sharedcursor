@@ -1,4 +1,5 @@
 import U3D from '/models/utility3d.js';
+import R3D from '/models/rocket3d.js';
 
 export default class ActionCards {
   constructor(app) {
@@ -18,9 +19,55 @@ export default class ActionCards {
       }
 
       this.cardHolders.push(cardHolder);
+
+      let localIndex = cardIndex;
+      let playActionCardBtn = U3D.addTextPlane(this.scene, 'Play', 'playActionCardBtn' + cardIndex);
+      playActionCardBtn.position.x = -2;
+      playActionCardBtn.position.y = 3;
+      playActionCardBtn.position.z = -0.5;
+      //playActionCardBtn.scaling = U3D.v(1.5);
+      playActionCardBtn.parent = cardHolder;
+      playActionCardBtn.assetMeta = {
+        appClickable: true,
+        clickCommand: 'customClick',
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.playCard(localIndex);
+        }
+      };
+
+      let discardActionCardBtn = U3D.addTextPlane(this.scene, 'Discard', 'discardActionCardBtn' + cardIndex, "Arial", "", "#000000", "transparent");
+      discardActionCardBtn.position.x = 0;
+      discardActionCardBtn.position.y = 3;
+      discardActionCardBtn.position.z = -0.5;
+      //discardActionCardBtn.scaling = U3D.v(1.5);
+      discardActionCardBtn.parent = cardHolder;
+      discardActionCardBtn.assetMeta = {
+        appClickable: true,
+        clickCommand: 'customClick',
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.discardCard(localIndex);
+        }
+      };
     }
 
     this.updatePlayerCards();
+  }
+  async discardCard(cardIndex) {
+
+  }
+  async playCard(cardIndex) {
+    if (this.rocketRunning)
+      return;
+    this.rocketRunning = true;
+    setTimeout(() => this.rocketRunning = false, 1000);
+
+    let rotation = new BABYLON.Vector3(0, 0, 0);
+    let endPosition = U3D.vector(this.obj('mars').position);
+    let startPosition = U3D.vector(this.obj('neptune').position);
+    await R3D.shootRocket(this.app.scene, startPosition, rotation, endPosition);
+  }
+  obj(name) {
+    return this.app.staticAssets[name];
   }
   async updatePlayerCards(actionCards) {
     actionCards = this.app.actionCards;

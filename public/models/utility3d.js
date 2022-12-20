@@ -566,6 +566,9 @@ export default class Utility3D {
     })
   }
   static v(x, y, z) {
+    if (x === undefined) x = 0;
+    if (y === undefined) y = x;
+    if (z === undefined) z = x;
     return new BABYLON.Vector3(x, y, z);
   }
   static v4(x, y, z, weight) {
