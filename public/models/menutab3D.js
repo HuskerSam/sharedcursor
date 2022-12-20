@@ -563,6 +563,12 @@ export default class MenuTab3D {
 
       let key = keys[nextIndex];
       this.setSelectedAsset(this.loadedAsteroids[key].orbitWrapper.assetMeta);
+    } else if (meta.avatarType) {
+      let index = meta.seatIndex++;
+      if (index > 3)
+        index = 0;
+
+      this.setSelectedAsset(this.app.avatarHelper.initedAvatars[index].TN2.assetMeta);
     } else {
       let keys = Object.keys(this.app.staticAssets).sort((a, b) => {
         if (this.obj(a).assetMeta.name > this.obj(b).assetMeta.name)

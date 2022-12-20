@@ -25,7 +25,6 @@ export default class ActionCards {
       playActionCardBtn.position.x = -2;
       playActionCardBtn.position.y = 3;
       playActionCardBtn.position.z = -0.5;
-      //playActionCardBtn.scaling = U3D.v(1.5);
       playActionCardBtn.parent = cardHolder;
       playActionCardBtn.assetMeta = {
         appClickable: true,
@@ -39,7 +38,6 @@ export default class ActionCards {
       discardActionCardBtn.position.x = 0;
       discardActionCardBtn.position.y = 3;
       discardActionCardBtn.position.z = -0.5;
-      //discardActionCardBtn.scaling = U3D.v(1.5);
       discardActionCardBtn.parent = cardHolder;
       discardActionCardBtn.assetMeta = {
         appClickable: true,

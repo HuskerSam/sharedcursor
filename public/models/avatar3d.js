@@ -111,6 +111,7 @@ export default class Avatar3D {
         extended: {},
         appClickable: true,
         avatarType: true,
+        seatIndex: seatIndex,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.app.menuTab3D.setSelectedAsset(meta);
@@ -409,6 +410,7 @@ export default class Avatar3D {
       mesh.parent = t2n;
       newModel.TN = t;
       newModel.TN.avatarMeta = avatarMeta;
+      newModel.TN2 = t2n;
 
       scene.baseShadowGenerator.addShadowCaster(mesh);
 
@@ -417,6 +419,7 @@ export default class Avatar3D {
         extended: {},
         appClickable: true,
         avatarType: true,
+        seatIndex: c,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.app.menuTab3D.setSelectedAsset(meta);
