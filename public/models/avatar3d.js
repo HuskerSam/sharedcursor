@@ -414,7 +414,13 @@ export default class Avatar3D {
         newModel = newSkin;
       } else {
         newModel = avatarContainers[avatarMeta.name].instantiateModelsToScene();
-        newModel.animContainer = newModel;
+        let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
+
+        this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
+        newModel.rootNodes[0].setEnabled(false);
+
+        newSkin.animContainer = newModel;
+        newModel = newSkin;
       }
 
       initedAvatars.push(newModel);
