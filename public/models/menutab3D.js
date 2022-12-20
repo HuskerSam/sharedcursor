@@ -532,17 +532,9 @@ export default class MenuTab3D {
       this.selectedAssetLabel.dispose();
 
     this.selectedAssetLabel = U3D.addTextPlane(this.scene, desc, 'selectedAssetLabel');
-    this.selectedAssetLabel.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.nextSelectedObject();
-      }
-    };
     this.selectedAssetLabel.position.x = -10;
     this.selectedAssetLabel.position.y = 2;
     this.selectedAssetLabel.position.z = 0;
-    this.selectedAssetLabel.scaling = U3D.v(2, 2, 2);
     this.selectedAssetLabel.parent = this.focusPanelTab;
 
     this.updateAssetSizeButtons();
@@ -569,6 +561,10 @@ export default class MenuTab3D {
         index = 0;
 
       this.setSelectedAsset(this.app.avatarHelper.initedAvatars[index].TN2.assetMeta);
+    } else if (meta.actionCardType) {
+      let index = meta.cardIndex + 1;
+      if (index > 5) index = 0;
+      this.setSelectedAsset(this.app.actionCardHelper.cardItemMeta[index]);
     } else {
       let keys = Object.keys(this.app.staticAssets).sort((a, b) => {
         if (this.obj(a).assetMeta.name > this.obj(b).assetMeta.name)

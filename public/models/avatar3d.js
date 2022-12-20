@@ -334,13 +334,14 @@ export default class Avatar3D {
 
       this.avatarSequence(container, index);
     });
-
+    /*
     this.menuBarAvatars.forEach(container => {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
 
       this.avatarSequence(container, index);
     });
+    */
   }
   get3DColors(seatIndex) {
     let r = 220 / 255,
@@ -429,6 +430,11 @@ export default class Avatar3D {
 
     this.initedAvatars = initedAvatars;
     this.avatarContainers = avatarContainers;
+
+    this.randomizeAnimations();
+    setTimeout(() => {
+      this.randomizeAnimations();
+    }, 20000)
   }
   linkSkeletonMeshes(master, slave) {
     if (master != null && master.bones != null && master.bones.length > 0) {

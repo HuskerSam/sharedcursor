@@ -70,6 +70,7 @@ export default class ActionCards {
   async updatePlayerCards(actionCards) {
     actionCards = this.app.actionCards;
 
+    this.cardItemMeta = [];
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       let cardMeta = actionCards[cardIndex];
       let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
@@ -89,11 +90,14 @@ export default class ActionCards {
         baseMesh: mesh,
         basePivot: animDetails.rotationPivot,
         clickCommand: 'customClick',
+        actionCardType: true,
+        cardIndex,
         rotationAnimation: animDetails.runningAnimation,
         handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.app.pauseAssetSpin(pointerInfo, mesh, meta);
         }
       };
+      this.cardItemMeta.push(mesh.assetMeta);
     }
   }
 }
