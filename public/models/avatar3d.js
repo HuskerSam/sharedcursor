@@ -652,7 +652,11 @@ export default class Avatar3D {
       let mesh = model.rootNodes[0].getChildMeshes()[0];
       mesh.refreshBoundingInfo(true);
       mesh.computeWorldMatrix(true);
-      let position = model.skeletons[0].bones[0].getTransformNode().getAbsolutePosition();
+      let bIndex = model.skeletons[0].getBoneIndexByName("mixamorig:Hips");
+      if (bIndex < 0)
+        bIndex = model.skeletons[0].getBoneIndexByName("mixamorig10:Hips");
+
+      let position = model.skeletons[0].bones[bIndex].getTransformNode().getAbsolutePosition();
 
       model.TN.position.x = -1 * position.x;
       model.TN.position.z = -1 * position.z;
