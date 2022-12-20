@@ -178,7 +178,7 @@ export class StoryApp extends BaseApp {
         assetMeta: meta
       };
 
-    U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
+    U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
       mesh.material = this.asteroidHelper.selectedAsteroidMaterial;
@@ -673,5 +673,9 @@ export class StoryApp extends BaseApp {
     }
 
     return rotation;
+  }
+  updateAvatarRender() {
+    if (this.avatarHelper)
+      this.avatarHelper.updateAvatarRender();
   }
 }

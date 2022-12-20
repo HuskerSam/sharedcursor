@@ -12,7 +12,7 @@
     "url": "https://en.wikipedia.org/wiki/Sun",
     "color": "rgb(200, 200, 200)",
     "x": 18,
-    "y": 5,
+    "y": 8,
     "z": 5,
     "noShadow": true
   },
@@ -322,7 +322,7 @@
     "largeglbpath": "/solar/bennuhuge.glb",
     "smallglbpath": "/solar/bennusmall.glb",
     "sizeBoxFit": 1.5,
-    "symbolY": 0.5,
+    "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/101955_Bennu",
     "color": "rgb(255, 63, 63)",
     "x": 7,

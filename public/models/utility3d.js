@@ -640,7 +640,9 @@ export default class Utility3D {
       glbPath
     };
   }
-  static _fitNodeToSize(node, size) {
+  static sizeNodeToFit(node, size) {
+    node.refreshBoundingInfo(true);
+    node.computeWorldMatrix(true);
     const boundingInfo = node.getHierarchyBoundingVectors(true);
     const currentLength = boundingInfo.max.subtract(boundingInfo.min);
     const biggestSide = Math.max(currentLength.x, Math.max(currentLength.y, currentLength.z));

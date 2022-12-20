@@ -73,7 +73,7 @@ export default class Avatar3D {
         }
       };
       mesh.parent = this.dockSeatContainers[seatIndex];
-      U3D._fitNodeToSize(mesh, 1.75);
+      U3D.sizeNodeToFit(mesh, 1.75);
 
       let newModel;
       let avatarMeta = this.getAvatarData()[seatIndex];
@@ -145,10 +145,10 @@ export default class Avatar3D {
       seatContainer.playerImage = null;
     }
 
+    let colors = this.get3DColors(seatIndex);
+    let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
     if (active) {
-      let colors = this.get3DColors(seatIndex);
       let meta = seatContainer.assetMeta;
-      let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
       if (seatData.seated) {
         let avatarContainer = new BABYLON.TransformNode("avatarContainer" + seatIndex, this.app.scene);
@@ -229,15 +229,33 @@ export default class Avatar3D {
         seatContainer.sitStandButton = sitBtn;
       }
     } else {
-      seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, 'Computer', 'playerName' + seatIndex, "Impact", "", 'rgb(255,255,255)');
+      seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, 'Computer', 'playerName' + seatIndex, "Impact", "", rgb);
       seatContainer.namePlate1.position.z = 1;
       seatContainer.namePlate1.position.y = 4.2;
       seatContainer.namePlate1.parent = seatContainer;
 
-      seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, 'Player', 'playerNameLine2' + seatIndex, "Impact", "", 'rgb(255,255,255)');
+      seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, 'Player', 'playerNameLine2' + seatIndex, "Impact", "", rgb);
       seatContainer.namePlate2.position.z = 1;
       seatContainer.namePlate2.position.y = 3.6;
       seatContainer.namePlate2.parent = seatContainer;
+    }
+
+    let avatar = this.initedAvatars[seatIndex];
+    if (avatar.namePlate1) {
+      avatar.namePlate1.dispose();
+      avatar.namePlate1 = null;
+    }
+    if (avatar.namePlate2) {
+      avatar.namePlate2.dispose();
+      avatar.namePlate2 = null;
+    }
+    if (seatContainer.namePlate1) {
+      //  avatar.namePlate1 = seatContainer.namePlate1.clone();
+      //  avatar.namePlate1.parent = avatar.rootNodes[0];
+    }
+    if (seatContainer.namePlate2) {
+      //  avatar.namePlate2 = seatContainer.namePlate2.clone();
+      //  avatar.namePlate2.parent = avatar.rootNodes[0];
     }
   }
   async updatePlayerDock() {
@@ -489,6 +507,7 @@ export default class Avatar3D {
     const offsets = this.getAnimationOffsets();
 
     //start new offsets
+
     if (offsets[animName]) {
       let offsetInfo = offsets[animName];
 
@@ -532,21 +551,29 @@ export default class Avatar3D {
       if (!mesh.animations)
         mesh.animations = [];
       mesh.animations.push(offsetPositionAnim);
-      avatarContainer.offsetAnimation = scene.beginAnimation(mesh, 0, endFrame, true);
+      avatarContainer.offsetAnimation = scene.beginAnimation(mesh, 0, endFrame, true, 1, () => {
+
+      });
       avatarContainer.offsetPositionAnim = offsetPositionAnim;
 
       arr[animationIndex].reset();
       arr[animationIndex].start(true);
 
-      mesh.position.x = 0;//mesh.avatarMeta.x;
-      mesh.position.z = 0;//mesh.avatarMeta.z;
+      mesh.position.x = 0; //mesh.avatarMeta.x;
+      mesh.position.z = 0; //mesh.avatarMeta.z;
     } else {
       arr[animationIndex].reset();
       arr[animationIndex].start(true);
 
       let mesh = avatarContainer.TN;
-      mesh.position.x = 0;// mesh.avatarMeta.x;
-      mesh.position.z = 0; //mesh.avatarMeta.z;
+      mesh.position.x = 0;
+      mesh.position.z = 0;
+
+      arr[animationIndex].onAnimationGroupLoopObservable.add(() => {
+        mesh.position.x = 0;
+        mesh.position.z = 0;
+      });
+
     }
   }
   getAvatarData() {
@@ -554,8 +581,8 @@ export default class Avatar3D {
         "name": "Terra",
         "path": "maria.glb",
         "cloneAnimations": "Daya",
-        "x": -9,
-        "z": -10,
+        "x": 12,
+        "z": 21,
         "race": "Human",
         "seatIndex": 0
       },
@@ -563,16 +590,16 @@ export default class Avatar3D {
         "name": "Jade",
         "path": "jolleen.glb",
         "cloneAnimations": "Daya",
-        "x": -5,
-        "z": -10,
+        "x": -10,
+        "z": 22,
         "race": "Botan",
         "seatIndex": 1
       },
       {
         "name": "Daya",
         "path": "jonesbase.glb",
-        "x": -3,
-        "z": -10,
+        "x": -30,
+        "z": 35,
         "race": "Avian",
         "seatIndex": 2
       },
@@ -580,14 +607,16 @@ export default class Avatar3D {
         "name": "Geronimo",
         "path": "maynard.glb",
         "cloneAnimations": "Daya",
-        "x": -7,
-        "z": -10,
+        "x": 7,
+        "z": -32,
         "race": "Titan",
         "seatIndex": 3
       }
     ]
   }
   getAnimationOffsets() {
+    return {};
+    /*
     return {
       "Clone of jogging": {
         "z": 5.3,
@@ -607,5 +636,20 @@ export default class Avatar3D {
         "frames": 72
       }
     };
+    */
+  }
+  updateAvatarRender() {
+    if (!this.initedAvatars)
+      return;
+
+    this.initedAvatars.forEach(model => {
+      let mesh = model.rootNodes[0].getChildMeshes()[0];
+      mesh.refreshBoundingInfo(true);
+      mesh.computeWorldMatrix(true);
+      let position = model.skeletons[0].bones[0].getTransformNode().getAbsolutePosition();
+
+      model.TN.position.x = -1 * position.x;
+      model.TN.position.z = -1 * position.z;
+    });
   }
 }

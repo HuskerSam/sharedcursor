@@ -76,7 +76,7 @@ export default class ActionCards {
       let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
       meta.extended = U3D.processStaticAssetMeta(meta, {});
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
-      U3D._fitNodeToSize(mesh, 4.5);
+      U3D.sizeNodeToFit(mesh, 4.5);
 
       let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
       mesh.parent = animDetails.rotationPivot;

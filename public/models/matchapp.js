@@ -204,7 +204,7 @@ export class MatchApp extends BaseApp {
 
     this.finalLoadedMesh = await U3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
     this.finalLoadedMesh.position.y = 2;
-    U3D._fitNodeToSize(this.finalLoadedMesh, 2.5);
+    U3D.sizeNodeToFit(this.finalLoadedMesh, 2.5);
     this.engine.resize();
 
     this.match_end_display_promo.querySelector('.beer_name').innerHTML = cardMeta.name;

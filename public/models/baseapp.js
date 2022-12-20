@@ -1191,13 +1191,17 @@ export class BaseApp {
     this.canvas = document.querySelector(canvasQuery);
     this.engine = new BABYLON.Engine(this.canvas, true);
     BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
+    BABYLON.Animation.AllowMatricesInterpolation = true;
 
+    this.engine.enableOfflineSupport = false;
     this.scene = await this.createScene();
 
     this.runRender = false;
     this.engine.runRenderLoop(() => {
-      if (this.runRender)
+      if (this.runRender) {
         this.scene.render();
+        this.updateAvatarRender();
+      }
 
       if (this.activeFollowMeta && this.xr.baseExperience.state === 3 && this.activeFollowMeta.basePivot) {
         let position = new BABYLON.Vector3(0, 0, 0);
@@ -1220,12 +1224,14 @@ export class BaseApp {
         this.scene.activeCamera.position.addInPlace(movementVector);
         this.scene.activeCamera.target.addInPlace(movementVector);
       }
+
     });
 
     window.addEventListener("resize", () => {
       this.engine.resize();
     });
   }
+  updateAvatarRender() {}
   async initGraphics() {
     if (this.engine)
       return;
@@ -1269,9 +1275,9 @@ export class BaseApp {
     if (this.profile)
       this.mainLight.intensity = this._getLightLevel(this.profile.sceneLightLevel);
 
-    this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(2048, this.mainLight);
+    this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(1024, this.mainLight);
     this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
-    this.scene.baseShadowGenerator.blurKernel = 16;
+    this.scene.baseShadowGenerator.blurKernel = 32;
 
     let environment = scene.createDefaultEnvironment({
       createSkybox: false,
@@ -1286,13 +1292,15 @@ export class BaseApp {
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
     this.camera.wheelPrecision = 10;
-    this.camera.upperRadiusLimit = 25;
+    this.camera.lowerRadiusLimit = 2;
+    this.camera.upperRadiusLimit = 20;
+    this.camera.wheelDeltaPercentage = 0.01;
     this.camera.allowUpsideDown = false;
     this.camera.maxZ = 750;
     this.camera.panningAxis.y = 0;
     this.camera.panningAxis.z = 1;
 
-    scene.activeCamera.useAutoRotationBehavior = true;
+  //  scene.activeCamera.useAutoRotationBehavior = true;
     scene.activeCamera.beta -= 0.2;
 
     scene.activeCamera.setPosition(this.cameraMetaX.position);

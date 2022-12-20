@@ -354,7 +354,7 @@ export default class MenuTab3D {
 
       let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
       freshMesh.parent = this.obj(id).baseMesh.parent;
-      U3D._fitNodeToSize(freshMesh, meta.sizeBoxFit);
+      U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
       this.obj(id).baseMesh.dispose();
       this.obj(id).baseMesh = freshMesh;
     }
@@ -523,7 +523,7 @@ export default class MenuTab3D {
     let factor = 2.5;
     if (this.app.inXR)
       factor = 0.35;
-    U3D._fitNodeToSize(mesh, factor);
+    U3D.sizeNodeToFit(mesh, factor);
 
     if (assetMeta.asteroidType)
       mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;

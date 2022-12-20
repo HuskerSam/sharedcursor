@@ -177,7 +177,7 @@ export default class Rocket3D {
     let meta = Object.assign({}, window.allStaticAssetMeta[name]);
     meta.extended = U3D.processStaticAssetMeta(meta, {});
     let mesh = await U3D.loadStaticMesh(scene, meta.extended.glbPath);
-    U3D._fitNodeToSize(mesh, meta.sizeBoxFit);
+    U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
 
     let rocketTN = new BABYLON.TransformNode(mesh.id + 'tn', scene);
     mesh.parent = rocketTN;

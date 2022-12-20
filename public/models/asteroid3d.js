@@ -85,7 +85,7 @@ export default class Asteroid3D {
     let containerPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await U3D.loadStaticMesh(scene, containerPath);
-    U3D._fitNodeToSize(mesh, 1.5);
+    U3D.sizeNodeToFit(mesh, 1.5);
     mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, scene);
