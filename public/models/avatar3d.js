@@ -75,37 +75,33 @@ export default class Avatar3D {
       mesh.parent = this.dockSeatContainers[seatIndex];
       U3D.sizeNodeToFit(mesh, 1.75);
 
-      let newModel;
       let avatarMeta = this.getAvatarData()[seatIndex];
-      if (avatarMeta.cloneAnimations) {
-        newModel = this.avatarContainers[avatarMeta.cloneAnimations].instantiateModelsToScene();
-        let newSkin = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
-
-        this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
-        newModel.rootNodes[0].setEnabled(false);
-
-        newSkin.animContainer = newModel;
-        newModel = newSkin;
-      } else {
-        newModel = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
-        newModel.animContainer = newModel;
-      }
+      let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
+      let newModel = this.avatarContainers[animationsBaseName].instantiateModelsToScene();
+      let newSkin = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
+      this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
+      newModel.rootNodes[0].setEnabled(false);
+      newSkin.animContainer = newModel;
+      newModel = newSkin;
       this.menuBarAvatars.push(newModel);
       this.menuBarAvatars[seatIndex].animContainer.animationGroups[0].stop();
 
-      let t = new BABYLON.TransformNode("tnavatartoolbar" + seatIndex);
-      let t2n = new BABYLON.TransformNode("tnavatartoolbar2" + seatIndex);
-      t2n.scaling = U3D.v(2, 2, 2);
-      t2n.position.y = -1;
-      t2n.position.z = 3;
-      t2n.rotation.y = Math.PI;
-      this.menuBarAvatars[seatIndex].rootNodes[0].parent = t;
+      let bonesOffsetTN = new BABYLON.TransformNode("menu3davatarbonesoffset" + mesh.id);
+      let avatarPositionTN = new BABYLON.TransformNode("menu3davatarpositionoffset" + mesh.id);
+      let avatarExtrasTN = new BABYLON.TransformNode("menu3davatarpanel" + mesh.id);
+      avatarPositionTN.position.y = -1;
+      avatarPositionTN.position.z = 3;
+      avatarPositionTN.rotation.y = Math.PI;
+      avatarPositionTN.scaling = U3D.v(2, 2, 2);
+      bonesOffsetTN.parent = avatarPositionTN;
+      avatarExtrasTN.parent = avatarPositionTN;
+      avatarPositionTN.parent = this.dockSeatContainers[seatIndex];
+      this.menuBarAvatars[seatIndex].rootNodes[0].parent = bonesOffsetTN;
+      newModel.bonesOffsetTN = bonesOffsetTN;
+      newModel.avatarPositionTN = avatarPositionTN;
+      newModel.avatarExtrasTN = avatarExtrasTN;
 
-      this.menuBarAvatars[seatIndex].bonesOffsetTN = t;
-      t.parent = t2n;
-      t2n.parent = this.dockSeatContainers[seatIndex];
-
-      t2n.assetMeta = {
+      avatarPositionTN.assetMeta = {
         name: avatarMeta.name,
         extended: {},
         appClickable: true,
@@ -300,9 +296,9 @@ export default class Avatar3D {
         depth: 1
       }, this.app.scene);
       this.selectedPlayerPanel.material = new BABYLON.StandardMaterial('selectedPlayerPanelMat', this.app.scene);
-      this.selectedPlayerPanel.parent = this.dockSeatContainers[seatIndex];
       this.selectedPlayerPanel.position.y = 4;
     }
+    this.selectedPlayerPanel.parent = this.dockSeatContainers[seatIndex];
     this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
     this.selectedPlayerPanel.material.ambientColor = new BABYLON.Color3(1, 0, 0);
     this.selectedPlayerPanel.material.emissiveColor = new BABYLON.Color3(1, 0, 0);
@@ -313,16 +309,28 @@ export default class Avatar3D {
         height: 1,
         depth: 1
       }, this.app.scene);
-      this.selectedMoonPanel.parent = this.playerMoonAssets[seatIndex].assetMeta.basePivot;
       this.selectedMoonPanel.material = new BABYLON.StandardMaterial('selectedMoonPanelMat', this.app.scene);
       this.selectedMoonPanel.position.y = 3;
     }
+    this.selectedMoonPanel.parent = this.playerMoonAssets[seatIndex].assetMeta.basePivot;
 
     let colors = this.get3DColors(seatIndex);
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
     this.selectedMoonPanel.material.diffuseColor = playerColor;
     this.selectedMoonPanel.material.ambientColor = playerColor;
     this.selectedMoonPanel.material.emissiveColor = playerColor;
+
+    this.menuBarAvatars.forEach((container, i) => {
+      let arr = container.animContainer.animationGroups;
+      let animName = (i === seatIndex) ? 'Clone of jogging' : 'Clone of surprised';
+
+      let animIndex = 0;
+      arr.forEach((anim, i2) => {
+        if (anim.name === animName)
+          animIndex = i2;
+      })
+      this.avatarSequence(container, animIndex, i, true);
+    });
   }
   getSeatData(seatIndex) {
     let key = 'seat' + seatIndex.toString();
@@ -367,14 +375,6 @@ export default class Avatar3D {
       */
       this.avatarSequence(container, index, avatarIndex);
     });
-    /*
-    this.menuBarAvatars.forEach(container => {
-      let arr = container.animContainer.animationGroups;
-      let index = Math.floor(Math.random() * arr.length);
-
-      this.avatarSequence(container, index);
-    });
-    */
   }
   get3DColors(seatIndex) {
     let r = 220 / 255,
@@ -415,27 +415,16 @@ export default class Avatar3D {
     }
 
     for (let c = 0; c < 4; c++) {
-      let newModel;
       let avatarMeta = avatarMetas[c];
-      if (avatarMeta.cloneAnimations) {
-        newModel = avatarContainers[avatarMeta.cloneAnimations].instantiateModelsToScene();
-        let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
+      let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
+      let newModel = avatarContainers[animationsBaseName].instantiateModelsToScene();
+      let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
 
-        this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
-        newModel.rootNodes[0].setEnabled(false);
+      this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
+      newModel.rootNodes[0].setEnabled(false);
 
-        newSkin.animContainer = newModel;
-        newModel = newSkin;
-      } else {
-        newModel = avatarContainers[avatarMeta.name].instantiateModelsToScene();
-        let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
-
-        this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
-        newModel.rootNodes[0].setEnabled(false);
-
-        newSkin.animContainer = newModel;
-        newModel = newSkin;
-      }
+      newSkin.animContainer = newModel;
+      newModel = newSkin;
 
       initedAvatars.push(newModel);
       initedAvatars[c].animContainer.animationGroups[0].stop();
@@ -510,15 +499,17 @@ export default class Avatar3D {
     }
     return result;
   }
-  async avatarSequence(avatarContainer, animationIndex, avatarIndex) {
+  async avatarSequence(avatarContainer, animationIndex, avatarIndex, randomStart) {
     let scene = this.app.scene;
     let arr = avatarContainer.animContainer.animationGroups;
     arr.forEach(anim => anim.stop());
 
     let animName = arr[animationIndex].name;
 
-    arr[animationIndex].reset();
+    //arr[animationIndex].reset();
     arr[animationIndex].start(true);
+    arr[animationIndex].goToFrame(Math.floor(Math.random() * arr[animationIndex].to));
+
 
     let mesh = avatarContainer.bonesOffsetTN;
     mesh.position.x = 0;
@@ -567,22 +558,24 @@ export default class Avatar3D {
       }
     ];
   }
+  _offsetBonesMovement(model) {
+    let mesh = model.rootNodes[0].getChildMeshes()[0];
+    mesh.refreshBoundingInfo(true);
+    mesh.computeWorldMatrix(true);
+    let bIndex = model.skeletons[0].getBoneIndexByName("mixamorig:Hips");
+    if (bIndex < 0)
+      bIndex = model.skeletons[0].getBoneIndexByName("mixamorig10:Hips");
+
+    let position = model.skeletons[0].bones[bIndex].getTransformNode().getAbsolutePosition();
+
+    model.bonesOffsetTN.position.x = -1 * position.x;
+    model.bonesOffsetTN.position.z = -1 * position.z;
+  }
   updateAvatarRender() {
     if (!this.initedAvatars)
       return;
 
-    this.initedAvatars.forEach(model => {
-      let mesh = model.rootNodes[0].getChildMeshes()[0];
-      mesh.refreshBoundingInfo(true);
-      mesh.computeWorldMatrix(true);
-      let bIndex = model.skeletons[0].getBoneIndexByName("mixamorig:Hips");
-      if (bIndex < 0)
-        bIndex = model.skeletons[0].getBoneIndexByName("mixamorig10:Hips");
-
-      let position = model.skeletons[0].bones[bIndex].getTransformNode().getAbsolutePosition();
-
-      model.bonesOffsetTN.position.x = -1 * position.x;
-      model.bonesOffsetTN.position.z = -1 * position.z;
-    });
+    this.initedAvatars.forEach(model => this._offsetBonesMovement(model));
+    this.menuBarAvatars.forEach(model => this._offsetBonesMovement(model));
   }
 }
