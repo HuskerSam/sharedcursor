@@ -38,18 +38,7 @@ export default class MenuTab3D {
     this.playerMoonPanelTab.parent = panel;
     this.playerMoonPanelTab.position.y = 0;
     this.playerMoonPanelTab.setEnabled(false);
-
-    this.gameStatusPanelTab = new BABYLON.TransformNode('gameStatusPanelTab', scene);
-    this.gameStatusPanelTab.parent = panel;
-    this.gameStatusPanelTab.position.y = 0;
-    this.gameStatusPanelTab.setEnabled(false);
     this.initGameStatusPanel();
-
-    this.cardsStatusPanelTab = new BABYLON.TransformNode('cardsStatusPanelTab', scene);
-    this.cardsStatusPanelTab.parent = panel;
-    this.cardsStatusPanelTab.position.y = 0;
-    this.cardsStatusPanelTab.setEnabled(false);
-    this.app.actionCardHelper.init();
   }
   addTabButtons(scene, tabBar) {
     let iconName = 'xmark';
@@ -98,7 +87,7 @@ export default class MenuTab3D {
       }
     };
     selectedObjectMenuBtn.parent = tabBar;
-    selectedObjectMenuBtn.position.x = -7;
+    selectedObjectMenuBtn.position.x = -4;
 
     iconName = 'diversity';
     let playersMoonsMenuBtn = this.addIconBtn(scene, iconName, 'playersMoonsMenuBtn');
@@ -110,33 +99,7 @@ export default class MenuTab3D {
       }
     };
     playersMoonsMenuBtn.parent = tabBar;
-    playersMoonsMenuBtn.position.x = -4;
-
-    iconName = 'eventrepeat';
-    let gameStatusMenuBtn = this.addIconBtn(scene, iconName, 'gameStatusMenuBtn');
-    gameStatusMenuBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.gameStatusPanelTab);
-      }
-    };
-    gameStatusMenuBtn.parent = tabBar;
-    gameStatusMenuBtn.position.x = -4;
-    gameStatusMenuBtn.position.y = -3;
-
-    iconName = 'spade';
-    let cardsStatusMenuBtn = this.addIconBtn(scene, iconName, 'cardsStatusMenuBtn');
-    cardsStatusMenuBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.cardsStatusPanelTab);
-      }
-    };
-    cardsStatusMenuBtn.parent = tabBar;
-    cardsStatusMenuBtn.position.x = -7;
-    cardsStatusMenuBtn.position.y = -3;
+    playersMoonsMenuBtn.position.x = -7;
   }
   addIconBtn(scene, iconName, name) {
     //let texturePath = 'https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg';
@@ -157,6 +120,7 @@ export default class MenuTab3D {
 
     return mesh;
   }
+
   selectedMenuBarTab(menuTabToShow) {
     if (this.currentSelectedTab)
       this.currentSelectedTab.setEnabled(false);
@@ -169,6 +133,7 @@ export default class MenuTab3D {
       this.currentSelectedTab = menuTabToShow;
     }
   }
+
   initOptionsTab(scene, parent) {
     let lightDnBtn = U3D.addTextPlane(scene, '-', 'lightDnBtn');
     lightDnBtn.position.x = -11;
@@ -290,8 +255,13 @@ export default class MenuTab3D {
   }
 
   initGameStatusPanel() {
+    this.gameActionsPanel = new BABYLON.TransformNode('gameActionsPanel', this.app.scene);
+    this.gameActionsPanel.parent = this.playerMoonPanelTab;
+    this.gameActionsPanel.position.y = 9;
+    this.gameActionsPanel.position.z = 3;
+
     this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
-    this.startGameButton.parent = this.gameStatusPanelTab;
+    this.startGameButton.parent = this.gameActionsPanel;
     this.startGameButton.scaling = U3D.v(2, 2, 2);
     this.startGameButton.position.x = -5;
     this.startGameButton.position.y = 3;
@@ -299,14 +269,14 @@ export default class MenuTab3D {
     this.startGameButton.setEnabled(false);
 
     this.endGameButton = U3D.addTextPlane(this.scene, "END Game", "endGameButton", "Impact", "", "#ffffff");
-    this.endGameButton.parent = this.gameStatusPanelTab;
+    this.endGameButton.parent = this.gameActionsPanel;
     this.endGameButton.scaling = U3D.v(2, 2, 2);
     this.endGameButton.position.x = -10;
     this.endGameButton.position.y = 3;
     this.endGameButton.position.z = 1;
 
     this.endTurnButton = U3D.addTextPlane(this.scene, "End Turn", "endTurnButton", "Arial", "", "#ffffff");
-    this.endTurnButton.parent = this.gameStatusPanelTab;
+    this.endTurnButton.parent = this.gameActionsPanel;
     this.endTurnButton.scaling = U3D.v(2, 2, 2);
     this.endTurnButton.position.x = -5;
     this.endTurnButton.position.y = 5;
@@ -471,8 +441,13 @@ export default class MenuTab3D {
     this.assetSmallSizeButton.scaling = U3D.v(1, 1, 1);
     this.assetSmallSizeButton.parent = parent;
 
-
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
+
+    this.playerCardsTN = new BABYLON.TransformNode('playerCardsTN', scene);
+    this.playerCardsTN.parent = parent;
+    this.playerCardsTN.position.y = 6;
+    this.playerCardsTN.position.z = 4;
+    this.app.actionCardHelper.init();
   }
   async setSelectedAsset(assetMeta) {
     this.spinPauseMeta = assetMeta;

@@ -6,7 +6,7 @@ export default class ActionCards {
     this.app = app;
   }
   async init() {
-    this.cardPanel = this.app.menuTab3D.cardsStatusPanelTab;
+    this.cardPanel = this.app.menuTab3D.playerCardsTN;
 
     this.cardHolders = [];
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
