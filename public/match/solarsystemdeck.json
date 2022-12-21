@@ -419,5 +419,49 @@
     "sizeBoxFit": 1,
     "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter",
     "containerOnly": true
+  },
+  {
+    "id": "comet_churyumov",
+    "name": "67P C-G Comet",
+    "objectType": "comet",
+    "image": "/cardimages/p67cg.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/solar/p67_cg.obj",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/67P/Churyumov%E2%80%93Gerasimenko",
+    "containerOnly": true
+  },
+  {
+    "id": "comet_halleys",
+    "name": "1P Halleys Comet",
+    "objectType": "comet",
+    "image": "/cardimages/halleyscomet.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/solar/halleys.obj",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/Halley%27s_Comet",
+    "containerOnly": true
+  },
+  {
+    "id": "comet_hartley",
+    "name": "103P Hartley",
+    "objectType": "comet",
+    "image": "/cardimages/hartleycomet.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/solar/hartley.obj",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/103P/Hartley",
+    "containerOnly": true
+  },
+  {
+    "id": "comet_tempel",
+    "name": "9P Tempel 1",
+    "objectType": "comet",
+    "image": "/cardimages/tempel.jpg",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/solar/tempel.obj",
+    "sizeBoxFit": 1,
+    "url": "https://en.wikipedia.org/wiki/Tempel_1",
+    "containerOnly": true
   }
 ]

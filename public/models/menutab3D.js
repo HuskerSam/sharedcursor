@@ -544,7 +544,7 @@ export default class MenuTab3D {
     let id = meta.id;
     let factor = previous ? -1 : 1;
     if (meta.asteroidType) {
-      let keys = Object.keys(this.loadedAsteroids).sort();
+      let keys = Object.keys(this.app.asteroidHelper.loadedAsteroids).sort();
 
       let index = keys.indexOf(meta.name);
       let nextIndex = index + factor;
@@ -554,7 +554,7 @@ export default class MenuTab3D {
         nextIndex = 0;
 
       let key = keys[nextIndex];
-      this.setSelectedAsset(this.loadedAsteroids[key].orbitWrapper.assetMeta);
+      this.setSelectedAsset(this.app.asteroidHelper.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else if (meta.avatarType) {
       let index = meta.seatIndex++;
       if (index > 3)

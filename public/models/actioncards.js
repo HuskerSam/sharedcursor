@@ -72,7 +72,7 @@ export default class ActionCards {
 
     this.cardItemMeta = [];
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
-      let cardMeta = actionCards[cardIndex];
+      let cardMeta = actionCards[cardIndex + 3];
       let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
       meta.extended = U3D.processStaticAssetMeta(meta, {});
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);

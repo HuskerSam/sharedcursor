@@ -681,7 +681,7 @@ export default class Utility3D {
     m.diffuseTexture = t;
     m.emissiveTexture = t;
     m.ambientTexture = t;
-    let extraY = 0;
+    let extraY = 1.25;
     if (meta.symbolY)
       extraY = meta.symbolY;
 

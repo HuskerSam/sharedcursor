@@ -296,7 +296,7 @@ export default class Avatar3D {
         depth: 1
       }, this.app.scene);
       this.selectedPlayerPanel.material = new BABYLON.StandardMaterial('selectedPlayerPanelMat', this.app.scene);
-      this.selectedPlayerPanel.position.y = 4;
+      this.selectedPlayerPanel.position.y = 6.5;
     }
     this.selectedPlayerPanel.parent = this.dockSeatContainers[seatIndex];
     this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
@@ -322,15 +322,24 @@ export default class Avatar3D {
 
     this.menuBarAvatars.forEach((container, i) => {
       let arr = container.animContainer.animationGroups;
-      let animName = (i === seatIndex) ? 'Clone of jogging' : 'Clone of surprised';
+      if (i === seatIndex) {
+        let animName = 'Clone of surprised';
 
-      let animIndex = 0;
-      arr.forEach((anim, i2) => {
-        if (anim.name === animName)
-          animIndex = i2;
-      })
-      this.avatarSequence(container, animIndex, i, true);
+        let animIndex = 0;
+        arr.forEach((anim, i2) => {
+          if (anim.name === animName)
+            animIndex = i2;
+        })
+        this.avatarSequence(container, animIndex, i);
+      } else {
+        arr.forEach(anim => anim.stop());
+        container.skeletons[0].returnToRest();
+      }
     });
+
+    this.initedAvatars.forEach((avatar, i) => {
+      avatar.rootNodes[0].setEnabled(i === seatIndex);
+    })
   }
   getSeatData(seatIndex) {
     let key = 'seat' + seatIndex.toString();
@@ -499,7 +508,7 @@ export default class Avatar3D {
     }
     return result;
   }
-  async avatarSequence(avatarContainer, animationIndex, avatarIndex, randomStart) {
+  async avatarSequence(avatarContainer, animationIndex, avatarIndex) {
     let scene = this.app.scene;
     let arr = avatarContainer.animContainer.animationGroups;
     arr.forEach(anim => anim.stop());
@@ -508,8 +517,6 @@ export default class Avatar3D {
 
     //arr[animationIndex].reset();
     arr[animationIndex].start(true);
-    arr[animationIndex].goToFrame(Math.floor(Math.random() * arr[animationIndex].to));
-
 
     let mesh = avatarContainer.bonesOffsetTN;
     mesh.position.x = 0;
@@ -575,7 +582,9 @@ export default class Avatar3D {
     if (!this.initedAvatars)
       return;
 
-    this.initedAvatars.forEach(model => this._offsetBonesMovement(model));
-    this.menuBarAvatars.forEach(model => this._offsetBonesMovement(model));
+    if (this.currentSeatMeshIndex === undefined)
+      return;
+
+    this._offsetBonesMovement(this.initedAvatars[this.currentSeatMeshIndex]);
   }
 }

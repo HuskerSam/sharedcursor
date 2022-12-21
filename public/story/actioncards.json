@@ -22,5 +22,21 @@
   {
     "name": "Planet Orbiter",
     "gameCard": "probe_shuttle"
+  },
+  {
+    "name": "67P C-G",
+    "gameCard": "comet_churyumov"
+  },
+  {
+    "name": "1P Halleys",
+    "gameCard": "comet_halleys"
+  },
+  {
+    "name": "103P Hartley",
+    "gameCard": "comet_hartley"
+  },
+  {
+    "name": "9P Tempel 1",
+    "gameCard": "comet_tempel"
   }
 ]
