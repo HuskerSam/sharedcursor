@@ -101,8 +101,7 @@ export default class Avatar3D {
       t2n.rotation.y = Math.PI;
       this.menuBarAvatars[seatIndex].rootNodes[0].parent = t;
 
-      this.menuBarAvatars[seatIndex].TN = t;
-      this.menuBarAvatars[seatIndex].TN.avatarMeta = avatarMeta;
+      this.menuBarAvatars[seatIndex].bonesOffsetTN = t;
       t.parent = t2n;
       t2n.parent = this.dockSeatContainers[seatIndex];
 
@@ -249,13 +248,24 @@ export default class Avatar3D {
       avatar.namePlate2.dispose();
       avatar.namePlate2 = null;
     }
+    if (avatar.playerImage) {
+      avatar.playerImage.dispose();
+      avatar.playerImage = null;
+    }
     if (seatContainer.namePlate1) {
-      //  avatar.namePlate1 = seatContainer.namePlate1.clone();
-      //  avatar.namePlate1.parent = avatar.rootNodes[0];
+      avatar.namePlate1 = seatContainer.namePlate1.clone();
+      avatar.namePlate1.position.z = 0;
+      avatar.namePlate1.parent = avatar.avatarExtrasTN;
     }
     if (seatContainer.namePlate2) {
-      //  avatar.namePlate2 = seatContainer.namePlate2.clone();
-      //  avatar.namePlate2.parent = avatar.rootNodes[0];
+      avatar.namePlate2 = seatContainer.namePlate2.clone();
+      avatar.namePlate2.position.z = 0;
+      avatar.namePlate2.parent = avatar.avatarExtrasTN;
+    }
+    if (seatContainer.playerImage) {
+      avatar.playerImage = seatContainer.playerImage.clone();
+      avatar.playerImage.position.z = 0;
+      avatar.playerImage.parent = avatar.avatarExtrasTN;
     }
   }
   async updatePlayerDock() {
@@ -346,11 +356,16 @@ export default class Avatar3D {
     if (!this.initedAvatars)
       return;
 
-    this.initedAvatars.forEach(container => {
+    this.initedAvatars.forEach((container, avatarIndex) => {
       let arr = container.animContainer.animationGroups;
       let index = Math.floor(Math.random() * arr.length);
-
-      this.avatarSequence(container, index);
+      /*
+      arr.forEach((anim, i) => {
+        if (anim.name === 'Clone of jogging')
+          index = i;
+      })
+      */
+      this.avatarSequence(container, index, avatarIndex);
     });
     /*
     this.menuBarAvatars.forEach(container => {
@@ -396,7 +411,6 @@ export default class Avatar3D {
         encodeURIComponent('/avatars/' + avatarMeta.path) + '?alt=media';
 
       let container = await U3D.loadContainer(scene, path);
-      container.avatarMeta = avatarMeta;
       avatarContainers[avatarMeta.name] = container;
     }
 
@@ -427,19 +441,22 @@ export default class Avatar3D {
       initedAvatars[c].animContainer.animationGroups[0].stop();
 
       let mesh = initedAvatars[c].rootNodes[0];
-      let t = new BABYLON.TransformNode("tnavatar1floor" + mesh.id);
-      let t2n = new BABYLON.TransformNode("tnavatarfloor2" + mesh.id);
-      t2n.position.x = avatarMeta.x;
-      t2n.position.z = avatarMeta.z;
-      t2n.parent = t;
-      mesh.parent = t2n;
-      newModel.TN = t;
-      newModel.TN.avatarMeta = avatarMeta;
-      newModel.TN2 = t2n;
+      let bonesOffsetTN = new BABYLON.TransformNode("avatarbonesoffset" + mesh.id);
+      let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + mesh.id);
+      let avatarExtrasTN = new BABYLON.TransformNode("avatarpanel" + mesh.id);
+      avatarPositionTN.position.x = avatarMeta.x;
+      avatarPositionTN.position.z = avatarMeta.z;
+      bonesOffsetTN.parent = avatarPositionTN;
+      avatarExtrasTN.parent = avatarPositionTN;
+      avatarExtrasTN.rotation.y = Math.PI;
+      mesh.parent = bonesOffsetTN;
+      newModel.bonesOffsetTN = bonesOffsetTN;
+      newModel.avatarPositionTN = avatarPositionTN;
+      newModel.avatarExtrasTN = avatarExtrasTN;
 
       scene.baseShadowGenerator.addShadowCaster(mesh);
 
-      t2n.assetMeta = {
+      avatarPositionTN.assetMeta = {
         name: avatarMeta.name,
         extended: {},
         appClickable: true,
@@ -456,7 +473,7 @@ export default class Avatar3D {
     this.avatarContainers = avatarContainers;
 
     this.randomizeAnimations();
-    setTimeout(() => {
+    setInterval(() => {
       this.randomizeAnimations();
     }, 20000)
   }
@@ -493,94 +510,24 @@ export default class Avatar3D {
     }
     return result;
   }
-  async avatarSequence(avatarContainer, animationIndex) {
+  async avatarSequence(avatarContainer, animationIndex, avatarIndex) {
     let scene = this.app.scene;
     let arr = avatarContainer.animContainer.animationGroups;
     arr.forEach(anim => anim.stop());
 
-    if (avatarContainer.offsetAnimation) {
-      //stop previous
-      avatarContainer.offsetAnimation.stop();
-      avatarContainer.offsetAnimation = null;
-
-      let mesh = avatarContainer.TN;
-      let animIndex = mesh.animations.indexOf(avatarContainer.offsetPositionAnim);
-      mesh.animations.splice(animIndex, 1);
-      avatarContainer.offsetPositionAnim = null;
-    }
-
     let animName = arr[animationIndex].name;
-    const offsets = this.getAnimationOffsets();
 
-    //start new offsets
+    arr[animationIndex].reset();
+    arr[animationIndex].start(true);
 
-    if (offsets[animName]) {
-      let offsetInfo = offsets[animName];
+    let mesh = avatarContainer.bonesOffsetTN;
+    mesh.position.x = 0;
+    mesh.position.z = 0;
 
-      let offsetPositionAnim = new BABYLON.Animation(
-        'offsetanimavatar' + animationIndex.toString(),
-        "position",
-        60,
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-      );
-
-      let mesh = avatarContainer.TN;
-      let x = 0; //mesh.avatarMeta.x;
-      let y = 0;
-      let z = 0; //mesh.avatarMeta.z;
-      let keys = [];
-      let endFrame = offsetInfo.frames;
-
-      let offsetX = 0;
-      let offsetY = 0;
-      let offsetZ = 0;
-      if (offsetInfo.z)
-        offsetZ = offsetInfo.z;
-      if (offsetInfo.y)
-        offsetY = offsetInfo.y;
-      if (offsetInfo.x)
-        offsetX = offsetInfo.x;
-
-      keys.push({
-        frame: 0,
-        value: U3D.v(x, y, z)
-      });
-
-      keys.push({
-        frame: endFrame,
-        value: U3D.v(x - offsetX, y - offsetY, z - offsetZ)
-      });
-
-      offsetPositionAnim.setKeys(keys);
-
-      if (!mesh.animations)
-        mesh.animations = [];
-      mesh.animations.push(offsetPositionAnim);
-      avatarContainer.offsetAnimation = scene.beginAnimation(mesh, 0, endFrame, true, 1, () => {
-
-      });
-      avatarContainer.offsetPositionAnim = offsetPositionAnim;
-
-      arr[animationIndex].reset();
-      arr[animationIndex].start(true);
-
-      mesh.position.x = 0; //mesh.avatarMeta.x;
-      mesh.position.z = 0; //mesh.avatarMeta.z;
-    } else {
-      arr[animationIndex].reset();
-      arr[animationIndex].start(true);
-
-      let mesh = avatarContainer.TN;
+    arr[animationIndex].onAnimationGroupLoopObservable.add(() => {
       mesh.position.x = 0;
       mesh.position.z = 0;
-
-      arr[animationIndex].onAnimationGroupLoopObservable.add(() => {
-        mesh.position.x = 0;
-        mesh.position.z = 0;
-      });
-
-    }
+    });
   }
   getAvatarData() {
     return [{
@@ -618,31 +565,7 @@ export default class Avatar3D {
         "race": "Titan",
         "seatIndex": 3
       }
-    ]
-  }
-  getAnimationOffsets() {
-    return {};
-    /*
-    return {
-      "Clone of jogging": {
-        "z": 5.3,
-        "frames": 156,
-        "startRatio": 0.75
-      },
-      "Clone of strut": {
-        "z": 1.5,
-        "frames": 88
-      },
-      "Clone of walking": {
-        "z": 1.78,
-        "frames": 64
-      },
-      "Clone of femalewalk": {
-        "z": 1.5,
-        "frames": 72
-      }
-    };
-    */
+    ];
   }
   updateAvatarRender() {
     if (!this.initedAvatars)
@@ -658,8 +581,8 @@ export default class Avatar3D {
 
       let position = model.skeletons[0].bones[bIndex].getTransformNode().getAbsolutePosition();
 
-      model.TN.position.x = -1 * position.x;
-      model.TN.position.z = -1 * position.z;
+      model.bonesOffsetTN.position.x = -1 * position.x;
+      model.bonesOffsetTN.position.z = -1 * position.z;
     });
   }
 }
