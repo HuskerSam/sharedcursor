@@ -2,13 +2,11 @@ import U3D from '/models/utility3d.js';
 import R3D from '/models/rocket3d.js';
 
 export default class ActionCards {
-  constructor(app) {
+  constructor(app, panel) {
     this.app = app;
-  }
-  async init() {
-    this.cardPanel = this.app.menuTab3D.playerCardsTN;
+    this.cardPanel = panel;
+    this.cardPositions = [];
 
-    this.cardHolders = [];
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
@@ -18,7 +16,7 @@ export default class ActionCards {
         cardHolder.position.z = 5;
       }
 
-      this.cardHolders.push(cardHolder);
+      this.cardPositions.push(cardHolder);
 
       let localIndex = cardIndex;
       let playActionCardBtn = U3D.addTextPlane(this.scene, 'Play', 'playActionCardBtn' + cardIndex);
@@ -48,7 +46,7 @@ export default class ActionCards {
       };
     }
 
-    this.updatePlayerCards();
+    this.updateCardsForPlayer();
   }
   async discardCard(cardIndex) {
 
@@ -67,37 +65,47 @@ export default class ActionCards {
   obj(name) {
     return this.app.staticAssets[name];
   }
-  async updatePlayerCards(actionCards) {
+  async updateCardsForPlayer(actionCards) {
     actionCards = this.app.actionCards;
 
     this.cardItemMeta = [];
+    let promises = [];
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
-      let cardMeta = actionCards[cardIndex + 3];
-      let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
-      meta.extended = U3D.processStaticAssetMeta(meta, {});
-      let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
-      U3D.sizeNodeToFit(mesh, 4.5);
-
-      let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
-      mesh.parent = animDetails.rotationPivot;
-      animDetails.rotationPivot.parent = this.cardHolders[cardIndex];
-
-      mesh.assetMeta = {
-        name: cardMeta.name,
-        containerPath: meta.extended.glbPath,
-        extended: {},
-        appClickable: true,
-        baseMesh: mesh,
-        basePivot: animDetails.rotationPivot,
-        clickCommand: 'customClick',
-        actionCardType: true,
-        cardIndex,
-        rotationAnimation: animDetails.runningAnimation,
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.pauseAssetSpin(pointerInfo, mesh, meta);
-        }
-      };
-      this.cardItemMeta.push(mesh.assetMeta);
+      promises.push(this.renderPlayerCard(cardIndex));
     }
+
+    await Promise.all(promises);
+  }
+  async renderPlayerCard(rawCardIndex) {
+    let cardIndex = rawCardIndex + 3;
+
+    //if (this.)
+
+    let cardMeta = this.app.actionCards[cardIndex];
+    let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
+    meta.extended = U3D.processStaticAssetMeta(meta, {});
+    let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
+    U3D.sizeNodeToFit(mesh, 4.5);
+
+    let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
+    mesh.parent = animDetails.rotationPivot;
+    animDetails.rotationPivot.parent = this.cardPositions[rawCardIndex];
+
+    mesh.assetMeta = {
+      name: cardMeta.name,
+      containerPath: meta.extended.glbPath,
+      extended: {},
+      appClickable: true,
+      baseMesh: mesh,
+      basePivot: animDetails.rotationPivot,
+      clickCommand: 'customClick',
+      actionCardType: true,
+      cardIndex,
+      rotationAnimation: animDetails.runningAnimation,
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.pauseAssetSpin(pointerInfo, mesh, meta);
+      }
+    };
+    this.cardItemMeta.push(mesh.assetMeta);
   }
 }

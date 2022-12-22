@@ -9,7 +9,7 @@ export default class MenuTab3D {
     return this.app.staticAssets[name];
   }
 
-  async initOptionsBar() {
+  initOptionsBar() {
     let scene = this.app.scene;
     let parent = this.app.menuBarTabButtonsTN;
     let panel = this.app.menuBarLeftTN;
@@ -21,12 +21,6 @@ export default class MenuTab3D {
     this.optionsMenuTab.position.y = 0;
     this.optionsMenuTab.setEnabled(false);
     this.initOptionsTab(scene, this.optionsMenuTab);
-
-    this.asteroidMenuTab = new BABYLON.TransformNode('asteroidMenuTab', scene);
-    this.asteroidMenuTab.parent = panel;
-    this.asteroidMenuTab.position.y = 0;
-    this.asteroidMenuTab.setEnabled(false);
-    this.initAsteroidsTab(scene, this.asteroidMenuTab);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', scene);
     this.focusPanelTab.parent = panel;
@@ -42,7 +36,7 @@ export default class MenuTab3D {
   }
   addTabButtons(scene, tabBar) {
     let iconName = 'xmark';
-    let closeMenuTabBtn = this.addIconBtn(scene, iconName, 'asteroidMenuTabBtn');
+    let closeMenuTabBtn = this.addIconBtn(scene, iconName, 'closeMenuTabBtn');
     closeMenuTabBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -53,19 +47,7 @@ export default class MenuTab3D {
     closeMenuTabBtn.parent = tabBar;
     closeMenuTabBtn.position.x = -16;
 
-    iconName = 'meteor';
-    let asteroidMenuTabBtn = this.addIconBtn(scene, iconName, 'asteroidMenuTabBtn');
-    asteroidMenuTabBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.selectedMenuBarTab(this.asteroidMenuTab);
-      }
-    };
-    asteroidMenuTabBtn.parent = tabBar;
-    asteroidMenuTabBtn.position.x = -13;
-
-    iconName = 'sun';
+    iconName = 'gear';
     let optionsMenuBtn = this.addIconBtn(scene, iconName, 'optionsMenuBtn');
     optionsMenuBtn.assetMeta = {
       appClickable: true,
@@ -102,7 +84,6 @@ export default class MenuTab3D {
     playersMoonsMenuBtn.position.x = -7;
   }
   addIconBtn(scene, iconName, name) {
-    //let texturePath = 'https://unpkg.com/@fortawesome/fontawesome-free@5.7.2/svgs/solid/' + iconName + '.svg';
     let texturePath = '/fontcons/' + iconName + '.svg';
     let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
       radius: 1,
@@ -177,6 +158,11 @@ export default class MenuTab3D {
       }
     };
     this._updateSkyboxNamePanel();
+
+    this.asteroidOptionsPanel = new BABYLON.TransformNode('asteroidOptionsPanel', scene);
+    this.asteroidOptionsPanel.parent = parent;
+    this.asteroidOptionsPanel.position.y = 7;
+    this.initAsteroidsTab(scene, this.asteroidOptionsPanel);
   }
   _updateLightIntensityPanel() {
     if (this.lightLevelPanel)
@@ -447,7 +433,9 @@ export default class MenuTab3D {
     this.playerCardsTN.parent = parent;
     this.playerCardsTN.position.y = 6;
     this.playerCardsTN.position.z = 4;
-    this.app.actionCardHelper.init();
+
+
+    //this.app.actionCardHelper.init();
   }
   async setSelectedAsset(assetMeta) {
     this.spinPauseMeta = assetMeta;

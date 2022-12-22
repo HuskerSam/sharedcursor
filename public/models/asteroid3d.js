@@ -4,12 +4,13 @@ export default class Asteroid3D {
   constructor(app) {
     this.app = app;
     this.asteroidOrbitTime = 300000;
+    this.asteroidMaterial = new BABYLON.StandardMaterial('asteroidMaterial', this.app.scene);
+    this.selectedAsteroidMaterial = new BABYLON.StandardMaterial('selectedAsteroidMaterial', this.app.scene);
   }
-  async loadAsteroids(init) {
+  async loadAsteroids() {
     let scene = this.app.scene;
     if (this.asteroidLoadingLine1) {
       this.asteroidLoadingLine1.remove();
-      this.asteroidLoadingLine2.remove();
 
       for (let asteroid in this.loadedAsteroids) {
         this.loadedAsteroids[asteroid].orbitWrapper.dispose();
@@ -17,7 +18,6 @@ export default class Asteroid3D {
     }
     this.loadedAsteroids = {};
 
-    this.asteroidUpdateMaterials();
     let asteroids = U3D.getAsteroids();
 
     let ratio = 0;
@@ -28,8 +28,6 @@ export default class Asteroid3D {
       count = max;
     else if (this.app.profile.asteroidCount)
       count = Number(this.app.profile.asteroidCount);
-
-    this.asteroidLoadingLine1 = this.app.addLineToLoading(`Asteroids - ${count} from ${max} available`);
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {
@@ -49,7 +47,7 @@ export default class Asteroid3D {
       if (i % 4 === 3)
         linkNameList += '<br>';
     });
-    this.asteroidLoadingLine2 = this.app.addLineToLoading(linkNameList);
+    this.asteroidLoadingLine1 = this.app.addLineToLoading(`Asteroids - ${count} from ${max} available` + linkNameList);
 
     this.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
 
@@ -65,18 +63,11 @@ export default class Asteroid3D {
       });
     });
 
-    if (!init)
-      this.app.runRender = false;
     let promises = [];
     for (let c = 0; c < count; c++)
       promises.push(this.loadAsteroid(asteroids[randomArray[c]], c, count));
 
     await Promise.all(promises);
-    this.__addLogosToAsteroids();
-
-    if (!init)
-      this.app.runRender = true;
-    this.updateAsteroidLabel();
   }
   async loadAsteroid(asteroid, index, count) {
     let scene = this.app.scene;
@@ -238,18 +229,6 @@ export default class Asteroid3D {
       count = 20;
     return count;
   }
-  updateAsteroidLabel() {
-    if (this.asteroidCountLabel)
-      this.asteroidCountLabel.dispose();
-
-    let count = this.getAsteroidCount(this.app.profile.asteroidCount);
-    this.asteroidCountLabel = U3D.addTextPlane(this.app.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.app.menuTab3D.asteroidMenuTab;
-    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
-    this.asteroidCountLabel.position.x = -9;
-    this.asteroidCountLabel.position.y = 1;
-    this.asteroidCountLabel.position.z = 1;
-  }
   asteroidUpdateMaterials() {
     let name = 'Wireframe';
     let wireframe = this.app.profile.asteroidWireframe === true;
@@ -269,7 +248,7 @@ export default class Asteroid3D {
     this.asteroidWireframeBtn.position.x = -7;
     this.asteroidWireframeBtn.position.y = 3;
     this.asteroidWireframeBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidWireframeBtn.parent = this.app.menuTab3D.asteroidMenuTab;
+    this.asteroidWireframeBtn.parent = this.app.menuTab3D.asteroidOptionsPanel;
 
     name = 'Rocky';
     let profileTexture = this.app.profile.asteroidColorOnly === true;
@@ -288,7 +267,7 @@ export default class Asteroid3D {
     this.asteroidTextureBtn.position.x = -14;
     this.asteroidTextureBtn.position.y = 3;
     this.asteroidTextureBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidTextureBtn.parent = this.app.menuTab3D.asteroidMenuTab;
+    this.asteroidTextureBtn.parent = this.app.menuTab3D.asteroidOptionsPanel;
 
     name = 'Logos';
     let includeLogos = this.app.profile.asteroidExcludeLogos === true;
@@ -307,15 +286,20 @@ export default class Asteroid3D {
     this.asteroidInternalLogos.position.x = 0;
     this.asteroidInternalLogos.position.y = 3;
     this.asteroidInternalLogos.scaling = U3D.v(2, 2, 2);
-    this.asteroidInternalLogos.parent = this.app.menuTab3D.asteroidMenuTab;
+    this.asteroidInternalLogos.parent = this.app.menuTab3D.asteroidOptionsPanel;
+
+    if (this.asteroidCountLabel)
+      this.asteroidCountLabel.dispose();
+    let count = this.getAsteroidCount(this.app.profile.asteroidCount);
+    this.asteroidCountLabel = U3D.addTextPlane(this.app.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
+    this.asteroidCountLabel.parent = this.app.menuTab3D.asteroidOptionsPanel;
+    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
+    this.asteroidCountLabel.position.x = -9;
+    this.asteroidCountLabel.position.y = 1;
+    this.asteroidCountLabel.position.z = 1;
 
     name = 'asteroidmaterial';
     let scene = this.app.scene;
-
-    if (!this.asteroidMaterial)
-      this.asteroidMaterial = new BABYLON.StandardMaterial(name + 'mat', scene);
-    if (!this.selectedAsteroidMaterial)
-      this.selectedAsteroidMaterial = new BABYLON.StandardMaterial(name + 'selectedmat', scene);
 
     this.asteroidMaterial.wireframe = this.app.profile.asteroidWireframe === true;
     this.selectedAsteroidMaterial.wireframe = this.app.profile.asteroidWireframe !== true;

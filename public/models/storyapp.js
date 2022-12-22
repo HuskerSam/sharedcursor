@@ -91,7 +91,16 @@ export class StoryApp extends BaseApp {
     deck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
     });
-    let loadingResults = await Promise.all(promises);
+
+    this.avatarHelper = new Avatar3D(this);
+    let loadingResults;
+    await Promise.all([
+      this.avatarHelper.loadAndInitAvatars(),
+      (loadingResults = await Promise.all(promises)),
+      this.asteroidHelper.loadAsteroids()
+    ]);
+
+    let loadingHTML = '';
     loadingResults.forEach(assetMesh => {
       let meta = assetMesh.assetMeta;
 
@@ -105,8 +114,7 @@ export class StoryApp extends BaseApp {
 
       let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
 
-      this.addLineToLoading(`
-        ${meta.name}:
+      loadingHTML += `${meta.name}:
         &nbsp;
         ${smallLink}
         ${normalLink}
@@ -114,8 +122,7 @@ export class StoryApp extends BaseApp {
         <br>
         <a href="${meta.url}" target="_blank">wiki</a>
         &nbsp; ${imgHTML}
-        <br>
-      `);
+        <br>`;
 
       if (meta.noClick !== true) {
         meta.appClickable = true;
@@ -125,17 +132,12 @@ export class StoryApp extends BaseApp {
         };
       }
     });
+    this.addLineToLoading(loadingHTML);
 
-    this.avatarHelper = new Avatar3D(this);
-    await this.avatarHelper.loadAndInitAvatars();
-
-    this.actionCardHelper = new ActionCards(this);
-
-    await Promise.all([
-      this.menuTab3D.initOptionsBar(),
-      this.asteroidHelper.loadAsteroids(true),
-      this.avatarHelper.initPlayerPanel()
-    ]);
+    this.menuTab3D.initOptionsBar();
+    this.avatarHelper.initPlayerPanel();
+    this.asteroidHelper.asteroidUpdateMaterials();
+    this.actionCardHelper = new ActionCards(this, this.menuTab3D.playerCardsTN);
 
     if (this.instrumentationOn) {
       let delta = new Date().getTime() - startTime.getTime();
@@ -302,6 +304,7 @@ export class StoryApp extends BaseApp {
     this.profile.asteroidCount = asteroidCount;
     this.clearActiveFollowMeta();
     this.asteroidHelper.loadAsteroids();
+    this.asteroidHelper.asteroidUpdateMaterials();
 
     if (this.fireToken)
       await firebase.firestore().doc(`Users/${this.uid}`).update({

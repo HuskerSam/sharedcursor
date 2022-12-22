@@ -1212,15 +1212,7 @@ export class BaseApp {
         let mZ = position.z - this.scene.activeCamera.position.z;
 
         let movementVector = new BABYLON.Vector3(mX, 0, mZ);
-        //let angle = this.startCameraAlpha - this.scene.activeCamera.alpha;
-        /*
-        let angle = this.scene.activeCamera.alpha;
-        movementVector.set(
-          movementVector.x * Math.cos(angle) + movementVector.z * Math.sin(angle),
-          0,
-          movementVector.z * Math.cos(angle) - movementVector.x * Math.sin(angle)
-        );
-        */
+
         this.scene.activeCamera.position.addInPlace(movementVector);
         this.scene.activeCamera.target.addInPlace(movementVector);
       }
