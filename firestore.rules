@@ -6,6 +6,10 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    match /Games/{id}/rounds/{round} {
+      allow read: if true;
+    }
+
     match /Games/{id}/messages/{mid} {
       allow read: if true;
     }

@@ -257,7 +257,9 @@ module.exports = class GameAPI {
     let gameData = gameDataQuery.data();
     let success = false;
     if (gameData && gameData.createUser === uid) {
-      await gameDataRef.delete();
+      await gameDataRef.delete({
+        recursive: true
+      });
       await GameAPI.deleteCollection(firebaseAdmin.firestore(), `Games/${gameNumber}/messages`, 50);
       success = true;
     }

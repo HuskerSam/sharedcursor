@@ -1,0 +1,23 @@
+{
+  "actions": [{
+      "assetId": "e1_luna",
+      "parent": "earth"
+    },
+    {
+      "assetId": "j5_io",
+      "parent": "jupiter"
+    },
+    {
+      "assetId": "j6_europa",
+      "parent": "jupiter"
+    },
+    {
+      "assetId": "j7_ganymede",
+      "parent": "jupiter"
+    },
+    {
+      "assetId": "j8_callisto",
+      "parent": "jupiter"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-[
+{
+  "actions":[
   {
     "assetId": "e1_luna",
     "action": "parentChange",
@@ -29,4 +30,4 @@
     "parent": "mars",
     "when": "init"
   }
-]
+]}

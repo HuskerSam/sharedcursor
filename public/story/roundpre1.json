@@ -1,14 +1,15 @@
-[
-  {
-    "assetId": "e1_luna",
-    "action": "parentChange",
-    "parent": "venus",
-    "when": "init"
-  },
-  {
-    "assetId": "j5_io",
-    "action": "parentChange",
-    "parent": "earth",
-    "when": "init"
-  }
-]
+{
+  "actions": [{
+      "assetId": "e1_luna",
+      "action": "parentChange",
+      "parent": "venus",
+      "when": "init"
+    },
+    {
+      "assetId": "j5_io",
+      "action": "parentChange",
+      "parent": "earth",
+      "when": "init"
+    }
+  ]
+}

@@ -13,7 +13,7 @@ export class StoryApp extends BaseApp {
     this.cache = {};
     this.staticBoardObjects = {};
     this.playerMoonAssets = new Array(4);
-    this.gameRoundDisplayed = -1;
+    this.gameRoundDisplayed = 0;
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
@@ -281,7 +281,7 @@ export class StoryApp extends BaseApp {
     await Promise.all([
       window.allStaticAssetMeta = await GameCards.loadDecks(),
       this.actionCards = await this.getJSONFile('/story/actioncards.json'),
-      this.boardResetRoundData = await this.getJSONFile('/story/round0.json')
+      this.boardResetRoundData = await this.getJSONFile('/story/defaultround.json')
     ])
     await super.load();
   }
@@ -709,22 +709,17 @@ export class StoryApp extends BaseApp {
   async paintBoard() {
     if (this.paintedBoardRoundIndex !== this.gameRoundDisplayed) {
       this.paintedBoardRoundIndex = this.gameRoundDisplayed;
-      let index = -1 * this.paintedBoardRoundIndex;
-      this.boardData = await this.getJSONFile(`/story/roundpre${index}.json`);
+      this.initListenGameRound(this.paintedBoardRoundIndex);
 
-      this.boardResetRoundData.forEach(meta => {
-        let asset = this.staticBoardObjects[meta.assetId];
-        if (asset) {
-          asset.parent = this.staticBoardObjects[meta.parent];
-        }
-      });
-    }
 
-    //sync board status
-    this.boardData.forEach((boardAction, i) => {
-      if (boardAction.when === 'init')
-        this.applyBoardAction(boardAction);
-    });
+      let index = this.paintedBoardRoundIndex;
+      if (index < 0) {
+        let index = -1 * this.paintedBoardRoundIndex;
+        this.boardData = await this.getJSONFile(`/story/roundpre${index}.json`);
+        this.updateBoardRoundData(true);
+      }
+    } else
+      this.updateBoardRoundData();
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
@@ -736,5 +731,75 @@ export class StoryApp extends BaseApp {
   async loadReplay(startAutomation = false) {
     this.gameRoundDisplayed = this.menuTab3D.selectedReplayRound;
     this.paintBoard();
+  }
+
+  updateBoardRoundData(reset) {
+    if (reset) {
+      this.boardResetRoundData.forEach(meta => {
+        let asset = this.staticBoardObjects[meta.assetId];
+        if (asset) {
+          asset.parent = this.staticBoardObjects[meta.parent];
+        }
+      });
+    }
+
+    if (!this.boardData)
+      return;
+
+    this.boardData.actions.forEach((action, i) => {
+      this.applyBoardAction(action, i);
+    });
+  }
+  initListenGameRound(roundIndex) {
+    if (this.gameRoundSubscription) {
+      this.gameRoundSubscription();
+      this.gameRoundSubscription = null;
+    }
+    if (roundIndex < 0)
+      return;
+
+    let roundPath = `Games/${this.currentGame}/rounds/${roundIndex}`;
+    this.gameRoundSubscription = firebase.firestore().doc(roundPath)
+      .onSnapshot(async (doc) => {
+        let data = doc.data();
+        if (!data) {
+          this.sendRoundAction('init');
+          return;
+        }
+        this.boardData = data;
+        this.updateBoardRoundData();
+      });
+  }
+  _determineRoundResults(roundData) {
+    return roundData;
+  }
+  async sendRoundAction(roundAction) {
+    let roundIndex = -1;
+    let action = 'roundType';
+    let body = {
+      gameId: this.currentGame,
+      action,
+      roundAction,
+      roundIndex
+    };
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+
+    if (!json.success) {
+      console.log('selection send resolve', json);
+      if (this.alertErrors)
+        alert('Failed to resolve selection: ' + json.errorMessage);
+      return;
+    }
   }
 }

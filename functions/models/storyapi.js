@@ -4,7 +4,7 @@ const baseClass = require('./baseclass.js');
 const gameAPI = require('./gameapi.js');
 
 module.exports = class StoryAPI {
-  static async _processUserAction(gameData, uid, localInstance, action, card0, card1) {
+  static async _processUserAction(gameData, uid, action, card0, card1) {
     let isOwner = (uid === gameData.createUser);
     let currentUser = gameData['seat' + gameData.currentSeat];
     let currentPlayer = (uid === currentUser);
@@ -87,68 +87,97 @@ module.exports = class StoryAPI {
 
     let uid = authResults.uid;
 
-    let localInstance = baseClass.newLocalInstance();
-    await localInstance.init();
-
-    let gameId = req.body.gameId;
-    let action = req.body.action;
-    let card0 = req.body.previousCard0;
-    let card1 = req.body.previousCard1;
-
     try {
-      let gQuery = await firebaseAdmin.firestore().doc(`Games/${gameId}`);
-      let uidPacket = null;
-      let uidWinner = null;
-
-      await firebaseAdmin.firestore().runTransaction(async (transaction) => {
-        const sfDoc = await transaction.get(gQuery);
-        if (!sfDoc.exists) {
-          throw new Error("Game does not exist");
-        }
-        let gameData = sfDoc.data();
-
-        let updatePacket = await StoryAPI._processUserAction(gameData, uid, localInstance, action, card0, card1);
-
-        if (Object.keys(updatePacket).length > 0) {
-          updatePacket.lastActivity = new Date().toISOString();
-          if (!updatePacket.members)
-            updatePacket.members = {};
-          updatePacket.members[uid] = new Date().toISOString();
-
-          transaction.set(gQuery, updatePacket, {
-            merge: true
-          });
-        }
-
-        if (updatePacket.gameFinished && gameData.winningSeatIndex >= 0) {
-          let cardIndex = gameData.lastMatchIndex % (gameData.cardCount / 2);
-          cardIndex = gameData.cardRandomIndex[cardIndex];
-          let cardDeck = gameData.cardDeck;
-          if (!cardDeck)
-            cardDeck = 'solarsystem';
-          uidPacket = {
-            matchedCards: {
-              [cardDeck]: {
-                [cardIndex]: new Date().toISOString()
-              }
-            }
-          };
-          uidWinner = gameData['seat' + gameData.winningSeatIndex];
-        }
-      });
-
-      if (uidWinner && uidPacket) {
-        await firebaseAdmin.firestore().doc(`Users/${uidWinner}`).set(uidPacket, {
-          merge: true
-        });
-      }
+      console.log(req.body);
+      if (req.body.action !== 'roundType')
+        await StoryAPI._handleNonRoundAction(req.body, uid);
+      else
+        await StoryAPI._pushRoundAction(req.body, uid);
     } catch (e) {
-      console.log("Transaction failed: ", e);
+      console.log("Game Update transaction failed: ", e);
       return baseClass.respondError(res, e.message);
     }
 
     return res.status(200).send({
       success: true
     })
+  }
+  static async _handleNonRoundAction(meta, uid) {
+    let gameId = meta.gameId;
+    let action = meta.action;
+    let card0 = meta.previousCard0;
+    let card1 = meta.previousCard1;
+
+    let gQuery = await firebaseAdmin.firestore().doc(`Games/${gameId}`);
+    let uidPacket = null;
+    let uidWinner = null;
+
+    await firebaseAdmin.firestore().runTransaction(async (transaction) => {
+      const sfDoc = await transaction.get(gQuery);
+      if (!sfDoc.exists) {
+        throw new Error("Game does not exist");
+      }
+      let gameData = sfDoc.data();
+
+      let updatePacket = await StoryAPI._processUserAction(gameData, uid, action, card0, card1);
+
+      if (Object.keys(updatePacket).length > 0) {
+        updatePacket.lastActivity = new Date().toISOString();
+        if (!updatePacket.members)
+          updatePacket.members = {};
+        updatePacket.members[uid] = new Date().toISOString();
+
+        transaction.set(gQuery, updatePacket, {
+          merge: true
+        });
+      }
+
+      if (updatePacket.gameFinished && gameData.winningSeatIndex >= 0) {
+        let cardIndex = gameData.lastMatchIndex % (gameData.cardCount / 2);
+        cardIndex = gameData.cardRandomIndex[cardIndex];
+        let cardDeck = gameData.cardDeck;
+        if (!cardDeck)
+          cardDeck = 'solarsystem';
+        uidPacket = {
+          matchedCards: {
+            [cardDeck]: {
+              [cardIndex]: new Date().toISOString()
+            }
+          }
+        };
+        uidWinner = gameData['seat' + gameData.winningSeatIndex];
+      }
+    });
+
+    if (uidWinner && uidPacket) {
+      await firebaseAdmin.firestore().doc(`Users/${uidWinner}`).set(uidPacket, {
+        merge: true
+      });
+    }
+  }
+  static async _pushRoundAction(meta, uid) {
+    let roundIndex = meta.roundIndex;
+    let roundAction = meta.roundAction;
+    let gameId = meta.gameId;
+
+    if (!roundIndex || roundIndex < 0)
+      roundIndex = 0;
+
+    let roundPath = `Games/${gameId}/rounds/${roundIndex}`;
+    let roundQuery = await firebaseAdmin.firestore().doc(roundPath).get();
+
+    let roundData = roundQuery.data();
+    let updatePacket = {};
+    if (!roundData) {
+      roundData = {
+        created: new Date().toISOString(),
+        actions: []
+      };
+      Object.assign(updatePacket, roundData);
+    }
+
+    await firebaseAdmin.firestore().doc(roundPath).set(roundData, {
+      merge: true
+    });
   }
 };
