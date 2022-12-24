@@ -706,11 +706,15 @@ export class StoryApp extends BaseApp {
     }
 
     this.boardData.forEach((boardAction, i) => {
-      if (boardAction.action === 'parentChange') {
-        let asset = this.staticBoardObjects[boardAction.assetId];
-        if (asset)
-          asset.parent = this.staticBoardObjects[boardAction.parent];
-      }
+      if (boardAction.when === 'init')
+        this.applyBoardAction(boardAction);
     });
+  }
+  applyBoardAction(boardAction) {
+    if (boardAction.action === 'parentChange') {
+      let asset = this.staticBoardObjects[boardAction.assetId];
+      if (asset)
+        asset.parent = this.staticBoardObjects[boardAction.parent];
+    }
   }
 }

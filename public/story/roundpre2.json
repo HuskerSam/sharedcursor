@@ -2,26 +2,31 @@
   {
     "assetId": "e1_luna",
     "action": "parentChange",
-    "parent": "venus"
+    "parent": "venus",
+    "when": "init"
   },
   {
     "assetId": "j5_io",
     "action": "parentChange",
-    "parent": "earth"
+    "parent": "earth",
+    "when": "init"
   },
   {
     "id": "j6_europa",
     "action": "parentChange",
-    "parent": "mercury"
+    "parent": "mercury",
+    "when": "init"
   },
   {
     "id": "j7_ganymede",
     "action": "parentChange",
-    "parent": "mars"
+    "parent": "mars",
+    "when": "init"
   },
   {
     "id": "j8_callisto",
     "action": "parentChange",
-    "parent": "mars"
+    "parent": "mars",
+    "when": "init"
   },
 ]
