@@ -1,0 +1,14 @@
+[
+  {
+    "order": 1,
+    "assetId": "e1_luna",
+    "action": "parentChange",
+    "parent": "venus"
+  },
+  {
+    "order": 2,
+    "assetId": "j5_io",
+    "action": "parentChange",
+    "parent": "earth"
+  }
+]

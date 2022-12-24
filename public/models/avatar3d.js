@@ -6,7 +6,6 @@ export default class Avatar3D {
     this.app.gameData = this.app.gameData;
 
     this.dockDiscRadius = 0.6;
-    this.playerMoonAssets = {};
   }
   async updateUserPresence() {
     if (!this.dockSeatContainers)
@@ -45,10 +44,10 @@ export default class Avatar3D {
     }
   }
   async initPlayerPanel() {
-    for (let key in this.app.staticAssets) {
-      let assetMesh = this.app.staticAssets[key];
+    for (let key in this.app.staticBoardObjects) {
+      let assetMesh = this.app.staticBoardObjects[key];
       if (assetMesh.assetMeta.seatIndex !== undefined)
-        this.playerMoonAssets[assetMesh.assetMeta.seatIndex] = assetMesh;
+        this.app.playerMoonAssets[assetMesh.assetMeta.seatIndex] = assetMesh;
     }
 
     this.dockSeatContainers = [];
@@ -59,7 +58,7 @@ export default class Avatar3D {
       dockSeatContainer.position.x = -18 + (seatIndex * 4.5);
       dockSeatContainer.parent = this.app.menuTab3D.playerMoonPanelTab;
 
-      let assetMeta = this.playerMoonAssets[seatIndex].assetMeta;
+      let assetMeta = this.app.playerMoonAssets[seatIndex].assetMeta;
       let path = assetMeta.containerPath;
       let newAsset = window.staticMeshContainer[path].instantiateModelsToScene();
       let mesh = newAsset.rootNodes[0];
@@ -284,19 +283,20 @@ export default class Avatar3D {
     this.avatarsLoaded = true;
   }
   updateCurrentPlayer() {
-    let seatIndex = this.app.gameData.currentSeat;
+    let seatIndex = this.app.activeSeatIndex;
     if (this.currentSeatMeshIndex === seatIndex)
       return;
     this.currentSeatMeshIndex = seatIndex;
 
     if (!this.selectedPlayerPanel) {
-      this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateSphere("selectedplayerpanel", {
-        width: 1,
-        height: 1,
-        depth: 1
+      this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateDisc("selectedplayerpanel", {
+        radius: 1,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
       }, this.app.scene);
       this.selectedPlayerPanel.material = new BABYLON.StandardMaterial('selectedPlayerPanelMat', this.app.scene);
-      this.selectedPlayerPanel.position.y = 6.5;
+      this.selectedPlayerPanel.position.y = -1;
+      this.selectedPlayerPanel.position.z = 3;
+      this.selectedPlayerPanel.rotation.x = Math.PI / 2;
     }
     this.selectedPlayerPanel.parent = this.dockSeatContainers[seatIndex];
     this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
@@ -312,7 +312,7 @@ export default class Avatar3D {
       this.selectedMoonPanel.material = new BABYLON.StandardMaterial('selectedMoonPanelMat', this.app.scene);
       this.selectedMoonPanel.position.y = 3;
     }
-    this.selectedMoonPanel.parent = this.playerMoonAssets[seatIndex].assetMeta.basePivot;
+    this.selectedMoonPanel.parent = this.app.playerMoonAssets[seatIndex].assetMeta.basePivot;
 
     let colors = this.get3DColors(seatIndex);
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);

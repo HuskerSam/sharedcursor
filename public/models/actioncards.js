@@ -31,6 +31,8 @@ export default class ActionCards {
           this.playCard(localIndex);
         }
       };
+      cardHolder.playButton = playActionCardBtn;
+      cardHolder.playButton.setEnabled(false);
 
       let discardActionCardBtn = U3D.addTextPlane(this.scene, 'Discard', 'discardActionCardBtn' + cardIndex, "Arial", "", "#000000", "transparent");
       discardActionCardBtn.position.x = 0;
@@ -44,6 +46,8 @@ export default class ActionCards {
           this.discardCard(localIndex);
         }
       };
+      cardHolder.discardButton = discardActionCardBtn;
+      cardHolder.discardButton.setEnabled(false);
     }
 
     this.updateCardsForPlayer();
@@ -58,17 +62,20 @@ export default class ActionCards {
     setTimeout(() => this.rocketRunning = false, 1000);
 
     let rotation = new BABYLON.Vector3(0, 0, 0);
-    let endPosition = U3D.vector(this.obj('mars').position);
-    let startPosition = U3D.vector(this.obj('neptune').position);
+    let endPosition = U3D.vector(this.obj('neptune').position);
+    if (this.app.selectedAsset.objectType === 'planet') {
+      endPosition = this.obj(this.app.selectedAsset.id).getAbsolutePosition();
+    }
+
+    let startPosition = U3D.vector(this.app.activeMoon.baseMesh.getAbsolutePosition());
     await R3D.shootRocket(this.app.scene, startPosition, rotation, endPosition);
   }
   obj(name) {
-    return this.app.staticAssets[name];
+    return this.app.staticBoardObjects[name];
   }
-  async updateCardsForPlayer(actionCards) {
-    actionCards = this.app.actionCards;
+  async updateCardsForPlayer() {
+    let actionCards = this.app.actionCards;
 
-    this.cardItemMeta = [];
     let promises = [];
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       promises.push(this.renderPlayerCard(cardIndex));
@@ -77,35 +84,48 @@ export default class ActionCards {
     await Promise.all(promises);
   }
   async renderPlayerCard(rawCardIndex) {
+    let cardHolder = this.cardPositions[rawCardIndex];
     let cardIndex = rawCardIndex + 3;
 
-    //if (this.)
+    if (cardHolder.cachedIndex !== cardIndex) {
+      cardHolder.cachedIndex = cardIndex;
+      if (cardHolder.assetMesh)
+        cardHolder.assetMesh.dispose();
 
-    let cardMeta = this.app.actionCards[cardIndex];
-    let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
-    meta.extended = U3D.processStaticAssetMeta(meta, {});
-    let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
-    U3D.sizeNodeToFit(mesh, 4.5);
+      let cardMeta = this.app.actionCards[cardIndex];
+      let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
+      meta.extended = U3D.processStaticAssetMeta(meta, {});
+      let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
+      U3D.sizeNodeToFit(mesh, 4.5);
 
-    let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
-    mesh.parent = animDetails.rotationPivot;
-    animDetails.rotationPivot.parent = this.cardPositions[rawCardIndex];
+      let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
+      mesh.parent = animDetails.rotationPivot;
+      animDetails.rotationPivot.parent = cardHolder;
 
-    mesh.assetMeta = {
-      name: cardMeta.name,
-      containerPath: meta.extended.glbPath,
-      extended: {},
-      appClickable: true,
-      baseMesh: mesh,
-      basePivot: animDetails.rotationPivot,
-      clickCommand: 'customClick',
-      actionCardType: true,
-      cardIndex,
-      rotationAnimation: animDetails.runningAnimation,
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.pauseAssetSpin(pointerInfo, mesh, meta);
-      }
-    };
-    this.cardItemMeta.push(mesh.assetMeta);
+      mesh.assetMeta = {
+        name: cardMeta.name,
+        containerPath: meta.extended.glbPath,
+        extended: {},
+        appClickable: true,
+        baseMesh: mesh,
+        basePivot: animDetails.rotationPivot,
+        clickCommand: 'customClick',
+        actionCardType: true,
+        cardIndex,
+        rotationAnimation: animDetails.runningAnimation,
+        handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.app.pauseAssetSpin(pointerInfo, mesh, meta);
+        }
+      };
+      cardHolder.assetMesh = mesh;
+    }
+
+    if (this.app.selectedAsset.objectType === 'planet') {
+      cardHolder.playButton.setEnabled(true);
+    } else {
+      cardHolder.playButton.setEnabled(false);
+    }
+
+    cardHolder.discardButton.setEnabled(true);
   }
 }

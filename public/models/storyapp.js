@@ -11,7 +11,8 @@ export class StoryApp extends BaseApp {
     super();
     this.apiType = 'story';
     this.cache = {};
-    this.staticAssets = {};
+    this.staticBoardObjects = {};
+    this.playerMoonAssets = new Array(4);
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
@@ -153,9 +154,10 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.billboardMode = 7;
     this.menuBarLeftTN.position.y = 5;
     this.menuBarLeftTN.position.z = 3;
+    this.menuBarLeftTN.rotation.x = -0.5;
+    this.menuBarLeftTN.billboardMode = 7;
 
     this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
     this.menuBarRightTN.position = U3D.v(-5, 1, -5);
@@ -203,14 +205,14 @@ export class StoryApp extends BaseApp {
 
     meshPivot.assetMeta = meta;
     meshPivot.baseMesh = mesh;
-    this.staticAssets[name] = meshPivot;
+    this.staticBoardObjects[name] = meshPivot;
 
     let ___awaitAssetLoad = async (name) => {
       return new Promise((res, rej) => {
         let awaitInterval = setInterval(() => {
-          if (this.staticAssets[name]) {
+          if (this.staticBoardObjects[name]) {
             clearInterval(awaitInterval);
-            res(this.staticAssets[name]);
+            res(this.staticBoardObjects[name]);
           }
         }, 50);
       });
@@ -219,13 +221,13 @@ export class StoryApp extends BaseApp {
     if (meta.parent) {
       await ___awaitAssetLoad(meta.parent);
       if (meta.parentType === 'basePivot')
-        meshPivot.parent = this.staticAssets[meta.parent].assetMeta.basePivot;
+        meshPivot.parent = this.staticBoardObjects[meta.parent].assetMeta.basePivot;
       else
-        meshPivot.parent = this.staticAssets[meta.parent];
+        meshPivot.parent = this.staticBoardObjects[meta.parent];
     } else
       meshPivot.parent = sceneParent;
 
-    return this.staticAssets[name];
+    return this.staticBoardObjects[name];
   }
   addLineToLoading(str) {
     let div = document.createElement('div');
@@ -278,6 +280,15 @@ export class StoryApp extends BaseApp {
     window.allStaticAssetMeta = await GameCards.loadDecks();
     this.actionCards = await this.getJSONFile('/story/actioncards.json');
     await super.load();
+  }
+
+  get activeSeatIndex() {
+    if (!this.gameData)
+      return 0;
+    return  this.gameData.currentSeat;
+  }
+  get activeMoon() {
+    return this.playerMoonAssets[this.activeSeatIndex];
   }
 
   //profile related
@@ -422,6 +433,7 @@ export class StoryApp extends BaseApp {
 
     this._updateGameMembersList();
     this.paintDock();
+    this.paintBoard();
 
     if (this.gameData.mode !== this.previousMode)
       this.matchBoardRendered = false;
@@ -505,7 +517,7 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.position = U3D.v(0.05, 0.05, -0.05);
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
-
+    this.menuBarLeftTN.billboardMode = 7;
     this.inXR = true;
 
     this.menuBarRightTN.position = U3D.v(0.05, 0.05, -0.05);
@@ -635,7 +647,7 @@ export class StoryApp extends BaseApp {
     if (this.activeFollowMeta.basePivot)
       v.copyFrom(this.activeFollowMeta.basePivot.getAbsolutePosition());
     else
-      v.copyFrom(this.staticAssets[this.activeFollowMeta.id].getAbsolutePosition());
+      v.copyFrom(this.staticBoardObjects[this.activeFollowMeta.id].getAbsolutePosition());
     v.y += 4;
     this.camera.position.copyFrom(v);
     this.camera.alpha += Math.PI;
@@ -680,5 +692,25 @@ export class StoryApp extends BaseApp {
   updateAvatarRender() {
     if (this.avatarHelper)
       this.avatarHelper.updateAvatarRender();
+  }
+
+  get selectedAsset() {
+    if (!this.menuTab3D)
+      return {};
+    return this.menuTab3D.selectedObjectMeta;
+  }
+
+  async paintBoard() {
+    if (!this.boardData) {
+      this.boardData = await this.getJSONFile('/story/roundpre1.json');
+    }
+
+    this.boardData.forEach((boardAction, i) => {
+      if (boardAction.action === 'parentChange') {
+        let asset = this.staticBoardObjects[boardAction.assetId];
+        if (asset)
+          asset.parent = this.staticBoardObjects[boardAction.parent];
+      }
+    });
   }
 }

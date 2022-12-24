@@ -1,0 +1,27 @@
+[
+  {
+    "assetId": "e1_luna",
+    "action": "parentChange",
+    "parent": "venus"
+  },
+  {
+    "assetId": "j5_io",
+    "action": "parentChange",
+    "parent": "earth"
+  },
+  {
+    "id": "j6_europa",
+    "action": "parentChange",
+    "parent": "mercury"
+  },
+  {
+    "id": "j7_ganymede",
+    "action": "parentChange",
+    "parent": "mars"
+  },
+  {
+    "id": "j8_callisto",
+    "action": "parentChange",
+    "parent": "mars"
+  },
+]

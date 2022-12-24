@@ -6,7 +6,7 @@ export default class MenuTab3D {
     this.scene = app.scene;
   }
   obj(name) {
-    return this.app.staticAssets[name];
+    return this.app.staticBoardObjects[name];
   }
 
   initOptionsBar() {
@@ -15,6 +15,12 @@ export default class MenuTab3D {
     let panel = this.app.menuBarLeftTN;
 
     this.addTabButtons(scene, parent);
+
+    this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', scene);
+    this.scoreMenuTab.parent = panel;
+    this.scoreMenuTab.position.y = 0;
+    this.scoreMenuTab.setEnabled(false);
+    this.initScoreTab();
 
     this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', scene);
     this.optionsMenuTab.parent = panel;
@@ -32,7 +38,6 @@ export default class MenuTab3D {
     this.playerMoonPanelTab.parent = panel;
     this.playerMoonPanelTab.position.y = 0;
     this.playerMoonPanelTab.setEnabled(false);
-    this.initGameStatusPanel();
   }
   addTabButtons(scene, tabBar) {
     let iconName = 'xmark';
@@ -46,6 +51,18 @@ export default class MenuTab3D {
     };
     closeMenuTabBtn.parent = tabBar;
     closeMenuTabBtn.position.x = -16;
+
+    iconName = 'score';
+    let scoreMenuBtn = this.addIconBtn(scene, iconName, 'scoreMenuBtn');
+    scoreMenuBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.selectedMenuBarTab(this.scoreMenuTab);
+      }
+    };
+    scoreMenuBtn.parent = tabBar;
+    scoreMenuBtn.position.x = -13;
 
     iconName = 'gear';
     let optionsMenuBtn = this.addIconBtn(scene, iconName, 'optionsMenuBtn');
@@ -240,17 +257,17 @@ export default class MenuTab3D {
     asteroidUpCountBtn.parent = parent;
   }
 
-  initGameStatusPanel() {
+  initScoreTab() {
     this.gameActionsPanel = new BABYLON.TransformNode('gameActionsPanel', this.app.scene);
-    this.gameActionsPanel.parent = this.playerMoonPanelTab;
-    this.gameActionsPanel.position.y = 9;
-    this.gameActionsPanel.position.z = 3;
+    this.gameActionsPanel.parent = this.scoreMenuTab;
+    this.gameActionsPanel.position.y = 1;
+    this.gameActionsPanel.position.z = 1;
 
     this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
     this.startGameButton.parent = this.gameActionsPanel;
     this.startGameButton.scaling = U3D.v(2, 2, 2);
     this.startGameButton.position.x = -5;
-    this.startGameButton.position.y = 3;
+    this.startGameButton.position.y = 5;
     this.startGameButton.position.z = 1;
     this.startGameButton.setEnabled(false);
 
@@ -258,14 +275,14 @@ export default class MenuTab3D {
     this.endGameButton.parent = this.gameActionsPanel;
     this.endGameButton.scaling = U3D.v(2, 2, 2);
     this.endGameButton.position.x = -10;
-    this.endGameButton.position.y = 3;
+    this.endGameButton.position.y = 5;
     this.endGameButton.position.z = 1;
 
     this.endTurnButton = U3D.addTextPlane(this.scene, "End Turn", "endTurnButton", "Arial", "", "#ffffff");
     this.endTurnButton.parent = this.gameActionsPanel;
     this.endTurnButton.scaling = U3D.v(2, 2, 2);
-    this.endTurnButton.position.x = -5;
-    this.endTurnButton.position.y = 5;
+    this.endTurnButton.position.x = -10;
+    this.endTurnButton.position.y = 2;
     this.endTurnButton.position.z = 1;
     this.endTurnButton.assetMeta = {
       appClickable: true,
@@ -501,6 +518,8 @@ export default class MenuTab3D {
     this.selectedAssetLabel.parent = this.focusPanelTab;
 
     this.updateAssetSizeButtons();
+    if (this.app.actionCardHelper)
+      this.app.actionCardHelper.updateCardsForPlayer();
   }
   nextSelectedObject(previous = false) {
     let meta = this.selectedObjectMeta;
@@ -529,7 +548,7 @@ export default class MenuTab3D {
       if (index > 5) index = 0;
       this.setSelectedAsset(this.app.actionCardHelper.cardItemMeta[index]);
     } else {
-      let keys = Object.keys(this.app.staticAssets).sort((a, b) => {
+      let keys = Object.keys(this.app.staticBoardObjects).sort((a, b) => {
         if (this.obj(a).assetMeta.name > this.obj(b).assetMeta.name)
           return 1;
         if (this.obj(a).assetMeta.name < this.obj(b).assetMeta.name)
