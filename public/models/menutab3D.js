@@ -291,6 +291,133 @@ export default class MenuTab3D {
         this.app.clickEndTurn();
       }
     };
+
+    this.initRoundPanel(this.scoreMenuTab);
+  }
+  initRoundPanel(parent) {
+    let scene = this.scene;
+    let nextRoundButton = U3D.addTextPlane(scene, '>', 'nextRoundButton');
+    nextRoundButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.nextReplayRound(1);
+      }
+    };
+    nextRoundButton.position.x = -8;
+    nextRoundButton.position.y = 0;
+    nextRoundButton.position.z = 0;
+    nextRoundButton.scaling = U3D.v(2, 2, 2);
+    nextRoundButton.parent = parent;
+
+    let previousRoundButton = U3D.addTextPlane(scene, '<', 'previousRoundButton');
+    previousRoundButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.nextReplayRound(-1);
+      }
+    };
+    previousRoundButton.position.x = -16;
+    previousRoundButton.position.y = 0;
+    previousRoundButton.position.z = 0;
+    previousRoundButton.scaling = U3D.v(2, 2, 2);
+    previousRoundButton.parent = parent;
+
+    let nextReplayPlayerButton = U3D.addTextPlane(scene, '>', 'nextReplayPlayerButton');
+    nextReplayPlayerButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.nextReplayPlayer(1);
+      }
+    };
+    nextReplayPlayerButton.position.x = -8;
+    nextReplayPlayerButton.position.y = 1.5;
+    nextReplayPlayerButton.position.z = 0;
+    nextReplayPlayerButton.scaling = U3D.v(2, 2, 2);
+    nextReplayPlayerButton.parent = parent;
+
+    let previousReplayPlayerButton = U3D.addTextPlane(scene, '<', 'previousReplayPlayerButton');
+    previousReplayPlayerButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.nextReplayPlayer(-1);
+      }
+    };
+    previousReplayPlayerButton.position.x = -16;
+    previousReplayPlayerButton.position.y = 1.5;
+    previousReplayPlayerButton.position.z = 0;
+    previousReplayPlayerButton.scaling = U3D.v(2, 2, 2);
+    previousReplayPlayerButton.parent = parent;
+
+    this.selectedReplayRound = -1;
+    this.selectedReplayPlayer = 0;
+    this.nextReplayRound(0);
+    this.nextReplayPlayer(0);
+
+    this.loadReplayButton = U3D.addTextPlane(this.scene, "Load Replay", "loadReplayButton", "Arial", "", "#ffffff");
+    this.loadReplayButton.parent = parent;
+    this.loadReplayButton.scaling = U3D.v(2, 2, 2);
+    this.loadReplayButton.position.x = -1;
+    this.loadReplayButton.position.y = 1.5;
+    this.loadReplayButton.position.z = 0;
+    this.loadReplayButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.loadReplay();
+      }
+    };
+
+    this.playReplayButton = U3D.addTextPlane(this.scene, "Play Replay", "playReplayButton", "Arial", "", "#ffffff");
+    this.playReplayButton.parent = parent;
+    this.playReplayButton.scaling = U3D.v(2, 2, 2);
+    this.playReplayButton.position.x = -1;
+    this.playReplayButton.position.y = 0;
+    this.playReplayButton.position.z = 0;
+    this.playReplayButton.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.loadReplay(true);
+      }
+    };
+  }
+  nextReplayRound(delta) {
+    if (this.selectedRoundIndexPanel)
+      this.selectedRoundIndexPanel.dispose();
+
+    let min = -3;
+    let max = -1;
+    this.selectedReplayRound += delta;
+    if (this.selectedReplayRound < min)
+      this.selectedReplayRound = max;
+    if (this.selectedReplayRound > max)
+      this.selectedReplayRound = min;
+
+    let label = "Round " + (this.selectedReplayRound + 1).toString();
+    if (this.selectedReplayRound < 0)
+      label = "Prequel " + (-1 * this.selectedReplayRound).toString();
+    this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, label, 'selectedRoundIndexPanel');
+    this.selectedRoundIndexPanel.position.x = -12;
+    this.selectedRoundIndexPanel.position.y = 0;
+    this.selectedRoundIndexPanel.position.z = 0;
+    this.selectedRoundIndexPanel.scaling = U3D.v(1.5, 1.5, 1.5);
+    this.selectedRoundIndexPanel.parent = this.scoreMenuTab;
+  }
+  nextReplayPlayer(delta) {
+    if (this.selectedReplayPlayerPanel)
+      this.selectedReplayPlayerPanel.dispose();
+
+    let desc = "Geronimo";
+    this.selectedReplayPlayerPanel = U3D.addTextPlane(this.app.scene, desc, 'selectedReplayPlayerPanel');
+    this.selectedReplayPlayerPanel.position.x = -12;
+    this.selectedReplayPlayerPanel.position.y = 1.5;
+    this.selectedReplayPlayerPanel.position.z = 0;
+    this.selectedReplayPlayerPanel.scaling = U3D.v(1.5, 1.5, 1.5);
+    this.selectedReplayPlayerPanel.parent = this.scoreMenuTab;
   }
 
   updateAssetSizeButtons() {
