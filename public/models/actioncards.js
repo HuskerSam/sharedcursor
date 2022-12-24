@@ -1,5 +1,4 @@
 import U3D from '/models/utility3d.js';
-import R3D from '/models/rocket3d.js';
 
 export default class ActionCards {
   constructor(app, panel) {
@@ -28,7 +27,7 @@ export default class ActionCards {
         appClickable: true,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.playCard(localIndex);
+          this.app.playCard(localIndex);
         }
       };
       cardHolder.playButton = playActionCardBtn;
@@ -43,7 +42,7 @@ export default class ActionCards {
         appClickable: true,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.discardCard(localIndex);
+          this.app.discardCard(localIndex);
         }
       };
       cardHolder.discardButton = discardActionCardBtn;
@@ -51,27 +50,6 @@ export default class ActionCards {
     }
 
     this.updateCardsForPlayer();
-  }
-  async discardCard(cardIndex) {
-
-  }
-  async playCard(cardIndex) {
-    if (this.rocketRunning)
-      return;
-    this.rocketRunning = true;
-    setTimeout(() => this.rocketRunning = false, 1000);
-
-    let rotation = new BABYLON.Vector3(0, 0, 0);
-    let endPosition = U3D.vector(this.obj('neptune').position);
-    if (this.app.selectedAsset.objectType === 'planet') {
-      endPosition = this.obj(this.app.selectedAsset.id).getAbsolutePosition();
-    }
-
-    let startPosition = U3D.vector(this.app.activeMoon.baseMesh.getAbsolutePosition());
-    await R3D.shootRocket(this.app.scene, startPosition, rotation, endPosition);
-  }
-  obj(name) {
-    return this.app.staticBoardObjects[name];
   }
   async updateCardsForPlayer() {
     let actionCards = this.app.actionCards;

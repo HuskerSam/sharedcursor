@@ -176,6 +176,18 @@ module.exports = class StoryAPI {
       Object.assign(updatePacket, roundData);
     }
 
+    if (roundAction === 'playCard') {
+      roundData.actions.push({
+        when: "phase",
+        phase: 0,
+        action: "playCard",
+        cardIndex: meta.cardIndex,
+        cardDetails: meta.cardDetails,
+        targetId: meta.targetId,
+        sourceId: meta.sourceId
+      });
+    }
+
     await firebaseAdmin.firestore().doc(roundPath).set(roundData, {
       merge: true
     });

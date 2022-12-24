@@ -5,6 +5,7 @@ import MenuTab3D from '/models/menutab3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
 import ActionCards from '/models/actioncards.js';
+import R3D from '/models/rocket3d.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -715,11 +716,11 @@ export class StoryApp extends BaseApp {
       let index = this.paintedBoardRoundIndex;
       if (index < 0) {
         let index = -1 * this.paintedBoardRoundIndex;
-        this.boardData = await this.getJSONFile(`/story/roundpre${index}.json`);
+        this.boardRoundData = await this.getJSONFile(`/story/roundpre${index}.json`);
         this.updateBoardRoundData(true);
       }
     } else
-      this.updateBoardRoundData();
+      this.updateBoardRoundData(true);
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
@@ -735,20 +736,44 @@ export class StoryApp extends BaseApp {
 
   updateBoardRoundData(reset) {
     if (reset) {
-      this.boardResetRoundData.forEach(meta => {
+      this.boardResetRoundData.actions.forEach(meta => {
         let asset = this.staticBoardObjects[meta.assetId];
         if (asset) {
           asset.parent = this.staticBoardObjects[meta.parent];
         }
       });
+
+      this.boardRoundData.actions.forEach((action, i) => {
+        if (action.when === 'init')
+          this.applyBoardAction(action, i);
+      });
+
+      this.roundCurrentSequenceIndex = -1;
     }
 
-    if (!this.boardData)
+    if (!this.boardRoundData)
       return;
 
-    this.boardData.actions.forEach((action, i) => {
-      this.applyBoardAction(action, i);
-    });
+    this.iterateBoardRoundSequence();
+  }
+  async iterateBoardRoundSequence(reset) {
+    if (reset)
+      this.roundActionRunning = false;
+    if (this.roundActionRunning)
+      return;
+    if (this.roundCurrentSequenceIndex === undefined)
+      return;
+
+    let actionIndex = this.roundCurrentSequenceIndex + 1;
+
+    if (actionIndex < this.boardRoundData.actions.length) {
+      this.roundActionRunning = true;
+      this.roundCurrentSequenceIndex = actionIndex;
+      let action = this.boardRoundData.actions[actionIndex];
+      await this.animatedRoundAction(action);
+      this.roundActionRunning = false;
+      this.iterateBoardRoundSequence();
+    }
   }
   initListenGameRound(roundIndex) {
     if (this.gameRoundSubscription) {
@@ -766,21 +791,25 @@ export class StoryApp extends BaseApp {
           this.sendRoundAction('init');
           return;
         }
-        this.boardData = data;
+        this.boardRoundData = data;
         this.updateBoardRoundData();
       });
   }
   _determineRoundResults(roundData) {
     return roundData;
   }
-  async sendRoundAction(roundAction) {
+  async sendRoundAction(roundAction, cardIndex = -1, cardDetails = null, targetId = null, sourceId = null) {
     let roundIndex = -1;
     let action = 'roundType';
     let body = {
       gameId: this.currentGame,
       action,
       roundAction,
-      roundIndex
+      roundIndex,
+      cardIndex,
+      cardDetails,
+      targetId,
+      sourceId
     };
     let token = await firebase.auth().currentUser.getIdToken();
     let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
@@ -801,5 +830,20 @@ export class StoryApp extends BaseApp {
         alert('Failed to resolve selection: ' + json.errorMessage);
       return;
     }
+  }
+
+
+  async discardCard(cardIndex) {
+
+  }
+  async playCard(cardIndex) {
+    let cardDetails = this.actionCards[cardIndex];
+    await this.sendRoundAction('playCard', cardIndex, cardDetails, this.selectedAsset.id, this.activeMoon.assetMeta.id);
+  }
+  async animatedRoundAction(actionDetails) {
+    let rotation = new BABYLON.Vector3(0, 0, 0);
+    let startPosition = this.staticBoardObjects[actionDetails.sourceId].getAbsolutePosition();
+    let endPosition = this.staticBoardObjects[actionDetails.targetId].getAbsolutePosition();
+    await R3D.shootRocket(this.scene, startPosition, rotation, endPosition);
   }
 }
