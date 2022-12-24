@@ -1,7 +1,36 @@
 import U3D from '/models/utility3d.js';
 
 export default class Rocket3D {
-  static async rocketTakeOff(scene, rocketMesh, height, xDelta, timeMS = 2000) {
+  constructor(app) {
+    this.app = app;
+  }
+  async shootRocket(probe, startPos, startRotation, endPosition) {
+    let scene = this.app.scene;
+    let meta = Object.assign({}, window.allStaticAssetMeta[probe]);
+    meta.extended = U3D.processStaticAssetMeta(meta, {});
+    let mesh = await U3D.loadStaticMesh(scene, meta.extended.glbPath);
+    U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
+
+    let rocketTN = new BABYLON.TransformNode(mesh.id + 'tn', scene);
+    mesh.parent = rocketTN;
+
+    let particles = U3D.createFireParticles(meta, rocketTN, scene);
+
+    rocketTN.position.copyFrom(startPos);
+    rocketTN.rotation.copyFrom(startRotation);
+    particles.start();
+
+    await this.rocketTakeOff(scene, rocketTN, 6, 10, 2500);
+    await this.rocketTravelTo(scene, rocketTN, endPosition, 8000, 1500);
+    particles.stop();
+    await this.rocketLand(scene, rocketTN, endPosition, 1500);
+
+    rocketTN.dispose();
+    setTimeout(() => particles.dispose(), 2000);
+  }
+
+
+  async rocketTakeOff(scene, rocketMesh, height, xDelta, timeMS = 2000) {
     return new Promise((res, rej) => {
       const id = rocketMesh.id;
       const frameRate = 60;
@@ -77,7 +106,7 @@ export default class Rocket3D {
       }, timeMS);
     });
   }
-  static async rocketLand(scene, rocketMesh, endPosition, timeMS = 1500) {
+  async rocketLand(scene, rocketMesh, endPosition, timeMS = 1500) {
     return new Promise((res, rej) => {
       const id = rocketMesh.id;
       const frameRate = 60;
@@ -137,7 +166,7 @@ export default class Rocket3D {
       }, timeMS);
     });
   }
-  static async rocketTravelTo(scene, rocket, endPosition, travelTime, landingDelay = 1500) {
+  async rocketTravelTo(scene, rocket, endPosition, travelTime, landingDelay = 1500) {
     return new Promise((res, rej) => {
       let startPosition = U3D.vector(rocket.position);
       const id = rocket.id;
@@ -171,29 +200,5 @@ export default class Rocket3D {
         res();
       }, (travelTime - landingDelay));
     });
-  }
-  static async shootRocket(scene, startPos, startRotation, endPosition) {
-    let name = 'rocket_atlasv';
-    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
-    meta.extended = U3D.processStaticAssetMeta(meta, {});
-    let mesh = await U3D.loadStaticMesh(scene, meta.extended.glbPath);
-    U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
-
-    let rocketTN = new BABYLON.TransformNode(mesh.id + 'tn', scene);
-    mesh.parent = rocketTN;
-
-    let particles = U3D.createFireParticles(meta, rocketTN, scene);
-
-    rocketTN.position.copyFrom(startPos);
-    rocketTN.rotation.copyFrom(startRotation);
-    particles.start();
-
-    await this.rocketTakeOff(scene, rocketTN, 6, 10, 2500);
-    await this.rocketTravelTo(scene, rocketTN, endPosition, 8000, 1500);
-    particles.stop();
-    await this.rocketLand(scene, rocketTN, endPosition, 1500);
-
-    rocketTN.dispose();
-    setTimeout(() => particles.dispose(), 2000);
   }
 }

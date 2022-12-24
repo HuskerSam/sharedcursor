@@ -5,7 +5,7 @@ import MenuTab3D from '/models/menutab3d.js';
 import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
 import ActionCards from '/models/actioncards.js';
-import R3D from '/models/rocket3d.js';
+import Rocket3D from '/models/rocket3d.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -71,6 +71,7 @@ export class StoryApp extends BaseApp {
     this.createMenu3DWrapper();
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
+    this.rocketHelper = new Rocket3D(this);
 
     if (this.urlParams.get('showguides'))
       U3D.createGuides(this.scene);
@@ -844,6 +845,7 @@ export class StoryApp extends BaseApp {
     let rotation = new BABYLON.Vector3(0, 0, 0);
     let startPosition = this.staticBoardObjects[actionDetails.sourceId].getAbsolutePosition();
     let endPosition = this.staticBoardObjects[actionDetails.targetId].getAbsolutePosition();
-    await R3D.shootRocket(this.scene, startPosition, rotation, endPosition);
+    let probe = actionDetails.cardDetails.gameCard;
+    await this.rocketHelper.shootRocket(probe, startPosition, rotation, endPosition);
   }
 }
