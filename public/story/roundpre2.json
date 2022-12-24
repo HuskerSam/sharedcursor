@@ -12,21 +12,21 @@
     "when": "init"
   },
   {
-    "id": "j6_europa",
+    "assetId": "j6_europa",
     "action": "parentChange",
     "parent": "mercury",
     "when": "init"
   },
   {
-    "id": "j7_ganymede",
+    "assetId": "j7_ganymede",
     "action": "parentChange",
     "parent": "mars",
     "when": "init"
   },
   {
-    "id": "j8_callisto",
+    "assetId": "j8_callisto",
     "action": "parentChange",
     "parent": "mars",
     "when": "init"
-  },
+  }
 ]

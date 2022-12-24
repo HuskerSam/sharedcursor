@@ -13,6 +13,7 @@ export class StoryApp extends BaseApp {
     this.cache = {};
     this.staticBoardObjects = {};
     this.playerMoonAssets = new Array(4);
+    this.gameRoundDisplayed = -1;
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
@@ -277,15 +278,18 @@ export class StoryApp extends BaseApp {
     return await response.json();
   }
   async load() {
-    window.allStaticAssetMeta = await GameCards.loadDecks();
-    this.actionCards = await this.getJSONFile('/story/actioncards.json');
+    await Promise.all([
+      window.allStaticAssetMeta = await GameCards.loadDecks(),
+      this.actionCards = await this.getJSONFile('/story/actioncards.json'),
+      this.boardResetRoundData = await this.getJSONFile('/story/round0.json')
+    ])
     await super.load();
   }
 
   get activeSeatIndex() {
     if (!this.gameData)
       return 0;
-    return  this.gameData.currentSeat;
+    return this.gameData.currentSeat;
   }
   get activeMoon() {
     return this.playerMoonAssets[this.activeSeatIndex];
@@ -433,6 +437,8 @@ export class StoryApp extends BaseApp {
 
     this._updateGameMembersList();
     this.paintDock();
+
+
     this.paintBoard();
 
     if (this.gameData.mode !== this.previousMode)
@@ -701,10 +707,20 @@ export class StoryApp extends BaseApp {
   }
 
   async paintBoard() {
-    if (!this.boardData) {
-      this.boardData = await this.getJSONFile('/story/roundpre1.json');
+    if (this.paintedBoardRoundIndex !== this.gameRoundDisplayed) {
+      this.paintedBoardRoundIndex = this.gameRoundDisplayed;
+      let index = -1 * this.paintedBoardRoundIndex;
+      this.boardData = await this.getJSONFile(`/story/roundpre${index}.json`);
+
+      this.boardResetRoundData.forEach(meta => {
+        let asset = this.staticBoardObjects[meta.assetId];
+        if (asset) {
+          asset.parent = this.staticBoardObjects[meta.parent];
+        }
+      });
     }
 
+    //sync board status
     this.boardData.forEach((boardAction, i) => {
       if (boardAction.when === 'init')
         this.applyBoardAction(boardAction);
@@ -716,5 +732,9 @@ export class StoryApp extends BaseApp {
       if (asset)
         asset.parent = this.staticBoardObjects[boardAction.parent];
     }
+  }
+  async loadReplay(startAutomation = false) {
+    this.gameRoundDisplayed = this.menuTab3D.selectedReplayRound;
+    this.paintBoard();
   }
 }
