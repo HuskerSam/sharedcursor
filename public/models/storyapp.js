@@ -14,7 +14,7 @@ export class StoryApp extends BaseApp {
     this.cache = {};
     this.staticBoardObjects = {};
     this.playerMoonAssets = new Array(4);
-    this.gameRoundDisplayed = 0;
+    this.overrideDisplayRound = null;
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
@@ -179,12 +179,7 @@ export class StoryApp extends BaseApp {
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
     let noShadow = meta.noShadow === true;
-    let mesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta.containerOnly, noShadow);
-    if (meta.containerOnly)
-      return {
-        assetMeta: meta
-      };
-
+    let mesh = await U3D.loadStaticMesh(scene, meta.containerPath, noShadow);
     U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
@@ -208,6 +203,8 @@ export class StoryApp extends BaseApp {
 
     meshPivot.assetMeta = meta;
     meshPivot.baseMesh = mesh;
+    if (meta.loadDisabled)
+      meshPivot.setEnabled(false);
     this.staticBoardObjects[name] = meshPivot;
 
     let ___awaitAssetLoad = async (name) => {
@@ -223,10 +220,10 @@ export class StoryApp extends BaseApp {
 
     if (meta.parent) {
       await ___awaitAssetLoad(meta.parent);
-      if (meta.parentType === 'basePivot')
-        meshPivot.parent = this.staticBoardObjects[meta.parent].assetMeta.basePivot;
-      else
-        meshPivot.parent = this.staticBoardObjects[meta.parent];
+      //if (meta.parentType === 'basePivot')
+      //  meshPivot.parent = this.staticBoardObjects[meta.parent].assetMeta.basePivot;
+      //else
+      meshPivot.parent = this.staticBoardObjects[meta.parent];
     } else
       meshPivot.parent = sceneParent;
 
@@ -709,10 +706,9 @@ export class StoryApp extends BaseApp {
   }
 
   async paintBoard() {
-    if (this.paintedBoardRoundIndex !== this.gameRoundDisplayed) {
-      this.paintedBoardRoundIndex = this.gameRoundDisplayed;
+    if (this.paintedBoardRoundIndex !== this.visibleRound) {
+      this.paintedBoardRoundIndex = this.visibleRound;
       this.initListenGameRound(this.paintedBoardRoundIndex);
-
 
       let index = this.paintedBoardRoundIndex;
       if (index < 0) {
@@ -725,22 +721,40 @@ export class StoryApp extends BaseApp {
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
-      let asset = this.staticBoardObjects[boardAction.assetId];
+      let asset = this.staticBoardObjects[boardAction.sourceId];
       if (asset)
-        asset.parent = this.staticBoardObjects[boardAction.parent];
+        asset.parent = this.staticBoardObjects[boardAction.targetId];
+    }
+    if (boardAction.action === 'init') {
+      this.applyInitRoundAction(boardAction);
     }
   }
   async loadReplay(startAutomation = false) {
-    this.gameRoundDisplayed = this.menuTab3D.selectedReplayRound;
+    this.overrideDisplayRound = this.menuTab3D.selectedReplayRound;
     this.paintBoard();
+  }
+  /*
+  get gameRound() {
+    if (!this.gameData || !this.gameData.runningNumberOfSeats)
+      return 0;
+    return Math.floor(this.gameData.turnNumber / this.gameData.runningNumberOfSeats);
+  }
+  */
+  get visibleRound() {
+    if (this.overrideDisplayRound !== null)
+      return this.overrideDisplayRound;
+
+    return this.gameData.turnNumber;
   }
 
   updateBoardRoundData(reset) {
+    if (!this.boardRoundData)
+      return;
+
     if (reset) {
       this.boardResetRoundData.actions.forEach(meta => {
-        let asset = this.staticBoardObjects[meta.assetId];
-        if (asset) {
-          asset.parent = this.staticBoardObjects[meta.parent];
+        if (meta.action === 'init') {
+          this.applyInitRoundAction(meta);
         }
       });
 
@@ -751,9 +765,6 @@ export class StoryApp extends BaseApp {
 
       this.roundCurrentSequenceIndex = -1;
     }
-
-    if (!this.boardRoundData)
-      return;
 
     this.iterateBoardRoundSequence();
   }
@@ -796,21 +807,17 @@ export class StoryApp extends BaseApp {
         this.updateBoardRoundData();
       });
   }
-  _determineRoundResults(roundData) {
-    return roundData;
-  }
-  async sendRoundAction(roundAction, cardIndex = -1, cardDetails = null, targetId = null, sourceId = null) {
-    let roundIndex = -1;
-    let action = 'roundType';
+  async sendRoundAction(roundAction, cardIndex = -1, cardDetails = null, targetId = null, sourceId = null, originId = null) {
     let body = {
       gameId: this.currentGame,
-      action,
+      action: 'roundType',
       roundAction,
-      roundIndex,
+      roundIndex: this.gameData.turnNumber,
       cardIndex,
       cardDetails,
       targetId,
-      sourceId
+      sourceId,
+      originId
     };
     let token = await firebase.auth().currentUser.getIdToken();
     let f_result = await fetch(this.basePath + `api/${this.apiType}/action`, {
@@ -833,19 +840,24 @@ export class StoryApp extends BaseApp {
     }
   }
 
-
   async discardCard(cardIndex) {
 
   }
   async playCard(cardIndex) {
     let cardDetails = this.actionCards[cardIndex];
-    await this.sendRoundAction('playCard', cardIndex, cardDetails, this.selectedAsset.id, this.activeMoon.assetMeta.id);
+    await this.sendRoundAction('playCard', cardIndex, cardDetails, this.selectedAsset.id,
+      cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
   async animatedRoundAction(actionDetails) {
-    let rotation = new BABYLON.Vector3(0, 0, 0);
-    let startPosition = this.staticBoardObjects[actionDetails.sourceId].getAbsolutePosition();
-    let endPosition = this.staticBoardObjects[actionDetails.targetId].getAbsolutePosition();
-    let probe = actionDetails.cardDetails.gameCard;
-    await this.rocketHelper.shootRocket(probe, startPosition, rotation, endPosition);
+    await this.rocketHelper.shootRocket(actionDetails.sourceId, actionDetails.targetId, actionDetails.originId);
+  }
+  applyInitRoundAction(meta) {
+    let asset = this.staticBoardObjects[meta.sourceId];
+    if (asset) {
+      if (meta.parent === null)
+        asset.parent = null;
+      else if (meta.parent !== undefined)
+        asset.parent = this.staticBoardObjects[meta.parent];
+    }
   }
 }

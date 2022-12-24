@@ -1,32 +1,32 @@
 {
   "actions": [{
-      "assetId": "e1_luna",
+      "sourceId": "e1_luna",
       "action": "parentChange",
-      "parent": "venus",
+      "targetId": "venus",
       "when": "init"
     },
     {
-      "assetId": "j5_io",
+      "sourceId": "j5_io",
       "action": "parentChange",
-      "parent": "earth",
+      "targetId": "earth",
       "when": "init"
     },
     {
-      "assetId": "j6_europa",
+      "sourceId": "j6_europa",
       "action": "parentChange",
-      "parent": "mercury",
+      "targetId": "mercury",
       "when": "init"
     },
     {
-      "assetId": "j7_ganymede",
+      "sourceId": "j7_ganymede",
       "action": "parentChange",
-      "parent": "mars",
+      "targetId": "mars",
       "when": "init"
     },
     {
-      "assetId": "j8_callisto",
+      "sourceId": "j8_callisto",
       "action": "parentChange",
-      "parent": "mars",
+      "targetId": "mars",
       "when": "init"
     }
   ]

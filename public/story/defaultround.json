@@ -1,23 +1,28 @@
 {
   "actions": [{
-      "assetId": "e1_luna",
-      "parent": "earth"
+      "sourceId": "e1_luna",
+      "parent": "earth",
+      "action": "init"
     },
     {
-      "assetId": "j5_io",
-      "parent": "jupiter"
+      "sourceId": "j5_io",
+      "parent": "jupiter",
+      "action": "init"
     },
     {
-      "assetId": "j6_europa",
-      "parent": "jupiter"
+      "sourceId": "j6_europa",
+      "parent": "jupiter",
+      "action": "init"
     },
     {
-      "assetId": "j7_ganymede",
-      "parent": "jupiter"
+      "sourceId": "j7_ganymede",
+      "parent": "jupiter",
+      "action": "init"
     },
     {
-      "assetId": "j8_callisto",
-      "parent": "jupiter"
+      "sourceId": "j8_callisto",
+      "parent": "jupiter",
+      "action": "init"
     }
   ]
 }

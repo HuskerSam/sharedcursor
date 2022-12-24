@@ -173,6 +173,15 @@ module.exports = class StoryAPI {
         created: new Date().toISOString(),
         actions: []
       };
+
+      if (roundIndex > 0) {
+        let lastRoundPath = `Games/${gameId}/rounds/${roundIndex - 1}`;
+        let lastRoundQuery = await firebaseAdmin.firestore().doc(lastRoundPath).get();
+        let lastRoundData = lastRoundQuery.data();
+        if (lastRoundData)
+          roundData.actions = StoryAPI.processActions(lastRoundData.actions);
+      }
+
       Object.assign(updatePacket, roundData);
     }
 
@@ -184,12 +193,48 @@ module.exports = class StoryAPI {
         cardIndex: meta.cardIndex,
         cardDetails: meta.cardDetails,
         targetId: meta.targetId,
-        sourceId: meta.sourceId
+        sourceId: meta.sourceId,
+        originId: meta.originId
       });
     }
 
     await firebaseAdmin.firestore().doc(roundPath).set(roundData, {
       merge: true
     });
+  }
+  static processActions(newActions) {
+    let assets = {};
+    newActions.forEach(action => {
+      if (action.action = 'init')
+        assets[action.sourceId] = action;
+      if (action.action = 'parentChange') {
+        if (!assets[action.sourceId])
+          assets[action.sourceId] = {};
+        assets[action.sourceId].parent = action.targetId;
+      }
+      if (action.action = 'playCard') {
+        if (!assets[action.sourceId])
+          assets[action.sourceId] = {};
+        assets[action.sourceId].parent = action.targetId;
+        assets[action.sourceId].orbiting = true;
+      }
+    });
+
+    let actionArray = [];
+    for (let id in assets) {
+      let data = {
+        sourceId: id,
+        action: 'init',
+        when: 'init'
+      };
+      if (assets[id].parent !== undefined)
+        data.parent = assets[id].parent;
+      if (assets[id].orbiting !== undefined)
+        data.orbiting = assets[id].orbiting;
+
+      actionArray.push(data);
+    }
+
+    return actionArray;
   }
 };

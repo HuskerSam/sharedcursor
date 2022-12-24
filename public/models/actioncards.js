@@ -98,7 +98,8 @@ export default class ActionCards {
       cardHolder.assetMesh = mesh;
     }
 
-    if (this.app.selectedAsset.objectType === 'planet') {
+    let types = ['planet', 'moon', 'dwarf']
+    if (types.indexOf(this.app.selectedAsset.objectType) !== -1) {
       cardHolder.playButton.setEnabled(true);
     } else {
       cardHolder.playButton.setEnabled(false);

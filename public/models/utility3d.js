@@ -583,15 +583,12 @@ export default class Utility3D {
     return v;
   }
 
-  static async loadStaticMesh(scene, path, containerOnly, noShadow) {
+  static async loadStaticMesh(scene, path, noShadow) {
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
 
     if (!window.staticMeshContainer[path])
       window.staticMeshContainer[path] = await this.loadContainer(scene, path);
-
-    if (containerOnly)
-      return null;
 
     let result = window.staticMeshContainer[path].instantiateModelsToScene();
     if (noShadow) {

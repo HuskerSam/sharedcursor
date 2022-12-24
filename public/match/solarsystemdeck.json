@@ -364,7 +364,7 @@
     "px": 0,
     "py": -1,
     "pz": 0,
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "probe_lunar_lander",
@@ -377,7 +377,7 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Lunar_lander",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "probe_newhorizons",
@@ -386,9 +386,12 @@
     "image": "/cardimages/probenewhorizons.jpg",
     "symbol": "/symbol/bird.png",
     "glbpath": "/mascots/newhorizon.glb",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/New_Horizons",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "probe_psp",
@@ -397,9 +400,12 @@
     "image": "/cardimages/probepsp.jpg",
     "symbol": "/symbol/bird.png",
     "glbpath": "/mascots/probepsp.glb",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Parker_Solar_Probe",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "probe_tgo",
@@ -408,9 +414,12 @@
     "image": "/cardimages/probetgo.jpg",
     "symbol": "/symbol/bird.png",
     "glbpath": "/solar/probetgo.glb",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Trace_Gas_Orbiter",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "probe_shuttle",
@@ -419,9 +428,12 @@
     "image": "/cardimages/probeshuttle.jpg",
     "symbol": "/symbol/bird.png",
     "glbpath": "/solar/shuttle.glb",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "comet_churyumov",
@@ -430,9 +442,12 @@
     "image": "/cardimages/p67cg.jpg",
     "symbol": "/symbol/cleo.png",
     "glbpath": "/solar/p67_cg.obj",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/67P/Churyumov%E2%80%93Gerasimenko",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "comet_halleys",
@@ -441,9 +456,12 @@
     "image": "/cardimages/halleyscomet.jpg",
     "symbol": "/symbol/cleo.png",
     "glbpath": "/solar/halleys.obj",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Halley%27s_Comet",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "comet_hartley",
@@ -452,9 +470,12 @@
     "image": "/cardimages/hartleycomet.jpg",
     "symbol": "/symbol/cleo.png",
     "glbpath": "/solar/hartley.obj",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/103P/Hartley",
-    "containerOnly": true
+    "loadDisabled": true
   },
   {
     "id": "comet_tempel",
@@ -463,8 +484,11 @@
     "image": "/cardimages/tempel.jpg",
     "symbol": "/symbol/cleo.png",
     "glbpath": "/solar/tempel.obj",
-    "sizeBoxFit": 1,
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Tempel_1",
-    "containerOnly": true
+    "loadDisabled": true
   }
 ]

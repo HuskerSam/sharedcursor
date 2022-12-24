@@ -4,20 +4,24 @@ export default class Rocket3D {
   constructor(app) {
     this.app = app;
   }
-  async shootRocket(probe, startPos, startRotation, endPosition) {
-    let scene = this.app.scene;
-    let meta = Object.assign({}, window.allStaticAssetMeta[probe]);
-    meta.extended = U3D.processStaticAssetMeta(meta, {});
-    let mesh = await U3D.loadStaticMesh(scene, meta.extended.glbPath);
-    U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
+  async shootRocket(probeId, targetId, originId) {
+    let rotation = new BABYLON.Vector3(0, 0, 0);
+    let startPosition = this.app.staticBoardObjects[originId].getAbsolutePosition();
+    let endPosition = this.app.staticBoardObjects[targetId].getAbsolutePosition();
 
-    let rocketTN = new BABYLON.TransformNode(mesh.id + 'tn', scene);
-    mesh.parent = rocketTN;
+    let scene = this.app.scene;
+    let asset = this.app.staticBoardObjects[probeId];
+    let meta = asset.assetMeta;
+    asset.setEnabled(true);
+    U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
+
+    let rocketTN = new BABYLON.TransformNode(asset.baseMesh.id + 'tn', scene);
+    asset.parent = rocketTN;
 
     let particles = U3D.createFireParticles(meta, rocketTN, scene);
 
-    rocketTN.position.copyFrom(startPos);
-    rocketTN.rotation.copyFrom(startRotation);
+    rocketTN.position.copyFrom(startPosition);
+    rocketTN.rotation.copyFrom(rotation);
     particles.start();
 
     await this.rocketTakeOff(scene, rocketTN, 6, 10, 2500);
@@ -25,10 +29,11 @@ export default class Rocket3D {
     particles.stop();
     await this.rocketLand(scene, rocketTN, endPosition, 1500);
 
+    asset.parent = null;
+    asset.setEnabled(false);
     rocketTN.dispose();
     setTimeout(() => particles.dispose(), 2000);
   }
-
 
   async rocketTakeOff(scene, rocketMesh, height, xDelta, timeMS = 2000) {
     return new Promise((res, rej) => {

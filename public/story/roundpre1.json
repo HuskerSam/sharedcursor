@@ -1,14 +1,14 @@
 {
   "actions": [{
-      "assetId": "e1_luna",
+      "sourceId": "e1_luna",
       "action": "parentChange",
-      "parent": "venus",
+      "targetId": "venus",
       "when": "init"
     },
     {
-      "assetId": "j5_io",
+      "sourceId": "j5_io",
       "action": "parentChange",
-      "parent": "earth",
+      "targetId": "earth",
       "when": "init"
     }
   ]
