@@ -234,6 +234,9 @@ export class StoryApp extends BaseApp {
 
     return this.staticBoardObjects[name];
   }
+  assetPosition(assetId) {
+    return this.staticBoardObjects[assetId].assetMeta.basePivot.getAbsolutePosition();
+  }
   async __awaitAssetLoad(name) {
     if (this.staticBoardObjects[name])
       return this.staticBoardObjects[name];

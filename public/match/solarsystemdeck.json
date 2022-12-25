@@ -359,6 +359,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -375,6 +376,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -392,6 +394,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -409,6 +412,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -426,6 +430,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -443,6 +448,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -460,6 +466,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -477,6 +484,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   },
   {
@@ -491,7 +499,11 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/103P/Hartley",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "rotationTime": 50000,
+    "orbitTime": 50000
   },
   {
     "id": "comet_tempel",
@@ -508,6 +520,7 @@
     "loadDisabled": true,
     "orbitRadius": 50,
     "startRatio": 0,
+    "rotationTime": 50000,
     "orbitTime": 50000
   }
 ]

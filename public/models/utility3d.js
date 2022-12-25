@@ -61,7 +61,7 @@ export default class Utility3D {
     let rotationPivot = new BABYLON.TransformNode("tnrotationasset" + meta.id, scene);
 
     let rotationAnimation = new BABYLON.Animation(
-      "tnrotationassetanim" + meta.id,
+      "tnrotationassetanim_" + meta.id,
       "rotation",
       60,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
@@ -102,12 +102,12 @@ export default class Utility3D {
     let rotationAnimation = new BABYLON.Animation(
       "selectedRotationAnimation" + name,
       "rotation",
-      30,
+      60,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
-    let endFrame = 36 * 30;
+    let endFrame = 36 * 60;
     let keys = [{
       frame: 0,
       value: this.v(0, 0, 0)
