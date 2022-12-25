@@ -723,8 +723,8 @@ export default class MenuTab3D {
     this.displayedNamePlate.billboardMode = 7;
     this.displayedNamePlate.position.y = yOffset;
     this.displayedNamePlate.parent = meta.basePivot;
-    if (meta.textPivot)
-      meta.textPivot.setEnabled(false);
+    if (meta.assetSymbolPanel)
+      meta.assetSymbolPanel.setEnabled(false);
   }
   hideAssetNamePlate(meta) {
     if (this.displayedNamePlate) {
@@ -732,7 +732,7 @@ export default class MenuTab3D {
       this.displayedNamePlate = null;
     }
 
-    if (meta.textPivot)
-      meta.textPivot.setEnabled(true);
+    if (meta.assetSymbolPanel)
+      meta.assetSymbolPanel.setEnabled(true);
   }
 }

@@ -171,9 +171,11 @@ export class StoryApp extends BaseApp {
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = -3;
   }
-  async loadStaticAsset(name, sceneParent, profile, scene) {
-    let meta = Object.assign({}, window.allStaticAssetMeta[name]);
-    meta.extended = U3D.processStaticAssetMeta(meta, profile);
+  async loadStaticAsset(name, sceneParent, profile, scene, meta = null) {
+    if (!meta) {
+      meta = Object.assign({}, window.allStaticAssetMeta[name]);
+      meta.extended = U3D.processStaticAssetMeta(meta, profile);
+    }
 
     if (meta.sizeBoxFit === undefined)
       meta.sizeBoxFit = 2;
@@ -191,43 +193,59 @@ export class StoryApp extends BaseApp {
     mesh.parent = meshPivot;
     meta.basePivot = meshPivot;
 
-    if (meta.symbol)
-      meshPivot = U3D.infoPanel(name, meta, meshPivot, scene);
+    let outerPivot = meshPivot;
+    if (meta.symbol) {
+      meta.assetSymbolPanel = U3D.addSymbolPanel(meta, scene);
+      meta.assetSymbolPanel.parent = outerPivot;
+    }
 
-    if (meta.rotationTime)
-      meshPivot = U3D.__rotationAnimation(name, meta, meshPivot, scene);
-    if (meta.orbitTime)
-      meshPivot = U3D.__orbitAnimation(name, meta, meshPivot, scene);
+    if (meta.rotationTime) {
+      meta.rotationPivot = U3D.addRotationPivot(meta, scene);
+      meta.rotationPivot.parent = outerPivot.parent;
+      outerPivot.parent = meta.rotationPivot;
+      outerPivot = meta.rotationPivot;
+      meta.rotationAnimation = outerPivot.rotationAnimation;
+    }
 
-    meshPivot = U3D.positionPivot(name, meta, meshPivot, scene);
+    if (meta.orbitTime) {
+      meta.orbitPivot = U3D.addOrbitPivot(meta, scene);
+      meta.orbitPivot.parent = outerPivot.parent;
+      outerPivot.parent = meta.orbitPivot;
+      outerPivot = meta.orbitPivot;
+      meta.orbitAnimation = outerPivot.orbitAnimation;
+    }
 
-    meshPivot.assetMeta = meta;
-    meshPivot.baseMesh = mesh;
+    meta.positionPivot = U3D.addPositionPivot(meta, this.scene);
+    meta.positionPivot.parent = outerPivot.parent;
+    outerPivot.parent = meta.positionPivot;
+    outerPivot = meta.positionPivot;
+
+    outerPivot.assetMeta = meta;
+    outerPivot.baseMesh = mesh;
     if (meta.loadDisabled)
-      meshPivot.setEnabled(false);
-    this.staticBoardObjects[name] = meshPivot;
-
-    let ___awaitAssetLoad = async (name) => {
-      return new Promise((res, rej) => {
-        let awaitInterval = setInterval(() => {
-          if (this.staticBoardObjects[name]) {
-            clearInterval(awaitInterval);
-            res(this.staticBoardObjects[name]);
-          }
-        }, 50);
-      });
-    };
+      outerPivot.setEnabled(false);
+    this.staticBoardObjects[name] = outerPivot;
 
     if (meta.parent) {
-      await ___awaitAssetLoad(meta.parent);
-      //if (meta.parentType === 'basePivot')
-      //  meshPivot.parent = this.staticBoardObjects[meta.parent].assetMeta.basePivot;
-      //else
-      meshPivot.parent = this.staticBoardObjects[meta.parent];
+      await this.__awaitAssetLoad(meta.parent);
+      this.staticBoardObjects[name].parent = this.staticBoardObjects[meta.parent];
     } else
-      meshPivot.parent = sceneParent;
+      this.staticBoardObjects[name].parent = sceneParent;
 
     return this.staticBoardObjects[name];
+  }
+  async __awaitAssetLoad(name) {
+    if (this.staticBoardObjects[name])
+      return this.staticBoardObjects[name];
+
+    return new Promise((res, rej) => {
+      let awaitInterval = setInterval(() => {
+        if (this.staticBoardObjects[name]) {
+          clearInterval(awaitInterval);
+          res(this.staticBoardObjects[name]);
+        }
+      }, 100);
+    });
   }
   addLineToLoading(str) {
     let div = document.createElement('div');

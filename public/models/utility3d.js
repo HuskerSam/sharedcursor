@@ -1,9 +1,6 @@
 export default class Utility3D {
-  static positionPivot(name, meta, meshPivot, scene) {
-    let positionPivot = new BABYLON.TransformNode("transformposition" + name, scene);
-    positionPivot.parent = meshPivot.parent;
-    meshPivot.parent = positionPivot;
-
+  static addPositionPivot(meta, scene) {
+    let positionPivot = new BABYLON.TransformNode("transformposition" + meta.id, scene);
     if (meta.x !== undefined)
       positionPivot.position.x = meta.x;
     if (meta.y !== undefined)
@@ -20,15 +17,12 @@ export default class Utility3D {
 
     return positionPivot;
   }
-  static __orbitAnimation(name, meta, meshPivot, scene) {
-    let orbitPivot = new BABYLON.TransformNode("transformorbit" + name, scene);
-    orbitPivot.parent = meshPivot.parent;
-    meshPivot.parent = orbitPivot;
-
+  static addOrbitPivot(meta, scene) {
+    let orbitPivot = new BABYLON.TransformNode("assetorbittn_" + meta.id, scene);
     let orbitAnimation = new BABYLON.Animation(
-      "staticmeshorbitanim" + name,
+      "assetorbitanim_" + meta.id,
       "position",
-      30,
+      60,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
@@ -60,19 +54,16 @@ export default class Utility3D {
     if (meta.startRatio !== undefined)
       anim.goToFrame(Math.floor(endFrame * meta.startRatio));
 
-    meta.orbitAnimation = anim;
-
+    orbitPivot.orbitAnimation = anim;
     return orbitPivot;
   }
-  static __rotationAnimation(name, meta, meshPivot, scene) {
-    let rotationPivot = new BABYLON.TransformNode("transformrotation" + name, scene);
-    rotationPivot.parent = meshPivot.parent;
-    meshPivot.parent = rotationPivot;
+  static addRotationPivot(meta, scene) {
+    let rotationPivot = new BABYLON.TransformNode("tnrotationasset" + meta.id, scene);
 
     let rotationAnimation = new BABYLON.Animation(
-      "rotationanimationrotation" + name,
+      "tnrotationassetanim" + meta.id,
       "rotation",
-      30,
+      60,
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
@@ -102,7 +93,7 @@ export default class Utility3D {
     let anim = scene.beginAnimation(rotationPivot, 0, endFrame, true);
     if (rotationPivot.rotateStartRatio !== undefined)
       anim.goToFrame(Math.floor(endFrame * meta.rotateStartRatio));
-    meta.rotationAnimation = anim;
+    rotationPivot.rotationAnimation = anim;
 
     return rotationPivot;
   }
@@ -646,30 +637,14 @@ export default class Utility3D {
     let scale = size / biggestSide;
     node.scaling.scaleInPlace(scale);
   }
-  static infoPanel(name, meta, pivotMesh, scene) {
-    let size = 1;
-
-    let symbolPivot = new BABYLON.TransformNode('symbolpopupwrapper' + name, scene);
-    let symbolMat = new BABYLON.StandardMaterial('symbolshowmatalpha' + name, scene);
-    symbolPivot.parent = pivotMesh.parent;
-    pivotMesh.parent = symbolPivot;
-
-    let textPivot = new BABYLON.TransformNode('textsymbolpopupwrapper' + name, scene);
-    textPivot.parent = symbolPivot;
-    textPivot.billboardMode = 7;
-    meta.textPivot = textPivot;
-
-    if (meta.parent === 'uranus') {
-      textPivot.rotation.x -= 1.57;
-    }
-
-    let symbolMesh1 = BABYLON.MeshBuilder.CreatePlane('symbolshow1' + name, {
-      height: size,
-      width: size,
+  static addSymbolPanel(meta, scene) {
+    let textPanel = BABYLON.MeshBuilder.CreatePlane('assettextPanel_' + meta.id, {
+      height: 1,
+      width: 1,
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
 
-    let m = new BABYLON.StandardMaterial('symbolshowmat' + name, scene);
+    let m = new BABYLON.StandardMaterial('assettextPanelMat_' + meta.id, scene);
     let t = new BABYLON.Texture(meta.extended.symbolPath, scene);
     t.vScale = 1;
     t.uScale = 1;
@@ -682,13 +657,18 @@ export default class Utility3D {
     if (meta.symbolY)
       extraY = meta.symbolY;
 
-    meta.yOffset = 0.5 + extraY;
-    symbolMesh1.material = m;
-    symbolMesh1.parent = textPivot;
-    symbolMesh1.rotation.y = 0;
-    symbolMesh1.position.y = meta.yOffset;
+    textPanel.billboardMode = 7;
 
-    return symbolPivot;
+    if (meta.parent === 'uranus') {
+      textPanel.rotation.x -= 1.57;
+    }
+
+    meta.yOffset = 0.5 + extraY;
+    textPanel.material = m;
+    textPanel.rotation.y = 0;
+    textPanel.position.y = meta.yOffset;
+
+    return textPanel;
   }
 
   static createGuides(scene, size = 30) {

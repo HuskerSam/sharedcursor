@@ -32,7 +32,6 @@
     "x": 20,
     "y": 1.25,
     "z": 10,
-    "navDiameter": 2,
     "rotationTime": 50000
   },
   {
@@ -51,7 +50,6 @@
     "x": 16,
     "y": 1.6,
     "z": 15,
-    "navDiameter": 2.4,
     "rotationTime": 100000,
     "rotationDirection": -1
   },
@@ -71,7 +69,6 @@
     "x": 9,
     "y": 1.6,
     "z": 18,
-    "navDiameter": 2.4,
     "rotationTime": 10000
   },
   {
@@ -89,7 +86,6 @@
     "x": 0,
     "y": 1.35,
     "z": 18,
-    "navDiameter": 2.1,
     "rotationTime": 10500
   },
   {
@@ -108,7 +104,6 @@
     "x": -25,
     "y": 2.25,
     "z": 30,
-    "navDiameter": 5,
     "rotationTime": 4166
   },
   {
@@ -126,7 +121,6 @@
     "x": -35,
     "y": 1.6,
     "z": -5,
-    "navDiameter": 6.5,
     "rotationTime": 12000
   },
   {
@@ -146,7 +140,6 @@
     "z": -27,
     "rx": 1.57,
     "ry": 0.3,
-    "navDiameter": 5,
     "rotationTime": 8000
   },
   {
@@ -164,7 +157,6 @@
     "x": 5,
     "y": 3,
     "z": -30,
-    "navDiameter": 5,
     "rotationTime": 7000
   },
   {
@@ -364,7 +356,10 @@
     "px": 0,
     "py": -1,
     "pz": 0,
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "probe_lunar_lander",
@@ -377,7 +372,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Lunar_lander",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "probe_newhorizons",
@@ -391,7 +389,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/New_Horizons",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "probe_psp",
@@ -405,7 +406,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Parker_Solar_Probe",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "probe_tgo",
@@ -419,7 +423,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Trace_Gas_Orbiter",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "probe_shuttle",
@@ -433,7 +440,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "comet_churyumov",
@@ -447,7 +457,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/67P/Churyumov%E2%80%93Gerasimenko",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "comet_halleys",
@@ -461,7 +474,10 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Halley%27s_Comet",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   },
   {
     "id": "comet_hartley",
@@ -489,6 +505,9 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Tempel_1",
-    "loadDisabled": true
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "orbitTime": 50000
   }
 ]
