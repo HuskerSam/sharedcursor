@@ -35,7 +35,7 @@ export default class Rocket3D {
     particles.stop();
 
     this.clearAnimations(probeId);
-    meta.basePivot.parent = this.app.parentPivot(targetId);
+    asset.parent = this.app.parentPivot(targetId);
 
     let orbitPivot = U3D.addOrbitPivot({
       id: meta.id,
@@ -84,7 +84,6 @@ export default class Rocket3D {
 
       if (meta.startRatio !== undefined)
         meta.orbitAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
-
 
       const newRotationAnim = new BABYLON.Animation("tnrotationassetanim_" + probeId,
         "rotation", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);

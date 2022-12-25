@@ -181,16 +181,16 @@ export class StoryApp extends BaseApp {
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
     let noShadow = meta.noShadow === true;
-    let mesh = await U3D.loadStaticMesh(scene, meta.containerPath, noShadow);
-    U3D.sizeNodeToFit(mesh, meta.sizeBoxFit);
+    let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, noShadow);
+    U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
-      mesh.material = this.asteroidHelper.selectedAsteroidMaterial;
-      mesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);
+      scaleMesh.material = this.asteroidHelper.selectedAsteroidMaterial;
+      scaleMesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);
     }
 
     let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
-    mesh.parent = meshPivot;
+    scaleMesh.parent = meshPivot;
     meta.basePivot = meshPivot;
 
     let outerPivot = meshPivot;
@@ -221,7 +221,7 @@ export class StoryApp extends BaseApp {
     outerPivot = meta.positionPivot;
 
     outerPivot.assetMeta = meta;
-    outerPivot.baseMesh = mesh;
+    outerPivot.baseMesh = scaleMesh;
     if (meta.loadDisabled)
       outerPivot.setEnabled(false);
     this.staticBoardObjects[name] = outerPivot;
@@ -241,8 +241,8 @@ export class StoryApp extends BaseApp {
 
     return this.staticBoardObjects[id];
   }
-  assetPosition(assetId) {
-    return this.staticBoardObjects[assetId].getAbsolutePosition();
+  assetPosition(id) {
+    return this.staticBoardObjects[id].baseMesh.getAbsolutePosition();
   }
   async __awaitAssetLoad(name) {
     if (this.staticBoardObjects[name])
