@@ -28,7 +28,7 @@ export default class Utility3D {
     );
 
     let keys = [];
-    let endFrame = Math.floor(meta.orbitTime / 1000 * 30);
+    let endFrame = Math.floor(meta.orbitTime / 1000 * 60);
 
     let orbitDirection = meta.orbitDirection === -1 ? -1 : 1;
 
@@ -73,7 +73,7 @@ export default class Utility3D {
     let y = 0;
     let z = 0;
 
-    let endFrame = meta.rotationTime / 1000 * 30;
+    let endFrame = meta.rotationTime / 1000 * 60;
     let rotationDirection = meta.rotationDirection === -1 ? 2 : -2;
 
     keys.push({

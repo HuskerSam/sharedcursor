@@ -228,7 +228,7 @@ export class StoryApp extends BaseApp {
 
     if (meta.parent) {
       await this.__awaitAssetLoad(meta.parent);
-      this.staticBoardObjects[name].parent = this.staticBoardObjects[meta.parent];
+      this.staticBoardObjects[name].parent = this.staticBoardObjects[meta.parent].assetMeta.basePivot;
     } else
       this.staticBoardObjects[name].parent = sceneParent;
 
@@ -751,13 +751,6 @@ export class StoryApp extends BaseApp {
     this.overrideDisplayRound = this.menuTab3D.selectedReplayRound;
     this.paintBoard();
   }
-  /*
-  get gameRound() {
-    if (!this.gameData || !this.gameData.runningNumberOfSeats)
-      return 0;
-    return Math.floor(this.gameData.turnNumber / this.gameData.runningNumberOfSeats);
-  }
-  */
   get visibleRound() {
     if (this.overrideDisplayRound !== null)
       return this.overrideDisplayRound;
