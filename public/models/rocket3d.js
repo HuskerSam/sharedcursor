@@ -21,23 +21,30 @@ export default class Rocket3D {
     return asset;
   }
   async shootRocket(probeId, targetId, originId) {
-    let scene = this.app.scene;
     let asset = this.clearAnimations(probeId);
 
     let meta = asset.assetMeta;
     asset.setEnabled(true);
 
     U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
-    let particles = U3D.createFireParticles(meta, meta.basePivot, scene);
+    let particles = U3D.createFireParticles(meta, meta.basePivot, this.app.scene);
     particles.start();
 
     await this.rocketTakeOff(probeId, originId);
     await this.rocketTravelTo(probeId, targetId);
     particles.stop();
 
-    asset.assetMeta.basePivot.parent = this.app.staticBoardObjects[targetId];
     this.clearAnimations(probeId);
-    //    this.setOrbitAnimation(probeId);
+    meta.basePivot.parent = this.app.parentPivot(targetId);
+
+    let orbitPivot = U3D.addOrbitPivot({
+      id: meta.id,
+      orbitDirection: 1,
+      orbitRadius: 2,
+      startRatio: 0.25,
+      orbitTime: 60000
+    }, this.app.scene, asset.assetMeta.orbitPivot);
+    meta.orbitAnimation = orbitPivot.orbitAnimation;
 
     setTimeout(() => particles.dispose(), 2000);
   }
@@ -55,8 +62,8 @@ export default class Rocket3D {
       let newOrbitAnim = new BABYLON.Animation("assetorbitanim_" + probeId,
         "position", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
       let orbitKeys = [];
-      let height = 15;
-      let width = 5;
+      let height = 8;
+      let width = 2.5;
       for (let frame = 0; frame < endFrame; frame++) {
         let ratio = frame / endFrame * Math.PI / 2;
         let x = Math.cos(ratio) * width + startPosition.x;
@@ -91,12 +98,12 @@ export default class Rocket3D {
         frame: Math.floor(0.667 * endFrame),
         value: startR
       });
-      let midR = U3D.v(startR.x + Math.PI / 4, startR.y, startR.z);
+      let midR = U3D.v(startR.x, startR.y, startR.z + Math.PI / 4);
       rotationKeys.push({
         frame: Math.floor(0.75 * endFrame),
         value: midR
       });
-      let endR = U3D.v(startR.x + Math.PI / 2, startR.y, startR.z);
+      let endR = U3D.v(startR.x, startR.y, startR.z + Math.PI / 2);
       rotationKeys.push({
         frame: endFrame,
         value: endR

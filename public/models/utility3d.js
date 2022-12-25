@@ -17,8 +17,9 @@ export default class Utility3D {
 
     return positionPivot;
   }
-  static addOrbitPivot(meta, scene) {
-    let orbitPivot = new BABYLON.TransformNode("assetorbittn_" + meta.id, scene);
+  static addOrbitPivot(meta, scene, orbitPivot) {
+    if (!orbitPivot)
+      orbitPivot = new BABYLON.TransformNode("assetorbittn_" + meta.id, scene);
     let orbitAnimation = new BABYLON.Animation(
       "assetorbitanim_" + meta.id,
       "position",
@@ -46,8 +47,6 @@ export default class Utility3D {
     }
 
     orbitAnimation.setKeys(keys);
-    if (!orbitPivot.animations)
-      orbitPivot.animations = [];
     orbitPivot.animations.push(orbitAnimation);
     let anim = scene.beginAnimation(orbitPivot, 0, endFrame, true);
 

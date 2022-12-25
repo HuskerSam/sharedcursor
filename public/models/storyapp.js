@@ -228,14 +228,21 @@ export class StoryApp extends BaseApp {
 
     if (meta.parent) {
       await this.__awaitAssetLoad(meta.parent);
-      this.staticBoardObjects[name].parent = this.staticBoardObjects[meta.parent].assetMeta.basePivot;
+      this.staticBoardObjects[name].parent = this.parentPivot(meta.parent);
     } else
       this.staticBoardObjects[name].parent = sceneParent;
 
     return this.staticBoardObjects[name];
   }
+  parentPivot(id) {
+    let meta = this.staticBoardObjects[id].assetMeta;
+    if (meta.objectType === 'moon' || meta.objectType === 'dwarf')
+      return meta.basePivot;
+
+    return this.staticBoardObjects[id];
+  }
   assetPosition(assetId) {
-    return this.staticBoardObjects[assetId].assetMeta.basePivot.getAbsolutePosition();
+    return this.staticBoardObjects[assetId].getAbsolutePosition();
   }
   async __awaitAssetLoad(name) {
     if (this.staticBoardObjects[name])
