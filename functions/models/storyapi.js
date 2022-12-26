@@ -205,9 +205,9 @@ module.exports = class StoryAPI {
   static processActions(newActions) {
     let assets = {};
     newActions.forEach(action => {
-      if (action.action = 'init')
+      if (action.action === 'init')
         assets[action.sourceId] = action;
-      if (action.action = 'parentChange') {
+      if (action.action === 'parentChange') {
         if (action.sourceId === action.targetId) {
           console.log('circular action parentChange', action);
         } else {
@@ -216,7 +216,7 @@ module.exports = class StoryAPI {
           assets[action.sourceId].parent = action.targetId;
         }
       }
-      if (action.action = 'playCard') {
+      if (action.action === 'playCard') {
         if (!assets[action.sourceId])
           assets[action.sourceId] = {};
         assets[action.sourceId].parent = action.targetId;
