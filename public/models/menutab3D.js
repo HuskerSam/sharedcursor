@@ -455,7 +455,8 @@ export default class MenuTab3D {
   }
   async initFocusedAssetPanel(parent) {
     let scene = this.app.scene;
-    let followSelectedMetaBtn = U3D.addTextPlane(scene, 'Follow [B]', 'followSelectedMetaBtn', "Arial", "", "rgb(0, 200, 0)");
+
+    let followSelectedMetaBtn = U3D.addDefaultText(scene, 'Follow [B]', "rgb(0, 200, 0)");
     followSelectedMetaBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -465,11 +466,11 @@ export default class MenuTab3D {
     };
     followSelectedMetaBtn.position.x = -1;
     followSelectedMetaBtn.position.y = -3.5;
-    followSelectedMetaBtn.position.z = -1;
+    followSelectedMetaBtn.position.z = -5;
     followSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
     followSelectedMetaBtn.parent = parent;
 
-    let followStopBtn = U3D.addTextPlane(scene, 'Stop [A]', 'followSelectedMetaBtn', "Arial", "", "rgb(255, 0, 0)");
+    let followStopBtn = U3D.addDefaultText(scene, 'Stop [A]', "rgb(200, 0, 0)");
     followStopBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -477,9 +478,9 @@ export default class MenuTab3D {
         this.app.aButtonPress();
       }
     };
-    followStopBtn.position.x = 5;
+    followStopBtn.position.x = 5.75;
     followStopBtn.position.y = -3.5;
-    followStopBtn.position.z = -1;
+    followStopBtn.position.z = -5;
     followStopBtn.scaling = U3D.v(2, 2, 2);
     followStopBtn.parent = parent;
 
@@ -491,9 +492,9 @@ export default class MenuTab3D {
         this.nextSelectedObject();
       }
     };
-    nextSelectedMetaBtn.position.x = 6.5;
-    nextSelectedMetaBtn.position.y = 3;
-    nextSelectedMetaBtn.position.z = -2;
+    nextSelectedMetaBtn.position.x = 7.5;
+    nextSelectedMetaBtn.position.y = 5;
+    nextSelectedMetaBtn.position.z = -5;
     nextSelectedMetaBtn.scaling = U3D.v(1);
     nextSelectedMetaBtn.parent = parent;
 
@@ -505,13 +506,13 @@ export default class MenuTab3D {
         this.nextSelectedObject(true);
       }
     };
-    previousSelectedMetaBtn.position.x = -2.5;
-    previousSelectedMetaBtn.position.y = 3;
-    previousSelectedMetaBtn.position.z = -2;
+    previousSelectedMetaBtn.position.x = -3.5;
+    previousSelectedMetaBtn.position.y = 5;
+    previousSelectedMetaBtn.position.z = -5;
     previousSelectedMetaBtn.scaling = U3D.v(1);
     previousSelectedMetaBtn.parent = parent;
 
-    this.normalAssetSizeBtn = U3D.addTextPlane(scene, 'Better', 'normalAssetSizeBtn');
+    this.normalAssetSizeBtn = U3D.addDefaultText(scene, 'Better');
     this.normalAssetSizeBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -520,13 +521,13 @@ export default class MenuTab3D {
         this.updateAssetSize('normal');
       }
     };
-    this.normalAssetSizeBtn.position.x = 3;
+    this.normalAssetSizeBtn.position.x = 2.9;
     this.normalAssetSizeBtn.position.y = -1.25;
-    this.normalAssetSizeBtn.position.z = 0;
+    this.normalAssetSizeBtn.position.z = -5;
     this.normalAssetSizeBtn.scaling = U3D.v(2);
     this.normalAssetSizeBtn.parent = parent;
 
-    this.assetPanelHugeButton = U3D.addTextPlane(scene, 'Best', 'assetPanelHugeButton');
+    this.assetPanelHugeButton = U3D.addDefaultText(scene, 'Best');
     this.assetPanelHugeButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -535,13 +536,13 @@ export default class MenuTab3D {
         this.updateAssetSize('huge');
       }
     };
-    this.assetPanelHugeButton.position.x = 7;
+    this.assetPanelHugeButton.position.x = 6.75;
     this.assetPanelHugeButton.position.y = -1.25;
-    this.assetPanelHugeButton.position.z = 0;
+    this.assetPanelHugeButton.position.z = -5;
     this.assetPanelHugeButton.scaling = U3D.v(2);
     this.assetPanelHugeButton.parent = parent;
 
-    this.assetSmallSizeButton = U3D.addTextPlane(scene, 'Normal', 'assetSmallSizeButton');
+    this.assetSmallSizeButton = U3D.addDefaultText(scene, 'Normal');
     this.assetSmallSizeButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -550,9 +551,9 @@ export default class MenuTab3D {
         this.updateAssetSize('small');
       }
     };
-    this.assetSmallSizeButton.position.x = -2;
+    this.assetSmallSizeButton.position.x = -1.75;
     this.assetSmallSizeButton.position.y = -1.25;
-    this.assetSmallSizeButton.position.z = 0;
+    this.assetSmallSizeButton.position.z = -5;
     this.assetSmallSizeButton.scaling = U3D.v(2);
     this.assetSmallSizeButton.parent = parent;
 
@@ -580,7 +581,7 @@ export default class MenuTab3D {
     this.selectedContainerTransform.parent = this.focusPanelTab;
     this.selectedContainerTransform.position.x = 4;
     this.selectedContainerTransform.position.z = 8;
-    this.selectedContainerTransform.position.y = 5;
+    this.selectedContainerTransform.position.y = 9;
     this.selectedContainerTransform.rotation.y = Math.PI;
 
     let result, mesh;
@@ -609,9 +610,11 @@ export default class MenuTab3D {
         this.app.pauseAssetSpin(pointerInfo, mesh, meta);
       }
     };
-    let factor = 2.5;
-    if (this.app.inXR)
+    let factor = 3;
+    if (this.app.inXR) {      
+      this.selectedContainerTransform.position.y = 6;
       factor = 0.35;
+    }
     U3D.sizeNodeToFit(mesh, factor);
 
     if (assetMeta.asteroidType)
@@ -620,10 +623,11 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose();
 
-    this.selectedAssetLabel = U3D.addTextPlane(this.scene, desc, 'selectedAssetLabel');
+    this.selectedAssetLabel = U3D.addDefaultText(this.scene, desc, "#0000FF", "#ffffff");
     this.selectedAssetLabel.position.x = 2;
-    this.selectedAssetLabel.position.y = 3;
-    this.selectedAssetLabel.position.z = -1.5;
+    this.selectedAssetLabel.position.y = 1.5;
+    this.selectedAssetLabel.position.z = -4;
+    this.selectedAssetLabel.scaling = U3D.v(1.5);
     this.selectedAssetLabel.parent = this.focusPanelTab;
 
     this.updateAssetSizeButtons();

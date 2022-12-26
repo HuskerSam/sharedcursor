@@ -719,7 +719,10 @@ export default class Utility3D {
 
     mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
-  static addTextPlane(scene, text, id = "randomid", font_family = "Arial", bold = " bold", color = "#FFFFFF", backColor = "transparent") {
+  static addDefaultText(scene, text, color = "#FFFFFF", backColor = "rgb(127,127,127)") {
+    return this.addTextPlane(scene, text, "defaulttextplane", "Arial", " ", color, backColor, 64)
+  }
+  static addTextPlane(scene, text, id = "randomid", font_family = "Arial", bold = " bold", color = "#FFFFFF", backColor = "transparent", paddingSides = 8) {
     let font_size = 192;
     var font = bold + " " + font_size + "px " + font_family;
     var planeHeight = 1;
@@ -728,7 +731,7 @@ export default class Utility3D {
     var temp = new BABYLON.DynamicTexture(id + "dt2", 64, scene);
     var tmpctx = temp.getContext();
     tmpctx.font = font;
-    var DTWidth = tmpctx.measureText(text).width + 8;
+    var DTWidth = tmpctx.measureText(text).width + paddingSides;
 
     //Calculate width the plane has to be
     var planeWidth = DTWidth * ratio;
@@ -743,7 +746,7 @@ export default class Utility3D {
     mat.emissiveTexture = dynamicTexture;
     mat.ambientTexture = dynamicTexture;
     dynamicTexture.hasAlpha = true;
-    dynamicTexture.drawText(text, null, null, font, color, backColor, true);
+    dynamicTexture.drawText(text, null, 205, font, color, backColor, true);
 
     //Create plane and set dynamic texture as material
     var plane = BABYLON.MeshBuilder.CreatePlane(id + "textplane", {
