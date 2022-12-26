@@ -4,152 +4,143 @@ export default class Rocket3D {
   constructor(app) {
     this.app = app;
   }
-  clearAnimations(probeId) {
-    let asset = this.app.staticBoardObjects[probeId];
-    let meta = asset.assetMeta;
-    if (meta.orbitAnimation) {
-      meta.orbitAnimation.stop();
-      meta.orbitPivot.animations = [];
-      meta.orbitAnimation = null;
-    }
-    if (meta.rotationAnimation) {
-      meta.rotationAnimation.stop();
-      meta.rotationPivot.animations = [];
-      meta.rotationAnimation = null;
-    }
-
-    return asset;
-  }
   async shootRocket(probeId, targetId, originId) {
-    let asset = this.clearAnimations(probeId);
+    let asset = this.app.clearAnimations(probeId);
 
     let meta = asset.assetMeta;
+    asset.parent = null;
     asset.setEnabled(true);
 
-    U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
-    let particles = U3D.createFireParticles(meta, meta.basePivot, this.app.scene);
-    particles.start();
+    //U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
 
-    await this.rocketTakeOff(probeId, originId);
-    await this.rocketTravelTo(probeId, targetId);
-    particles.stop();
+    await this.rocketTravel(probeId, targetId, originId);
+    await this.rocketArrive(probeId, targetId);
+  }
 
-    this.clearAnimations(probeId);
+  async rocketArrive(probeId, targetId) {
+    this.app.clearAnimations(probeId);
+    let asset = this.app.staticBoardObjects[probeId];
     asset.parent = this.app.parentPivot(targetId);
 
     let orbitPivot = U3D.addOrbitPivot({
-      id: meta.id,
+      id: probeId,
       orbitDirection: 1,
       orbitRadius: 2,
       startRatio: 0.25,
       orbitTime: 60000
     }, this.app.scene, asset.assetMeta.orbitPivot);
-    meta.orbitAnimation = orbitPivot.orbitAnimation;
-
-    setTimeout(() => particles.dispose(), 2000);
+    asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
   }
+  __createTravelPath(startPosition, startRotation, endPosition) {
+    let phase1Time = 2500;
+    let phase2Time = 6000;
+    let takeOffHeight = 8;
+    let takeOffX = 2.5;
 
-  async rocketTakeOff(probeId, originId) {
-    return new Promise((res, rej) => {
-      let asset = this.app.staticBoardObjects[probeId];
-      let meta = asset.assetMeta;
+    let xDelta = endPosition.x - startPosition.x;
+    let zDelta = endPosition.z - startPosition.z;
+    let yPointedRotation = Math.atan2(xDelta, zDelta);
 
-      let timeMS = 2500;
-      const endFrame = timeMS * 60 / 1000;
+    let phase1PosStart = U3D.v(startPosition.x, startPosition.y, startPosition.z);
+    let phase1PosEnd = U3D.v(startPosition.x + takeOffX, startPosition.y + takeOffHeight, startPosition.z);
 
-      let startPosition = this.app.assetPosition(originId);
-
-      let newOrbitAnim = new BABYLON.Animation("assetorbitanim_" + probeId,
-        "position", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-      let orbitKeys = [];
-      let height = 8;
-      let width = 2.5;
-      for (let frame = 0; frame < endFrame; frame++) {
-        let ratio = frame / endFrame * Math.PI / 2;
-        let x = Math.cos(ratio) * width + startPosition.x;
-        let y = Math.sin(ratio) * height + startPosition.y;
-        let z = startPosition.z;
-        let value = U3D.v(x, y, z);
-        orbitKeys.push({
-          frame,
-          value
-        });
-      }
-
-      newOrbitAnim.setKeys(orbitKeys);
-      meta.orbitPivot.animations.push(newOrbitAnim);
-      meta.orbitAnimation = this.app.scene.beginAnimation(meta.orbitPivot, 0, endFrame, false, 1, () => {
-        res();
+    let positionKeys = [];
+    let rotationKeys = [];
+    let endPhase1 = phase1Time * 60 / 1000;
+    for (let frame = 0; frame < endPhase1; frame++) {
+      let ratio = frame / endPhase1;// * Math.PI / 2;
+      let x = ratio * takeOffX + startPosition.x;
+      let y = ratio * takeOffHeight + startPosition.y;
+      let z = startPosition.z;
+      let value = U3D.v(x, y, z);
+      positionKeys.push({
+        frame,
+        value
       });
+    }
 
-      if (meta.startRatio !== undefined)
-        meta.orbitAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
+    let phase1RotStart = U3D.vector(startRotation);
+    let phase1RotEnd = U3D.v(startRotation.x, startRotation.y, startRotation.z + Math.PI / 2);
 
-      const newRotationAnim = new BABYLON.Animation("tnrotationassetanim_" + probeId,
-        "rotation", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-      const rotationKeys = [];
-      let startR = U3D.v(0, 0, 0);
-      rotationKeys.push({
-        frame: 0,
-        value: startR
-      });
-      rotationKeys.push({
-        frame: Math.floor(0.667 * endFrame),
-        value: startR
-      });
-      let midR = U3D.v(startR.x, startR.y, startR.z + Math.PI / 4);
-      rotationKeys.push({
-        frame: Math.floor(0.75 * endFrame),
-        value: midR
-      });
-      let endR = U3D.v(startR.x, startR.y, startR.z + Math.PI / 2);
-      rotationKeys.push({
-        frame: endFrame,
-        value: endR
-      });
-      newRotationAnim.setKeys(rotationKeys);
-
-      meta.rotationPivot.animations.push(newRotationAnim);
-      meta.rotationAnimation = this.app.scene.beginAnimation(meta.rotationPivot, 0, endFrame, false);
-
-      if (meta.startRatio !== undefined)
-        meta.rotationAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
+    rotationKeys.push({
+      frame: 0,
+      value: phase1RotStart
     });
+    rotationKeys.push({
+      frame: Math.floor(0.667 * endPhase1),
+      value: phase1RotStart
+    });
+    rotationKeys.push({
+      frame: Math.floor(0.75 * endPhase1),
+      value: U3D.v(phase1RotStart.x, phase1RotStart.y, (phase1RotStart.z + phase1RotEnd.z) / 2)
+    });
+    rotationKeys.push({
+      frame: endPhase1,
+      value: phase1RotEnd
+    });
+
+
+    let endPhase2 = phase2Time * 60 / 1000;
+    positionKeys.push({
+      frame: endPhase1 + 1,
+      value: U3D.vector(phase1PosEnd)
+    });
+    positionKeys.push({
+      frame: endPhase1 + endPhase2,
+      value: U3D.v(endPosition.x, phase1PosEnd.y, endPosition.z)
+    });
+
+
+    let phase2RotStart = phase1RotEnd;
+    let phase2RotStop = U3D.v(phase1RotEnd.x, yPointedRotation, phase1RotEnd.z);
+    rotationKeys.push({
+      frame: endPhase1 + 1,
+      value: phase2RotStart
+    });
+    rotationKeys.push({
+      frame: endPhase1 + endPhase2,
+      value: phase2RotStop
+    });
+
+    return {
+      positionKeys,
+      rotationKeys,
+      frames: endPhase1 + endPhase2,
+      time: phase1Time + phase2Time
+    }
   }
-  async rocketTravelTo(probeId, targetId) {
+  async rocketTravel(probeId, targetId, originId) {
     return new Promise((res, rej) => {
       let asset = this.app.staticBoardObjects[probeId];
       let meta = asset.assetMeta;
 
-      let timeMS = 10000;
-      const endFrame = timeMS * 60 / 1000;
+      //U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
+      let startPosition = this.app.assetPosition(originId);
+      let endPosition = this.app.assetPosition(targetId);
+      let startRotation = U3D.v(0);
+      let travelPath = this.__createTravelPath(startPosition, startRotation, endPosition)
+
+      let particles = U3D.createFireParticles(meta, meta.basePivot, this.app.scene);
+      particles.start();
+      setTimeout(() => particles.dispose(), 5000);
+
 
       let newOrbitAnim = new BABYLON.Animation("assetorbitanim_" + probeId,
         "position", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
-      let orbitKeys = [];
+      let newRotationAnim = new BABYLON.Animation("assetrotationanim_" + probeId,
+        "rotation", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
 
-      let startPosition = this.app.assetPosition(probeId);
-      let endPosition = this.app.assetPosition(targetId);
-
-      orbitKeys.push({
-        frame: 0,
-        value: U3D.v(startPosition.x, startPosition.y, startPosition.z)
-      });
-      orbitKeys.push({
-        frame: endFrame,
-        value: U3D.v(endPosition.x, startPosition.y, endPosition.z)
-      });
-
-
-      newOrbitAnim.setKeys(orbitKeys);
+      newOrbitAnim.setKeys(travelPath.positionKeys);
+      newRotationAnim.setKeys(travelPath.rotationKeys);
       meta.orbitPivot.animations.push(newOrbitAnim);
+      meta.rotationPivot.animations.push(newRotationAnim);
+
+      let endFrame = travelPath.frames;
       meta.orbitAnimation = this.app.scene.beginAnimation(meta.orbitPivot, 0, endFrame, false, 1, () => {
         res();
       });
-
-      if (meta.startRatio !== undefined)
-        meta.orbitAnimation.goToFrame(Math.floor(endFrame * meta.startRatio));
-
+      meta.rotationAnimation = this.app.scene.beginAnimation(meta.rotationPivot, 0, endFrame, false);
+      setTimeout(() => res(), 20000);
     });
   }
 }

@@ -208,9 +208,13 @@ module.exports = class StoryAPI {
       if (action.action = 'init')
         assets[action.sourceId] = action;
       if (action.action = 'parentChange') {
-        if (!assets[action.sourceId])
-          assets[action.sourceId] = {};
-        assets[action.sourceId].parent = action.targetId;
+        if (action.sourceId === action.targetId) {
+          console.log('circular action parentChange', action);
+        } else {
+          if (!assets[action.sourceId])
+            assets[action.sourceId] = {};
+          assets[action.sourceId].parent = action.targetId;
+        }
       }
       if (action.action = 'playCard') {
         if (!assets[action.sourceId])
@@ -227,8 +231,12 @@ module.exports = class StoryAPI {
         action: 'init',
         when: 'init'
       };
-      if (assets[id].parent !== undefined)
-        data.parent = assets[id].parent;
+      if (assets[id].parent !== undefined) {
+        if (assets[id].parent !== id)
+          data.parent = assets[id].parent;
+        else
+          console.log('invalid init id parent', assets[id]);
+      }
       if (assets[id].orbiting !== undefined)
         data.orbiting = assets[id].orbiting;
 

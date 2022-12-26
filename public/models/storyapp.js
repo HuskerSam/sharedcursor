@@ -67,7 +67,7 @@ export class StoryApp extends BaseApp {
   }
   async _initContent3D() {
     let startTime = new Date();
-    this.sceneTransformNode = new BABYLON.TransformNode('sceneTransformNode', this.scene);
+    this.sceneTransformNode = null;//new BABYLON.TransformNode('sceneTransformNode', this.scene);
     this.createMenu3DWrapper();
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
@@ -870,6 +870,7 @@ export class StoryApp extends BaseApp {
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
   async animatedRoundAction(actionDetails) {
+    console.log(actionDetails);
     await this.rocketHelper.shootRocket(actionDetails.sourceId, actionDetails.targetId, actionDetails.originId);
   }
   applyInitRoundAction(meta) {
@@ -880,5 +881,22 @@ export class StoryApp extends BaseApp {
       else if (meta.parent !== undefined)
         asset.parent = this.staticBoardObjects[meta.parent];
     }
+  }
+
+  clearAnimations(probeId) {
+    let asset = this.staticBoardObjects[probeId];
+    let meta = asset.assetMeta;
+    if (meta.orbitAnimation) {
+      meta.orbitAnimation.stop();
+      meta.orbitPivot.animations = [];
+      meta.orbitAnimation = null;
+    }
+    if (meta.rotationAnimation) {
+      meta.rotationAnimation.stop();
+      meta.rotationPivot.animations = [];
+      meta.rotationAnimation = null;
+    }
+
+    return asset;
   }
 }
