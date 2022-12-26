@@ -157,7 +157,7 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.position.y = 5;
+    this.menuBarLeftTN.position.y = 1;
     this.menuBarLeftTN.position.z = 3;
     this.menuBarLeftTN.rotation.x = -0.5;
     this.menuBarLeftTN.billboardMode = 7;

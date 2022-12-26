@@ -1284,15 +1284,17 @@ export class BaseApp {
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
     this.camera.wheelPrecision = 10;
-    this.camera.lowerRadiusLimit = 2;
-    this.camera.upperRadiusLimit = 20;
+    this.camera.lowerRadiusLimit = 5;
+    this.camera.upperRadiusLimit = 15;
     this.camera.wheelDeltaPercentage = 0.01;
     this.camera.allowUpsideDown = false;
     this.camera.maxZ = 750;
     this.camera.panningAxis.y = 0;
     this.camera.panningAxis.z = 1;
+    this.camera.upperBetaLimit = 1.5;
+    this.camera.lowerBetaLimit = 0.25;
 
-  //  scene.activeCamera.useAutoRotationBehavior = true;
+    //  scene.activeCamera.useAutoRotationBehavior = true;
     scene.activeCamera.beta -= 0.2;
 
     scene.activeCamera.setPosition(this.cameraMetaX.position);

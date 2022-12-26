@@ -63,7 +63,7 @@ export default class ActionCards {
   }
   async renderPlayerCard(rawCardIndex) {
     let cardHolder = this.cardPositions[rawCardIndex];
-    let cardIndex = rawCardIndex + 3;
+    let cardIndex = rawCardIndex;
 
     if (cardHolder.cachedIndex !== cardIndex) {
       cardHolder.cachedIndex = cardIndex;
