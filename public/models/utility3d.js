@@ -719,7 +719,7 @@ export default class Utility3D {
 
     mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
-  static addTextPlane(scene, text, id = "randomid", font_family = "Arial", bold = " bold", color = "#FF00FF", backColor = "transparent") {
+  static addTextPlane(scene, text, id = "randomid", font_family = "Arial", bold = " bold", color = "#FFFFFF", backColor = "transparent") {
     let font_size = 192;
     var font = bold + " " + font_size + "px " + font_family;
     var planeHeight = 1;

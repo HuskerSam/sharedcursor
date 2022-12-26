@@ -47,7 +47,7 @@ export default class Asteroid3D {
       if (i % 4 === 3)
         linkNameList += '<br>';
     });
-    this.asteroidLoadingLine1 = this.app.addLineToLoading(`Asteroids - ${count} from ${max} available` + linkNameList);
+    this.asteroidLoadingLine1 = this.app.addLineToLoading(`Asteroids - ${count} from ${max} available<br>` + linkNameList);
 
     this.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
 
