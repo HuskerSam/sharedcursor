@@ -322,14 +322,19 @@ export class StoryApp extends BaseApp {
   }
 
   //profile related
-  async switchSkyboxNext() {
+  async switchSkyboxNext(previous) {
     let index = this.menuTab3D.skyboxList().indexOf(this.profile.skyboxPath);
-    if (index < this.menuTab3D.skyboxList().length - 1)
-      index++
+    if (previous)
+      index--;
     else
+      index++;
+    if (index > this.menuTab3D.skyboxList().length - 1)
       index = 0;
+    if (index < 0)
+      index = this.menuTab3D.skyboxList().length - 1;
+
     this.profile.skyboxPath = this.menuTab3D.skyboxList()[index];
-    this.menuTab3D._updateSkyboxNamePanel();
+    this.menuTab3D.updateSkyboxLabel();
     this.initSkybox();
 
     let updatePacket = {
@@ -346,6 +351,7 @@ export class StoryApp extends BaseApp {
     this.clearActiveFollowMeta();
     this.asteroidHelper.loadAsteroids();
     this.asteroidHelper.asteroidUpdateMaterials();
+    this.menuTab3D.updateAsteroidOptions();
 
     if (this.fireToken)
       await firebase.firestore().doc(`Users/${this.uid}`).update({
@@ -369,6 +375,7 @@ export class StoryApp extends BaseApp {
     }
 
     this.asteroidHelper.asteroidUpdateMaterials();
+    this.menuTab3D.updateAsteroidOptions();
 
     await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
       merge: true
@@ -394,7 +401,7 @@ export class StoryApp extends BaseApp {
     sceneLightLevel = this._getLightLevel(sceneLightLevel + delta);
     this.profile.sceneLightLevel = sceneLightLevel;
     this.mainLight.intensity = sceneLightLevel;
-    this.menuTab3D._updateLightIntensityPanel();
+    this.menuTab3D.updateDiffuseLightLabel();
     if (this.fireToken)
       await firebase.firestore().doc(`Users/${this.uid}`).update({
         sceneLightLevel

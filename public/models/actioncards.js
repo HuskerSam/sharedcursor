@@ -79,7 +79,7 @@ export default class ActionCards {
     if (cardHolder.cachedIndex !== cardIndex) {
       cardHolder.cachedIndex = cardIndex;
       if (cardHolder.assetMesh)
-        cardHolder.assetMesh.dispose();
+        cardHolder.assetMesh.dispose(true, true);
 
       let cardMeta = this.app.actionCards[cardIndex];
       let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
@@ -101,7 +101,7 @@ export default class ActionCards {
 
 
       if (cardHolder.assetName)
-        cardHolder.assetName.dispose();
+        cardHolder.assetName.dispose(true, true);
       cardHolder.assetName = U3D.addDefaultText(this.app.scene, meta.name, "#0000FF", "#ffffff");
       cardHolder.assetName.position.x = -this.cardWidth / 2 + 0.5;
       cardHolder.assetName.position.y = 0; //this.cardHeight / 2;
@@ -111,7 +111,7 @@ export default class ActionCards {
       cardHolder.assetName.parent = cardHolder;
 
       if (cardHolder.assetType)
-        cardHolder.assetType.dispose();
+        cardHolder.assetType.dispose(true, true);
       cardHolder.assetType = U3D.addDefaultText(this.app.scene, meta.objectType, "#0000FF", "#ffffff");
       cardHolder.assetType.position.x = this.cardWidth / 2 - 0.5;
       cardHolder.assetType.position.y = 0; //this.cardHeight / 2;

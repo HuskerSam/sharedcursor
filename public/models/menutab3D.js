@@ -88,10 +88,11 @@ export default class MenuTab3D {
     selectedObjectMenuBtn.position.x = -10;
     selectedObjectMenuBtn.position.z = 2;
   }
-  addIconBtn(iconName, name) {
+  addIconBtn(iconName, name = 'random') {
     let texturePath = '/fontcons/' + iconName + '.svg';
-    let mesh = BABYLON.MeshBuilder.CreateDisc(name, {
-      radius: 2,
+    let mesh = BABYLON.MeshBuilder.CreatePlane(name, {
+      width: 3,
+      height: 3,
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.scene);
     let mat = new BABYLON.StandardMaterial(name + 'disc-mat', this.scene);
@@ -103,6 +104,7 @@ export default class MenuTab3D {
     mat.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
     mat.ambientColor = new BABYLON.Color3(0.25, 0, 1);
     mesh.material = mat;
+    mesh.rotation.x = Math.PI;
 
     return mesh;
   }
@@ -120,12 +122,18 @@ export default class MenuTab3D {
   }
 
   initOptionsTab(parent) {
-    let scene = this.app.scene;
-    let lightDnBtn = U3D.addTextPlane(scene, '-', 'lightDnBtn');
-    lightDnBtn.position.x = -11;
-    lightDnBtn.position.y = 3;
-    lightDnBtn.position.z = 1;
-    lightDnBtn.scaling = U3D.v(3, 3, 3);
+    let diffuseLightLabel = U3D.addTextPlane(this.app.scene, 'Diffuse Light');
+    diffuseLightLabel.position.x = -21;
+    diffuseLightLabel.position.y = 1;
+    diffuseLightLabel.position.z = 2;
+    diffuseLightLabel.scaling = U3D.v(2);
+    diffuseLightLabel.parent = parent;
+
+    let lightDnBtn = this.addIconBtn('minus');
+    lightDnBtn.position.x = -15;
+    lightDnBtn.position.y = 1;
+    lightDnBtn.position.z = 2;
+    lightDnBtn.scaling = U3D.v(0.5);
     lightDnBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -135,7 +143,7 @@ export default class MenuTab3D {
     };
     lightDnBtn.parent = parent;
 
-    let lightUpBtn = U3D.addTextPlane(scene, '+', 'lightUpBtn');
+    let lightUpBtn = this.addIconBtn('plus');
     lightUpBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -143,47 +151,101 @@ export default class MenuTab3D {
         this.app.sceneLightChange(0.1);
       }
     };
-    lightUpBtn.position.x = -9;
-    lightUpBtn.position.y = 3;
-    lightUpBtn.position.z = 1;
-    lightUpBtn.scaling = U3D.v(3, 3, 3);
+    lightUpBtn.position.x = -13;
+    lightUpBtn.position.y = 1;
+    lightUpBtn.position.z = 2;
+    lightUpBtn.scaling = U3D.v(0.5);
     lightUpBtn.parent = parent;
 
-    this._updateLightIntensityPanel();
+    this.updateDiffuseLightLabel();
 
-    let cycleSkyboxBtn = this.addIconBtn('eye', 'cycleSkyboxBtn');
-    cycleSkyboxBtn.position.x = -16;
-    cycleSkyboxBtn.position.y = 5;
-    cycleSkyboxBtn.parent = parent;
-    cycleSkyboxBtn.assetMeta = {
+    let skyboxLabel = U3D.addTextPlane(this.app.scene, 'Skybox');
+    skyboxLabel.position.x = -21;
+    skyboxLabel.position.y = 4;
+    skyboxLabel.position.z = 4;
+    skyboxLabel.scaling = U3D.v(2);
+    skyboxLabel.parent = parent;
+
+    let skyboxPrev = this.addIconBtn('previous');
+    skyboxPrev.position.x = -15;
+    skyboxPrev.position.y = 4;
+    skyboxPrev.position.z = 4;
+    skyboxPrev.scaling = U3D.v(0.5);
+    skyboxPrev.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.switchSkyboxNext(true);
+      }
+    };
+    skyboxPrev.parent = parent;
+
+    let skyboxNext = this.addIconBtn('next');
+    skyboxNext.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.app.switchSkyboxNext();
       }
     };
-    this._updateSkyboxNamePanel();
+    skyboxNext.position.x = -13;
+    skyboxNext.position.y = 4;
+    skyboxNext.position.z = 4;
+    skyboxNext.scaling = U3D.v(0.5);
+    skyboxNext.parent = parent;
+    this.updateSkyboxLabel();
 
-    this.asteroidOptionsPanel = new BABYLON.TransformNode('asteroidOptionsPanel', scene);
-    this.asteroidOptionsPanel.parent = parent;
-    this.asteroidOptionsPanel.position.y = 7;
-    this.initAsteroidsTab(this.asteroidOptionsPanel);
+    let asteroidCountLabel = U3D.addTextPlane(this.app.scene, 'Asteroid Count');
+    asteroidCountLabel.position.x = -22;
+    asteroidCountLabel.position.y = 7;
+    asteroidCountLabel.position.z = 7;
+    asteroidCountLabel.scaling = U3D.v(2);
+    asteroidCountLabel.parent = parent;
+
+    let asteroidDownCountBtn = this.addIconBtn('minus');
+    asteroidDownCountBtn.position.x = -15;
+    asteroidDownCountBtn.position.y = 7;
+    asteroidDownCountBtn.position.z = 7;
+    asteroidDownCountBtn.scaling = U3D.v(0.5);
+    asteroidDownCountBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.asteroidCountChange(-20);
+      }
+    };
+    asteroidDownCountBtn.parent = parent;
+
+    let asteroidUpCountBtn = this.addIconBtn('plus');
+    asteroidUpCountBtn.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.asteroidCountChange(20);
+      }
+    };
+    asteroidUpCountBtn.position.x = -13;
+    asteroidUpCountBtn.position.y = 7;
+    asteroidUpCountBtn.position.z = 7;
+    asteroidUpCountBtn.scaling = U3D.v(0.5);
+    asteroidUpCountBtn.parent = parent;
+    this.updateAsteroidOptions();
   }
-  _updateLightIntensityPanel() {
+  updateDiffuseLightLabel() {
     if (this.lightLevelPanel)
-      this.lightLevelPanel.dispose();
+      this.lightLevelPanel.dispose(true, true);
 
     let level = Number(this.app.profile.sceneLightLevel).toFixed(1);
     this.lightLevelPanel = U3D.addTextPlane(this.app.scene, level, 'lightLevelPanel');
-    this.lightLevelPanel.position.x = -7;
-    this.lightLevelPanel.position.y = 3;
-    this.lightLevelPanel.position.z = 1;
-    this.lightLevelPanel.scaling = U3D.v(2, 2, 2);
+    this.lightLevelPanel.position.x = 0;
+    this.lightLevelPanel.position.y = 1;
+    this.lightLevelPanel.position.z = 2;
+    this.lightLevelPanel.scaling = U3D.v(2);
     this.lightLevelPanel.parent = this.optionsMenuTab;
   }
-  _updateSkyboxNamePanel() {
+  updateSkyboxLabel() {
     if (this.skyboxNamePanel)
-      this.skyboxNamePanel.dispose();
+      this.skyboxNamePanel.dispose(true, true);
 
     let skybox = this.app.profile.skyboxPath;
     let pieces = skybox.split('_');
@@ -193,10 +255,10 @@ export default class MenuTab3D {
     })
     skybox = pieces.join(' ');
     this.skyboxNamePanel = U3D.addTextPlane(this.app.scene, skybox, 'skyboxNamePanel');
-    this.skyboxNamePanel.position.x = -6;
-    this.skyboxNamePanel.position.y = 5;
-    this.skyboxNamePanel.position.z = 1;
-    this.skyboxNamePanel.scaling = U3D.v(2, 2, 2);
+    this.skyboxNamePanel.position.x = 0;
+    this.skyboxNamePanel.position.y = 4;
+    this.skyboxNamePanel.position.z = 4;
+    this.skyboxNamePanel.scaling = U3D.v(2);
     this.skyboxNamePanel.parent = this.optionsMenuTab;
   }
   skyboxList() {
@@ -214,36 +276,70 @@ export default class MenuTab3D {
       'vortex_starless'
     ];
   }
+  updateAsteroidOptions() {
+    if (this.asteroidCountLabel)
+      this.asteroidCountLabel.dispose(true, true);
+    let count = this.app.asteroidHelper.getAsteroidCount(this.app.profile.asteroidCount);
+    this.asteroidCountLabel = U3D.addTextPlane(this.app.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
+    this.asteroidCountLabel.position.x = 0;
+    this.asteroidCountLabel.position.y = 7;
+    this.asteroidCountLabel.position.z = 7;
+    this.asteroidCountLabel.scaling = U3D.v(2);
+    this.asteroidCountLabel.parent = this.optionsMenuTab;
 
-  initAsteroidsTab(parent) {
-    let scene = this.app.scene;
-    let asteroidDownCountBtn = U3D.addTextPlane(scene, '-', 'asteroidDownCountBtn');
-    asteroidDownCountBtn.position.x = -11;
-    asteroidDownCountBtn.position.y = 1;
-    asteroidDownCountBtn.position.z = 1;
-    asteroidDownCountBtn.scaling = U3D.v(3, 3, 3);
-    asteroidDownCountBtn.assetMeta = {
+    if (this.asteroidWireframeBtn)
+      this.asteroidWireframeBtn.dispose(true, true);
+    let wireframe = this.app.profile.asteroidWireframe === true;
+    let wireframeDesc = wireframe ? 'Solid' : 'Wireframe';
+    this.asteroidWireframeBtn = U3D.addDefaultText(this.app.scene, wireframeDesc);
+    this.asteroidWireframeBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidCountChange(-20);
+        this.app.asteroidChangeMaterial(!wireframe, null, null);
       }
     };
-    asteroidDownCountBtn.parent = parent;
+    this.asteroidWireframeBtn.position.x = -24;
+    this.asteroidWireframeBtn.position.y = 11;
+    this.asteroidWireframeBtn.position.z = 10;
+    this.asteroidWireframeBtn.scaling = U3D.v(3);
+    this.asteroidWireframeBtn.parent = this.optionsMenuTab;
 
-    let asteroidUpCountBtn = U3D.addTextPlane(scene, '+', 'asteroidUpCountBtn');
-    asteroidUpCountBtn.assetMeta = {
+    if (this.asteroidTextureBtn)
+      this.asteroidTextureBtn.dispose(true, true);
+    let profileTexture = this.app.profile.asteroidColorOnly === true;
+    let profileDesc = profileTexture ? 'Color' : 'Rocky';
+    this.asteroidTextureBtn = U3D.addDefaultText(this.app.scene, profileDesc);
+    this.asteroidTextureBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidCountChange(20);
+        this.app.asteroidChangeMaterial(null, !profileTexture, null);
       }
     };
-    asteroidUpCountBtn.position.x = -7;
-    asteroidUpCountBtn.position.y = 1;
-    asteroidUpCountBtn.position.z = 1;
-    asteroidUpCountBtn.scaling = U3D.v(3, 3, 3);
-    asteroidUpCountBtn.parent = parent;
+    this.asteroidTextureBtn.position.x = -14;
+    this.asteroidTextureBtn.position.y = 11;
+    this.asteroidTextureBtn.position.z = 10;
+    this.asteroidTextureBtn.scaling = U3D.v(3);
+    this.asteroidTextureBtn.parent = this.optionsMenuTab;
+
+    if (this.asteroidInternalLogos)
+      this.asteroidInternalLogos.dispose(true, true);
+    let includeLogos = this.app.profile.asteroidExcludeLogos === true;
+    let logoDesc = includeLogos ? 'Logos' : 'No Logos';
+    this.asteroidInternalLogos = U3D.addDefaultText(this.app.scene, logoDesc);
+    this.asteroidInternalLogos.assetMeta = {
+      appClickable: true,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.asteroidChangeMaterial(null, null, !includeLogos);
+      }
+    };
+    this.asteroidInternalLogos.position.x = -4;
+    this.asteroidInternalLogos.position.y = 11;
+    this.asteroidInternalLogos.position.z = 10;
+    this.asteroidInternalLogos.scaling = U3D.v(3);
+    this.asteroidInternalLogos.parent = this.optionsMenuTab;
   }
 
   initScoreTab() {
@@ -252,27 +348,27 @@ export default class MenuTab3D {
     this.gameActionsPanel.position.y = 1;
     this.gameActionsPanel.position.z = 1;
 
-    this.startGameButton = U3D.addTextPlane(this.scene, "START Game", "startGameButton", "Impact", "", "#ffffff");
+    this.startGameButton = U3D.addDefaultText(this.scene, "START Game", "#ffffff");
     this.startGameButton.parent = this.gameActionsPanel;
     this.startGameButton.scaling = U3D.v(2, 2, 2);
-    this.startGameButton.position.x = -5;
-    this.startGameButton.position.y = 5;
-    this.startGameButton.position.z = 1;
+    this.startGameButton.position.x = -10;
+    this.startGameButton.position.y = 10;
+    this.startGameButton.position.z = 5;
     this.startGameButton.setEnabled(false);
 
-    this.endGameButton = U3D.addTextPlane(this.scene, "END Game", "endGameButton", "Impact", "", "#ffffff");
+    this.endGameButton = U3D.addDefaultText(this.scene, "END Game", "#440000");
     this.endGameButton.parent = this.gameActionsPanel;
     this.endGameButton.scaling = U3D.v(2, 2, 2);
     this.endGameButton.position.x = -10;
-    this.endGameButton.position.y = 5;
-    this.endGameButton.position.z = 1;
+    this.endGameButton.position.y = 10;
+    this.endGameButton.position.z = 5;
 
-    this.endTurnButton = U3D.addTextPlane(this.scene, "End Turn", "endTurnButton", "Arial", "", "#ffffff");
+    this.endTurnButton = U3D.addDefaultText(this.scene, "End Turn", "#00ff00");
     this.endTurnButton.parent = this.gameActionsPanel;
     this.endTurnButton.scaling = U3D.v(2, 2, 2);
-    this.endTurnButton.position.x = -10;
-    this.endTurnButton.position.y = 2;
-    this.endTurnButton.position.z = 1;
+    this.endTurnButton.position.x = -20;
+    this.endTurnButton.position.y = 10;
+    this.endTurnButton.position.z = 5;
     this.endTurnButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -281,91 +377,46 @@ export default class MenuTab3D {
       }
     };
 
-    this.initRoundPanel(this.scoreMenuTab);
+    this.initTurnHistoryPanel(this.scoreMenuTab);
   }
-  initRoundPanel(parent) {
-    let scene = this.scene;
-    let nextRoundButton = U3D.addTextPlane(scene, '>', 'nextRoundButton');
-    nextRoundButton.assetMeta = {
+  initTurnHistoryPanel(parent) {
+    let nextSelectedMetaBtn = this.addIconBtn('next', 'nextSelectedMetaBtn');
+    nextSelectedMetaBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.nextReplayRound(1);
       }
     };
-    nextRoundButton.position.x = -8;
-    nextRoundButton.position.y = 0;
-    nextRoundButton.position.z = 3;
-    nextRoundButton.scaling = U3D.v(2, 2, 2);
-    nextRoundButton.parent = parent;
+    nextSelectedMetaBtn.position.x = -16;
+    nextSelectedMetaBtn.position.y = 2;
+    nextSelectedMetaBtn.position.z = 5;
+    nextSelectedMetaBtn.scaling = U3D.v(0.5);
+    nextSelectedMetaBtn.parent = parent;
 
-    let previousRoundButton = U3D.addTextPlane(scene, '<', 'previousRoundButton');
-    previousRoundButton.assetMeta = {
+    let previousSelectedMetaBtn = this.addIconBtn('previous', 'previousSelectedMetaBtn');
+    previousSelectedMetaBtn.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
         this.nextReplayRound(-1);
       }
     };
-    previousRoundButton.position.x = -16;
-    previousRoundButton.position.y = 0;
-    previousRoundButton.position.z = 3;
-    previousRoundButton.scaling = U3D.v(2, 2, 2);
-    previousRoundButton.parent = parent;
-
-    let nextReplayPlayerButton = U3D.addTextPlane(scene, '>', 'nextReplayPlayerButton');
-    nextReplayPlayerButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextReplayPlayer(1);
-      }
-    };
-    nextReplayPlayerButton.position.x = -8;
-    nextReplayPlayerButton.position.y = 1.5;
-    nextReplayPlayerButton.position.z = 0;
-    nextReplayPlayerButton.scaling = U3D.v(2, 2, 2);
-    nextReplayPlayerButton.parent = parent;
-
-    let previousReplayPlayerButton = U3D.addTextPlane(scene, '<', 'previousReplayPlayerButton');
-    previousReplayPlayerButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextReplayPlayer(-1);
-      }
-    };
-    previousReplayPlayerButton.position.x = -16;
-    previousReplayPlayerButton.position.y = 1.5;
-    previousReplayPlayerButton.position.z = 0;
-    previousReplayPlayerButton.scaling = U3D.v(2, 2, 2);
-    previousReplayPlayerButton.parent = parent;
+    previousSelectedMetaBtn.position.x = -26;
+    previousSelectedMetaBtn.position.y = 2;
+    previousSelectedMetaBtn.position.z = 5;
+    previousSelectedMetaBtn.scaling = U3D.v(0.5);
+    previousSelectedMetaBtn.parent = parent;
 
     this.selectedReplayRound = -1;
-    this.selectedReplayPlayer = 0;
     this.nextReplayRound(0);
-    this.nextReplayPlayer(0);
 
-    this.loadReplayButton = U3D.addTextPlane(this.scene, "Load Replay", "loadReplayButton", "Arial", "", "#ffffff");
-    this.loadReplayButton.parent = parent;
-    this.loadReplayButton.scaling = U3D.v(2, 2, 2);
-    this.loadReplayButton.position.x = -1;
-    this.loadReplayButton.position.y = 1.5;
-    this.loadReplayButton.position.z = 0;
-    this.loadReplayButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.loadReplay();
-      }
-    };
-
-    this.playReplayButton = U3D.addTextPlane(this.scene, "Play Replay", "playReplayButton", "Arial", "", "#ffffff");
+    this.playReplayButton = U3D.addDefaultText(this.app.scene, "Replay", "#00ff00");
     this.playReplayButton.parent = parent;
     this.playReplayButton.scaling = U3D.v(2, 2, 2);
-    this.playReplayButton.position.x = -1;
-    this.playReplayButton.position.y = 0;
-    this.playReplayButton.position.z = 0;
+    this.playReplayButton.position.x = -10;
+    this.playReplayButton.position.y = 2;
+    this.playReplayButton.position.z = 5;
     this.playReplayButton.assetMeta = {
       appClickable: true,
       clickCommand: 'customClick',
@@ -376,7 +427,7 @@ export default class MenuTab3D {
   }
   nextReplayRound(delta) {
     if (this.selectedRoundIndexPanel)
-      this.selectedRoundIndexPanel.dispose();
+      this.selectedRoundIndexPanel.dispose(true, true);
 
     let min = -3;
     let max = -1;
@@ -389,74 +440,14 @@ export default class MenuTab3D {
     let label = "Round " + (this.selectedReplayRound + 1).toString();
     if (this.selectedReplayRound < 0)
       label = "Prequel " + (-1 * this.selectedReplayRound).toString();
-    this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, label, 'selectedRoundIndexPanel');
-    this.selectedRoundIndexPanel.position.x = -12;
-    this.selectedRoundIndexPanel.position.y = 0;
-    this.selectedRoundIndexPanel.position.z = 0;
-    this.selectedRoundIndexPanel.scaling = U3D.v(1.5, 1.5, 1.5);
+    this.selectedRoundIndexPanel = U3D.addDefaultText(this.app.scene, label, '#aaffaa');
+    this.selectedRoundIndexPanel.position.x = -21;
+    this.selectedRoundIndexPanel.position.y = 2;
+    this.selectedRoundIndexPanel.position.z = 5;
+    this.selectedRoundIndexPanel.scaling = U3D.v(2);
     this.selectedRoundIndexPanel.parent = this.scoreMenuTab;
   }
-  nextReplayPlayer(delta) {
-    if (this.selectedReplayPlayerPanel)
-      this.selectedReplayPlayerPanel.dispose();
 
-    let desc = "Geronimo";
-    this.selectedReplayPlayerPanel = U3D.addTextPlane(this.app.scene, desc, 'selectedReplayPlayerPanel');
-    this.selectedReplayPlayerPanel.position.x = -12;
-    this.selectedReplayPlayerPanel.position.y = 1.5;
-    this.selectedReplayPlayerPanel.position.z = 0;
-    this.selectedReplayPlayerPanel.scaling = U3D.v(1.5, 1.5, 1.5);
-    this.selectedReplayPlayerPanel.parent = this.scoreMenuTab;
-  }
-
-  updateAssetSizeButtons() {
-    let meta = this.selectedObjectMeta;
-    if (meta.asteroidType || meta.avatarType) {
-      this.normalAssetSizeBtn.setEnabled(false);
-      this.assetSmallSizeButton.setEnabled(false);
-      this.assetPanelHugeButton.setEnabled(false);
-
-      return;
-    }
-
-    let smallSize = meta.smallglbpath ? true : false;
-    let hugeSize = meta.largeglbpath ? true : false;
-
-    let isSmallSize = meta.extended.smallGlbPath === meta.extended.glbPath;
-    let isHugeSize = meta.extended.largeGlbPath === meta.extended.glbPath;
-    let isNormalSize = meta.extended.normalGlbPath === meta.extended.glbPath;
-
-    this.normalAssetSizeBtn.setEnabled(!isNormalSize);
-    this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
-    this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
-  }
-  async updateAssetSize(size) {
-    let meta = this.selectedObjectMeta;
-    let id = meta.id;
-    if (this.obj(id)) {
-      if (size === 'huge')
-        meta.containerPath = meta.extended.largeGlbPath;
-      if (size === 'normal')
-        meta.containerPath = meta.extended.normalGlbPath;
-      if (size === 'small')
-        meta.containerPath = meta.extended.smallGlbPath;
-
-      let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
-      freshMesh.parent = this.obj(id).baseMesh.parent;
-      U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
-      this.obj(id).baseMesh.dispose();
-      this.obj(id).baseMesh = freshMesh;
-    }
-
-    let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
-    if (moonIndex !== -1) {
-      //this.loadMoonButton(moonIndex);
-    }
-
-    await this.app.updateProfileMeshOverride(id, size);
-    this.obj(id).assetMeta.extended = U3D.processStaticAssetMeta(this.obj(id).assetMeta, this.app.profile);
-    this.setSelectedAsset(this.obj(id).assetMeta);
-  }
   async initFocusedAssetPanel(parent) {
     let scene = this.app.scene;
 
@@ -568,6 +559,54 @@ export default class MenuTab3D {
     this.playerCardsTN.position.y = 6;
     this.playerCardsTN.position.z = 4;
   }
+  updateAssetSizeButtons() {
+    let meta = this.selectedObjectMeta;
+    if (meta.asteroidType || meta.avatarType) {
+      this.normalAssetSizeBtn.setEnabled(false);
+      this.assetSmallSizeButton.setEnabled(false);
+      this.assetPanelHugeButton.setEnabled(false);
+
+      return;
+    }
+
+    let smallSize = meta.smallglbpath ? true : false;
+    let hugeSize = meta.largeglbpath ? true : false;
+
+    let isSmallSize = meta.extended.smallGlbPath === meta.extended.glbPath;
+    let isHugeSize = meta.extended.largeGlbPath === meta.extended.glbPath;
+    let isNormalSize = meta.extended.normalGlbPath === meta.extended.glbPath;
+
+    this.normalAssetSizeBtn.setEnabled(!isNormalSize);
+    this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
+    this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
+  }
+  async updateAssetSize(size) {
+    let meta = this.selectedObjectMeta;
+    let id = meta.id;
+    if (this.obj(id)) {
+      if (size === 'huge')
+        meta.containerPath = meta.extended.largeGlbPath;
+      if (size === 'normal')
+        meta.containerPath = meta.extended.normalGlbPath;
+      if (size === 'small')
+        meta.containerPath = meta.extended.smallGlbPath;
+
+      let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
+      freshMesh.parent = this.obj(id).baseMesh.parent;
+      U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
+      this.obj(id).baseMesh.dispose(true, true);
+      this.obj(id).baseMesh = freshMesh;
+    }
+
+    let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
+    if (moonIndex !== -1) {
+      //this.loadMoonButton(moonIndex);
+    }
+
+    await this.app.updateProfileMeshOverride(id, size);
+    this.obj(id).assetMeta.extended = U3D.processStaticAssetMeta(this.obj(id).assetMeta, this.app.profile);
+    this.setSelectedAsset(this.obj(id).assetMeta);
+  }
   async setSelectedAsset(assetMeta) {
     this.spinPauseMeta = assetMeta;
     this.selectedObjectMeta = this.spinPauseMeta;
@@ -624,7 +663,7 @@ export default class MenuTab3D {
       mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;
 
     if (this.selectedAssetLabel)
-      this.selectedAssetLabel.dispose();
+      this.selectedAssetLabel.dispose(true, true);
 
     this.selectedAssetLabel = U3D.addDefaultText(this.app.scene, desc, "#0000FF", "#ffffff");
     this.selectedAssetLabel.position.x = 2;
@@ -685,7 +724,7 @@ export default class MenuTab3D {
 
   showAssetNamePlate(meta) {
     if (this.displayedNamePlate)
-      this.displayedNamePlate.dispose();
+      this.displayedNamePlate.dispose(true, true);
 
     let nameDesc = meta.name;
     if (meta.solarPosition)
@@ -717,7 +756,7 @@ export default class MenuTab3D {
   }
   hideAssetNamePlate(meta) {
     if (this.displayedNamePlate) {
-      this.displayedNamePlate.dispose();
+      this.displayedNamePlate.dispose(true, true);
       this.displayedNamePlate = null;
     }
 

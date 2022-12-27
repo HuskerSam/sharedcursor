@@ -230,97 +230,50 @@ export default class Asteroid3D {
     return count;
   }
   asteroidUpdateMaterials() {
-    let name = 'Wireframe';
-    let wireframe = this.app.profile.asteroidWireframe === true;
-    if (wireframe)
-      name = 'Solid';
-
-    if (this.asteroidWireframeBtn)
-      this.asteroidWireframeBtn.dispose();
-    this.asteroidWireframeBtn = U3D.addTextPlane(this.scene, name, 'asteroidWireframeBtn');
-    this.asteroidWireframeBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidChangeMaterial(!wireframe, null, null);
-      }
-    };
-    this.asteroidWireframeBtn.position.x = -7;
-    this.asteroidWireframeBtn.position.y = 3;
-    this.asteroidWireframeBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidWireframeBtn.parent = this.app.menuTab3D.asteroidOptionsPanel;
-
-    name = 'Rocky';
-    let profileTexture = this.app.profile.asteroidColorOnly === true;
-    if (profileTexture)
-      name = 'Color';
-    if (this.asteroidTextureBtn)
-      this.asteroidTextureBtn.dispose();
-    this.asteroidTextureBtn = U3D.addTextPlane(this.scene, name, 'asteroidTextureBtn');
-    this.asteroidTextureBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidChangeMaterial(null, !profileTexture, null);
-      }
-    };
-    this.asteroidTextureBtn.position.x = -14;
-    this.asteroidTextureBtn.position.y = 3;
-    this.asteroidTextureBtn.scaling = U3D.v(2, 2, 2);
-    this.asteroidTextureBtn.parent = this.app.menuTab3D.asteroidOptionsPanel;
-
-    name = 'Logos';
-    let includeLogos = this.app.profile.asteroidExcludeLogos === true;
-    if (!includeLogos)
-      name = "No Logos";
-    if (this.asteroidInternalLogos)
-      this.asteroidInternalLogos.dispose();
-    this.asteroidInternalLogos = U3D.addTextPlane(this.scene, name, 'asteroidInternalLogos');
-    this.asteroidInternalLogos.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidChangeMaterial(null, null, !includeLogos);
-      }
-    };
-    this.asteroidInternalLogos.position.x = 0;
-    this.asteroidInternalLogos.position.y = 3;
-    this.asteroidInternalLogos.scaling = U3D.v(2, 2, 2);
-    this.asteroidInternalLogos.parent = this.app.menuTab3D.asteroidOptionsPanel;
-
-    if (this.asteroidCountLabel)
-      this.asteroidCountLabel.dispose();
-    let count = this.getAsteroidCount(this.app.profile.asteroidCount);
-    this.asteroidCountLabel = U3D.addTextPlane(this.app.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
-    this.asteroidCountLabel.parent = this.app.menuTab3D.asteroidOptionsPanel;
-    this.asteroidCountLabel.scaling = U3D.v(2, 2, 2);
-    this.asteroidCountLabel.position.x = -9;
-    this.asteroidCountLabel.position.y = 1;
-    this.asteroidCountLabel.position.z = 1;
-
-    name = 'asteroidmaterial';
+    let name = 'asteroidmaterial';
     let scene = this.app.scene;
+
+    if (this.selectedAsteroidMaterial.diffuseTexture) {
+      this.selectedAsteroidMaterial.diffuseTexture.dispose();
+      this.selectedAsteroidMaterial.diffuseTexture = null;
+    }
+    if (this.selectedAsteroidMaterial.ambientTexture) {
+      this.selectedAsteroidMaterial.ambientTexture.dispose();
+      this.selectedAsteroidMaterial.ambientTexture = null;
+    }
+    if (this.selectedAsteroidMaterial.emissiveTexture) {
+      this.selectedAsteroidMaterial.emissiveTexture.dispose();
+      this.selectedAsteroidMaterial.emissiveTexture = null;
+    }
+
+    if (this.asteroidMaterial.diffuseTexture) {
+      this.asteroidMaterial.diffuseTexture.dispose();
+      this.asteroidMaterial.diffuseTexture = null;
+    }
+    if (this.asteroidMaterial.ambientTexture) {
+      this.asteroidMaterial.ambientTexture.dispose();
+      this.asteroidMaterial.ambientTexture = null;
+    }
+    if (this.asteroidMaterial.emissiveTexture) {
+      this.asteroidMaterial.emissiveTexture.dispose();
+      this.asteroidMaterial.emissiveTexture = null;
+    }
 
     this.asteroidMaterial.wireframe = this.app.profile.asteroidWireframe === true;
     this.selectedAsteroidMaterial.wireframe = this.app.profile.asteroidWireframe !== true;
     if (this.app.profile.asteroidColorOnly) {
-      this.asteroidMaterial.diffuseTexture = null;
       this.asteroidMaterial.diffuseColor = new BABYLON.Color3(0.35, 0.35, 0.35);
-
-      this.selectedAsteroidMaterial.diffuseTexture = null;
       this.selectedAsteroidMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
       this.selectedAsteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
       this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
     } else {
-      let at = new BABYLON.Texture('/images/rockymountain.jpg', scene);
-      this.asteroidMaterial.diffuseTexture = at;
+      let t = new BABYLON.Texture('/images/rockymountain.jpg', this.app.scene);
+      this.asteroidMaterial.diffuseTexture = t;
 
-      let t = new BABYLON.Texture('/images/rockymountain.jpg', scene);
       this.selectedAsteroidMaterial.diffuseTexture = t;
+      this.selectedAsteroidMaterial.emissiveTexture = t;
+      this.selectedAsteroidMaterial.ambientTexture = t;
       this.selectedAsteroidMaterial.wireframe = this.app.profile.asteroidWireframe !== true;
-      this.selectedAsteroidMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
-      this.selectedAsteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-      this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
     }
     this.__addLogosToAsteroids();
   }

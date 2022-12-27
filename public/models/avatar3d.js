@@ -15,7 +15,7 @@ export default class Avatar3D {
       let seat = this.dockSeatContainers[seatIndex];
       if (seat) {
         if (seat.onlineSphere) {
-          seat.onlineSphere.dispose();
+          seat.onlineSphere.dispose(true, true);
           seat.onlineSphere = null;
         }
 
@@ -116,26 +116,26 @@ export default class Avatar3D {
   _renderPlayerSeat(seatIndex, seatData, active) {
     let seatContainer = this.dockSeatContainers[seatIndex];
     if (seatContainer.avatarContainer) {
-      seatContainer.avatarContainer.dispose();
+      seatContainer.avatarContainer.dispose(true, true);
       seatContainer.avatarContainer = null;
     }
 
     if (seatContainer.namePlate1) {
-      seatContainer.namePlate1.dispose();
+      seatContainer.namePlate1.dispose(true, true);
       seatContainer.namePlate1 = null;
     }
     if (seatContainer.namePlate2) {
-      seatContainer.namePlate2.dispose();
+      seatContainer.namePlate2.dispose(true, true);
       seatContainer.namePlate2 = null;
     }
 
     if (seatContainer.sitStandButton) {
-      seatContainer.sitStandButton.dispose();
+      seatContainer.sitStandButton.dispose(true, true);
       seatContainer.sitStandButton = null;
     }
 
     if (seatContainer.playerImage) {
-      seatContainer.playerImage.dispose();
+      seatContainer.playerImage.dispose(true, true);
       seatContainer.playerImage = null;
     }
 
@@ -198,7 +198,7 @@ export default class Avatar3D {
             clickCommand: 'customClick',
             handlePointerDown: async (pointerInfo, mesh, meta) => {
               this.app._gameAPIStand(seatIndex);
-              seatContainer.sitStandButton.dispose();
+              seatContainer.sitStandButton.dispose(true, true);
               seatContainer.sitStandButton = null;
             }
           };
@@ -214,7 +214,7 @@ export default class Avatar3D {
           clickCommand: 'customClick',
           handlePointerDown: async (pointerInfo, mesh, meta) => {
             this.app.dockSit(seatIndex);
-            seatContainer.sitStandButton.dispose();
+            seatContainer.sitStandButton.dispose(true, true);
             seatContainer.sitStandButton = null;
           }
         };
@@ -236,15 +236,15 @@ export default class Avatar3D {
 
     let avatar = this.initedAvatars[seatIndex];
     if (avatar.namePlate1) {
-      avatar.namePlate1.dispose();
+      avatar.namePlate1.dispose(true, true);
       avatar.namePlate1 = null;
     }
     if (avatar.namePlate2) {
-      avatar.namePlate2.dispose();
+      avatar.namePlate2.dispose(true, true);
       avatar.namePlate2 = null;
     }
     if (avatar.playerImage) {
-      avatar.playerImage.dispose();
+      avatar.playerImage.dispose(true, true);
       avatar.playerImage = null;
     }
     if (seatContainer.namePlate1) {
