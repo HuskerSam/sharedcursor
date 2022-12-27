@@ -233,7 +233,7 @@ export default class MenuTab3D {
   }
   updateDiffuseLightLabel() {
     if (this.lightLevelPanel)
-      this.lightLevelPanel.dispose(true, true);
+      this.lightLevelPanel.dispose(false, true);
 
     let level = Number(this.app.profile.sceneLightLevel).toFixed(1);
     this.lightLevelPanel = U3D.addTextPlane(this.app.scene, level, 'lightLevelPanel');
@@ -245,9 +245,11 @@ export default class MenuTab3D {
   }
   updateSkyboxLabel() {
     if (this.skyboxNamePanel)
-      this.skyboxNamePanel.dispose(true, true);
+      this.skyboxNamePanel.dispose(false, true);
 
     let skybox = this.app.profile.skyboxPath;
+    if (!skybox)
+      skybox = '';
     let pieces = skybox.split('_');
     pieces.forEach((piece, i) => {
       piece = piece.charAt(0).toUpperCase() + piece.slice(1);
@@ -278,7 +280,7 @@ export default class MenuTab3D {
   }
   updateAsteroidOptions() {
     if (this.asteroidCountLabel)
-      this.asteroidCountLabel.dispose(true, true);
+      this.asteroidCountLabel.dispose(false, true);
     let count = this.app.asteroidHelper.getAsteroidCount(this.app.profile.asteroidCount);
     this.asteroidCountLabel = U3D.addTextPlane(this.app.scene, count.toString(), "asteroidCountLabel", "Impact", "", "#ffffff");
     this.asteroidCountLabel.position.x = 0;
@@ -288,7 +290,7 @@ export default class MenuTab3D {
     this.asteroidCountLabel.parent = this.optionsMenuTab;
 
     if (this.asteroidWireframeBtn)
-      this.asteroidWireframeBtn.dispose(true, true);
+      this.asteroidWireframeBtn.dispose(false, true);
     let wireframe = this.app.profile.asteroidWireframe === true;
     let wireframeDesc = wireframe ? 'Solid' : 'Wireframe';
     this.asteroidWireframeBtn = U3D.addDefaultText(this.app.scene, wireframeDesc);
@@ -306,7 +308,7 @@ export default class MenuTab3D {
     this.asteroidWireframeBtn.parent = this.optionsMenuTab;
 
     if (this.asteroidTextureBtn)
-      this.asteroidTextureBtn.dispose(true, true);
+      this.asteroidTextureBtn.dispose(false, true);
     let profileTexture = this.app.profile.asteroidColorOnly === true;
     let profileDesc = profileTexture ? 'Color' : 'Rocky';
     this.asteroidTextureBtn = U3D.addDefaultText(this.app.scene, profileDesc);
@@ -324,7 +326,7 @@ export default class MenuTab3D {
     this.asteroidTextureBtn.parent = this.optionsMenuTab;
 
     if (this.asteroidInternalLogos)
-      this.asteroidInternalLogos.dispose(true, true);
+      this.asteroidInternalLogos.dispose(false, true);
     let includeLogos = this.app.profile.asteroidExcludeLogos === true;
     let logoDesc = includeLogos ? 'Logos' : 'No Logos';
     this.asteroidInternalLogos = U3D.addDefaultText(this.app.scene, logoDesc);
@@ -427,7 +429,7 @@ export default class MenuTab3D {
   }
   nextReplayRound(delta) {
     if (this.selectedRoundIndexPanel)
-      this.selectedRoundIndexPanel.dispose(true, true);
+      this.selectedRoundIndexPanel.dispose(false, true);
 
     let min = -3;
     let max = -1;
@@ -594,7 +596,7 @@ export default class MenuTab3D {
       let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
       freshMesh.parent = this.obj(id).baseMesh.parent;
       U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
-      this.obj(id).baseMesh.dispose(true, true);
+      this.obj(id).baseMesh.dispose(false, true);
       this.obj(id).baseMesh = freshMesh;
     }
 
@@ -663,7 +665,7 @@ export default class MenuTab3D {
       mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;
 
     if (this.selectedAssetLabel)
-      this.selectedAssetLabel.dispose(true, true);
+      this.selectedAssetLabel.dispose(false, true);
 
     this.selectedAssetLabel = U3D.addDefaultText(this.app.scene, desc, "#0000FF", "#ffffff");
     this.selectedAssetLabel.position.x = 2;
@@ -724,7 +726,7 @@ export default class MenuTab3D {
 
   showAssetNamePlate(meta) {
     if (this.displayedNamePlate)
-      this.displayedNamePlate.dispose(true, true);
+      this.displayedNamePlate.dispose(false, true);
 
     let nameDesc = meta.name;
     if (meta.solarPosition)
@@ -756,7 +758,7 @@ export default class MenuTab3D {
   }
   hideAssetNamePlate(meta) {
     if (this.displayedNamePlate) {
-      this.displayedNamePlate.dispose(true, true);
+      this.displayedNamePlate.dispose(false, true);
       this.displayedNamePlate = null;
     }
 

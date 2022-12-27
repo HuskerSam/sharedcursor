@@ -766,8 +766,9 @@ export class StoryApp extends BaseApp {
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
       let asset = this.staticBoardObjects[boardAction.sourceId];
-      if (asset)
+      if (asset) {
         asset.parent = this.staticBoardObjects[boardAction.targetId];
+      }
     }
     if (boardAction.action === 'init') {
       this.applyInitRoundAction(boardAction);
@@ -797,7 +798,7 @@ export class StoryApp extends BaseApp {
 
       this.boardRoundData.actions.forEach((action, i) => {
         if (action.when === 'init')
-          this.applyBoardAction(action, i);
+          this.applyBoardAction(action);
       });
 
       this.roundCurrentSequenceIndex = -1;
@@ -819,7 +820,12 @@ export class StoryApp extends BaseApp {
       this.roundActionRunning = true;
       this.roundCurrentSequenceIndex = actionIndex;
       let action = this.boardRoundData.actions[actionIndex];
-      await this.animatedRoundAction(action);
+      if (action.action === 'playCard')
+        await this.animatedRoundAction(action);
+      else {
+        //apply
+       this.applyBoardAction(action);
+      }
       this.roundActionRunning = false;
       this.iterateBoardRoundSequence();
     }
@@ -895,6 +901,7 @@ export class StoryApp extends BaseApp {
         asset.parent = null;
       else if (meta.parent !== undefined)
         asset.parent = this.staticBoardObjects[meta.parent];
+      asset.setEnabled(true);
     }
   }
 
