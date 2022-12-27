@@ -749,7 +749,7 @@ export default class MenuTab3D {
 
     let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
 
-    this.displayedNamePlate = U3D.getTextPlane(nameDesc, 'seletecedAssetNamePlate', this.scene, width, height, color, 'transparent');
+    this.displayedNamePlate = U3D.addDefaultText(this.app.scene, nameDesc, color, 'transparent');
     this.displayedNamePlate.billboardMode = 7;
     this.displayedNamePlate.position.y = yOffset;
     this.displayedNamePlate.parent = meta.basePivot;

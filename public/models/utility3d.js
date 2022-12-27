@@ -207,15 +207,10 @@ export default class Utility3D {
     return wrapper.particleSystem;
   }
   static createParticleSystem(scene) {
-    let pSystem;
-    if (BABYLON.GPUParticleSystem.IsSupported) {
-      pSystem = new BABYLON.GPUParticleSystem("particles", {
-        capacity: 10000
-      }, scene)
-      pSystem.activeParticleCount = 10000;
-    } else {
-      pSystem = new BABYLON.ParticleSystem("particles", 2500, scene);
-    }
+    let pSystem = new BABYLON.GPUParticleSystem("particles", {
+      capacity: 10000
+    }, scene)
+    pSystem.activeParticleCount = 10000;
 
     pSystem.emitRate = 75;
     // pSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
@@ -491,44 +486,7 @@ export default class Utility3D {
 
     return fullList;
   }
-  static getTextPlane(text, name, scene, planeWidth = 4, planeHeight = 1, color = "rgb(255, 0, 255)", backcolor = "rgba(0, 0, 0, 0.25)",
-    font_type = "Arial", scaleFactor = 100) {
-    let plane = BABYLON.MeshBuilder.CreatePlane(name + "textplane", {
-      width: planeWidth,
-      height: planeHeight,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, scene);
-
-    let DTWidth = planeWidth * scaleFactor;
-    let DTHeight = planeHeight * scaleFactor;
-
-    let dynamicTexture = new BABYLON.DynamicTexture(name + "textplaneDynamicTexture", {
-      width: DTWidth,
-      height: DTHeight
-    }, scene);
-
-    let ctx = dynamicTexture.getContext();
-    let size = 12; //any value will work
-    ctx.font = size + "px " + font_type;
-    let textWidth = ctx.measureText(text).width;
-    let ratio = textWidth / size;
-    let font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
-    let font = font_size + "px " + font_type;
-
-    dynamicTexture.hasAlpha = true;
-    dynamicTexture.drawText(text, null, null, font, color, backcolor, true);
-
-    let mat = new BABYLON.StandardMaterial(name + "textplanemat", scene);
-    mat.diffuseTexture = dynamicTexture;
-    mat.emissiveTexture = dynamicTexture;
-    mat.ambientTexture = dynamicTexture;
-
-    plane.material = mat;
-    return plane;
-  }
-
   static createAsteroidPath() {
-
     let v3 = (x, y, z) => new BABYLON.Vector3(x, y, z);
     let curve = BABYLON.Curve3.CreateCubicBezier(v3(5, 0, 0), v3(2.5, 2.5, -0.5), v3(1.5, 2, -1), v3(1, 2, -2), 10);
     let curveCont = BABYLON.Curve3.CreateCubicBezier(v3(1, 2, -2), v3(0, 2, -4.5), v3(-2, 1, -3.5), v3(-0.75, 3, -2), 10);

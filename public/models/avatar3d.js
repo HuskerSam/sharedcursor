@@ -100,6 +100,16 @@ export default class Avatar3D {
       moonFlagPole.position.y = 3.5;
       moonFlagPole.position.x = 0;
       dockSeatContainer.moonCloneTN = moonCloneTN;
+
+      let moonFlagBack2 = moonFlagBack.clone();
+      let moonFlagPole2 = moonFlagPole.clone();
+      let flagPoleHolder = new BABYLON.TransformNode('flagpoleholder' + seatIndex, this.app.scene);
+      flagPoleHolder.parent = this.app.parentPivot(moonCloneMeta.id);
+      flagPoleHolder.scaling = U3D.v(0.2);
+      flagPoleHolder.position.y = 0.45;
+      moonFlagBack2.parent = flagPoleHolder;
+      moonFlagPole2.parent = flagPoleHolder;
+
       let playerImagePlane = BABYLON.MeshBuilder.CreatePlane("avatarimageplane" + seatIndex, {
           height: 1.5,
           width: 1.5,
@@ -113,7 +123,16 @@ export default class Avatar3D {
       playerImagePlane.material = dockSeatContainer.playerImageMaterial;
       playerImagePlane.parent = dockSeatContainer.moonCloneTN;
       playerImagePlane.setEnabled(false);
+      let playerImagePlane1 = playerImagePlane.clone();
+      let playerImagePlane2 = playerImagePlane.clone();
+      playerImagePlane1.setEnabled(false);
+      playerImagePlane2.setEnabled(false);
+      playerImagePlane1.parent = flagPoleHolder;
+      playerImagePlane2.parent = flagPoleHolder;
       dockSeatContainer.playerImagePlane = playerImagePlane;
+      dockSeatContainer.playerImagePlane1 = playerImagePlane1;
+      dockSeatContainer.playerImagePlane2 = playerImagePlane2;
+      playerImagePlane2.position.z = 0.05;
 
       let avatarMeta = this.getAvatarData()[seatIndex];
       let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
@@ -126,20 +145,17 @@ export default class Avatar3D {
       this.menuBarAvatars.push(newModel);
       this.menuBarAvatars[seatIndex].animContainer.animationGroups[0].stop();
 
-      let bonesOffsetTN = new BABYLON.TransformNode("menu3davatarbonesoffset" + seatIndex);
-      let avatarPositionTN = new BABYLON.TransformNode("menu3davatarpositionoffset" + seatIndex);
-      let avatarExtrasTN = new BABYLON.TransformNode("menu3davatarpanel" + seatIndex);
+      let bonesOffsetTN = new BABYLON.TransformNode("menu3davatarbonesoffset" + seatIndex, this.app.scene);
+      let avatarPositionTN = new BABYLON.TransformNode("menu3davatarpositionoffset" + seatIndex, this.app.scene);
       avatarPositionTN.position.y = -1;
       avatarPositionTN.position.z = 3;
       avatarPositionTN.rotation.y = Math.PI;
       avatarPositionTN.scaling = U3D.v(3);
       bonesOffsetTN.parent = avatarPositionTN;
-      avatarExtrasTN.parent = avatarPositionTN;
       avatarPositionTN.parent = this.dockSeatContainers[seatIndex];
       this.menuBarAvatars[seatIndex].rootNodes[0].parent = bonesOffsetTN;
       newModel.bonesOffsetTN = bonesOffsetTN;
       newModel.avatarPositionTN = avatarPositionTN;
-      newModel.avatarExtrasTN = avatarExtrasTN;
 
       avatarPositionTN.assetMeta = {
         name: avatarMeta.name,
@@ -164,6 +180,8 @@ export default class Avatar3D {
     seatContainer.playerDetailsTN.parent = seatContainer;
 
     seatContainer.playerImagePlane.setEnabled(false);
+    seatContainer.playerImagePlane1.setEnabled(false);
+    seatContainer.playerImagePlane2.setEnabled(false);
 
     let colors = this.get3DColors(seatIndex);
     let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
@@ -216,6 +234,8 @@ export default class Avatar3D {
         seatContainer.playerImageMaterial.emissiveTexture = t;
         seatContainer.playerImageMaterial.ambientTexture = t;
         seatContainer.playerImagePlane.setEnabled(true);
+        seatContainer.playerImagePlane1.setEnabled(true);
+        seatContainer.playerImagePlane2.setEnabled(true);
       } else {
         let sitBtn = U3D.addDefaultText(this.app.scene, "Sit", rgb);
         sitBtn.position.y = 0.25;
@@ -252,6 +272,8 @@ export default class Avatar3D {
       seatContainer.playerImageMaterial.emissiveTexture = t;
       seatContainer.playerImageMaterial.ambientTexture = t;
       seatContainer.playerImagePlane.setEnabled(true);
+      seatContainer.playerImagePlane1.setEnabled(true);
+      seatContainer.playerImagePlane2.setEnabled(true);
     }
   }
   async updatePlayerDock() {
@@ -294,22 +316,10 @@ export default class Avatar3D {
     this.selectedPlayerPanel.material.ambientColor = new BABYLON.Color3(1, 0, 0);
     this.selectedPlayerPanel.material.emissiveColor = new BABYLON.Color3(1, 0, 0);
 
-    if (!this.selectedMoonPanel) {
-      this.selectedMoonPanel = BABYLON.MeshBuilder.CreateSphere("selectedmoonpanel", {
-        width: 1,
-        height: 1,
-        depth: 1
-      }, this.app.scene);
-      this.selectedMoonPanel.material = new BABYLON.StandardMaterial('selectedMoonPanelMat', this.app.scene);
-      this.selectedMoonPanel.position.y = 3;
-    }
-    this.selectedMoonPanel.parent = this.app.playerMoonAssets[seatIndex].assetMeta.basePivot;
-
     let colors = this.get3DColors(seatIndex);
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
-    this.selectedMoonPanel.material.diffuseColor = playerColor;
-    this.selectedMoonPanel.material.ambientColor = playerColor;
-    this.selectedMoonPanel.material.emissiveColor = playerColor;
+
+    this.initParticleSystem();
 
     this.menuBarAvatars.forEach((container, i) => {
       let arr = container.animContainer.animationGroups;
@@ -330,7 +340,60 @@ export default class Avatar3D {
 
     this.initedAvatars.forEach((avatar, i) => {
       avatar.rootNodes[0].setEnabled(i === seatIndex);
+
+      if (i === seatIndex) {
+        this.particleSystem.emitter = avatar.particleTN;
+      }
     })
+  }
+  initParticleSystem() {
+    if (this.particleSystem)
+      return;
+    this.particleSystem = new BABYLON.ParticleSystem("particles", 38000, this.app.scene);
+    this.particleSystem.particleTexture = new BABYLON.Texture("/images/smokeParticleTexture.png", this.app.scene);
+    this.particleSystem.minLifeTime = 4.5;
+    this.particleSystem.maxLifeTime = 8.5;
+    this.particleSystem.emitRate = 80;
+    this.particleSystem.addVelocityGradient(0, 2, 3);
+    this.particleSystem.addVelocityGradient(0.5, 0.2, 0.3);
+    this.particleSystem.addVelocityGradient(1, 0.04, 0.06);
+    this.particleSystem.addSizeGradient(0, 0.45, 0.85);
+    this.particleSystem.addSizeGradient(0.7, 2.5, 3.5);
+    this.particleSystem.addSizeGradient(1.0, 6.5, 6.5);
+
+    this.particleSystem.addColorGradient(0.0, new BABYLON.Color4(0.92, 0.92, 1, 0.5), new BABYLON.Color4(1, 1, 1, 0.5));
+    this.particleSystem.addColorGradient(0.5, new BABYLON.Color4(0.089, 0.085, 0.85, 0.1), new BABYLON.Color4(1, 0.15, 0.15, 0.9));
+    this.particleSystem.addColorGradient(0.8, new BABYLON.Color4(0.09, 0.09, 0.09, 0.15), new BABYLON.Color4(0.5, 0.5, 0.5, 0.15));
+    this.particleSystem.addColorGradient(1, new BABYLON.Color4(0.09, 0.09, 0.09, 0), new BABYLON.Color4(0.5, 0.5, 0.5, 0));
+
+    this.particleSystem.minInitialRotation = 0;
+    this.particleSystem.maxInitialRotation = Math.PI;
+    this.particleSystem.minAngularSpeed = -1;
+    this.particleSystem.maxAngularSpeed = 1;
+
+    this.particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+
+    let sphereEmitter = this.particleSystem.createSphereEmitter(0.1);
+    const spread = 0.5;
+    const bb = 0.025;
+    const bby = 0.25;
+    var boxEmitter = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(-spread, 1, 0), new BABYLON.Vector3(spread, 1, 0), new BABYLON.Vector3(-bb, -bb, -bby),
+      new BABYLON.Vector3(bb, bb, bby));
+
+    // Where the particles come from
+    this.particleSystem.particleEmitterType = boxEmitter;
+    this.particleSystem.emitter = new BABYLON.Vector3(0, 0, 0); // the starting object, the emitter
+
+    let noiseTexture = new BABYLON.NoiseProceduralTexture("perlin", 256, this.app.scene);
+    noiseTexture.animationSpeedFactor = 5;
+    noiseTexture.persistence = 2;
+    noiseTexture.brightness = 0.5;
+    noiseTexture.octaves = 2;
+
+    this.particleSystem.noiseTexture = noiseTexture;
+    this.particleSystem.noiseStrength = new BABYLON.Vector3(1, 0, 1);
+
+    this.particleSystem.start();
   }
   getSeatData(seatIndex) {
     let key = 'seat' + seatIndex.toString();
@@ -414,8 +477,8 @@ export default class Avatar3D {
       avatarContainers[avatarMeta.name] = container;
     }
 
-    for (let c = 0; c < 4; c++) {
-      let avatarMeta = avatarMetas[c];
+    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
+      let avatarMeta = avatarMetas[seatIndex];
       let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
       let newModel = avatarContainers[animationsBaseName].instantiateModelsToScene();
       let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
@@ -427,22 +490,22 @@ export default class Avatar3D {
       newModel = newSkin;
 
       initedAvatars.push(newModel);
-      initedAvatars[c].animContainer.animationGroups[0].stop();
+      initedAvatars[seatIndex].animContainer.animationGroups[0].stop();
 
-      let mesh = initedAvatars[c].rootNodes[0];
+      let mesh = initedAvatars[seatIndex].rootNodes[0];
       let bonesOffsetTN = new BABYLON.TransformNode("avatarbonesoffset" + mesh.id);
       let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + mesh.id);
-      let avatarExtrasTN = new BABYLON.TransformNode("avatarpanel" + mesh.id);
       avatarPositionTN.position.x = avatarMeta.x;
       avatarPositionTN.position.z = avatarMeta.z;
       bonesOffsetTN.parent = avatarPositionTN;
-      avatarExtrasTN.parent = avatarPositionTN;
-      avatarExtrasTN.rotation.y = Math.PI;
       mesh.parent = bonesOffsetTN;
       newModel.bonesOffsetTN = bonesOffsetTN;
       newModel.avatarPositionTN = avatarPositionTN;
-      newModel.avatarExtrasTN = avatarExtrasTN;
-      avatarExtrasTN.position.z = 8;
+      newModel.particleTN = new BABYLON.TransformNode("particleTNavatar" + seatIndex, this.app.scene);
+      newModel.particleTN.parent = avatarPositionTN;
+      newModel.particleTN.position.y = 0.8;
+      newModel.particleTN.position.z = -0.25;
+      newModel.particleTN.rotation.x = -Math.PI / 2;
 
       scene.baseShadowGenerator.addShadowCaster(mesh);
 
@@ -451,7 +514,7 @@ export default class Avatar3D {
         extended: {},
         appClickable: true,
         avatarType: true,
-        seatIndex: c,
+        seatIndex,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.app.menuTab3D.setSelectedAsset(meta);
@@ -506,8 +569,6 @@ export default class Avatar3D {
     arr.forEach(anim => anim.stop());
 
     let animName = arr[animationIndex].name;
-
-    //arr[animationIndex].reset();
     arr[animationIndex].start(true);
 
     let mesh = avatarContainer.bonesOffsetTN;
