@@ -5,13 +5,13 @@ export default class ActionCards {
     this.app = app;
     this.cardPanel = panel;
     this.cardPositions = [];
-    let cardWidth = 5;
-    let cardHeight = 9;
+    this.cardWidth = 5;
+    this.cardHeight = 9;
 
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
-      cardHolder.position.x = -1 * (cardIndex % 3) * cardWidth * 1.25 - 14;
+      cardHolder.position.x = -1 * (cardIndex % 3) * this.cardWidth * 1.25 - 14;
       if (cardIndex > 2) {
         cardHolder.position.y = 8;
         cardHolder.position.z = 5;
@@ -20,8 +20,8 @@ export default class ActionCards {
       this.cardPositions.push(cardHolder);
 
       let localIndex = cardIndex;
-      let playActionCardBtn = U3D.addDefaultText(this.scene, 'Play Card', "#ffffff", "#00aa00");
-      playActionCardBtn.position.y = cardHeight / 2 - 0.75;
+      let playActionCardBtn = U3D.addDefaultText(this.scene, 'Play', "#ffffff", "#00aa00");
+      playActionCardBtn.position.y = this.cardHeight / 2 - 0.75;
       playActionCardBtn.position.z = -0.05;
       playActionCardBtn.parent = cardHolder;
       playActionCardBtn.assetMeta = {
@@ -34,8 +34,8 @@ export default class ActionCards {
       cardHolder.playButton = playActionCardBtn;
       cardHolder.playButton.setEnabled(false);
 
-      let discardActionCardBtn = U3D.addDefaultText(this.scene, 'Recycle Card', "#ffffff", "#ff0000");
-      discardActionCardBtn.position.y = -cardHeight / 2 + 0.75;
+      let discardActionCardBtn = U3D.addDefaultText(this.scene, 'Recycle', "#ffffff", "#ff0000");
+      discardActionCardBtn.position.y = -this.cardHeight / 2 + 0.75;
       discardActionCardBtn.position.z = -0.05;
       discardActionCardBtn.parent = cardHolder;
       discardActionCardBtn.assetMeta = {
@@ -53,8 +53,8 @@ export default class ActionCards {
       mat.ambientColor = U3D.color("0.5,.5,.5");
 
       let plane = BABYLON.MeshBuilder.CreatePlane("random", {
-        width: cardWidth,
-        height: cardHeight
+        width: this.cardWidth,
+        height: this.cardHeight
       }, this.app.scene);
       plane.material = mat;
       plane.parent = cardHolder;
@@ -85,7 +85,7 @@ export default class ActionCards {
       let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
       meta.extended = U3D.processStaticAssetMeta(meta, {});
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
-      U3D.sizeNodeToFit(mesh, 4.5);
+      U3D.sizeNodeToFit(mesh, 3);
       mesh.parent = cardHolder;
       Object.assign(meta, {
         appClickable: true,
@@ -98,6 +98,27 @@ export default class ActionCards {
       mesh.assetMeta = meta;
 
       cardHolder.assetMesh = mesh;
+
+
+      if (cardHolder.assetName)
+        cardHolder.assetName.dispose();
+      cardHolder.assetName = U3D.addDefaultText(this.app.scene, meta.name, "#0000FF", "#ffffff");
+      cardHolder.assetName.position.x = -this.cardWidth / 2 + 0.5;
+      cardHolder.assetName.position.y = 0; //this.cardHeight / 2;
+      cardHolder.assetName.position.z = -0.05;
+      cardHolder.assetName.rotation.z = Math.PI / 2;
+      cardHolder.assetName.scaling = U3D.v(0.75);
+      cardHolder.assetName.parent = cardHolder;
+
+      if (cardHolder.assetType)
+        cardHolder.assetType.dispose();
+      cardHolder.assetType = U3D.addDefaultText(this.app.scene, meta.objectType, "#0000FF", "#ffffff");
+      cardHolder.assetType.position.x = this.cardWidth / 2 - 0.5;
+      cardHolder.assetType.position.y = 0; //this.cardHeight / 2;
+      cardHolder.assetType.position.z = -0.05;
+      cardHolder.assetType.rotation.z = Math.PI / 2;
+      cardHolder.assetType.scaling = U3D.v(0.75);
+      cardHolder.assetType.parent = cardHolder;
     }
 
     let types = ['planet', 'moon', 'dwarf', 'nearearth']

@@ -295,7 +295,7 @@ export default class MenuTab3D {
     };
     nextRoundButton.position.x = -8;
     nextRoundButton.position.y = 0;
-    nextRoundButton.position.z = 0;
+    nextRoundButton.position.z = 3;
     nextRoundButton.scaling = U3D.v(2, 2, 2);
     nextRoundButton.parent = parent;
 
@@ -309,7 +309,7 @@ export default class MenuTab3D {
     };
     previousRoundButton.position.x = -16;
     previousRoundButton.position.y = 0;
-    previousRoundButton.position.z = 0;
+    previousRoundButton.position.z = 3;
     previousRoundButton.scaling = U3D.v(2, 2, 2);
     previousRoundButton.parent = parent;
 
@@ -626,7 +626,7 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose();
 
-    this.selectedAssetLabel = U3D.addDefaultText(this.scene, desc, "#0000FF", "#ffffff");
+    this.selectedAssetLabel = U3D.addDefaultText(this.app.scene, desc, "#0000FF", "#ffffff");
     this.selectedAssetLabel.position.x = 2;
     this.selectedAssetLabel.position.y = 1.5;
     this.selectedAssetLabel.position.z = -4;
