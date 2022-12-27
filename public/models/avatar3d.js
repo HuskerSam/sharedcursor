@@ -319,8 +319,6 @@ export default class Avatar3D {
     let colors = this.get3DColors(seatIndex);
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
-    this.initParticleSystem();
-
     this.menuBarAvatars.forEach((container, i) => {
       let arr = container.animContainer.animationGroups;
       if (i === seatIndex) {
@@ -339,62 +337,14 @@ export default class Avatar3D {
     });
 
     this.initedAvatars.forEach((avatar, i) => {
-      avatar.rootNodes[0].setEnabled(i === seatIndex);
+      //  avatar.rootNodes[0].setEnabled(i === seatIndex);
 
-      if (i === seatIndex) {
-        this.particleSystem.emitter = avatar.particleTN;
+      if (i !== seatIndex) {
+        avatar.animContainer.animationGroups.forEach(anim => anim.stop());
       }
     })
   }
-  initParticleSystem() {
-    if (this.particleSystem)
-      return;
-    this.particleSystem = new BABYLON.ParticleSystem("particles", 38000, this.app.scene);
-    this.particleSystem.particleTexture = new BABYLON.Texture("/images/smokeParticleTexture.png", this.app.scene);
-    this.particleSystem.minLifeTime = 4.5;
-    this.particleSystem.maxLifeTime = 8.5;
-    this.particleSystem.emitRate = 80;
-    this.particleSystem.addVelocityGradient(0, 2, 3);
-    this.particleSystem.addVelocityGradient(0.5, 0.2, 0.3);
-    this.particleSystem.addVelocityGradient(1, 0.04, 0.06);
-    this.particleSystem.addSizeGradient(0, 0.45, 0.85);
-    this.particleSystem.addSizeGradient(0.7, 2.5, 3.5);
-    this.particleSystem.addSizeGradient(1.0, 6.5, 6.5);
 
-    this.particleSystem.addColorGradient(0.0, new BABYLON.Color4(0.92, 0.92, 1, 0.5), new BABYLON.Color4(1, 1, 1, 0.5));
-    this.particleSystem.addColorGradient(0.5, new BABYLON.Color4(0.089, 0.085, 0.85, 0.1), new BABYLON.Color4(1, 0.15, 0.15, 0.9));
-    this.particleSystem.addColorGradient(0.8, new BABYLON.Color4(0.09, 0.09, 0.09, 0.15), new BABYLON.Color4(0.5, 0.5, 0.5, 0.15));
-    this.particleSystem.addColorGradient(1, new BABYLON.Color4(0.09, 0.09, 0.09, 0), new BABYLON.Color4(0.5, 0.5, 0.5, 0));
-
-    this.particleSystem.minInitialRotation = 0;
-    this.particleSystem.maxInitialRotation = Math.PI;
-    this.particleSystem.minAngularSpeed = -1;
-    this.particleSystem.maxAngularSpeed = 1;
-
-    this.particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
-
-    let sphereEmitter = this.particleSystem.createSphereEmitter(0.1);
-    const spread = 0.5;
-    const bb = 0.025;
-    const bby = 0.25;
-    var boxEmitter = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(-spread, 1, 0), new BABYLON.Vector3(spread, 1, 0), new BABYLON.Vector3(-bb, -bb, -bby),
-      new BABYLON.Vector3(bb, bb, bby));
-
-    // Where the particles come from
-    this.particleSystem.particleEmitterType = boxEmitter;
-    this.particleSystem.emitter = new BABYLON.Vector3(0, 0, 0); // the starting object, the emitter
-
-    let noiseTexture = new BABYLON.NoiseProceduralTexture("perlin", 256, this.app.scene);
-    noiseTexture.animationSpeedFactor = 5;
-    noiseTexture.persistence = 2;
-    noiseTexture.brightness = 0.5;
-    noiseTexture.octaves = 2;
-
-    this.particleSystem.noiseTexture = noiseTexture;
-    this.particleSystem.noiseStrength = new BABYLON.Vector3(1, 0, 1);
-
-    this.particleSystem.start();
-  }
   getSeatData(seatIndex) {
     let key = 'seat' + seatIndex.toString();
     let name = '';
@@ -427,17 +377,10 @@ export default class Avatar3D {
     if (!this.initedAvatars)
       return;
 
-    this.initedAvatars.forEach((container, avatarIndex) => {
-      let arr = container.animContainer.animationGroups;
-      let index = Math.floor(Math.random() * arr.length);
-      /*
-      arr.forEach((anim, i) => {
-        if (anim.name === 'Clone of jogging')
-          index = i;
-      })
-      */
-      this.avatarSequence(container, index, avatarIndex);
-    });
+    let container = this.initedAvatars[this.app.activeSeatIndex];
+    let arr = container.animContainer.animationGroups;
+    let index = Math.floor(Math.random() * arr.length);
+    this.avatarSequence(container, index, this.app.activeSeatIndex);
   }
   get3DColors(seatIndex) {
     let r = 220 / 255,
@@ -528,7 +471,7 @@ export default class Avatar3D {
     this.randomizeAnimations();
     setInterval(() => {
       this.randomizeAnimations();
-    }, 20000)
+    }, 10000)
   }
   linkSkeletonMeshes(master, slave) {
     if (master != null && master.bones != null && master.bones.length > 0) {
@@ -585,8 +528,8 @@ export default class Avatar3D {
         "name": "Terra",
         "path": "maria.glb",
         "cloneAnimations": "Daya",
-        "x": 12,
-        "z": 21,
+        "x": 3,
+        "z": 3,
         "race": "Human",
         "seatIndex": 0
       },
@@ -594,25 +537,25 @@ export default class Avatar3D {
         "name": "Jade",
         "path": "jolleen.glb",
         "cloneAnimations": "Daya",
-        "x": -10,
-        "z": 22,
+        "x": -3,
+        "z": 3,
         "race": "Botan",
         "seatIndex": 1
       },
       {
         "name": "Daya",
         "path": "jonesbase.glb",
-        "x": -30,
-        "z": 35,
+        "x": -3,
+        "z": -3,
         "race": "Avian",
         "seatIndex": 2
       },
       {
-        "name": "Geronimo",
+        "name": "Elihu",
         "path": "maynard.glb",
         "cloneAnimations": "Daya",
-        "x": 7,
-        "z": -32,
+        "x": 3,
+        "z": -3,
         "race": "Titan",
         "seatIndex": 3
       }
@@ -638,6 +581,6 @@ export default class Avatar3D {
     if (this.currentSeatMeshIndex === undefined)
       return;
 
-    this._offsetBonesMovement(this.initedAvatars[this.currentSeatMeshIndex]);
+    this.initedAvatars.forEach(avatar => this._offsetBonesMovement(avatar));
   }
 }
