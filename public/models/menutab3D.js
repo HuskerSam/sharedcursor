@@ -49,7 +49,8 @@ export default class MenuTab3D {
       }
     };
     scoreMenuBtn.parent = tabBar;
-    scoreMenuBtn.position.x = -22;
+    scoreMenuBtn.position.x = -25;
+    scoreMenuBtn.position.z = 2;
 
     let optionsMenuBtn = this.addIconBtn('gear', 'optionsMenuBtn');
     optionsMenuBtn.assetMeta = {
@@ -60,7 +61,8 @@ export default class MenuTab3D {
       }
     };
     optionsMenuBtn.parent = tabBar;
-    optionsMenuBtn.position.x = -17;
+    optionsMenuBtn.position.x = -20;
+    optionsMenuBtn.position.z = 2;
 
     let playersMoonsMenuBtn = this.addIconBtn('diversity', 'playersMoonsMenuBtn');
     playersMoonsMenuBtn.assetMeta = {
@@ -71,7 +73,8 @@ export default class MenuTab3D {
       }
     };
     playersMoonsMenuBtn.parent = tabBar;
-    playersMoonsMenuBtn.position.x = -12;
+    playersMoonsMenuBtn.position.x = -15;
+    playersMoonsMenuBtn.position.z = 2;
 
     let selectedObjectMenuBtn = this.addIconBtn('inspectobject', 'selectedObjectMenuBtn');
     selectedObjectMenuBtn.assetMeta = {
@@ -82,7 +85,8 @@ export default class MenuTab3D {
       }
     };
     selectedObjectMenuBtn.parent = tabBar;
-    selectedObjectMenuBtn.position.x = -7;
+    selectedObjectMenuBtn.position.x = -10;
+    selectedObjectMenuBtn.position.z = 2;
   }
   addIconBtn(iconName, name) {
     let texturePath = '/fontcons/' + iconName + '.svg';
@@ -611,8 +615,7 @@ export default class MenuTab3D {
       }
     };
     let factor = 3;
-    if (this.app.inXR) {      
-      this.selectedContainerTransform.position.y = 6;
+    if (this.app.inXR) {
       factor = 0.35;
     }
     U3D.sizeNodeToFit(mesh, factor);

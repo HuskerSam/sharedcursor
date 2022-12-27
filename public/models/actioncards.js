@@ -5,11 +5,13 @@ export default class ActionCards {
     this.app = app;
     this.cardPanel = panel;
     this.cardPositions = [];
+    let cardWidth = 5;
+    let cardHeight = 9;
 
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
-      cardHolder.position.x = (cardIndex % 3) * -5 - 14;
+      cardHolder.position.x = -1 * (cardIndex % 3) * cardWidth * 1.25 - 14;
       if (cardIndex > 2) {
         cardHolder.position.y = 8;
         cardHolder.position.z = 5;
@@ -18,10 +20,9 @@ export default class ActionCards {
       this.cardPositions.push(cardHolder);
 
       let localIndex = cardIndex;
-      let playActionCardBtn = U3D.addTextPlane(this.scene, 'Play', 'playActionCardBtn' + cardIndex);
-      playActionCardBtn.position.x = -2;
-      playActionCardBtn.position.y = 3;
-      playActionCardBtn.position.z = -0.5;
+      let playActionCardBtn = U3D.addDefaultText(this.scene, 'Play Card', "#ffffff", "#00aa00");
+      playActionCardBtn.position.y = cardHeight / 2 - 0.75;
+      playActionCardBtn.position.z = -0.05;
       playActionCardBtn.parent = cardHolder;
       playActionCardBtn.assetMeta = {
         appClickable: true,
@@ -33,10 +34,9 @@ export default class ActionCards {
       cardHolder.playButton = playActionCardBtn;
       cardHolder.playButton.setEnabled(false);
 
-      let discardActionCardBtn = U3D.addTextPlane(this.scene, 'Discard', 'discardActionCardBtn' + cardIndex, "Arial", "", "#000000", "transparent");
-      discardActionCardBtn.position.x = 0;
-      discardActionCardBtn.position.y = 3;
-      discardActionCardBtn.position.z = -0.5;
+      let discardActionCardBtn = U3D.addDefaultText(this.scene, 'Recycle Card', "#ffffff", "#ff0000");
+      discardActionCardBtn.position.y = -cardHeight / 2 + 0.75;
+      discardActionCardBtn.position.z = -0.05;
       discardActionCardBtn.parent = cardHolder;
       discardActionCardBtn.assetMeta = {
         appClickable: true,
@@ -47,6 +47,17 @@ export default class ActionCards {
       };
       cardHolder.discardButton = discardActionCardBtn;
       cardHolder.discardButton.setEnabled(false);
+
+      let mat = new BABYLON.StandardMaterial("random", this.app.scene);
+      mat.diffuseColor = U3D.color("0.5,.5,.5");
+      mat.ambientColor = U3D.color("0.5,.5,.5");
+
+      let plane = BABYLON.MeshBuilder.CreatePlane("random", {
+        width: cardWidth,
+        height: cardHeight
+      }, this.app.scene);
+      plane.material = mat;
+      plane.parent = cardHolder;
     }
 
     this.updateCardsForPlayer();
@@ -75,30 +86,21 @@ export default class ActionCards {
       meta.extended = U3D.processStaticAssetMeta(meta, {});
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
       U3D.sizeNodeToFit(mesh, 4.5);
-
-      let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene);
-      mesh.parent = animDetails.rotationPivot;
-      animDetails.rotationPivot.parent = cardHolder;
-
-      mesh.assetMeta = {
-        name: cardMeta.name,
-        containerPath: meta.extended.glbPath,
-        extended: {},
+      mesh.parent = cardHolder;
+      Object.assign(meta, {
         appClickable: true,
-        baseMesh: mesh,
-        basePivot: animDetails.rotationPivot,
         clickCommand: 'customClick',
-        actionCardType: true,
-        cardIndex,
-        rotationAnimation: animDetails.runningAnimation,
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.pauseAssetSpin(pointerInfo, mesh, meta);
+          let id = cardMeta.gameCard;
+          this.app.menuTab3D.setSelectedAsset(this.app.staticBoardObjects[id].assetMeta);
         }
-      };
+      });
+      mesh.assetMeta = meta;
+
       cardHolder.assetMesh = mesh;
     }
 
-    let types = ['planet', 'moon', 'dwarf']
+    let types = ['planet', 'moon', 'dwarf', 'nearearth']
     if (types.indexOf(this.app.selectedAsset.objectType) !== -1) {
       cardHolder.playButton.setEnabled(true);
     } else {

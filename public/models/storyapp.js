@@ -67,7 +67,7 @@ export class StoryApp extends BaseApp {
   }
   async _initContent3D() {
     let startTime = new Date();
-    this.sceneTransformNode = null;//new BABYLON.TransformNode('sceneTransformNode', this.scene);
+    this.sceneTransformNode = null; //new BABYLON.TransformNode('sceneTransformNode', this.scene);
     this.createMenu3DWrapper();
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
@@ -235,7 +235,7 @@ export class StoryApp extends BaseApp {
   }
   parentPivot(id) {
     let meta = this.staticBoardObjects[id].assetMeta;
-    if (meta.objectType === 'moon' || meta.objectType === 'dwarf')
+    if (meta.objectType === 'moon' || meta.objectType === 'dwarf' || meta.objectType === 'nearearth')
       return meta.basePivot;
 
     return this.staticBoardObjects[id];
@@ -555,6 +555,8 @@ export class StoryApp extends BaseApp {
     this.menuBarRightTN.position = U3D.v(0.05, 0.05, -0.05);
     this.menuBarRightTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarRightTN.parent = this.rightHandedControllerGrip;
+
+    this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
   }
   enterNotInXR() {
     this.menuBarLeftTN.position = U3D.vector(-10, 1, -10);
@@ -641,6 +643,10 @@ export class StoryApp extends BaseApp {
 
       if (meta.orbitAnimation)
         meta.orbitAnimation.pause();
+
+      if (!this.inXR) {
+        this.camera.detachControl(this.canvas)
+      }
     } else {
       if (!meta.activeSelectedObject)
         this.menuTab3D.hideAssetNamePlate(meta);
@@ -650,6 +656,10 @@ export class StoryApp extends BaseApp {
 
       if (meta.orbitAnimation && meta.orbitAnimation._paused)
         meta.orbitAnimation.restart();
+
+      if (!this.inXR) {
+        this.camera.attachControl(this.canvas)
+      }
     }
   }
   pointerDown(pointerInfo) {
