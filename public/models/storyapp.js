@@ -14,7 +14,7 @@ export class StoryApp extends BaseApp {
     this.cache = {};
     this.staticBoardObjects = {};
     this.playerMoonAssets = new Array(4);
-    this.overrideDisplayRound = null;
+    this._paintedBoardTurn = null;
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
@@ -150,9 +150,10 @@ export class StoryApp extends BaseApp {
       this.addLineToLoading(`${delta} ms to load 3D content<br>`);
     }
 
-    this.paintGameData();
+    this.paintedBoardTurn = this.turnNumber;
 
     this.runRender = true;
+    this.paintGameData();
   }
   createMenu3DWrapper() {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
@@ -467,6 +468,9 @@ export class StoryApp extends BaseApp {
 
     this._initGameDataBasedContent();
 
+    if (!this.runRender)
+      return;
+
     document.body.classList.add('game_loaded');
 
     this.queryStringPaintProcess();
@@ -544,6 +548,11 @@ export class StoryApp extends BaseApp {
     this.updateUserPresence();
 
     document.body.classList.add('avatars_loaded');
+  }
+  get turnNumber() {
+    if (!this.gameData)
+      return 0;
+    return this.gameData.turnNumber;
   }
   async paintDock() {
     super.paintDock();
@@ -754,13 +763,14 @@ export class StoryApp extends BaseApp {
   }
 
   async paintBoard() {
-    if (this.paintedBoardRoundIndex !== this.visibleRound) {
-      this.paintedBoardRoundIndex = this.visibleRound;
-      this.initListenGameRound(this.paintedBoardRoundIndex);
+    if (this._renderedBoardTurn !== this.paintedBoardTurn) {
+      this.menuTab3D.updateMenubarLabel();
+      this._renderedBoardTurn = this.paintedBoardTurn;
+      this.initListenGameRound(this._renderedBoardTurn);
 
-      let index = this.paintedBoardRoundIndex;
+      let index = this._renderedBoardTurn;
       if (index < 0) {
-        let index = -1 * this.paintedBoardRoundIndex;
+        let index = -1 * this._renderedBoardTurn;
         this.boardRoundData = await this.getJSONFile(`/story/roundpre${index}.json`);
         this.updateBoardRoundData(true);
       }
@@ -778,17 +788,34 @@ export class StoryApp extends BaseApp {
       this.applyInitRoundAction(boardAction);
     }
   }
-  async loadReplay(startAutomation = false) {
-    this.overrideDisplayRound = this.menuTab3D.selectedReplayRound;
+  async automateReplay() {}
+  get paintedBoardTurn() {
+    if (this._paintedBoardTurn !== null)
+      return this._paintedBoardTurn;
+
+    return this.turnNumber;
+  }
+  set paintedBoardTurn(value) {
+    let min = -3;
+    let max = this.turnNumber;
+    this._paintedBoardTurn = value;
+    if (this._paintedBoardTurn < min)
+      this._paintedBoardTurn = min;
+    if (this._paintedBoardTurn > max)
+      this._paintedBoardTurn = max;
+
+    if (this._paintedBoardTurn === max)
+      this._paintedBoardTurn = null;
+
+    if (this._paintedBoardTurn === null)
+      this.boardTurnLabel = "Current";
+    else if (this._paintedBoardTurn < 0)
+      this.boardTurnLabel = "Prequel " + (-1 * this._paintedBoardTurn).toString();
+    else
+      this.boardTurnLabel = "Round " + (this._paintedBoardTurn + 1).toString();
+
     this.paintBoard();
   }
-  get visibleRound() {
-    if (this.overrideDisplayRound !== null)
-      return this.overrideDisplayRound;
-
-    return this.gameData.turnNumber;
-  }
-
   updateBoardRoundData(reset) {
     if (!this.boardRoundData)
       return;
@@ -829,7 +856,7 @@ export class StoryApp extends BaseApp {
         await this.animatedRoundAction(action);
       else {
         //apply
-       this.applyBoardAction(action);
+        this.applyBoardAction(action);
       }
       this.roundActionRunning = false;
       this.iterateBoardRoundSequence();
@@ -844,6 +871,7 @@ export class StoryApp extends BaseApp {
       return;
 
     let roundPath = `Games/${this.currentGame}/rounds/${roundIndex}`;
+    let firstLoad = true;
     this.gameRoundSubscription = firebase.firestore().doc(roundPath)
       .onSnapshot(async (doc) => {
         let data = doc.data();
@@ -852,7 +880,8 @@ export class StoryApp extends BaseApp {
           return;
         }
         this.boardRoundData = data;
-        this.updateBoardRoundData();
+        this.updateBoardRoundData(firstLoad);
+        firstLoad = false;
       });
   }
   async sendRoundAction(roundAction, cardIndex = -1, cardDetails = null, targetId = null, sourceId = null, originId = null) {
@@ -903,12 +932,16 @@ export class StoryApp extends BaseApp {
   applyInitRoundAction(meta) {
     let asset = this.staticBoardObjects[meta.sourceId];
     if (asset) {
-      if (meta.parent === null)
+      let enabled = true;
+      if (meta.parent === null) {
         asset.parent = null;
-      else if (meta.parent !== undefined) {
+        if (asset.assetMeta.objectType === 'probe')
+          enabled = false;
+      } else if (meta.parent !== undefined) {
         this.landProbe(meta.sourceId, meta.parent);
       }
-      asset.setEnabled(true);
+
+      asset.setEnabled(enabled);
     }
   }
 

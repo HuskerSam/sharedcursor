@@ -387,7 +387,7 @@ export default class MenuTab3D {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextReplayRound(1);
+        this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1;
       }
     };
     nextSelectedMetaBtn.position.x = -16;
@@ -401,7 +401,7 @@ export default class MenuTab3D {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.nextReplayRound(-1);
+        this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1;
       }
     };
     previousSelectedMetaBtn.position.x = -26;
@@ -410,10 +410,7 @@ export default class MenuTab3D {
     previousSelectedMetaBtn.scaling = U3D.v(0.5);
     previousSelectedMetaBtn.parent = parent;
 
-    this.selectedReplayRound = -1;
-    this.nextReplayRound(0);
-
-    this.playReplayButton = U3D.addDefaultText(this.app.scene, "Replay", "#00ff00");
+    this.playReplayButton = U3D.addDefaultText(this.app.scene, "Play", "#00ff00");
     this.playReplayButton.parent = parent;
     this.playReplayButton.scaling = U3D.v(2, 2, 2);
     this.playReplayButton.position.x = -10;
@@ -423,26 +420,19 @@ export default class MenuTab3D {
       appClickable: true,
       clickCommand: 'customClick',
       handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.loadReplay(true);
+        this.app.automateReplay();
       }
     };
   }
-  nextReplayRound(delta) {
+  updateMenubarLabel() {
+    if (this.app.boardTurnLabel === this.paintedLabel)
+      return;
+    this.paintedLabel = this.app.boardTurnLabel;
+
     if (this.selectedRoundIndexPanel)
       this.selectedRoundIndexPanel.dispose(false, true);
 
-    let min = -3;
-    let max = -1;
-    this.selectedReplayRound += delta;
-    if (this.selectedReplayRound < min)
-      this.selectedReplayRound = max;
-    if (this.selectedReplayRound > max)
-      this.selectedReplayRound = min;
-
-    let label = "Round " + (this.selectedReplayRound + 1).toString();
-    if (this.selectedReplayRound < 0)
-      label = "Prequel " + (-1 * this.selectedReplayRound).toString();
-    this.selectedRoundIndexPanel = U3D.addDefaultText(this.app.scene, label, '#aaffaa');
+    this.selectedRoundIndexPanel = U3D.addDefaultText(this.app.scene, this.app.boardTurnLabel, '#aaffaa');
     this.selectedRoundIndexPanel.position.x = -21;
     this.selectedRoundIndexPanel.position.y = 2;
     this.selectedRoundIndexPanel.position.z = 5;
@@ -600,9 +590,13 @@ export default class MenuTab3D {
       this.obj(id).baseMesh = freshMesh;
     }
 
-    let moonIndex = ['e1_luna', 'ceres', 'j5_io', 'eris'].indexOf(id);
-    if (moonIndex !== -1) {
-      //this.loadMoonButton(moonIndex);
+    if (this.app.staticBoardObjects[id].moonCloneMesh) {
+      let moonCloneInstance = window.staticMeshContainer[this.app.staticBoardObjects[id].assetMeta.containerPath].instantiateModelsToScene();
+      let moonCloneMesh = moonCloneInstance.rootNodes[0];
+      moonCloneMesh.parent = this.app.staticBoardObjects[id].moonCloneMesh.parent;
+      this.app.staticBoardObjects[id].moonCloneMesh.dispose();
+      this.app.staticBoardObjects[id].moonCloneMesh = moonCloneMesh;
+      U3D.sizeNodeToFit(moonCloneMesh, 2.5);
     }
 
     await this.app.updateProfileMeshOverride(id, size);

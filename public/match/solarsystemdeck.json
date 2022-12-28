@@ -347,7 +347,7 @@
   {
     "id": "rocket_atlasv",
     "name": "Atlas V Rocket",
-    "objectType": "rocket",
+    "objectType": "probe",
     "shortDescription": "Heavy Lift Rocket",
     "image": "/cardimages/atlasv.jpg",
     "url": "https://en.wikipedia.org/wiki/Atlas_V",
@@ -367,6 +367,7 @@
     "id": "probe_lunar_lander",
     "name": "LK Lunar Lander",
     "shortDescription": "Expedition Lander",
+    "objectType": "probe",
     "image": "/cardimages/lunarlander.jpg",
     "symbol": "/symbol/bird.png",
     "glbpath": "/solar/lk_lander.glb",

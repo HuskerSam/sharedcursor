@@ -23,6 +23,36 @@
       "sourceId": "j8_callisto",
       "parent": "jupiter",
       "action": "init"
+    },
+    {
+      "sourceId": "rocket_atlasv",
+      "parent": null,
+      "action": "init"
+    },
+    {
+      "sourceId": "probe_lunar_lander",
+      "parent": null,
+      "action": "init"
+    },
+    {
+      "sourceId": "probe_newhorizons",
+      "parent": null,
+      "action": "init"
+    },
+    {
+      "sourceId": "probe_psp",
+      "parent": null,
+      "action": "init"
+    },
+    {
+      "sourceId": "probe_tgo",
+      "parent": null,
+      "action": "init"
+    },
+    {
+      "sourceId": "probe_shuttle",
+      "parent": null,
+      "action": "init"
     }
   ]
 }

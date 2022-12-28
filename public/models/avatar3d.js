@@ -34,8 +34,9 @@ export default class Avatar3D {
             diameter: 0.5,
             segments: 16
           }, this.app.scene);
-          sphere.position.y = 2.5;
+          sphere.position.y = 7;
           sphere.position.x = -1;
+          sphere.position.z = 4;
           sphere.material = mat1;
           sphere.parent = seat;
           seat.onlineSphere = sphere;
@@ -65,6 +66,7 @@ export default class Avatar3D {
       let moonCloneInstance = window.staticMeshContainer[moonCloneMeta.containerPath].instantiateModelsToScene();
       let moonCloneMesh = moonCloneInstance.rootNodes[0];
       let moonCloneTN = new BABYLON.TransformNode('moonCloneTN' + seatIndex, this.app.scene);
+      this.app.playerMoonAssets[seatIndex].moonCloneMesh = moonCloneMesh;
       moonCloneMesh.parent = moonCloneTN;
       moonCloneTN.position.y = 6;
       moonCloneTN.position.z = 10;
@@ -204,12 +206,12 @@ export default class Avatar3D {
 
         if (this.app.uid === seatData.uid || this.app.isOwner) {
           let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
-          let color = gameOwnerNotPlayer ? "#000000" : '#ffffff';
+          let color = gameOwnerNotPlayer ? "#ff2222" : '#00dd00';
           let standBtn = U3D.addDefaultText(this.app.scene, "X", color);
           standBtn.scaling = U3D.v(1.25, 1.25, 1.25);
           standBtn.position.x = 1;
-          standBtn.position.y = 0.25;
-          standBtn.position.z = 2.5;
+          standBtn.position.y = 7;
+          standBtn.position.z = 4;
           standBtn.parent = seatContainer.playerDetailsTN;
           standBtn.assetMeta = {
             appClickable: true,
@@ -238,8 +240,8 @@ export default class Avatar3D {
         seatContainer.playerImagePlane2.setEnabled(true);
       } else {
         let sitBtn = U3D.addDefaultText(this.app.scene, "Sit", rgb);
-        sitBtn.position.y = 0.25;
-        sitBtn.position.z = 2.5;
+        sitBtn.position.y = 7;
+        sitBtn.position.z = 4;
         sitBtn.scaling = U3D.v(2, 2, 2);
         sitBtn.assetMeta = {
           seatIndex,
@@ -301,21 +303,6 @@ export default class Avatar3D {
       return;
     this.currentSeatMeshIndex = seatIndex;
 
-    if (!this.selectedPlayerPanel) {
-      this.selectedPlayerPanel = BABYLON.MeshBuilder.CreateDisc("selectedplayerpanel", {
-        radius: 1,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      }, this.app.scene);
-      this.selectedPlayerPanel.material = new BABYLON.StandardMaterial('selectedPlayerPanelMat', this.app.scene);
-      this.selectedPlayerPanel.position.y = -1;
-      this.selectedPlayerPanel.position.z = 3;
-      this.selectedPlayerPanel.rotation.x = Math.PI / 2;
-    }
-    this.selectedPlayerPanel.parent = this.dockSeatContainers[seatIndex];
-    this.selectedPlayerPanel.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-    this.selectedPlayerPanel.material.ambientColor = new BABYLON.Color3(1, 0, 0);
-    this.selectedPlayerPanel.material.emissiveColor = new BABYLON.Color3(1, 0, 0);
-
     let colors = this.get3DColors(seatIndex);
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
@@ -330,15 +317,14 @@ export default class Avatar3D {
             animIndex = i2;
         })
         this.avatarSequence(container, animIndex, i);
+        container.rootNodes[0].setEnabled(true);
       } else {
         arr.forEach(anim => anim.stop());
-        container.skeletons[0].returnToRest();
+        container.rootNodes[0].setEnabled(false);
       }
     });
 
     this.initedAvatars.forEach((avatar, i) => {
-      //  avatar.rootNodes[0].setEnabled(i === seatIndex);
-
       if (i !== seatIndex) {
         avatar.animContainer.animationGroups.forEach(anim => anim.stop());
       }
