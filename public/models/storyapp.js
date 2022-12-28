@@ -21,6 +21,7 @@ export class StoryApp extends BaseApp {
 
     this.alertErrors = false;
   }
+
   async _initMenuBar2D() {
     this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
     this.hide_loading_screen = document.querySelector('.hide_loading_screen');
@@ -170,6 +171,7 @@ export class StoryApp extends BaseApp {
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = -3;
   }
+
   async loadStaticAsset(name, sceneParent, profile, scene, meta = null) {
     if (!meta) {
       meta = Object.assign({}, window.allStaticAssetMeta[name]);
@@ -243,6 +245,7 @@ export class StoryApp extends BaseApp {
   assetPosition(id) {
     return this.staticBoardObjects[id].baseMesh.getAbsolutePosition();
   }
+
   async __awaitAssetLoad(name) {
     if (this.staticBoardObjects[name])
       return this.staticBoardObjects[name];
@@ -265,6 +268,7 @@ export class StoryApp extends BaseApp {
 
     return div;
   }
+
   aimCamera(locationMeta) {
     this.camera.restoreState();
     if (locationMeta) {
@@ -820,6 +824,7 @@ export class StoryApp extends BaseApp {
       this.roundActionRunning = true;
       this.roundCurrentSequenceIndex = actionIndex;
       let action = this.boardRoundData.actions[actionIndex];
+      console.log(action);
       if (action.action === 'playCard')
         await this.animatedRoundAction(action);
       else {
@@ -893,14 +898,16 @@ export class StoryApp extends BaseApp {
   }
   async animatedRoundAction(actionDetails) {
     await this.rocketHelper.shootRocket(actionDetails.sourceId, actionDetails.targetId, actionDetails.originId);
+    this.landProbe(actionDetails.sourceId, actionDetails.targetId);
   }
   applyInitRoundAction(meta) {
     let asset = this.staticBoardObjects[meta.sourceId];
     if (asset) {
       if (meta.parent === null)
         asset.parent = null;
-      else if (meta.parent !== undefined)
-        asset.parent = this.staticBoardObjects[meta.parent];
+      else if (meta.parent !== undefined) {
+        this.landProbe(meta.sourceId, meta.parent);
+      }
       asset.setEnabled(true);
     }
   }
@@ -920,5 +927,35 @@ export class StoryApp extends BaseApp {
     }
 
     return asset;
+  }
+  landProbe(probeId, targetId) {
+    this.clearAnimations(probeId);
+    let asset = this.staticBoardObjects[probeId];
+    asset.parent = this.parentPivot(targetId);
+    let parentAsset = this.staticBoardObjects[targetId];
+
+    let orbitRadius = 1.5;
+    let startRatio = 0;
+    if (parentAsset.assetMeta.objectType === 'planet') {
+      asset.assetMeta.orbitPivot.position.y = 3;
+      U3D.sizeNodeToFit(asset.baseMesh, 2);
+      if (asset.assetMeta.objectType === 'moon') {
+        startRatio = asset.assetMeta.startRatio;
+        orbitRadius = asset.assetMeta.orbitRadius;
+      }
+    } else {
+      asset.assetMeta.orbitPivot.position.y = 2;
+      orbitRadius = 1.5;
+      U3D.sizeNodeToFit(asset.baseMesh, 1);
+    }
+
+    let orbitPivot = U3D.addOrbitPivot({
+      id: probeId,
+      orbitDirection: 1,
+      orbitRadius,
+      startRatio,
+      orbitTime: 60000
+    }, this.scene, asset.assetMeta.orbitPivot);
+    asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
   }
 }

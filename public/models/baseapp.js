@@ -1285,7 +1285,7 @@ export class BaseApp {
     this.camera = scene.activeCamera;
     this.camera.wheelPrecision = 10;
     this.camera.lowerRadiusLimit = 5;
-    this.camera.upperRadiusLimit = 15;
+    this.camera.upperRadiusLimit = 35;
     this.camera.wheelDeltaPercentage = 0.01;
     this.camera.allowUpsideDown = false;
     this.camera.maxZ = 750;

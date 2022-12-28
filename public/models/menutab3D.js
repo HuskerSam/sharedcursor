@@ -596,7 +596,7 @@ export default class MenuTab3D {
       let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
       freshMesh.parent = this.obj(id).baseMesh.parent;
       U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
-      this.obj(id).baseMesh.dispose(false, true);
+      this.obj(id).baseMesh.dispose();
       this.obj(id).baseMesh = freshMesh;
     }
 

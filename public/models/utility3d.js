@@ -208,11 +208,11 @@ export default class Utility3D {
   }
   static createParticleSystem(scene) {
     let pSystem = new BABYLON.GPUParticleSystem("particles", {
-      capacity: 10000
+      capacity: 30000
     }, scene)
-    pSystem.activeParticleCount = 10000;
+    pSystem.activeParticleCount = 20000;
 
-    pSystem.emitRate = 75;
+    pSystem.emitRate = 150;
     // pSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
     pSystem.particleTexture = new BABYLON.Texture("/images/flare.png", scene);
 

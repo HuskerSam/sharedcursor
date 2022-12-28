@@ -581,6 +581,7 @@ export default class Avatar3D {
     if (this.currentSeatMeshIndex === undefined)
       return;
 
-    this.initedAvatars.forEach(avatar => this._offsetBonesMovement(avatar));
+      //this.initedAvatars.forEach(avatar => this._offsetBonesMovement(avatar));
+    this._offsetBonesMovement(this.initedAvatars[this.currentSeatMeshIndex]);
   }
 }

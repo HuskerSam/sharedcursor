@@ -14,23 +14,8 @@ export default class Rocket3D {
     //U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
 
     await this.rocketTravel(probeId, targetId, originId);
-    await this.rocketArrive(probeId, targetId);
   }
 
-  async rocketArrive(probeId, targetId) {
-    this.app.clearAnimations(probeId);
-    let asset = this.app.staticBoardObjects[probeId];
-    asset.parent = this.app.parentPivot(targetId);
-
-    let orbitPivot = U3D.addOrbitPivot({
-      id: probeId,
-      orbitDirection: 1,
-      orbitRadius: 2,
-      startRatio: 0.25,
-      orbitTime: 60000
-    }, this.app.scene, asset.assetMeta.orbitPivot);
-    asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
-  }
   __createTravelPath(startPosition, startRotation, endPosition) {
     let phase1Time = 2500;
     let phase2Time = 6000;
@@ -122,7 +107,7 @@ export default class Rocket3D {
 
       let particles = U3D.createFireParticles(meta, meta.basePivot, this.app.scene);
       particles.start();
-      setTimeout(() => particles.dispose(), 5000);
+      setTimeout(() => particles.dispose(), 15000);
 
 
       let newOrbitAnim = new BABYLON.Animation("assetorbitanim_" + probeId,
@@ -137,6 +122,7 @@ export default class Rocket3D {
 
       let endFrame = travelPath.frames;
       meta.orbitAnimation = this.app.scene.beginAnimation(meta.orbitPivot, 0, endFrame, false, 1, () => {
+        particles.stop();
         res();
       });
       meta.rotationAnimation = this.app.scene.beginAnimation(meta.rotationPivot, 0, endFrame, false);

@@ -6,7 +6,14 @@ export default class ActionCards {
     this.cardPanel = panel;
     this.cardPositions = [];
     this.cardWidth = 5;
-    this.cardHeight = 9;
+    this.cardHeight = 7;
+
+    let cardBackTexture = new BABYLON.Texture('/images/cardback.png', this.app.scene);
+    this.cardbackMaterial = new BABYLON.StandardMaterial("cardbackmaterial", this.app.scene);
+    this.cardbackMaterial.diffuseTexture = cardBackTexture;
+    //this.cardbackMaterial.ambientTexture = cardBackTexture;
+    //this.cardbackMaterial.emissiveTexture = cardBackTexture;
+    cardBackTexture.hasAlpha = true;
 
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
@@ -14,6 +21,9 @@ export default class ActionCards {
       cardHolder.position.x = -1 * (cardIndex % 3) * this.cardWidth * 1.25 - 14;
       if (cardIndex > 2) {
         cardHolder.position.y = 8;
+        cardHolder.position.z = 6;
+      } else {
+
         cardHolder.position.z = 5;
       }
 
@@ -21,7 +31,7 @@ export default class ActionCards {
 
       let localIndex = cardIndex;
       let playActionCardBtn = U3D.addDefaultText(this.scene, 'Play', "#ffffff", "#00aa00");
-      playActionCardBtn.position.y = this.cardHeight / 2 - 0.75;
+      playActionCardBtn.position.y = this.cardHeight / 2 - 0.55;
       playActionCardBtn.position.z = -0.05;
       playActionCardBtn.parent = cardHolder;
       playActionCardBtn.assetMeta = {
@@ -35,7 +45,7 @@ export default class ActionCards {
       cardHolder.playButton.setEnabled(false);
 
       let discardActionCardBtn = U3D.addDefaultText(this.scene, 'Recycle', "#ffffff", "#ff0000");
-      discardActionCardBtn.position.y = -this.cardHeight / 2 + 0.75;
+      discardActionCardBtn.position.y = -this.cardHeight / 2 + 0.55;
       discardActionCardBtn.position.z = -0.05;
       discardActionCardBtn.parent = cardHolder;
       discardActionCardBtn.assetMeta = {
@@ -48,15 +58,11 @@ export default class ActionCards {
       cardHolder.discardButton = discardActionCardBtn;
       cardHolder.discardButton.setEnabled(false);
 
-      let mat = new BABYLON.StandardMaterial("random", this.app.scene);
-      mat.diffuseColor = U3D.color("0.5,.5,.5");
-      mat.ambientColor = U3D.color("0.5,.5,.5");
-
       let plane = BABYLON.MeshBuilder.CreatePlane("random", {
         width: this.cardWidth,
         height: this.cardHeight
       }, this.app.scene);
-      plane.material = mat;
+      plane.material = this.cardbackMaterial;
       plane.parent = cardHolder;
     }
 
@@ -87,6 +93,7 @@ export default class ActionCards {
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
       U3D.sizeNodeToFit(mesh, 3);
       mesh.parent = cardHolder;
+      mesh.position.z = -1.5;
       Object.assign(meta, {
         appClickable: true,
         clickCommand: 'customClick',
@@ -112,7 +119,7 @@ export default class ActionCards {
 
       if (cardHolder.assetType)
         cardHolder.assetType.dispose(false, true);
-      cardHolder.assetType = U3D.addDefaultText(this.app.scene, meta.objectType, "#0000FF", "#ffffff");
+      cardHolder.assetType = U3D.addDefaultText(this.app.scene, meta.shortDescription, "#0000FF", "#ffffff");
       cardHolder.assetType.position.x = this.cardWidth / 2 - 0.5;
       cardHolder.assetType.position.y = 0; //this.cardHeight / 2;
       cardHolder.assetType.position.z = -0.05;
