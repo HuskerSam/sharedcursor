@@ -182,9 +182,9 @@ export class StoryApp extends BaseApp {
     if (meta.sizeBoxFit === undefined)
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
-    let noShadow = meta.noShadow === true;
-    let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, noShadow, meta.extended.texturePath);
-    U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
+    let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta);
+    if (!meta.texturePath)
+      U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
       scaleMesh.material = this.asteroidHelper.selectedAsteroidMaterial;

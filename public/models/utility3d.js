@@ -531,39 +531,53 @@ export default class Utility3D {
     return v;
   }
 
-  static async loadStaticMesh(scene, path, noShadow, texturePath) {
+  static async loadStaticMesh(scene, path, meta) {
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
     if (!window.staticMaterialContainer)
       window.staticMaterialContainer = {};
 
-    if (texturePath) {
-      let sphere = BABYLON.MeshBuilder.CreateSphere("basemeshsphere" + texturePath, {
-        diameter: 1,
+    let resultMesh;
+    if (meta && meta.extended.texturePath) {
+      let sphere = BABYLON.MeshBuilder.CreateSphere("basemeshsphere" + meta.id, {
+        diameter: meta.sizeBoxFit,
         segments: 16
       }, scene);
-      if (!window.staticMaterialContainer[texturePath]) {
-        let texture = new BABYLON.Texture(texturePath);
-        let material = new BABYLON.StandardMaterial("basemeshmat" + texturePath, scene);
+      if (!window.staticMaterialContainer[meta.extended.texturePath]) {
+        let texture = new BABYLON.Texture(meta.extended.texturePath);
+        let material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
         material.diffuseTexture = texture;
         material.ambientTexture = texture;
         material.emissiveTexture = texture;
-        window.staticMaterialContainer[texturePath] = material;
+        if (meta.cloneDiffuseForBump) {
+          material.bumpTexture = texture;
+          //material.invertNormalMapX = true;
+          //material.invertNormalMapY = true;
+        }
+        if (meta.specularPower !== undefined)
+          material.specularPower = meta.specularPower;
+        else
+          material.specularPower = 128;
+
+        window.staticMaterialContainer[meta.extended.texturePath] = material;
       }
-      sphere.material = window.staticMaterialContainer[texturePath];
+      sphere.material = window.staticMaterialContainer[meta.extended.texturePath];
       sphere.scaling = this.v(1, -1, 1);
-      return sphere;
+
+      resultMesh = sphere;
+    } else {
+      if (!window.staticMeshContainer[path])
+        window.staticMeshContainer[path] = await this.loadContainer(scene, path);
+
+      let result = window.staticMeshContainer[path].instantiateModelsToScene();
+      resultMesh = result.rootNodes[0];
     }
 
-    if (!window.staticMeshContainer[path])
-      window.staticMeshContainer[path] = await this.loadContainer(scene, path);
-
-    let result = window.staticMeshContainer[path].instantiateModelsToScene();
-    if (noShadow) {
-      scene.lights[0].excludedMeshes.push(result.rootNodes[0]);
+    if (meta && meta.noShadow) {
+      scene.lights[0].excludedMeshes.push(resultMesh);
     } else
-      scene.baseShadowGenerator.addShadowCaster(result.rootNodes[0]);
-    return result.rootNodes[0];
+      scene.baseShadowGenerator.addShadowCaster(resultMesh);
+    return resultMesh;
   }
   static processStaticAssetMeta(meta, profile) {
 
@@ -598,9 +612,12 @@ export default class Utility3D {
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
 
     let texturePath = null;
+    let specularPower = null;
     if (meta.texturePath) {
       texturePath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.texturePath) + '?alt=media';
       glbPath = null;
+      if (meta.specularPower)
+        specularPower = meta.specularPower;
     }
 
     return {
@@ -609,6 +626,7 @@ export default class Utility3D {
       smallGlbPath,
       largeGlbPath,
       texturePath,
+      specularPower,
       glbPath
     };
   }

@@ -63,7 +63,7 @@ export default class Avatar3D {
       dockSeatContainer.parent = this.app.menuTab3D.playerMoonPanelTab;
 
       let moonCloneMeta = this.app.playerMoonAssets[seatIndex].assetMeta;
-      let moonCloneMesh = await U3D.loadStaticMesh(this.app.scene, moonCloneMeta.containerPath, moonCloneMeta.noShadow, moonCloneMeta.extended.texturePath);
+      let moonCloneMesh = await U3D.loadStaticMesh(this.app.scene, moonCloneMeta.containerPath, moonCloneMeta);
       let moonCloneTN = new BABYLON.TransformNode('moonCloneTN' + seatIndex, this.app.scene);
       this.app.playerMoonAssets[seatIndex].moonCloneMesh = moonCloneMesh;
       moonCloneMesh.parent = moonCloneTN;
