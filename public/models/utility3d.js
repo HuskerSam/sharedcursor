@@ -532,21 +532,28 @@ export default class Utility3D {
   }
 
   static async loadStaticMesh(scene, path, noShadow, texturePath) {
+    if (!window.staticMeshContainer)
+      window.staticMeshContainer = {};
+    if (!window.staticMaterialContainer)
+      window.staticMaterialContainer = {};
+
     if (texturePath) {
       let sphere = BABYLON.MeshBuilder.CreateSphere("basemeshsphere" + texturePath, {
         diameter: 1,
         segments: 16
       }, scene);
-      let texture = new BABYLON.Texture(texturePath);
-      sphere.material = new BABYLON.StandardMaterial("basemeshmat" + texturePath, scene);
-      sphere.material.diffuseTexture = texture;
-      sphere.material.ambientTexture = texture;
-      sphere.material.emissiveTexture = texture;
+      if (!window.staticMaterialContainer[texturePath]) {
+        let texture = new BABYLON.Texture(texturePath);
+        let material = new BABYLON.StandardMaterial("basemeshmat" + texturePath, scene);
+        material.diffuseTexture = texture;
+        material.ambientTexture = texture;
+        material.emissiveTexture = texture;
+        window.staticMaterialContainer[texturePath] = material;
+      }
+      sphere.material = window.staticMaterialContainer[texturePath];
+      sphere.scaling = this.v(1, -1, 1);
       return sphere;
     }
-
-    if (!window.staticMeshContainer)
-      window.staticMeshContainer = {};
 
     if (!window.staticMeshContainer[path])
       window.staticMeshContainer[path] = await this.loadContainer(scene, path);
