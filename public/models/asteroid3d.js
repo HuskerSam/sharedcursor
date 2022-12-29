@@ -115,7 +115,8 @@ export default class Asteroid3D {
       orbitAnimation,
       basePivot: mesh,
       offsetY: 1.25,
-      containerPath
+      containerPath,
+      extended: {}
     };
 
 

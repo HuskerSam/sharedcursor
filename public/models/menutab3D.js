@@ -409,20 +409,6 @@ export default class MenuTab3D {
     previousSelectedMetaBtn.position.z = 5;
     previousSelectedMetaBtn.scaling = U3D.v(0.5);
     previousSelectedMetaBtn.parent = parent;
-
-    this.playReplayButton = U3D.addDefaultText(this.app.scene, "Play", "#00ff00");
-    this.playReplayButton.parent = parent;
-    this.playReplayButton.scaling = U3D.v(2, 2, 2);
-    this.playReplayButton.position.x = -10;
-    this.playReplayButton.position.y = 2;
-    this.playReplayButton.position.z = 5;
-    this.playReplayButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.automateReplay();
-      }
-    };
   }
   updateMenubarLabel() {
     if (this.app.boardTurnLabel === this.paintedLabel)
@@ -583,7 +569,8 @@ export default class MenuTab3D {
       if (size === 'small')
         meta.containerPath = meta.extended.smallGlbPath;
 
-      let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath);
+      let noShadow = meta.noShadow === true;
+      let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath, noShadow, meta.extended.texturePath);
       freshMesh.parent = this.obj(id).baseMesh.parent;
       U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
       this.obj(id).baseMesh.dispose();
@@ -630,8 +617,7 @@ export default class MenuTab3D {
       result.animationGroups[0].stop();
       result.skeletons[0].returnToRest();
     } else {
-      result = window.staticMeshContainer[assetMeta.containerPath].instantiateModelsToScene();
-      mesh = result.rootNodes[0];
+      mesh = await U3D.loadStaticMesh(this.app.scene, assetMeta.containerPath, assetMeta.noShadow, assetMeta.extended.texturePath);
     }
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);

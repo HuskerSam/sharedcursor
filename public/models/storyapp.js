@@ -183,7 +183,7 @@ export class StoryApp extends BaseApp {
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
     let noShadow = meta.noShadow === true;
-    let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, noShadow);
+    let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, noShadow, meta.extended.texturePath);
     U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
 
     if (meta.wireframe) {
@@ -788,7 +788,6 @@ export class StoryApp extends BaseApp {
       this.applyInitRoundAction(boardAction);
     }
   }
-  async automateReplay() {}
   get paintedBoardTurn() {
     if (this._paintedBoardTurn !== null)
       return this._paintedBoardTurn;

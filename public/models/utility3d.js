@@ -531,7 +531,20 @@ export default class Utility3D {
     return v;
   }
 
-  static async loadStaticMesh(scene, path, noShadow) {
+  static async loadStaticMesh(scene, path, noShadow, texturePath) {
+    if (texturePath) {
+      let sphere = BABYLON.MeshBuilder.CreateSphere("basemeshsphere" + texturePath, {
+        diameter: 1,
+        segments: 16
+      }, scene);
+      let texture = new BABYLON.Texture(texturePath);
+      sphere.material = new BABYLON.StandardMaterial("basemeshmat" + texturePath, scene);
+      sphere.material.diffuseTexture = texture;
+      sphere.material.ambientTexture = texture;
+      sphere.material.emissiveTexture = texture;
+      return sphere;
+    }
+
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
 
@@ -577,11 +590,18 @@ export default class Utility3D {
 
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
 
+    let texturePath = null;
+    if (meta.texturePath) {
+      texturePath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.texturePath) + '?alt=media';
+      glbPath = null;
+    }
+
     return {
       symbolPath,
       normalGlbPath,
       smallGlbPath,
       largeGlbPath,
+      texturePath,
       glbPath
     };
   }
