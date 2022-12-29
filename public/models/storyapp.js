@@ -140,7 +140,7 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    this.avatarHelper.initPlayerPanel();
+    await this.avatarHelper.initPlayerPanel();
     this.asteroidHelper.asteroidUpdateMaterials();
     this.actionCardHelper = new ActionCards(this, this.menuTab3D.playerCardsTN);
 

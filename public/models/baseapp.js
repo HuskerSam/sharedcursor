@@ -1411,7 +1411,7 @@ export class BaseApp {
     return value;
   }
   initSkybox() {
-    let skyboxname = 'nebula_orange_blue';
+    let skyboxname = 'stars8k.jpg';
     if (this.profile && this.profile.skyboxPath)
       skyboxname = this.profile.skyboxPath;
     let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;

@@ -265,6 +265,8 @@ export default class MenuTab3D {
   }
   skyboxList() {
     return [
+      'milkyway8k',
+      'stars8k',
       'nebula_orange_blue',
       'moon_high_clear',
       'moonless_2',
