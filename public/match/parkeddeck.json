@@ -15,6 +15,25 @@
     "y": 0
   },
   {
+    "id": "rocket_atlasv",
+    "name": "Atlas V Rocket",
+    "objectType": "probe",
+    "shortDescription": "Heavy Lift Rocket",
+    "image": "/cardimages/atlasv.jpg",
+    "url": "https://en.wikipedia.org/wiki/Atlas_V",
+    "symbol": "/symbol/bird.png",
+    "glbpath": "/mascots/atlasv.glb",
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
+    "loadDisabled": true,
+    "orbitRadius": 50,
+    "startRatio": 0,
+    "rotationTime": 50000,
+    "orbitTime": 50000
+  },
+  {
     "id": "action_rover",
     "name": "Planet Rover",
     "objectType": "probe",
@@ -153,5 +172,5 @@
       "orbitTime": 30000,
       "parent": "mars"
     },
-  
+
 ]
