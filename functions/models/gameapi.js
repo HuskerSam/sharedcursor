@@ -1,6 +1,7 @@
 const firebaseAdmin = require('firebase-admin');
 const fetch = require('cross-fetch');
 const baseClass = require('./baseclass.js');
+const textToSpeech = require('@google-cloud/text-to-speech');
 
 module.exports = class GameAPI {
   static _defaultGame(uid) {
@@ -881,5 +882,38 @@ module.exports = class GameAPI {
       customToken,
       success: true
     })
+  }
+
+  static async getTextWavPath(req, res) {
+    const client = new textToSpeech.TextToSpeechClient();
+    const text = req.body.text;
+    let uniqueText = text.replace(/[^a-zA-Z0-9]/g, '');
+
+    const bucket = firebaseAdmin.storage().bucket();
+    let path = `speech/voice/${uniqueText}.mp3`;
+    let file = bucket.file(path);
+
+    let exists = await file.exists();
+    if (!exists[0]) {
+      const request = {
+        input: {
+          text: text
+        },
+        voice: {
+          languageCode: 'en-US',
+          ssmlGender: 'NEUTRAL'
+        },
+        audioConfig: {
+          audioEncoding: 'MP3'
+        },
+      };
+      const [response] = await client.synthesizeSpeech(request);
+      await file.save(response.audioContent);
+    }
+
+    return res.status(200).send({
+      success: true,
+      path
+    });
   }
 };

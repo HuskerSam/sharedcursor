@@ -910,6 +910,20 @@ export class StoryApp extends BaseApp {
   }
   async playCard(cardIndex) {
     let cardDetails = this.actionCards[cardIndex];
+
+    let text = 'play card abcd';
+    let fileResult = await this.getMP3ForText(text);
+    let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(fileResult) + '?alt=media&fileext=.mp3';
+    if (this.voiceSoundObject) {
+      this.voiceSoundObject.stop();
+      this.voiceSoundObject.dispose();
+    }
+
+    this.voiceSoundObject = new BABYLON.Sound("voiceSoundObject", soundPath, this.scene, null, {
+      loop: false,
+      autoplay: true
+    });
+
     await this.sendRoundAction('playCard', cardIndex, cardDetails, this.selectedAsset.id,
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }

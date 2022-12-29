@@ -589,11 +589,7 @@ export default class Utility3D {
     if (meta && meta.noShadow) {
       scene.lights[0].excludedMeshes.push(resultMesh);
     } else {
-      //
-  //    if (textureType)
-    //    scene.baseShadowGenerator.getShadowMap().renderList.push(resultMesh);
-    //  else
-        scene.baseShadowGenerator.addShadowCaster(resultMesh);
+      scene.baseShadowGenerator.addShadowCaster(resultMesh);
     }
     return resultMesh;
   }

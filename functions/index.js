@@ -50,6 +50,8 @@ apiApp.post('/games/message', async (req, res) => gameAPI.message(req, res));
 apiApp.post('/games/message/delete', async (req, res) => gameAPI.messageDelete(req, res));
 apiApp.post('/games/seat/position', async (req, res) => gameAPI.positionSeat(req, res));
 
+apiApp.post('/games/texttospeech', async (req, res) => gameAPI.getTextWavPath(req, res));
+
 apiApp.post('/user/auth/custom', async (req, res) => gameAPI.customAuthCode(req, res));
 apiApp.post('/user/auth/query', async (req, res) => gameAPI.queryAuthCode(req, res));
 

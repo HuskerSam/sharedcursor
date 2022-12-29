@@ -1477,6 +1477,27 @@ export class BaseApp {
   groundClick(pointerInfo) {
     return;
   }
+  async getMP3ForText(text) {
+    if (!this.fireToken)
+      return;
+
+    let body = {
+      text
+    };
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + 'api/games/texttospeech', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+    return json.path;
+  }
 }
 
 export default BaseApp;
