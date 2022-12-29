@@ -1,0 +1,40 @@
+[{
+    "name": "Terra",
+    "path": "maria.glb",
+    "cloneAnimations": "Daya",
+    "x": 3,
+    "z": 3,
+    "race": "Human",
+    "voiceName": "en-GB-Neural2-A",
+    "seatIndex": 0
+  },
+  {
+    "name": "Jade",
+    "path": "jolleen.glb",
+    "cloneAnimations": "Daya",
+    "x": -3,
+    "z": 3,
+    "race": "Botan",
+    "voiceName": "en-AU-Neural2-C",
+    "seatIndex": 1
+  },
+  {
+    "name": "Daya",
+    "path": "jonesbase.glb",
+    "x": -3,
+    "z": -3,
+    "race": "Avian",
+    "voiceName": "en-US-Neural2-G",
+    "seatIndex": 2
+  },
+  {
+    "name": "Elihu",
+    "path": "maynard.glb",
+    "cloneAnimations": "Daya",
+    "x": 3,
+    "z": -3,
+    "race": "Titan",
+    "voiceName": "en-GB-Neural2-D",
+    "seatIndex": 3
+  }
+]

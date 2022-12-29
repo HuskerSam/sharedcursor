@@ -135,7 +135,7 @@ export default class Avatar3D {
       dockSeatContainer.playerImagePlane2 = playerImagePlane2;
       playerImagePlane2.position.z = 0.05;
 
-      let avatarMeta = this.getAvatarData()[seatIndex];
+      let avatarMeta = this.app.avatarMetas[seatIndex];
       let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
       let newModel = this.avatarContainers[animationsBaseName].instantiateModelsToScene();
       let newSkin = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
@@ -395,7 +395,7 @@ export default class Avatar3D {
     let initedAvatars = [];
     let avatarContainers = {};
 
-    let avatarMetas = this.getAvatarData();
+    let avatarMetas = this.app.avatarMetas;
     for (let c = 0; c < 4; c++) {
       let avatarMeta = avatarMetas[c];
       let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
@@ -507,44 +507,6 @@ export default class Avatar3D {
       mesh.position.x = 0;
       mesh.position.z = 0;
     });
-  }
-  getAvatarData() {
-    return [{
-        "name": "Terra",
-        "path": "maria.glb",
-        "cloneAnimations": "Daya",
-        "x": 3,
-        "z": 3,
-        "race": "Human",
-        "seatIndex": 0
-      },
-      {
-        "name": "Jade",
-        "path": "jolleen.glb",
-        "cloneAnimations": "Daya",
-        "x": -3,
-        "z": 3,
-        "race": "Botan",
-        "seatIndex": 1
-      },
-      {
-        "name": "Daya",
-        "path": "jonesbase.glb",
-        "x": -3,
-        "z": -3,
-        "race": "Avian",
-        "seatIndex": 2
-      },
-      {
-        "name": "Elihu",
-        "path": "maynard.glb",
-        "cloneAnimations": "Daya",
-        "x": 3,
-        "z": -3,
-        "race": "Titan",
-        "seatIndex": 3
-      }
-    ];
   }
   _offsetBonesMovement(model) {
     let mesh = model.rootNodes[0].getChildMeshes()[0];

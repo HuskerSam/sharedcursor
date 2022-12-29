@@ -1477,15 +1477,17 @@ export class BaseApp {
   groundClick(pointerInfo) {
     return;
   }
-  async getMP3ForText(text) {
+  async getMP3ForText(text, voiceName = 'en-AU-Standard-A') {
     if (!this.fireToken)
       return;
 
     let body = {
-      text
+      text,
+      voiceName
     };
     let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'api/games/texttospeech', {
+    let basePath = `https://us-central1-${this.projectId}.cloudfunctions.net/`;
+    let f_result = await fetch(basePath + 'api/games/texttospeech', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -1496,6 +1498,8 @@ export class BaseApp {
       body: JSON.stringify(body)
     });
     let json = await f_result.json();
+    let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(json.path) + '?alt=media&fileext=.mp3';
+    console.log(soundPath);
     return json.path;
   }
 }

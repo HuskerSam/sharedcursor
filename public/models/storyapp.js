@@ -312,7 +312,8 @@ export class StoryApp extends BaseApp {
     await Promise.all([
       window.allStaticAssetMeta = await GameCards.loadDecks(),
       this.actionCards = await this.getJSONFile('/story/actioncards.json'),
-      this.boardResetRoundData = await this.getJSONFile('/story/defaultround.json')
+      this.boardResetRoundData = await this.getJSONFile('/story/defaultround.json'),
+      this.avatarMetas = await this.getJSONFile('/story/avatars.json')
     ])
     await super.load();
   }
@@ -911,8 +912,12 @@ export class StoryApp extends BaseApp {
   async playCard(cardIndex) {
     let cardDetails = this.actionCards[cardIndex];
 
-    let text = 'play card abcd';
-    let fileResult = await this.getMP3ForText(text);
+    let avatarMeta = this.avatarMetas[this.activeSeatIndex];
+    let fromName = this.activeMoon.assetMeta.name;
+    let toName = this.selectedAsset.name;
+    let text = `${avatarMeta.name} launches Atlas V rocket from ${fromName} to ${toName}`;
+    let voiceName = avatarMeta.voiceName;
+    let fileResult = await this.getMP3ForText(text, voiceName);
     let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(fileResult) + '?alt=media&fileext=.mp3';
     if (this.voiceSoundObject) {
       this.voiceSoundObject.stop();

@@ -888,6 +888,8 @@ module.exports = class GameAPI {
     const client = new textToSpeech.TextToSpeechClient();
     const text = req.body.text;
     let uniqueText = text.replace(/[^a-zA-Z0-9]/g, '');
+    const voiceName = req.body.voiceName;
+    uniqueText = voiceName + "/" + uniqueText;
 
     const bucket = firebaseAdmin.storage().bucket();
     let path = `speech/voice/${uniqueText}.mp3`;
@@ -897,11 +899,11 @@ module.exports = class GameAPI {
     if (!exists[0]) {
       const request = {
         input: {
-          text: text
+          text
         },
         voice: {
-          languageCode: 'en-US',
-          ssmlGender: 'NEUTRAL'
+          languageCode: voiceName.slice(0, 5),
+          name: voiceName
         },
         audioConfig: {
           audioEncoding: 'MP3'
