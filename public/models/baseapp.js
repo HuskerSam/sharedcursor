@@ -1276,7 +1276,7 @@ export class BaseApp {
     let environment = scene.createDefaultEnvironment({
       createSkybox: false,
       groundSize: 150,
-      groundShadowLevel: 0.2,
+      groundShadowLevel: 0,
       enableGroundMirror: true
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
