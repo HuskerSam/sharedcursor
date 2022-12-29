@@ -843,7 +843,9 @@ export class StoryApp extends BaseApp {
       console.log(action);
       if (action.action === 'playCard')
         await this.animatedRoundAction(action);
-      else {
+      else if (action.action === 'avatarMessage') {
+        await this.boardActionAvatarMessage(action)
+      } else {
         //apply
         this.applyBoardAction(action);
       }
@@ -905,30 +907,22 @@ export class StoryApp extends BaseApp {
       return;
     }
   }
+  async boardActionAvatarMessage(action) {
+    await this.avatarShowMessage(action.seatIndex, action.text, action.timeToShow, action.timeToBlock);
+  }
 
   async discardCard(cardIndex) {
 
   }
   async playCard(cardIndex) {
     let cardDetails = this.actionCards[cardIndex];
-
+    /*
     let avatarMeta = this.avatarMetas[this.activeSeatIndex];
     let fromName = this.activeMoon.assetMeta.name;
     let toName = this.selectedAsset.name;
     let text = `${avatarMeta.name} launches Atlas V rocket from ${fromName} to ${toName}`;
-    let voiceName = avatarMeta.voiceName;
-    let fileResult = await this.getMP3ForText(text, voiceName);
-    let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(fileResult) + '?alt=media&fileext=.mp3';
-    if (this.voiceSoundObject) {
-      this.voiceSoundObject.stop();
-      this.voiceSoundObject.dispose();
-    }
-
-    this.voiceSoundObject = new BABYLON.Sound("voiceSoundObject", soundPath, this.scene, null, {
-      loop: false,
-      autoplay: true
-    });
-
+    this.avatarMessage(text);
+    */
     await this.sendRoundAction('playCard', cardIndex, cardDetails, this.selectedAsset.id,
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
@@ -997,5 +991,56 @@ export class StoryApp extends BaseApp {
       orbitTime: 60000
     }, this.scene, asset.assetMeta.orbitPivot);
     asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
+  }
+
+  async avatarShowMessage(seatIndex, text, timeToShow, timeToBlock) {
+    if (!this.avatarMetas[seatIndex].chatPanel) {
+      let texturePath = '/fontcons/chat' + seatIndex.toString() + '.svg';
+      let mesh = BABYLON.MeshBuilder.CreatePlane('chatbubblefor' + seatIndex, {
+        width: 3,
+        height: 3
+      }, this.scene);
+      let mat = new BABYLON.StandardMaterial('chatbubblematfor' + seatIndex, this.scene);
+      let chatTN = new BABYLON.TransformNode('chattnfor' + seatIndex, this.scene);
+
+      let tex = new BABYLON.Texture(texturePath, this.scene, false, false);
+      tex.hasAlpha = true;
+      mesh.material = mat;
+      mat.diffuseTexture = tex;
+      mat.ambientTexture = tex;
+      mat.emissiveTexture = tex;
+      mesh.rotation.x = Math.PI;
+      mesh.rotation.y = Math.PI;
+      mesh.scaling = U3D.v(-1, 1, 1);
+      mesh.position.x = 1;
+      mesh.parent = chatTN;
+
+      chatTN.position.y = 3;
+      chatTN.billboardMode = 7;
+
+      chatTN.parent = this.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
+      this.avatarMetas[this.activeSeatIndex].chatPanel = mesh;
+    }
+
+    //let avatarMeta = this.avatarMetas[this.activeSeatIndex];
+
+
+  }
+  async avatarMessage(text) {
+    let avatarMeta = this.avatarMetas[this.activeSeatIndex];
+
+    let voiceName = avatarMeta.voiceName;
+    let fileResult = await this.getMP3ForText(text, voiceName);
+    let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(fileResult) + '?alt=media&fileext=.mp3';
+    if (this.voiceSoundObject) {
+      this.voiceSoundObject.stop();
+      this.voiceSoundObject.dispose();
+    }
+
+    this.voiceSoundObject = new BABYLON.Sound("voiceSoundObject", soundPath, this.scene, null, {
+      loop: false,
+      autoplay: true
+    });
+
   }
 }

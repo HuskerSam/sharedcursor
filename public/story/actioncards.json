@@ -8,6 +8,10 @@
     "gameCard": "probe_lunar_lander"
   },
   {
+    "name": "Space Telescope",
+    "gameCard": "probe_hubble"
+  },
+  {
     "name": "Deep Space Probe",
     "gameCard": "probe_newhorizons"
   },

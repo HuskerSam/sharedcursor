@@ -1,15 +1,43 @@
 {
   "actions": [{
-      "sourceId": "e1_luna",
       "action": "parentChange",
+      "sourceId": "e1_luna",
       "targetId": "venus",
       "when": "init"
     },
     {
-      "sourceId": "j5_io",
       "action": "parentChange",
+      "sourceId": "j5_io",
       "targetId": "earth",
       "when": "init"
+    },
+    {
+      "action": "avatarMessage",
+      "seatIndex": 0,
+      "text": "Things started out so peacefully...",
+      "timeToShow": 15000,
+      "timeToBlock": 4000
+    },
+    {
+      "action": "avatarMessage",
+      "seatIndex": 1,
+      "text": "I blame it all on Elihu and capitalism!",
+      "timeToShow": 15000,
+      "timeToBlock": 4000
+    },
+    {
+      "action": "avatarMessage",
+      "seatIndex": 2,
+      "text": "Elihu thinks he owns everything.",
+      "timeToShow": 15000,
+      "timeToBlock": 4000
+    },
+    {
+      "action": "avatarMessage",
+      "seatIndex": 3,
+      "text": "This is my system.",
+      "timeToShow": 15000,
+      "timeToBlock": 4000
     }
   ]
 }
