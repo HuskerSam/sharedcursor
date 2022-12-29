@@ -1261,25 +1261,27 @@ export class BaseApp {
     if (this.urlParams.get('pointlight')) {
       this.mainLight = new BABYLON.PointLight("light1", new BABYLON.Vector3(5, 35, 5), scene);
     } else {
-      this.mainLight = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(-2, -3, 1), scene);
-      this.mainLight.position = new BABYLON.Vector3(6, 15, 3);
+      this.mainLight = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(1, -5, 1), scene);
     }
-    if (this.profile)
-      this.mainLight.intensity = this._getLightLevel(this.profile.sceneLightLevel);
+    this.mainLight.intensity = 0.8;
 
-    this.scene.baseShadowGenerator = new BABYLON.ShadowGenerator(1024, this.mainLight);
-    this.scene.baseShadowGenerator.useBlurExponentialShadowMap = true;
-    this.scene.baseShadowGenerator.blurKernel = 32;
+    const shadowGenerator = new BABYLON.CascadedShadowGenerator(4096, this.mainLight);
+    shadowGenerator.stabilizeCascades = true;
+    shadowGenerator.autoCalcDepthBounds = true;
+    shadowGenerator.penumbraDarkness = 0;
+    shadowGenerator.lambda = 1;
+    shadowGenerator.cascadeBlendPercentage = 0;
+    this.scene.baseShadowGenerator = shadowGenerator;
 
     let environment = scene.createDefaultEnvironment({
       createSkybox: false,
       groundSize: 150,
-      groundShadowLevel: 0.4,
+      groundShadowLevel: 0.2,
       enableGroundMirror: true
     });
     environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
     this.env = environment;
-    this.env.groundMaterial.alpha = 0.35;
+    this.env.groundMaterial.alpha = 0.4;
 
     scene.createDefaultCamera(true, true, true);
     this.camera = scene.activeCamera;
@@ -1294,7 +1296,7 @@ export class BaseApp {
     this.camera.upperBetaLimit = 1.5;
     this.camera.lowerBetaLimit = 0.25;
 
-    //  scene.activeCamera.useAutoRotationBehavior = true;
+    scene.activeCamera.useAutoRotationBehavior = true;
     scene.activeCamera.beta -= 0.2;
 
     scene.activeCamera.setPosition(this.cameraMetaX.position);
@@ -1398,17 +1400,6 @@ export class BaseApp {
     });
 
     return scene;
-  }
-  _getLightLevel(value) {
-    value = Number(value);
-    if (isNaN(value))
-      value = 0.7;
-    if (value < 0.1)
-      value = 0.1;
-    if (value > 1.5)
-      value = 1.5;
-
-    return value;
   }
   initSkybox() {
     let skyboxname = 'stars8k.jpg';

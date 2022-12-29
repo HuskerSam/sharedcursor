@@ -538,7 +538,8 @@ export default class Utility3D {
       window.staticMaterialContainer = {};
 
     let resultMesh;
-    if (meta && meta.extended.texturePath) {
+    let textureType = (meta && meta.extended.texturePath);
+    if (textureType) {
       let sphere = BABYLON.MeshBuilder.CreateSphere("basemeshsphere" + meta.id, {
         diameter: meta.sizeBoxFit,
         segments: 16
@@ -548,16 +549,28 @@ export default class Utility3D {
         let material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
         material.diffuseTexture = texture;
         material.ambientTexture = texture;
-        material.emissiveTexture = texture;
+        if (!meta.noEmissive)
+          material.emissiveTexture = texture;
         if (meta.cloneDiffuseForBump) {
           material.bumpTexture = texture;
-          //material.invertNormalMapX = true;
-          //material.invertNormalMapY = true;
+          if (meta.invertBump) {
+            material.invertNormalMapX = true;
+            material.invertNormalMapY = true;
+          }
         }
         if (meta.specularPower !== undefined)
           material.specularPower = meta.specularPower;
         else
-          material.specularPower = 128;
+          material.specularPower = 16;
+
+        if (meta.emissiveBlack) {
+          material.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+          material.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+        }
+        if (meta.noShadow) {
+          material.diffuseColor = new BABYLON.Color3(9, 9, 0);
+          material.emissiveColor = new BABYLON.Color3(9, 9, 0);
+        }
 
         window.staticMaterialContainer[meta.extended.texturePath] = material;
       }
@@ -575,8 +588,13 @@ export default class Utility3D {
 
     if (meta && meta.noShadow) {
       scene.lights[0].excludedMeshes.push(resultMesh);
-    } else
-      scene.baseShadowGenerator.addShadowCaster(resultMesh);
+    } else {
+      //
+      if (textureType)
+        scene.baseShadowGenerator.getShadowMap().renderList.push(resultMesh);
+      else
+        scene.baseShadowGenerator.addShadowCaster(resultMesh);
+    }
     return resultMesh;
   }
   static processStaticAssetMeta(meta, profile) {

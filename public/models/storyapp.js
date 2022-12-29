@@ -401,17 +401,6 @@ export class StoryApp extends BaseApp {
       merge: true
     });
   }
-  async sceneLightChange(delta) {
-    let sceneLightLevel = this._getLightLevel(this.profile.sceneLightLevel);
-    sceneLightLevel = this._getLightLevel(sceneLightLevel + delta);
-    this.profile.sceneLightLevel = sceneLightLevel;
-    this.mainLight.intensity = sceneLightLevel;
-    this.menuTab3D.updateDiffuseLightLabel();
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).update({
-        sceneLightLevel
-      });
-  }
 
   //game logic
   clickEndTurn() {

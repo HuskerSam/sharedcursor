@@ -122,43 +122,6 @@ export default class MenuTab3D {
   }
 
   initOptionsTab(parent) {
-    let diffuseLightLabel = U3D.addTextPlane(this.app.scene, 'Diffuse Light');
-    diffuseLightLabel.position.x = -21;
-    diffuseLightLabel.position.y = 1;
-    diffuseLightLabel.position.z = 2;
-    diffuseLightLabel.scaling = U3D.v(2);
-    diffuseLightLabel.parent = parent;
-
-    let lightDnBtn = this.addIconBtn('minus');
-    lightDnBtn.position.x = -15;
-    lightDnBtn.position.y = 1;
-    lightDnBtn.position.z = 2;
-    lightDnBtn.scaling = U3D.v(0.5);
-    lightDnBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.sceneLightChange(-0.1);
-      }
-    };
-    lightDnBtn.parent = parent;
-
-    let lightUpBtn = this.addIconBtn('plus');
-    lightUpBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.sceneLightChange(0.1);
-      }
-    };
-    lightUpBtn.position.x = -13;
-    lightUpBtn.position.y = 1;
-    lightUpBtn.position.z = 2;
-    lightUpBtn.scaling = U3D.v(0.5);
-    lightUpBtn.parent = parent;
-
-    this.updateDiffuseLightLabel();
-
     let skyboxLabel = U3D.addTextPlane(this.app.scene, 'Skybox');
     skyboxLabel.position.x = -21;
     skyboxLabel.position.y = 4;
@@ -230,18 +193,6 @@ export default class MenuTab3D {
     asteroidUpCountBtn.scaling = U3D.v(0.5);
     asteroidUpCountBtn.parent = parent;
     this.updateAsteroidOptions();
-  }
-  updateDiffuseLightLabel() {
-    if (this.lightLevelPanel)
-      this.lightLevelPanel.dispose(false, true);
-
-    let level = Number(this.app.profile.sceneLightLevel).toFixed(1);
-    this.lightLevelPanel = U3D.addTextPlane(this.app.scene, level, 'lightLevelPanel');
-    this.lightLevelPanel.position.x = 0;
-    this.lightLevelPanel.position.y = 1;
-    this.lightLevelPanel.position.z = 2;
-    this.lightLevelPanel.scaling = U3D.v(2);
-    this.lightLevelPanel.parent = this.optionsMenuTab;
   }
   updateSkyboxLabel() {
     if (this.skyboxNamePanel)
