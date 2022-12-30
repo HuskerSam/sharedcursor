@@ -1153,6 +1153,7 @@ export class StoryApp extends BaseApp {
 
     this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
       let avatarMeta = this.avatarMetas[seatIndex];
+      console.log('twice???');
       this.avatarHelper.avatarSequence(avatar, avatarMeta.walkingAnim, seatIndex);
 
       let positionTN = avatar.avatarPositionTN;
@@ -1187,16 +1188,6 @@ export class StoryApp extends BaseApp {
     //boxingleft, boxingright, chickendance, defeated, jogging,
     // walking, femalewalk, grabandslam, joyfuljump, surprised, thrillerpart1
 
-
-    /*
-
-        this.initedAvatars.forEach((avatar, i) => {
-          if (i !== seatIndex) {
-            avatar.animContainer.animationGroups.forEach(anim => anim.stop());
-          }
-        })
-
-        */
   }
   _generatePath(keyPointsArray) {
     let y = 0;

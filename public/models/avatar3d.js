@@ -138,24 +138,16 @@ export default class Avatar3D {
       let avatarMeta = this.app.avatarMetas[seatIndex];
       let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
       let newModel = this.avatarContainers[animationsBaseName].instantiateModelsToScene();
-      let newSkin = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
-      this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
-      newModel.rootNodes[0].setEnabled(false);
-      newSkin.animContainer = newModel;
-      newModel = newSkin;
       this.menuBarAvatars.push(newModel);
-      this.menuBarAvatars[seatIndex].animContainer.animationGroups[0].stop();
+      this.menuBarAvatars[seatIndex].animationGroups[0].stop();
 
-      let bonesOffsetTN = new BABYLON.TransformNode("menu3davatarbonesoffset" + seatIndex, this.app.scene);
       let avatarPositionTN = new BABYLON.TransformNode("menu3davatarpositionoffset" + seatIndex, this.app.scene);
       avatarPositionTN.position.y = -1;
       avatarPositionTN.position.z = 3;
       avatarPositionTN.rotation.y = Math.PI;
       avatarPositionTN.scaling = U3D.v(3);
-      bonesOffsetTN.parent = avatarPositionTN;
       avatarPositionTN.parent = this.dockSeatContainers[seatIndex];
-      this.menuBarAvatars[seatIndex].rootNodes[0].parent = bonesOffsetTN;
-      newModel.bonesOffsetTN = bonesOffsetTN;
+      this.menuBarAvatars[seatIndex].rootNodes[0].parent = avatarPositionTN;
       newModel.avatarPositionTN = avatarPositionTN;
 
       avatarPositionTN.assetMeta = {
@@ -307,10 +299,10 @@ export default class Avatar3D {
 
     this.menuBarAvatars.forEach((container, i) => {
       if (i === seatIndex) {
-        this.avatarSequence(container, 'Clone of surprised', i);
+      //  this.avatarSequence(container, 'Clone of surprised', i);
         container.rootNodes[0].setEnabled(true);
       } else {
-        container.animContainer.animationGroups.forEach(anim => anim.stop());
+        container.animationGroups.forEach(anim => anim.stop());
         container.rootNodes[0].setEnabled(false);
       }
     });
@@ -384,27 +376,15 @@ export default class Avatar3D {
 
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let avatarMeta = avatarMetas[seatIndex];
-      let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
-      let newModel = avatarContainers[animationsBaseName].instantiateModelsToScene();
-      let newSkin = avatarContainers[avatarMeta.name].instantiateModelsToScene();
-
-      this.linkSkeletonMeshes(newModel.skeletons[0], newSkin.skeletons[0]);
-      newModel.rootNodes[0].setEnabled(false);
-
-      newSkin.animContainer = newModel;
-      newModel = newSkin;
-
+      let newModel = avatarContainers[avatarMeta.name].instantiateModelsToScene();
       initedAvatars.push(newModel);
-      initedAvatars[seatIndex].animContainer.animationGroups[0].stop();
+      initedAvatars[seatIndex].animationGroups[0].stop();
 
       let mesh = initedAvatars[seatIndex].rootNodes[0];
-      let bonesOffsetTN = new BABYLON.TransformNode("avatarbonesoffset" + mesh.id);
       let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + mesh.id);
       avatarPositionTN.position.x = avatarMeta.x;
       avatarPositionTN.position.z = avatarMeta.z;
-      bonesOffsetTN.parent = avatarPositionTN;
-      mesh.parent = bonesOffsetTN;
-      newModel.bonesOffsetTN = bonesOffsetTN;
+      mesh.parent = avatarPositionTN;
       newModel.avatarPositionTN = avatarPositionTN;
       newModel.particleTN = new BABYLON.TransformNode("particleTNavatar" + seatIndex, this.app.scene);
       newModel.particleTN.parent = avatarPositionTN;
@@ -430,66 +410,14 @@ export default class Avatar3D {
     this.initedAvatars = initedAvatars;
     this.avatarContainers = avatarContainers;
   }
-  linkSkeletonMeshes(master, slave) {
-    if (master != null && master.bones != null && master.bones.length > 0) {
-      if (slave != null && slave.bones != null && slave.bones.length > 0) {
-        const boneCount = slave.bones.length;
-        for (let index = 0; index < boneCount; index++) {
-          const sbone = slave.bones[index];
-          if (sbone != null) {
-            const mbone = this.findBoneByName(master, sbone.name);
-            if (mbone != null) {
-              sbone._linkedTransformNode = mbone._linkedTransformNode;
-            } else {
-              console.warn("Failed to locate bone on master rig: " + sbone.name);
-            }
-          }
-        }
-      }
-    }
-  }
-  findBoneByName(skeleton, name) {
-    let result = null;
-    if (skeleton != null && skeleton.bones != null) {
-      for (let index = 0; index < skeleton.bones.length; index++) {
-        const bone = skeleton.bones[index];
-        const bname = bone.name.toLowerCase().replace("mixamo:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
-        const xname = name.toLowerCase().replace("mixamo:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
-        if (bname === xname) {
-          result = bone;
-          break;
-        }
-      }
-    }
-    return result;
-  }
   async avatarSequence(avatarContainer, animationName, avatarIndex) {
     let animationIndex = this.getAnimIndex(avatarContainer, animationName);
-    let arr = avatarContainer.animContainer.animationGroups;
+    let arr = avatarContainer.animationGroups;
     arr.forEach(anim => anim.stop());
 
     let animName = arr[animationIndex].name;
+
     arr[animationIndex].start(true);
-
-    avatarContainer.bonesOffsetTN.position.x = 0;
-    avatarContainer.bonesOffsetTN.position.z = 0;
-
-    arr[animationIndex].onAnimationGroupLoopObservable.add(() => {
-      this._offsetBonesMovement(avatarContainer);
-    });
-  }
-  _offsetBonesMovement(model) {
-    let mesh = model.rootNodes[0].getChildMeshes()[0];
-    mesh.refreshBoundingInfo(true);
-    mesh.computeWorldMatrix(true);
-    let bIndex = model.skeletons[0].getBoneIndexByName("mixamorig:Hips");
-    if (bIndex < 0)
-      bIndex = model.skeletons[0].getBoneIndexByName("mixamorig10:Hips");
-
-    let position = model.skeletons[0].bones[bIndex].getTransformNode().getAbsolutePosition();
-
-    model.bonesOffsetTN.position.x = -1 * position.x;
-    model.bonesOffsetTN.position.z = -1 * position.z;
   }
   updateAvatarRender() {
     if (!this.initedAvatars)
@@ -497,13 +425,10 @@ export default class Avatar3D {
 
     if (this.currentSeatMeshIndex === undefined)
       return;
-
-    this.initedAvatars.forEach(avatar => this._offsetBonesMovement(avatar));
-    //this._offsetBonesMovement(this.initedAvatars[this.currentSeatMeshIndex]);
   }
   getAnimIndex(avatar, animName) {
     let animIndex = -1;
-     avatar.animContainer.animationGroups.forEach((anim, i2) => {
+     avatar.animationGroups.forEach((anim, i2) => {
        let shortName = anim.name.replace('Clone of ', '');
       if (anim.name === animName || shortName === animName)
         animIndex = i2;

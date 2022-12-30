@@ -508,7 +508,6 @@ export default class Utility3D {
   static async loadContainer(scene, path) {
     return new Promise((res, rej) => {
       BABYLON.SceneLoader.LoadAssetContainer(path, "", scene, container => {
-        container.animContainer = container;
         res(container);
       });
     })
