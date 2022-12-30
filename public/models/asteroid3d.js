@@ -135,80 +135,34 @@ export default class Asteroid3D {
 
     let keyPoints = [];
 
-    keyPoints.push(this.v4(xMax, y, -5, 128));
-    keyPoints.push(this.v4(0, y, zMax, 128));
-    keyPoints.push(this.v4(xMin, y, 0, 128));
-    keyPoints.push(this.v4(0, y, zMin, 128));
-    keyPoints.push(this.v4(32, y, 0, 64));
-    keyPoints.push(this.v4(0, y, 30, 64));
-    keyPoints.push(this.v4(-10, y, 0, 64));
+    keyPoints.push(U3D.v4(xMax, y, -5, 128));
+    keyPoints.push(U3D.v4(0, y, zMax, 128));
+    keyPoints.push(U3D.v4(xMin, y, 0, 128));
+    keyPoints.push(U3D.v4(0, y, zMin, 128));
+    keyPoints.push(U3D.v4(32, y, 0, 64));
+    keyPoints.push(U3D.v4(0, y, 30, 64));
+    keyPoints.push(U3D.v4(-10, y, 0, 64));
 
-    keyPoints.push(this.v4(-50, y + 8, -40, 120));
+    keyPoints.push(U3D.v4(-50, y + 8, -40, 120));
 
     //saturn
-    keyPoints.push(this.v4(-35, y, -20, 32));
-    keyPoints.push(this.v4(-25, y, -15, 32));
-    keyPoints.push(this.v4(-20, y, 0, 32));
-    keyPoints.push(this.v4(-30, y, 5, 32));
-    keyPoints.push(this.v4(-50, y + 8, -5, 32));
+    keyPoints.push(U3D.v4(-35, y, -20, 32));
+    keyPoints.push(U3D.v4(-25, y, -15, 32));
+    keyPoints.push(U3D.v4(-20, y, 0, 32));
+    keyPoints.push(U3D.v4(-30, y, 5, 32));
+    keyPoints.push(U3D.v4(-50, y + 8, -5, 32));
 
     //jupiter
-    keyPoints.push(this.v4(-50, y, 20, 32));
-    keyPoints.push(this.v4(-15, y, 20, 32));
-    keyPoints.push(this.v4(-15, y, 55, 64));
+    keyPoints.push(U3D.v4(-50, y, 20, 32));
+    keyPoints.push(U3D.v4(-15, y, 20, 32));
+    keyPoints.push(U3D.v4(-15, y, 55, 64));
 
-    keyPoints.push(this.v4(-35, y + 8, 35, 64));
+    keyPoints.push(U3D.v4(-35, y + 8, 35, 64));
 
-    let curve = this.curvePointsMerge(keyPoints);
+    let curve = U3D.curvePointsMerge(keyPoints);
     let path = curve.getPoints();
 
     return path;
-  }
-  curvePointsMerge(keyPoints) {
-    let count = keyPoints.length;
-    let fullCurve;
-
-    for (let c = 0; c < count; c++) {
-      let pt1 = keyPoints[c].v;
-
-      let index2 = c + 1;
-      if (c + 1 >= count)
-        index2 = 0;
-      let pt2 = keyPoints[index2].v;
-      let weight = keyPoints[index2].weight;
-      let curve = BABYLON.Curve3.ArcThru3Points(
-        pt1,
-        this.curveV(pt1, pt2),
-        pt2,
-        weight);
-      if (fullCurve)
-        fullCurve = fullCurve.continue(curve);
-      else
-        fullCurve = curve;
-    }
-
-    return fullCurve;
-  }
-  curveV(v1, v2) {
-    let x = v1.x;
-    let z = v1.z;
-    if (Math.abs(v2.x) > Math.abs(v1.x))
-      x = v2.x;
-    if (Math.abs(v2.z) > Math.abs(v1.z))
-      z = v2.z;
-
-    return U3D.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
-  }
-  v4(x, y, z, weight) {
-    return {
-      v: new BABYLON.Vector3(x, y, z),
-      weight: weight * 2
-    };
-  }
-  vector(vector) {
-    let v = new BABYLON.Vector3();
-    v.copyFrom(vector);
-    return v;
   }
   retargetAnimationGroup(animationGroup, targetSkeleton) {
     //console.log("Retargeting animation group: " + animationGroup.name);

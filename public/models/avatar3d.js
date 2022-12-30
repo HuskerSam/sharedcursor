@@ -306,28 +306,14 @@ export default class Avatar3D {
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
     this.menuBarAvatars.forEach((container, i) => {
-      let arr = container.animContainer.animationGroups;
       if (i === seatIndex) {
-        let animName = 'Clone of surprised';
-
-        let animIndex = 0;
-        arr.forEach((anim, i2) => {
-          if (anim.name === animName)
-            animIndex = i2;
-        })
-        this.avatarSequence(container, animIndex, i);
+        this.avatarSequence(container, 'Clone of surprised', i);
         container.rootNodes[0].setEnabled(true);
       } else {
-        arr.forEach(anim => anim.stop());
+        container.animContainer.animationGroups.forEach(anim => anim.stop());
         container.rootNodes[0].setEnabled(false);
       }
     });
-
-    this.initedAvatars.forEach((avatar, i) => {
-      if (i !== seatIndex) {
-        avatar.animContainer.animationGroups.forEach(anim => anim.stop());
-      }
-    })
   }
 
   getSeatData(seatIndex) {
@@ -357,15 +343,6 @@ export default class Avatar3D {
       image,
       uid: this.app.gameData[key]
     };
-  }
-  async randomizeAnimations() {
-    if (!this.initedAvatars)
-      return;
-
-    let container = this.initedAvatars[this.app.activeSeatIndex];
-    let arr = container.animContainer.animationGroups;
-    let index = Math.floor(Math.random() * arr.length);
-    this.avatarSequence(container, index, this.app.activeSeatIndex);
   }
   get3DColors(seatIndex) {
     let r = 220 / 255,
@@ -452,11 +429,6 @@ export default class Avatar3D {
 
     this.initedAvatars = initedAvatars;
     this.avatarContainers = avatarContainers;
-
-    this.randomizeAnimations();
-    setInterval(() => {
-      this.randomizeAnimations();
-    }, 10000)
   }
   linkSkeletonMeshes(master, slave) {
     if (master != null && master.bones != null && master.bones.length > 0) {
@@ -491,8 +463,8 @@ export default class Avatar3D {
     }
     return result;
   }
-  async avatarSequence(avatarContainer, animationIndex, avatarIndex) {
-    let scene = this.app.scene;
+  async avatarSequence(avatarContainer, animationName, avatarIndex) {
+    let animationIndex = this.getAnimIndex(avatarContainer, animationName);
     let arr = avatarContainer.animContainer.animationGroups;
     arr.forEach(anim => anim.stop());
 
@@ -528,7 +500,17 @@ export default class Avatar3D {
     if (this.currentSeatMeshIndex === undefined)
       return;
 
-      //this.initedAvatars.forEach(avatar => this._offsetBonesMovement(avatar));
-    this._offsetBonesMovement(this.initedAvatars[this.currentSeatMeshIndex]);
+    this.initedAvatars.forEach(avatar => this._offsetBonesMovement(avatar));
+    //this._offsetBonesMovement(this.initedAvatars[this.currentSeatMeshIndex]);
+  }
+  getAnimIndex(avatar, animName) {
+    let animIndex = -1;
+     avatar.animContainer.animationGroups.forEach((anim, i2) => {
+       let shortName = anim.name.replace('Clone of ', '');
+      if (anim.name === animName || shortName === animName)
+        animIndex = i2;
+    });
+
+    return animIndex;
   }
 }

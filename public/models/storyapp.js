@@ -766,6 +766,8 @@ export class StoryApp extends BaseApp {
       }
     } else
       this.updateBoardRoundData(true);
+
+    this.updateAvatarPaths();
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
@@ -1114,5 +1116,69 @@ export class StoryApp extends BaseApp {
       autoplay: true
     });
     this.voiceSoundObject.attachToMesh(avatarMeta.chatBubble);
+  }
+
+  updateAvatarPaths() {
+    if (!this.avatarHelper.initedAvatars)
+      return;
+
+    if (this.avatarPathsInited)
+      return;
+
+    this.avatarPathsInited = true;
+
+    let path = this._generatePath();
+    let avatar = this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
+      let avatarMeta = this.avatarMetas[seatIndex];
+      this.avatarHelper.avatarSequence(avatar, avatarMeta.walkingAnim, seatIndex);
+    });
+
+    //boxingleft, boxingright, chickendance, defeated, jogging,
+    // walking, femalewalk, grabandslam, joyfuljump, surprised, thrillerpart1
+
+
+    /*
+
+        this.initedAvatars.forEach((avatar, i) => {
+          if (i !== seatIndex) {
+            avatar.animContainer.animationGroups.forEach(anim => anim.stop());
+          }
+        })
+
+        */
+  }
+  _generatePath(keyPointsArray) {
+    let y = 0;
+
+    let xMin = -10;
+    let xMax = 15;
+    let zMin = -18;
+    let zMax = 18;
+
+    let keyPoints = [];
+    let rotations = [];
+
+    rotations.push(U3D.v(0, 0, 0));
+    keyPoints.push(U3D.v4(xMax, y, 0, 1));
+
+    keyPoints.push(U3D.v4(0, y, zMax, 100));
+    rotations.push(U3D.v(0, Math.PI / 2, 0));
+
+    keyPoints.push(U3D.v4(xMin, y, 0, 100));
+    rotations.push(U3D.v(0, Math.PI, 0));
+
+    keyPoints.push(U3D.v4(0, y, zMin, 100));
+    rotations.push(U3D.v(0, Math.PI * 3 / 2, 0));
+
+    keyPoints.push(U3D.v4(xMax, y, 0, 99));
+    rotations.push(U3D.v(0, Math.PI * 2, 0));
+
+    let curve = U3D.curvePointsMerge(keyPoints);
+    let positions = curve.getPoints();
+
+    return {
+      positions,
+      rotations
+    };
   }
 }

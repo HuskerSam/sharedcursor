@@ -6,7 +6,29 @@
     "z": 3,
     "race": "Human",
     "voiceName": "en-GB-Neural2-A",
-    "seatIndex": 0
+    "seatIndex": 0,
+    "walkingAnim": "femalewalk",
+    "idleAnim": "defeated",
+    "defaultPath": [{
+        "x": 1,
+        "z": 1,
+        "ry": 1.57,
+        "segmentTime": 10000
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "ry": 3.14,
+        "segmentTime": 10000
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "ry": -1.57,
+        "segmentTime": 10000
+      }
+    ],
+    "activePath": []
   },
   {
     "name": "Jade",
@@ -16,7 +38,11 @@
     "z": 3,
     "race": "Botan",
     "voiceName": "en-AU-Neural2-C",
-    "seatIndex": 1
+    "seatIndex": 1,
+    "walkingAnim": "femalewalk",
+    "idleAnim": "joyfuljump",
+    "defaultPath": [],
+    "activePath": []
   },
   {
     "name": "Daya",
@@ -25,7 +51,11 @@
     "z": -3,
     "race": "Avian",
     "voiceName": "en-US-Neural2-G",
-    "seatIndex": 2
+    "seatIndex": 2,
+    "walkingAnim": "walking",
+    "idleAnim": "surprised",
+    "defaultPath": [],
+    "activePath": []
   },
   {
     "name": "Elihu",
@@ -35,6 +65,10 @@
     "z": -3,
     "race": "Titan",
     "voiceName": "en-GB-Neural2-D",
-    "seatIndex": 3
+    "seatIndex": 3,
+    "walkingAnim": "jogging",
+    "idleAnim": "chickendance",
+    "defaultPath": [],
+    "activePath": []
   }
 ]

@@ -531,6 +531,42 @@ export default class Utility3D {
     return v;
   }
 
+  static curvePointsMerge(keyPoints) {
+    let count = keyPoints.length;
+    let fullCurve;
+
+    for (let c = 0; c < count; c++) {
+      let pt1 = keyPoints[c].v;
+
+      let index2 = c + 1;
+      if (c + 1 >= count)
+        index2 = 0;
+      let pt2 = keyPoints[index2].v;
+      let weight = keyPoints[index2].weight;
+      let curve = BABYLON.Curve3.ArcThru3Points(
+        pt1,
+        this.curveV(pt1, pt2),
+        pt2,
+        weight);
+      if (fullCurve)
+        fullCurve = fullCurve.continue(curve);
+      else
+        fullCurve = curve;
+    }
+
+    return fullCurve;
+  }
+  static curveV(v1, v2) {
+    let x = v1.x;
+    let z = v1.z;
+    if (Math.abs(v2.x) > Math.abs(v1.x))
+      x = v2.x;
+    if (Math.abs(v2.z) > Math.abs(v1.z))
+      z = v2.z;
+
+    return this.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
+  }
+
   static async loadStaticMesh(scene, path, meta) {
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
