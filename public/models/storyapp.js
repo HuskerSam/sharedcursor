@@ -1128,9 +1128,60 @@ export class StoryApp extends BaseApp {
     this.avatarPathsInited = true;
 
     let path = this._generatePath();
-    let avatar = this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
+    let pathWalkTime = 60000;
+    let endFrame = pathWalkTime / 1000 * 60;
+    let avatarPositionKeys = [];
+    let avatarRotationKeys = [];
+
+    let positions = path.positions;
+    let positionCount = positions.length - 1;
+    positions.forEach((value, index) => {
+      avatarPositionKeys.push({
+        frame: Math.floor(endFrame * index / positionCount),
+        value
+      });
+    });
+
+    let rotations = path.rotations;
+    let rotationCount = rotations.length - 1;
+    rotations.forEach((value, index) => {
+      avatarRotationKeys.push({
+        frame: Math.floor(endFrame * index / rotationCount),
+        value
+      });
+    });
+
+    this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
       let avatarMeta = this.avatarMetas[seatIndex];
       this.avatarHelper.avatarSequence(avatar, avatarMeta.walkingAnim, seatIndex);
+
+      let positionTN = avatar.avatarPositionTN;
+      if (avatarMeta.positionAnimation)
+        avatarMeta.positionAnimation.stop();
+      positionTN.animations = [];
+
+      let positionAnim = new BABYLON.Animation(
+        "avatarpositionTN" + seatIndex,
+        "position",
+        60,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+      positionAnim.setKeys(avatarPositionKeys);
+      positionTN.animations.push(positionAnim);
+
+      let rotationAnim = new BABYLON.Animation(
+        "avatarrotationTN" + seatIndex,
+        "rotation",
+        60,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      );
+      rotationAnim.setKeys(avatarRotationKeys);
+      positionTN.animations.push(rotationAnim);
+
+      avatarMeta.positionAnimation = this.scene.beginAnimation(positionTN, 0, endFrame, true);
+      avatarMeta.positionAnimation.goToFrame(Math.floor(endFrame * seatIndex / 4));
     });
 
     //boxingleft, boxingright, chickendance, defeated, jogging,
@@ -1151,9 +1202,9 @@ export class StoryApp extends BaseApp {
     let y = 0;
 
     let xMin = -10;
-    let xMax = 15;
-    let zMin = -18;
-    let zMax = 18;
+    let xMax = 10;
+    let zMin = -10;
+    let zMax = 10;
 
     let keyPoints = [];
     let rotations = [];
@@ -1162,16 +1213,16 @@ export class StoryApp extends BaseApp {
     keyPoints.push(U3D.v4(xMax, y, 0, 1));
 
     keyPoints.push(U3D.v4(0, y, zMax, 100));
-    rotations.push(U3D.v(0, Math.PI / 2, 0));
+    rotations.push(U3D.v(0, -Math.PI / 2, 0));
 
     keyPoints.push(U3D.v4(xMin, y, 0, 100));
-    rotations.push(U3D.v(0, Math.PI, 0));
+    rotations.push(U3D.v(0, -Math.PI, 0));
 
     keyPoints.push(U3D.v4(0, y, zMin, 100));
-    rotations.push(U3D.v(0, Math.PI * 3 / 2, 0));
+    rotations.push(U3D.v(0, -Math.PI * 3 / 2, 0));
 
     keyPoints.push(U3D.v4(xMax, y, 0, 99));
-    rotations.push(U3D.v(0, Math.PI * 2, 0));
+    rotations.push(U3D.v(0, -Math.PI * 2, 0));
 
     let curve = U3D.curvePointsMerge(keyPoints);
     let positions = curve.getPoints();

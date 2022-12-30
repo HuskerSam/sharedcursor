@@ -471,13 +471,11 @@ export default class Avatar3D {
     let animName = arr[animationIndex].name;
     arr[animationIndex].start(true);
 
-    let mesh = avatarContainer.bonesOffsetTN;
-    mesh.position.x = 0;
-    mesh.position.z = 0;
+    avatarContainer.bonesOffsetTN.position.x = 0;
+    avatarContainer.bonesOffsetTN.position.z = 0;
 
     arr[animationIndex].onAnimationGroupLoopObservable.add(() => {
-      mesh.position.x = 0;
-      mesh.position.z = 0;
+      this._offsetBonesMovement(avatarContainer);
     });
   }
   _offsetBonesMovement(model) {

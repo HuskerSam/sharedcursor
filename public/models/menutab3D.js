@@ -570,6 +570,7 @@ export default class MenuTab3D {
       result.skeletons[0].returnToRest();
     } else {
       mesh = await U3D.loadStaticMesh(this.app.scene, assetMeta.containerPath, assetMeta);
+      mesh.setEnabled(false);
     }
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);
@@ -592,6 +593,7 @@ export default class MenuTab3D {
       factor = 0.35;
     }
     U3D.sizeNodeToFit(mesh, factor);
+    mesh.setEnabled(true);
 
     if (assetMeta.asteroidType)
       mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;
