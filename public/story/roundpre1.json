@@ -16,28 +16,28 @@
       "seatIndex": 0,
       "text": "Things started out so peacefully...",
       "timeToShow": 15000,
-      "timeToBlock": 4000
+      "timeToBlock": 10000
     },
     {
       "action": "avatarMessage",
       "seatIndex": 1,
       "text": "I blame it all on Elihu and capitalism!",
-      "timeToShow": 15000,
-      "timeToBlock": 4000
+      "timeToShow": 18000,
+      "timeToBlock": 12000
     },
     {
       "action": "avatarMessage",
       "seatIndex": 2,
       "text": "Elihu thinks he owns everything.",
       "timeToShow": 15000,
-      "timeToBlock": 4000
+      "timeToBlock": 10000
     },
     {
       "action": "avatarMessage",
       "seatIndex": 3,
-      "text": "This is my system.",
-      "timeToShow": 15000,
-      "timeToBlock": 4000
+      "text": "This is my system. Get the hell out or I'll enslave you!",
+      "timeToShow": 25000,
+      "timeToBlock": 12000
     }
   ]
 }

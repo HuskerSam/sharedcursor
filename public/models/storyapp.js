@@ -995,39 +995,111 @@ export class StoryApp extends BaseApp {
 
   async avatarShowMessage(seatIndex, text, timeToShow, timeToBlock) {
     if (!this.avatarMetas[seatIndex].chatPanel) {
-      let texturePath = '/fontcons/chat' + seatIndex.toString() + '.svg';
-      let mesh = BABYLON.MeshBuilder.CreatePlane('chatbubblefor' + seatIndex, {
-        width: 3,
+      let chatTN = new BABYLON.TransformNode('chattnfor' + seatIndex, this.scene);
+
+      let chatBubbleMesh = BABYLON.MeshBuilder.CreatePlane('chatbubblefor' + seatIndex, {
+        width: 5,
         height: 3
       }, this.scene);
       let mat = new BABYLON.StandardMaterial('chatbubblematfor' + seatIndex, this.scene);
-      let chatTN = new BABYLON.TransformNode('chattnfor' + seatIndex, this.scene);
-
+      let texturePath = '/fontcons/chat' + seatIndex.toString() + '.svg';
       let tex = new BABYLON.Texture(texturePath, this.scene, false, false);
       tex.hasAlpha = true;
-      mesh.material = mat;
       mat.diffuseTexture = tex;
       mat.ambientTexture = tex;
       mat.emissiveTexture = tex;
-      mesh.rotation.x = Math.PI;
-      mesh.rotation.y = Math.PI;
-      mesh.scaling = U3D.v(-1, 1, 1);
-      mesh.position.x = 1;
-      mesh.parent = chatTN;
+      chatBubbleMesh.material = mat;
+      chatBubbleMesh.position.x = -1.5;
+      chatBubbleMesh.scaling = U3D.v(-1, 1, 1);
+      chatBubbleMesh.rotation.x = Math.PI;
+      chatBubbleMesh.parent = chatTN;
 
-      chatTN.position.y = 3;
+      chatTN.position.y = 3.5;
+      chatTN.rotation.y = Math.PI;
       chatTN.billboardMode = 7;
 
       chatTN.parent = this.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
-      this.avatarMetas[this.activeSeatIndex].chatPanel = mesh;
+      this.avatarMetas[seatIndex].chatPanel = chatTN;
+      this.avatarMetas[seatIndex].chatBubble = chatBubbleMesh;
     }
 
-    //let avatarMeta = this.avatarMetas[this.activeSeatIndex];
+    this._updateAvatarTextChat(seatIndex, text, true);
 
+    this.avatarMetas[seatIndex].chatPanel.setEnabled(true);
+    clearTimeout(this.avatarMetas[seatIndex].chatCloseTimeout);
+    this.avatarMetas[seatIndex].chatCloseTimeout = setTimeout(() => {
+      this.avatarMetas[seatIndex].chatPanel.setEnabled(false);
+    }, timeToShow);
 
+    await this.waitTime(timeToBlock);
   }
-  async avatarMessage(text) {
-    let avatarMeta = this.avatarMetas[this.activeSeatIndex];
+  async waitTime(time) {
+    return new Promise((res, rej) => {
+      setTimeout(() => res(), time);
+    })
+  }
+  _updateAvatarTextChat(seatIndex, text, reset) {
+    let avatarMeta = this.avatarMetas[seatIndex]
+    clearTimeout(avatarMeta.chatTextTimer);
+
+    if (reset) {
+      this.avatarMessage(seatIndex, text);
+      avatarMeta.avatarChatCurrentWords = 0;
+    }
+    avatarMeta.avatarChatCurrentWords++;
+
+    let words = text.split(' ');
+    if (words.length < avatarMeta.avatarChatCurrentWords)
+      return;
+    //words = words.slice(0, avatarMeta.avatarChatCurrentWords);
+
+    if (avatarMeta.chatTextPlane) {
+      avatarMeta.chatTextPlane.dispose(true, true);
+      avatarMeta.chatTextPlane2.dispose(true, true);
+      avatarMeta.chatTextPlane3.dispose(true, true);
+    }
+
+    let color = "#000000";
+    if (seatIndex > 2)
+      color = "#ffffff";
+
+    let line1Words = words.slice(0, 4);
+    let line1 = line1Words.join(' ');
+    let id = 'chattextfor' + seatIndex;
+    let chatTextPlane = U3D.addTextPlane(this.scene, line1, id, "Arial", "", color);
+    avatarMeta.chatTextPlane = chatTextPlane;
+    chatTextPlane.parent = avatarMeta.chatBubble;
+    chatTextPlane.position.z = -0.01;
+    chatTextPlane.position.y = -0.6;
+    chatTextPlane.rotation.x = Math.PI;
+    chatTextPlane.scaling = U3D.v(0.5, 0.5, 0.5);
+
+    let line2Show = avatarMeta.avatarChatCurrentWords > 4;
+    let line2Words = words.slice(4, 8);
+    let line2 = line2Words.join(' ');
+    if (!line2Show)
+      line2 = '';
+    let id2 = 'chattextfor2' + seatIndex;
+    let chatTextPlane2 = U3D.addTextPlane(this.scene, line2, id2, "Arial", "", color);
+    chatTextPlane2.parent = chatTextPlane;
+    chatTextPlane2.position.y = -1.1;
+    avatarMeta.chatTextPlane2 = chatTextPlane2;
+
+    let line3Show = avatarMeta.avatarChatCurrentWords > 8;
+    let line3Words = words.slice(8, 12);
+    let line3 = line3Words.join(' ');
+    if (!line3Show)
+      line3 = '';
+    let id3 = 'chattextfor3' + seatIndex;
+    let chatTextPlane3 = U3D.addTextPlane(this.scene, line3, id3, "Arial", "", color);
+    chatTextPlane3.parent = chatTextPlane;
+    chatTextPlane3.position.y = -2.2;
+    avatarMeta.chatTextPlane3 = chatTextPlane3;
+
+    avatarMeta.chatTextTimer = setTimeout(() => this._updateAvatarTextChat(seatIndex, text), 600);
+  }
+  async avatarMessage(seatIndex, text) {
+    let avatarMeta = this.avatarMetas[seatIndex];
 
     let voiceName = avatarMeta.voiceName;
     let fileResult = await this.getMP3ForText(text, voiceName);
@@ -1041,6 +1113,6 @@ export class StoryApp extends BaseApp {
       loop: false,
       autoplay: true
     });
-
+    this.voiceSoundObject.attachToMesh(avatarMeta.chatBubble);
   }
 }
