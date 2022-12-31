@@ -203,6 +203,7 @@ export class MatchApp extends BaseApp {
       this.finalLoadedMesh.dispose();
 
     this.finalLoadedMesh = await U3D.loadStaticMesh(this.scene, extendedMetaData.glbPath);
+    this.finalLoadedMesh.setEnabled(true);
     this.finalLoadedMesh.position.y = 2;
     U3D.sizeNodeToFit(this.finalLoadedMesh, 2.5);
     this.engine.resize();

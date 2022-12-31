@@ -620,6 +620,7 @@ export default class Utility3D {
       let result = window.staticMeshContainer[path].instantiateModelsToScene();
       resultMesh = result.rootNodes[0];
     }
+    resultMesh.setEnabled(false);
 
     if (meta && meta.noShadow) {
       scene.lights[0].excludedMeshes.push(resultMesh);

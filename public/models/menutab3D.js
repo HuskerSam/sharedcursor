@@ -525,6 +525,7 @@ export default class MenuTab3D {
       let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath, meta);
       freshMesh.parent = this.obj(id).baseMesh.parent;
       U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
+      freshMesh.setEnabled(true);
       this.obj(id).baseMesh.dispose();
       this.obj(id).baseMesh = freshMesh;
     }
@@ -570,7 +571,6 @@ export default class MenuTab3D {
       result.skeletons[0].returnToRest();
     } else {
       mesh = await U3D.loadStaticMesh(this.app.scene, assetMeta.containerPath, assetMeta);
-      mesh.setEnabled(false);
     }
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);

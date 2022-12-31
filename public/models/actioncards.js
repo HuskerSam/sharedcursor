@@ -91,6 +91,7 @@ export default class ActionCards {
       let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
       meta.extended = U3D.processStaticAssetMeta(meta, {});
       let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
+      mesh.setEnabled(true);
       U3D.sizeNodeToFit(mesh, 3);
       mesh.parent = cardHolder;
       mesh.position.z = -1.5;

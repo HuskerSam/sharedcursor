@@ -185,7 +185,7 @@ export class StoryApp extends BaseApp {
     let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta);
     if (!meta.texturePath)
       U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
-
+    scaleMesh.setEnabled(true);
     if (meta.wireframe) {
       scaleMesh.material = this.asteroidHelper.selectedAsteroidMaterial;
       scaleMesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);

@@ -73,6 +73,7 @@ export default class Avatar3D {
 
       let moonCloneMeta = this.app.playerMoonAssets[seatIndex].assetMeta;
       let moonCloneMesh = await U3D.loadStaticMesh(this.app.scene, moonCloneMeta.containerPath, moonCloneMeta);
+      moonCloneMesh.setEnabled(true);
       let moonCloneTN = new BABYLON.TransformNode('moonCloneTN' + seatIndex, this.app.scene);
       this.app.playerMoonAssets[seatIndex].moonCloneMesh = moonCloneMesh;
       moonCloneMesh.parent = moonCloneTN;

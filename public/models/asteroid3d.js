@@ -77,6 +77,8 @@ export default class Asteroid3D {
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await U3D.loadStaticMesh(scene, containerPath);
     U3D.sizeNodeToFit(mesh, 1.5);
+    mesh.setEnabled(true);
+
     mesh.material = this.asteroidMaterial;
 
     let orbitWrapper = new BABYLON.TransformNode('assetorbitwrapper' + asteroid, scene);
@@ -118,7 +120,6 @@ export default class Asteroid3D {
       containerPath,
       extended: {}
     };
-
 
     this.loadedAsteroids[asteroid] = {
       orbitWrapper,
