@@ -5,6 +5,15 @@ export default class Avatar3D {
     this.app = app;
     this.app.gameData = this.app.gameData;
 
+    this.currentMenuAvatarTrackIndex = 0;
+    this.animationTracks = [
+      "idle",
+      "angry",
+      "agree",
+      "action", //dance
+      "walking"
+    ]
+
     this.dockDiscRadius = 0.6;
   }
   async updateUserPresence() {
@@ -158,6 +167,11 @@ export default class Avatar3D {
         seatIndex: seatIndex,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
+          this.currentMenuAvatarTrackIndex++;
+          if (this.currentMenuAvatarTrackIndex >= this.animationTracks.length)
+            this.currentMenuAvatarTrackIndex = 0;
+          this.avatarSequence(this.menuBarAvatars[seatIndex], this.animationTracks[this.currentMenuAvatarTrackIndex]);
+
           this.app.menuTab3D.setSelectedAsset(meta);
         }
       };
@@ -299,7 +313,8 @@ export default class Avatar3D {
 
     this.menuBarAvatars.forEach((container, i) => {
       if (i === seatIndex) {
-      //  this.avatarSequence(container, 'Clone of surprised', i);
+        this.avatarSequence(container, this.animationTracks[this.currentMenuAvatarTrackIndex]);
+        this.runningAnimation = 0;
         container.rootNodes[0].setEnabled(true);
       } else {
         container.animationGroups.forEach(anim => anim.stop());
@@ -410,7 +425,7 @@ export default class Avatar3D {
     this.initedAvatars = initedAvatars;
     this.avatarContainers = avatarContainers;
   }
-  async avatarSequence(avatarContainer, animationName, avatarIndex) {
+  async avatarSequence(avatarContainer, animationName) {
     let animationIndex = this.getAnimIndex(avatarContainer, animationName);
     let arr = avatarContainer.animationGroups;
     arr.forEach(anim => anim.stop());

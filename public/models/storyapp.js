@@ -1153,7 +1153,6 @@ export class StoryApp extends BaseApp {
 
     this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
       let avatarMeta = this.avatarMetas[seatIndex];
-      console.log('twice???');
       this.avatarHelper.avatarSequence(avatar, avatarMeta.walkingAnim, seatIndex);
 
       let positionTN = avatar.avatarPositionTN;

@@ -8,6 +8,7 @@
     "seatIndex": 0,
     "walkingAnim": "walking",
     "idleAnim": "happyidle",
+    "actionAnim": "action",
     "defaultPath": [{
         "x": 1,
         "z": 1,
