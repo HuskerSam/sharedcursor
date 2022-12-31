@@ -4,6 +4,7 @@ export default class MenuTab3D {
   constructor(app) {
     this.app = app;
     this.scene = app.scene;
+    this.menuIconButtons = [];
   }
   obj(name) {
     return this.app.staticBoardObjects[name];
@@ -106,6 +107,7 @@ export default class MenuTab3D {
     mesh.material = mat;
     mesh.rotation.x = Math.PI;
 
+    this.menuIconButtons.push(mesh);
     return mesh;
   }
   selectedMenuBarTab(menuTabToShow) {
@@ -119,6 +121,16 @@ export default class MenuTab3D {
         menuTabToShow.setEnabled(true);
       this.currentSelectedTab = menuTabToShow;
     }
+  }
+  updateMenuBar() {
+    this.menuIconButtons.forEach(mesh => {
+      let mat = mesh.material;
+      let colors = U3D.get3DColors(this.app.activeSeatIndex);
+
+      mat.emissiveColor = colors;
+      mat.diffuseColor = colors;
+      mat.ambientColor = colors;
+    });
   }
 
   initOptionsTab(parent) {

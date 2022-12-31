@@ -548,6 +548,8 @@ export class StoryApp extends BaseApp {
     super.paintDock();
     if (this.avatarHelper)
       this.avatarHelper.updatePlayerDock();
+    if (this.menuTab3D)
+      this.menuTab3D.updateMenuBar();
   }
   updateUserPresence() {
     super.updateUserPresence();
@@ -1153,7 +1155,7 @@ export class StoryApp extends BaseApp {
 
     this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
       let avatarMeta = this.avatarMetas[seatIndex];
-      this.avatarHelper.avatarSequence(avatar, avatarMeta.walkingAnim, seatIndex);
+      this.avatarHelper.avatarSequence(avatar, 'walking', seatIndex);
 
       let positionTN = avatar.avatarPositionTN;
       if (avatarMeta.positionAnimation)
@@ -1188,6 +1190,8 @@ export class StoryApp extends BaseApp {
     // walking, femalewalk, grabandslam, joyfuljump, surprised, thrillerpart1
 
   }
+
+
   _generatePath(keyPointsArray) {
     let y = 0;
 

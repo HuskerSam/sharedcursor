@@ -63,7 +63,7 @@ export default class Avatar3D {
     this.dockSeatContainers = [];
     this.menuBarAvatars = [];
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      let colors = this.get3DColors(seatIndex);
+      let colors = U3D.get3DColors(seatIndex);
       let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
@@ -191,7 +191,7 @@ export default class Avatar3D {
     seatContainer.playerImagePlane1.setEnabled(false);
     seatContainer.playerImagePlane2.setEnabled(false);
 
-    let colors = this.get3DColors(seatIndex);
+    let colors = U3D.get3DColors(seatIndex);
     let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
     if (active) {
       let meta = seatContainer.assetMeta;
@@ -309,7 +309,7 @@ export default class Avatar3D {
       return;
     this.currentSeatMeshIndex = seatIndex;
 
-    let colors = this.get3DColors(seatIndex);
+    let colors = U3D.get3DColors(seatIndex);
     let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
     this.menuBarAvatars.forEach((container, i) => {
@@ -351,28 +351,6 @@ export default class Avatar3D {
       image,
       uid: this.app.gameData[key]
     };
-  }
-  get3DColors(seatIndex) {
-    let r = 220 / 255,
-      g = 220 / 255,
-      b = 0;
-    if (seatIndex === 1) {
-      r = 0;
-      g = 220 / 255;
-      b = 210 / 255;
-    }
-    if (seatIndex === 2) {
-      r = 230 / 255;
-      g = 0;
-      b = 230 / 255;
-    }
-    if (seatIndex === 3) {
-      r = 150 / 255;
-      g = 130 / 255;
-      b = 255 / 255;
-    }
-
-    return new BABYLON.Color3(r, g, b);
   }
 
   async loadAndInitAvatars() {

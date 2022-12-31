@@ -6,9 +6,6 @@
     "race": "Human",
     "voiceName": "en-GB-Neural2-A",
     "seatIndex": 0,
-    "walkingAnim": "walking",
-    "idleAnim": "happyidle",
-    "actionAnim": "action",
     "defaultPath": [{
         "x": 1,
         "z": 1,
@@ -38,8 +35,6 @@
     "race": "Botan",
     "voiceName": "en-AU-Neural2-C",
     "seatIndex": 1,
-    "walkingAnim": "walking",
-    "idleAnim": "joyfuljump",
     "defaultPath": [],
     "activePath": []
   },
@@ -51,8 +46,6 @@
     "race": "Avian",
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
-    "walkingAnim": "walking",
-    "idleAnim": "surprised",
     "defaultPath": [],
     "activePath": []
   },
@@ -64,8 +57,6 @@
     "race": "Titan",
     "voiceName": "en-GB-Neural2-D",
     "seatIndex": 3,
-    "walkingAnim": "walking",
-    "idleAnim": "chickendance",
     "defaultPath": [],
     "activePath": []
   }
