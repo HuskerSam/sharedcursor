@@ -1161,7 +1161,18 @@ export class StoryApp extends BaseApp {
       positionTN.animations = [];
 
       if (seatIndex === this.activeSeatIndex) {
-        this.avatarHelper.avatarSequence(avatar, 'walking');
+
+        //this.avatarHelper.avatarSequence(avatar, 'walking');
+
+        let wAnim = avatar.animationGroups.find(n => n.name === 'Clone of walking');
+        let aAnim = avatar.animationGroups.find(n => n.name === 'Clone of agree');
+
+        BABYLON.AnimationGroup.MakeAnimationAdditive(aAnim);
+        aAnim.start(true);
+        aAnim.setWeightForAllAnimatables(1);
+
+        wAnim.start(true);
+        wAnim.setWeightForAllAnimatables(1);
 
         let positionAnim = new BABYLON.Animation(
           "avatarpositionTN" + seatIndex,
