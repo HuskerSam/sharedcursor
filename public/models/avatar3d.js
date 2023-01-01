@@ -61,7 +61,6 @@ export default class Avatar3D {
     }
 
     this.dockSeatContainers = [];
-    this.menuBarAvatars = [];
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let colors = U3D.get3DColors(seatIndex);
       let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
@@ -144,38 +143,6 @@ export default class Avatar3D {
       dockSeatContainer.playerImagePlane1 = playerImagePlane1;
       dockSeatContainer.playerImagePlane2 = playerImagePlane2;
       playerImagePlane2.position.z = 0.05;
-
-      let avatarMeta = this.app.avatarMetas[seatIndex];
-      let animationsBaseName = avatarMeta.cloneAnimations ? avatarMeta.cloneAnimations : avatarMeta.name;
-      let newModel = this.avatarContainers[animationsBaseName].instantiateModelsToScene();
-      this.menuBarAvatars.push(newModel);
-      this.menuBarAvatars[seatIndex].animationGroups[0].stop();
-
-      let avatarPositionTN = new BABYLON.TransformNode("menu3davatarpositionoffset" + seatIndex, this.app.scene);
-      avatarPositionTN.position.y = -1;
-      avatarPositionTN.position.z = 3;
-      avatarPositionTN.rotation.y = Math.PI;
-      avatarPositionTN.scaling = U3D.v(3);
-      avatarPositionTN.parent = this.dockSeatContainers[seatIndex];
-      this.menuBarAvatars[seatIndex].rootNodes[0].parent = avatarPositionTN;
-      newModel.avatarPositionTN = avatarPositionTN;
-
-      avatarPositionTN.assetMeta = {
-        name: avatarMeta.name,
-        extended: {},
-        appClickable: true,
-        avatarType: true,
-        seatIndex: seatIndex,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.currentMenuAvatarTrackIndex++;
-          if (this.currentMenuAvatarTrackIndex >= this.animationTracks.length)
-            this.currentMenuAvatarTrackIndex = 0;
-          this.avatarSequence(this.menuBarAvatars[seatIndex], this.animationTracks[this.currentMenuAvatarTrackIndex]);
-
-          this.app.menuTab3D.setSelectedAsset(meta);
-        }
-      };
     }
   }
   _renderPlayerSeat(seatIndex, seatData, active) {
@@ -309,19 +276,6 @@ export default class Avatar3D {
       return;
     this.currentSeatMeshIndex = seatIndex;
 
-    let colors = U3D.get3DColors(seatIndex);
-    let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
-
-    this.menuBarAvatars.forEach((container, i) => {
-      if (i === seatIndex) {
-        this.avatarSequence(container, this.animationTracks[this.currentMenuAvatarTrackIndex]);
-        this.runningAnimation = 0;
-        container.rootNodes[0].setEnabled(true);
-      } else {
-        container.animationGroups.forEach(anim => anim.stop());
-        container.rootNodes[0].setEnabled(false);
-      }
-    });
   }
 
   getSeatData(seatIndex) {

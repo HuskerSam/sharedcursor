@@ -321,6 +321,17 @@ export class StoryApp extends BaseApp {
   get activeSeatIndex() {
     if (!this.gameData)
       return 0;
+    if (this.paintedBoardTurn !== null) {
+      let seatTurn = this.paintedBoardTurn;
+      if (seatTurn < 0) {
+        let turn = seatTurn % this.gameData.runningNumberOfSeats + 4;
+        if (turn === 4)
+          turn = 0;
+        return turn;
+      }
+
+      return seatTurn % this.gameData.runningNumberOfSeats;
+    }
     return this.gameData.currentSeat;
   }
   get activeMoon() {
@@ -789,7 +800,7 @@ export class StoryApp extends BaseApp {
     return this.turnNumber;
   }
   set paintedBoardTurn(value) {
-    let min = -3;
+    let min = -4;
     let max = this.turnNumber;
     this._paintedBoardTurn = value;
     if (this._paintedBoardTurn < min)
@@ -1165,12 +1176,13 @@ export class StoryApp extends BaseApp {
         //this.avatarHelper.avatarSequence(avatar, 'walking');
 
         let wAnim = avatar.animationGroups.find(n => n.name === 'Clone of walking');
-        let aAnim = avatar.animationGroups.find(n => n.name === 'Clone of agree');
+        /*
+        let aAnim = avatar.animationGroups.find(n => n.name === 'Clone of angry');
 
         BABYLON.AnimationGroup.MakeAnimationAdditive(aAnim);
         aAnim.start(true);
         aAnim.setWeightForAllAnimatables(1);
-
+*/
         wAnim.start(true);
         wAnim.setWeightForAllAnimatables(1);
 
