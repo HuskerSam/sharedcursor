@@ -68,7 +68,7 @@ export class StoryApp extends BaseApp {
   }
   async _initContent3D() {
     let startTime = new Date();
-    this.sceneTransformNode = null; //new BABYLON.TransformNode('sceneTransformNode', this.scene);
+    this.sceneTransformNode = null;
     this.createMenu3DWrapper();
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
@@ -1124,10 +1124,9 @@ export class StoryApp extends BaseApp {
     if (!this.avatarHelper.initedAvatars)
       return;
 
-    if (this.avatarPathsInited)
+    if (this.avatarPathsInited === this.activeSeatIndex)
       return;
-
-    this.avatarPathsInited = true;
+    this.avatarPathsInited = this.activeSeatIndex;
 
     let path = this._generatePath();
     let pathWalkTime = 60000;
@@ -1155,40 +1154,48 @@ export class StoryApp extends BaseApp {
 
     this.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
       let avatarMeta = this.avatarMetas[seatIndex];
-      this.avatarHelper.avatarSequence(avatar, 'walking', seatIndex);
 
       let positionTN = avatar.avatarPositionTN;
       if (avatarMeta.positionAnimation)
         avatarMeta.positionAnimation.stop();
       positionTN.animations = [];
 
-      let positionAnim = new BABYLON.Animation(
-        "avatarpositionTN" + seatIndex,
-        "position",
-        60,
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-      );
-      positionAnim.setKeys(avatarPositionKeys);
-      positionTN.animations.push(positionAnim);
+      if (seatIndex === this.activeSeatIndex) {
+        this.avatarHelper.avatarSequence(avatar, 'walking');
 
-      let rotationAnim = new BABYLON.Animation(
-        "avatarrotationTN" + seatIndex,
-        "rotation",
-        60,
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-      );
-      rotationAnim.setKeys(avatarRotationKeys);
-      positionTN.animations.push(rotationAnim);
+        let positionAnim = new BABYLON.Animation(
+          "avatarpositionTN" + seatIndex,
+          "position",
+          60,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+        positionAnim.setKeys(avatarPositionKeys);
+        positionTN.animations.push(positionAnim);
 
-      avatarMeta.positionAnimation = this.scene.beginAnimation(positionTN, 0, endFrame, true);
-      avatarMeta.positionAnimation.goToFrame(Math.floor(endFrame * seatIndex / 4));
+        let rotationAnim = new BABYLON.Animation(
+          "avatarrotationTN" + seatIndex,
+          "rotation",
+          60,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+        rotationAnim.setKeys(avatarRotationKeys);
+        positionTN.animations.push(rotationAnim);
+
+        avatarMeta.positionAnimation = this.scene.beginAnimation(positionTN, 0, endFrame, true);
+        avatarMeta.positionAnimation.goToFrame(Math.floor(endFrame * seatIndex / 4));
+      } else {
+        avatar.avatarPositionTN.position.x = avatarMeta.x;
+        avatar.avatarPositionTN.position.z = avatarMeta.z;
+        let anim = this.avatarHelper.avatarSequence(avatar, 'idle');
+        anim.goToFrame(1);
+        setTimeout(() => {
+          anim.stop();
+        }, 50);
+      }
+
     });
-
-    //boxingleft, boxingright, chickendance, defeated, jogging,
-    // walking, femalewalk, grabandslam, joyfuljump, surprised, thrillerpart1
-
   }
 
 

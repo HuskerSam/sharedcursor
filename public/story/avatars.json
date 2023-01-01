@@ -24,8 +24,7 @@
         "ry": -1.57,
         "segmentTime": 10000
       }
-    ],
-    "activePath": []
+    ]
   },
   {
     "name": "Jade",
@@ -35,8 +34,7 @@
     "race": "Botan",
     "voiceName": "en-AU-Neural2-C",
     "seatIndex": 1,
-    "defaultPath": [],
-    "activePath": []
+    "defaultPath": []
   },
   {
     "name": "Daya",
@@ -46,8 +44,7 @@
     "race": "Avian",
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
-    "defaultPath": [],
-    "activePath": []
+    "defaultPath": []
   },
   {
     "name": "Elihu",
@@ -57,7 +54,6 @@
     "race": "Titan",
     "voiceName": "en-GB-Neural2-D",
     "seatIndex": 3,
-    "defaultPath": [],
-    "activePath": []
+    "defaultPath": []
   }
 ]

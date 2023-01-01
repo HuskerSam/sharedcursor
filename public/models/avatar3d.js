@@ -404,14 +404,15 @@ export default class Avatar3D {
     this.initedAvatars = initedAvatars;
     this.avatarContainers = avatarContainers;
   }
-  async avatarSequence(avatarContainer, animationName) {
+  avatarSequence(avatarContainer, animationName) {
     let animationIndex = this.getAnimIndex(avatarContainer, animationName);
     let arr = avatarContainer.animationGroups;
     arr.forEach(anim => anim.stop());
 
-    let animName = arr[animationIndex].name;
-
-    arr[animationIndex].start(true);
+    //let animName = arr[animationIndex].name;
+    if (animationIndex > -1)
+      arr[animationIndex].start(true);
+    return arr[animationIndex];
   }
   updateAvatarRender() {
     if (!this.initedAvatars)
