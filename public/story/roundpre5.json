@@ -1,18 +1,17 @@
 {
-  "actions": [
-    {
+  "actions": [{
       "action": "avatarMessage",
-      "seatIndex": 0,
+      "seatIndex": 3,
       "addAnimation": "agree",
-      "text": "Things started out so peacefully...",
+      "text": "I'm Elihu Husker, I represent the Titans... the first civilization on Earth",
       "timeToShow": 8000,
       "timeToBlock": 10000
     },
     {
       "action": "avatarMessage",
-      "seatIndex": 0,
+      "seatIndex": 3,
       "addAnimation": "angry",
-      "text": "Planets spin and moons move around",
+      "text": "I own this system, stay the hell out!",
       "timeToShow": 8000,
       "timeToBlock": 10000
     }

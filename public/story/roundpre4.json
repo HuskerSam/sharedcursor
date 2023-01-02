@@ -1,33 +1,43 @@
 {
   "actions": [{
-      "sourceId": "e1_luna",
       "action": "parentChange",
+      "sourceId": "e1_luna",
       "targetId": "venus",
       "when": "init"
     },
     {
-      "sourceId": "j5_io",
       "action": "parentChange",
+      "sourceId": "j5_io",
       "targetId": "earth",
       "when": "init"
     },
     {
-      "sourceId": "j6_europa",
-      "action": "parentChange",
-      "targetId": "mercury",
-      "when": "init"
+      "action": "avatarMessage",
+      "seatIndex": 0,
+      "text": "Things started out so peacefully...",
+      "timeToShow": 15000,
+      "timeToBlock": 10000
     },
     {
-      "sourceId": "j7_ganymede",
-      "action": "parentChange",
-      "targetId": "mars",
-      "when": "init"
+      "action": "avatarMessage",
+      "seatIndex": 1,
+      "text": "I blame it all on Elihu and capitalism!",
+      "timeToShow": 18000,
+      "timeToBlock": 12000
     },
     {
-      "sourceId": "j8_callisto",
-      "action": "parentChange",
-      "targetId": "mars",
-      "when": "init"
+      "action": "avatarMessage",
+      "seatIndex": 2,
+      "text": "Elihu thinks he owns everything.",
+      "timeToShow": 15000,
+      "timeToBlock": 10000
+    },
+    {
+      "action": "avatarMessage",
+      "seatIndex": 3,
+      "text": "This is my system. Get the hell out or I'll enslave you!",
+      "timeToShow": 25000,
+      "timeToBlock": 12000
     }
   ]
 }

@@ -15,6 +15,7 @@ export class StoryApp extends BaseApp {
     this.staticBoardObjects = {};
     this.playerMoonAssets = new Array(4);
     this._paintedBoardTurn = null;
+    this.minimumPrequel = -5;
 
     this.initGameOptionsPanel();
     this._initMenuBar2D();
@@ -800,7 +801,7 @@ export class StoryApp extends BaseApp {
     return this.turnNumber;
   }
   set paintedBoardTurn(value) {
-    let min = -4;
+    let min = this.minimumPrequel;
     let max = this.turnNumber;
     this._paintedBoardTurn = value;
     if (this._paintedBoardTurn < min)
@@ -923,6 +924,16 @@ export class StoryApp extends BaseApp {
     }
   }
   async boardActionAvatarMessage(action) {
+
+    if (action.addAnimation) {
+      let avatar = this.avatarHelper.initedAvatars[action.seatIndex];
+      let aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
+
+      BABYLON.AnimationGroup.MakeAnimationAdditive(aAnim);
+      aAnim.start(false);
+      aAnim.setWeightForAllAnimatables(1);
+    }
+
     await this.avatarShowMessage(action.seatIndex, action.text, action.timeToShow, action.timeToBlock);
   }
 
@@ -1172,17 +1183,8 @@ export class StoryApp extends BaseApp {
       positionTN.animations = [];
 
       if (seatIndex === this.activeSeatIndex) {
-
-        //this.avatarHelper.avatarSequence(avatar, 'walking');
-
         let wAnim = avatar.animationGroups.find(n => n.name === 'Clone of walking');
-        /*
-        let aAnim = avatar.animationGroups.find(n => n.name === 'Clone of angry');
 
-        BABYLON.AnimationGroup.MakeAnimationAdditive(aAnim);
-        aAnim.start(true);
-        aAnim.setWeightForAllAnimatables(1);
-*/
         wAnim.start(true);
         wAnim.setWeightForAllAnimatables(1);
 
