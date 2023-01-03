@@ -4,6 +4,8 @@
     "x": 3,
     "z": 3,
     "race": "Human",
+    "walkAnim": "walking",
+    "idlePose": "walking",
     "voiceName": "en-GB-Neural2-A",
     "seatIndex": 0,
     "defaultPath": [{
@@ -32,16 +34,20 @@
     "x": -3,
     "z": 3,
     "race": "Botan",
+    "walkAnim": "walking",
+    "idlePose": "idle",
     "voiceName": "en-AU-Neural2-C",
     "seatIndex": 1,
     "defaultPath": []
   },
   {
-    "name": "Daya",
-    "path": "daya.glb",
+    "name": "Raven",
+    "path": "raven.glb",
     "x": -3,
     "z": -3,
     "race": "Avian",
+    "walkAnim": "shoppingbagwalk",
+    "idlePose": "twerk",
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
     "defaultPath": []
@@ -52,6 +58,8 @@
     "x": 3,
     "z": -3,
     "race": "Titan",
+    "walkAnim": "strut",
+    "idlePose": "strut",
     "voiceName": "en-GB-Neural2-D",
     "seatIndex": 3,
     "defaultPath": []

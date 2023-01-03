@@ -11,7 +11,26 @@ export default class Avatar3D {
       "angry",
       "agree",
       "action", //dance
-      "walking"
+      "walking",
+
+      "strut",
+      "defeated",
+      "jumpingjack",
+      "groinkicked",
+      "mutantjump",
+      "jump",
+
+      "walking",
+      "joyfuljump",
+      "groinkicked",
+
+      "twerk",
+      "onehandwave",
+      "jump",
+      "joyfuljump",
+      "groinkicked",
+      "shoppingbagwalk"
+
     ]
 
     this.dockDiscRadius = 0.6;

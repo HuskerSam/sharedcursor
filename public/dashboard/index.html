@@ -117,7 +117,7 @@
           <div style="line-height:6em;padding-left:16px">
             <button class="create_new_solar_btn btn btn-primary">Create Moon Fight</button>
             &nbsp;
-            <button class="create_new_match_btn btn btn-primary">Match Moon Cards</button>
+            <button class="create_new_match_btn btn btn-primary" style="display:none">Match Moon Cards</button>
           </div>
           <div class="basic_options" style="display:none;">
             <div style="text-align:left">
@@ -132,9 +132,9 @@
                 <label class="form-label">Seats</label>
                 <select class="seat_count_select form-select ">
                   <option value="1">1 seat</option>
-                  <option selected value="2">2 seats</option>
+                  <option value="2">2 seats</option>
                   <option value="3">3 seats</option>
-                  <option value="4">4 seats</option>
+                  <option value="4" selected>4 seats</option>
                 </select>
               </div>
               <br>
@@ -145,11 +145,11 @@
                   <option value="all">All</option>
                 </select>
               </div>
-              <div style="display:inline-block;">
+              <div style="display:none">
                 <label class="form-label">Seat Limit</label>
                 <select class="seats_per_user_select form-select ">
                   <option value="one">One</option>
-                  <option value="none">None</option>
+                  <option value="none" selected>None</option>
                 </select>
               </div>
               <div class="match_additional_options">

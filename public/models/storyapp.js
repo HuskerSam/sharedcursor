@@ -1183,7 +1183,8 @@ export class StoryApp extends BaseApp {
       positionTN.animations = [];
 
       if (seatIndex === this.activeSeatIndex) {
-        let wAnim = avatar.animationGroups.find(n => n.name === 'Clone of walking');
+        let walkAnimName = avatarMeta.walkAnim;
+        let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
 
         wAnim.start(true);
         wAnim.setWeightForAllAnimatables(1);
@@ -1213,7 +1214,8 @@ export class StoryApp extends BaseApp {
       } else {
         avatar.avatarPositionTN.position.x = avatarMeta.x;
         avatar.avatarPositionTN.position.z = avatarMeta.z;
-        let anim = this.avatarHelper.avatarSequence(avatar, 'idle');
+        let idleAnimName = avatarMeta.idlePose;
+        let anim = this.avatarHelper.avatarSequence(avatar, idleAnimName);
         anim.goToFrame(1);
         setTimeout(() => {
           anim.stop();

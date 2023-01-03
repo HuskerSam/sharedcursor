@@ -3,7 +3,6 @@
     {
       "action": "avatarMessage",
       "seatIndex": 0,
-      "addAnimation": "agree",
       "text": "Things started out so peacefully...",
       "timeToShow": 8000,
       "timeToBlock": 10000
@@ -11,7 +10,6 @@
     {
       "action": "avatarMessage",
       "seatIndex": 0,
-      "addAnimation": "angry",
       "text": "Planets spin and moons move around",
       "timeToShow": 8000,
       "timeToBlock": 10000
