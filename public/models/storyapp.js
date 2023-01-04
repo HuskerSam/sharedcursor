@@ -145,11 +145,9 @@ export class StoryApp extends BaseApp {
     this.asteroidHelper.asteroidUpdateMaterials();
     this.actionCardHelper = new ActionCards(this, this.menuTab3D.playerCardsTN);
 
-    if (this.instrumentationOn) {
-      let delta = new Date().getTime() - startTime.getTime();
-      console.log('init3D', delta);
-      this.addLineToLoading(`${delta} ms to load 3D content<br>`);
-    }
+    let delta = new Date().getTime() - startTime.getTime();
+    console.log('init3D', delta);
+    this.addLineToLoading(`${delta} ms to load 3D content<br>`);
 
     this.paintedBoardTurn = this.turnNumber;
 
@@ -923,15 +921,27 @@ export class StoryApp extends BaseApp {
       return;
     }
   }
-  async boardActionAvatarMessage(action) {
 
+
+  async boardActionAvatarMessage(action) {
     if (action.addAnimation) {
       let avatar = this.avatarHelper.initedAvatars[action.seatIndex];
-      let aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
 
-      BABYLON.AnimationGroup.MakeAnimationAdditive(aAnim);
-      aAnim.start(false);
-      aAnim.setWeightForAllAnimatables(1);
+      let aAnim;
+      if (this.activeSeatIndex === action.seatIndex) {
+        //is moving
+        aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation + 'moving') !== -1);
+        if (!aAnim) {
+          let origAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
+          aAnim = BABYLON.AnimationGroup.MakeAnimationAdditive(origAnim, origAnim.from, origAnim.to, true, origAnim.name + 'moving');
+          avatar.animationGroups.push(aAnim);
+        }
+      } else {
+        aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
+      }
+
+      anim.setWeightForAllAnimatables(1);
+      anim.start(false);
     }
 
     await this.avatarShowMessage(action.seatIndex, action.text, action.timeToShow, action.timeToBlock);
@@ -1214,11 +1224,14 @@ export class StoryApp extends BaseApp {
       } else {
         avatar.avatarPositionTN.position.x = avatarMeta.x;
         avatar.avatarPositionTN.position.z = avatarMeta.z;
-        let idleAnimName = avatarMeta.idlePose;
-        let anim = this.avatarHelper.avatarSequence(avatar, idleAnimName);
-        anim.goToFrame(1);
+        avatar.animationGroups.forEach(anim => anim.stop());
+
+        //avatar.skeletons[0].returnToRest();
+        let aAnim = avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1);
+        aAnim.start();
+        aAnim.goToFrame(1);
         setTimeout(() => {
-          anim.stop();
+          aAnim.stop();
         }, 50);
       }
 

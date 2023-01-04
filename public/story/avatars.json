@@ -47,7 +47,7 @@
     "z": -3,
     "race": "Avian",
     "walkAnim": "shoppingbagwalk",
-    "idlePose": "twerk",
+    "idlePose": "shoppingbagwalk",
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
     "defaultPath": []

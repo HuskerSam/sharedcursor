@@ -1499,7 +1499,7 @@ export class BaseApp {
     });
     let json = await f_result.json();
     let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(json.path) + '?alt=media&fileext=.mp3';
-    console.log(soundPath);
+    window.lastSoundPath = soundPath;
     return json.path;
   }
 }
