@@ -621,6 +621,11 @@ export default class MenuTab3D {
     }
 
     let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
+    if (meta.avatarType) {
+      let colors = U3D.get3DColors(meta.seatIndex);
+      color = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
+      yOffset = 2.25;
+    }
 
     this.displayedNamePlate = U3D.addDefaultText(this.app.scene, nameDesc, color, 'transparent');
     this.displayedNamePlate.billboardMode = 7;

@@ -1,5 +1,6 @@
 {
-  "actions": [{
+  "actions": [
+    {
       "action": "avatarMessage",
       "seatIndex": 3,
       "addAnimation": "groinkicked",

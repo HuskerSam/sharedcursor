@@ -367,10 +367,10 @@ export default class Avatar3D {
         appClickable: true,
         avatarType: true,
         seatIndex,
+        basePivot: avatarPositionTN,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.menuTab3D.setSelectedAsset(meta);
-          //this.pauseAssetSpin(pointerInfo, mesh, meta);
+          this.app.pauseAssetSpin(pointerInfo, mesh, meta);
         }
       };
     }
@@ -384,15 +384,5 @@ export default class Avatar3D {
 
     if (this.currentSeatMeshIndex === undefined)
       return;
-  }
-  getAnimIndex(avatar, animName) {
-    let animIndex = -1;
-     avatar.animationGroups.forEach((anim, i2) => {
-       let shortName = anim.name.replace('Clone of ', '');
-      if (anim.name === animName || shortName === animName)
-        animIndex = i2;
-    });
-
-    return animIndex;
   }
 }

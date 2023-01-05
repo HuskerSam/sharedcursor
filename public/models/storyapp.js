@@ -606,11 +606,15 @@ export class StoryApp extends BaseApp {
       this.menuTab3D.setSelectedAsset(meta);
     }
 
+    if (meta.avatarType) {
+      meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
+    } else if (meta.asteroidType) {
+      meta.basePivot.originalRotation = this.getAbsoluteRotation(meta.basePivot);
+    } else {
+      meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
+    }
 
 
-    meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
-    if (meta.asteroidType)
-      meta.basePivot.rotation = this.getAbsoluteRotation(meta.basePivot);
     this.lastClickSpinPaused = true;
     this.spinPauseMetaPointerX = this.scene.pointerX;
     this.spinPauseMetaPointerY = this.scene.pointerY;
@@ -628,6 +632,9 @@ export class StoryApp extends BaseApp {
     if (meta.activeSelectedObject) {
       meta.basePivot.rotation.y -= dX * 0.0035;
       meta.basePivot.rotation.x -= dY * 0.0035;
+    } else if (meta.avatarType) {
+      meta.basePivot.rotation.y -= dX * 0.005;
+      meta.basePivot.rotation.x -= dY * 0.005;
     } else {
       meta.basePivot.rotation.y -= dX * 0.005;
       meta.basePivot.rotation.x -= dY * 0.005;
@@ -647,6 +654,14 @@ export class StoryApp extends BaseApp {
       if (meta.orbitAnimation)
         meta.orbitAnimation.pause();
 
+      if (meta.avatarType) {
+        let avatarMeta = this.avatarMetas[meta.seatIndex];
+        if (avatarMeta && avatarMeta.positionAnimation) {
+          avatarMeta.positionAnimation.pause();
+          avatarMeta.walkingAnimation.pause();
+        }
+      }
+
       if (!this.inXR) {
         this.camera.detachControl(this.canvas)
       }
@@ -660,8 +675,14 @@ export class StoryApp extends BaseApp {
       if (meta.orbitAnimation && meta.orbitAnimation._paused)
         meta.orbitAnimation.restart();
 
+      let avatarMeta = this.avatarMetas[meta.seatIndex];
+      if (avatarMeta && avatarMeta.positionAnimation) {
+        avatarMeta.positionAnimation.restart();
+        avatarMeta.walkingAnimation.restart();
+      }
+
       if (!this.inXR) {
-        this.camera.attachControl(this.canvas)
+        this.camera.attachControl(this.canvas);
       }
     }
   }
@@ -1169,8 +1190,11 @@ export class StoryApp extends BaseApp {
       let avatarMeta = this.avatarMetas[seatIndex];
 
       let positionTN = avatar.avatarPositionTN;
-      if (avatarMeta.positionAnimation)
+      if (avatarMeta.positionAnimation) {
         avatarMeta.positionAnimation.stop();
+        avatarMeta.positionAnimation = null;
+        avatarMeta.walkingAnimation = null;
+      }
       positionTN.animations = [];
 
       if (seatIndex === this.activeSeatIndex) {
@@ -1179,6 +1203,7 @@ export class StoryApp extends BaseApp {
 
         wAnim.start(true);
         wAnim.setWeightForAllAnimatables(1);
+        avatarMeta.walkingAnimation = wAnim;
 
         let positionAnim = new BABYLON.Animation(
           "avatarpositionTN" + seatIndex,
