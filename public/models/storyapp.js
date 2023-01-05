@@ -338,27 +338,6 @@ export class StoryApp extends BaseApp {
   }
 
   //profile related
-  async switchSkyboxNext(previous) {
-    let index = this.menuTab3D.skyboxList().indexOf(this.profile.skyboxPath);
-    if (previous)
-      index--;
-    else
-      index++;
-    if (index > this.menuTab3D.skyboxList().length - 1)
-      index = 0;
-    if (index < 0)
-      index = this.menuTab3D.skyboxList().length - 1;
-
-    this.profile.skyboxPath = this.menuTab3D.skyboxList()[index];
-    this.menuTab3D.updateSkyboxLabel();
-    this.initSkybox();
-
-    let updatePacket = {
-      skyboxPath: this.profile.skyboxPath
-    };
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).update(updatePacket);
-  }
   async asteroidCountChange(delta) {
     let asteroidCount = this.asteroidHelper.getAsteroidCount(this.profile.asteroidCount);
     asteroidCount = this.asteroidHelper.getAsteroidCount(asteroidCount + delta);
@@ -626,6 +605,8 @@ export class StoryApp extends BaseApp {
     if (meta.activeSelectedObject !== true) {
       this.menuTab3D.setSelectedAsset(meta);
     }
+
+
 
     meta.basePivot.originalRotation = U3D.vector(meta.basePivot.rotation);
     if (meta.asteroidType)
@@ -940,8 +921,8 @@ export class StoryApp extends BaseApp {
         aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
       }
 
-      anim.setWeightForAllAnimatables(1);
-      anim.start(false);
+      aAnim.setWeightForAllAnimatables(1);
+      aAnim.start(false);
     }
 
     await this.avatarShowMessage(action.seatIndex, action.text, action.timeToShow, action.timeToBlock);

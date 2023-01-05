@@ -1402,17 +1402,15 @@ export class BaseApp {
     return scene;
   }
   initSkybox() {
-    let skyboxname = 'stars8k.jpg';
-    if (this.profile && this.profile.skyboxPath)
-      skyboxname = this.profile.skyboxPath;
+    let skyboxname = 'stars8k';
     let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
 
     if (!this.photoDome) {
       this.photoDome = new BABYLON.PhotoDome(
         "photoDome",
         equipath, {
-          resolution: 32,
-          size: 1000
+          resolution: 128,
+          size: 150
         },
         this.scene
       );

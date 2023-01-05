@@ -370,6 +370,7 @@ export default class Avatar3D {
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.app.menuTab3D.setSelectedAsset(meta);
+          //this.pauseAssetSpin(pointerInfo, mesh, meta);
         }
       };
     }

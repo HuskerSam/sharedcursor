@@ -134,42 +134,6 @@ export default class MenuTab3D {
   }
 
   initOptionsTab(parent) {
-    let skyboxLabel = U3D.addTextPlane(this.app.scene, 'Skybox');
-    skyboxLabel.position.x = -21;
-    skyboxLabel.position.y = 4;
-    skyboxLabel.position.z = 4;
-    skyboxLabel.scaling = U3D.v(2);
-    skyboxLabel.parent = parent;
-
-    let skyboxPrev = this.addIconBtn('previous');
-    skyboxPrev.position.x = -15;
-    skyboxPrev.position.y = 4;
-    skyboxPrev.position.z = 4;
-    skyboxPrev.scaling = U3D.v(0.5);
-    skyboxPrev.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.switchSkyboxNext(true);
-      }
-    };
-    skyboxPrev.parent = parent;
-
-    let skyboxNext = this.addIconBtn('next');
-    skyboxNext.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.switchSkyboxNext();
-      }
-    };
-    skyboxNext.position.x = -13;
-    skyboxNext.position.y = 4;
-    skyboxNext.position.z = 4;
-    skyboxNext.scaling = U3D.v(0.5);
-    skyboxNext.parent = parent;
-    this.updateSkyboxLabel();
-
     let asteroidCountLabel = U3D.addTextPlane(this.app.scene, 'Asteroid Count');
     asteroidCountLabel.position.x = -22;
     asteroidCountLabel.position.y = 7;
@@ -205,43 +169,6 @@ export default class MenuTab3D {
     asteroidUpCountBtn.scaling = U3D.v(0.5);
     asteroidUpCountBtn.parent = parent;
     this.updateAsteroidOptions();
-  }
-  updateSkyboxLabel() {
-    if (this.skyboxNamePanel)
-      this.skyboxNamePanel.dispose(false, true);
-
-    let skybox = this.app.profile.skyboxPath;
-    if (!skybox)
-      skybox = '';
-    let pieces = skybox.split('_');
-    pieces.forEach((piece, i) => {
-      piece = piece.charAt(0).toUpperCase() + piece.slice(1);
-      pieces[i] = piece;
-    })
-    skybox = pieces.join(' ');
-    this.skyboxNamePanel = U3D.addTextPlane(this.app.scene, skybox, 'skyboxNamePanel');
-    this.skyboxNamePanel.position.x = 0;
-    this.skyboxNamePanel.position.y = 4;
-    this.skyboxNamePanel.position.z = 4;
-    this.skyboxNamePanel.scaling = U3D.v(2);
-    this.skyboxNamePanel.parent = this.optionsMenuTab;
-  }
-  skyboxList() {
-    return [
-      'milkyway8k',
-      'stars8k',
-      'nebula_orange_blue',
-      'moon_high_clear',
-      'moonless_2',
-      'nebula_black',
-      'nebula_blue_red',
-      'nebula_cold',
-      'nebula_glow',
-      'nebula_green',
-      'nebula_red',
-      'neon_starless',
-      'vortex_starless'
-    ];
   }
   updateAsteroidOptions() {
     if (this.asteroidCountLabel)
