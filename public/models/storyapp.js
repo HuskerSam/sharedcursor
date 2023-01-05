@@ -768,6 +768,7 @@ export class StoryApp extends BaseApp {
 
   async paintBoard() {
     if (this._renderedBoardTurn !== this.paintedBoardTurn) {
+      this.boardTurnFirstLoad = true;
       this.menuTab3D.updateMenubarLabel();
       this._renderedBoardTurn = this.paintedBoardTurn;
       this.initListenGameRound(this._renderedBoardTurn);
@@ -779,8 +780,7 @@ export class StoryApp extends BaseApp {
         this.updateBoardRoundData(true);
       }
     } else
-      this.updateBoardRoundData(true);
-
+      this.updateBoardRoundData();
     this.updateAvatarPaths();
   }
   applyBoardAction(boardAction) {
@@ -878,7 +878,6 @@ export class StoryApp extends BaseApp {
       return;
 
     let roundPath = `Games/${this.currentGame}/rounds/${roundIndex}`;
-    let firstLoad = true;
     this.gameRoundSubscription = firebase.firestore().doc(roundPath)
       .onSnapshot(async (doc) => {
         let data = doc.data();
@@ -887,8 +886,8 @@ export class StoryApp extends BaseApp {
           return;
         }
         this.boardRoundData = data;
-        this.updateBoardRoundData(firstLoad);
-        firstLoad = false;
+        this.updateBoardRoundData(this.boardTurnFirstLoad);
+        this.boardTurnFirstLoad = false;
       });
   }
   async sendRoundAction(roundAction, cardIndex = -1, cardDetails = null, targetId = null, sourceId = null, originId = null) {
