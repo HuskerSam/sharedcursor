@@ -176,8 +176,8 @@ export class StoryApp extends BaseApp {
 
     this.browserScreenMenuTN = new BABYLON.TransformNode("browserScreenMenuTN", this.scene);
     this.browserScreenMenuTN.position.x = 0;
-    this.browserScreenMenuTN.position.y = -6;
-    this.browserScreenMenuTN.position.z = 5;
+    this.browserScreenMenuTN.position.y = -5.25;
+    this.browserScreenMenuTN.position.z = 6;
     this.browserScreenMenuTN.parent = this.camera;
   }
 

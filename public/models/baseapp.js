@@ -1304,7 +1304,7 @@ export class BaseApp {
     scene.activeCamera.setTarget(this.cameraMetaX.target);
     scene.activeCamera.panningSensibility = 300;
     */
-    scene.activeCamera.position = new BABYLON.Vector3(-5, 5, -5);
+    scene.activeCamera.position = new BABYLON.Vector3(5, 5, 0);
     scene.activeCamera.setTarget(BABYLON.Vector3.Zero());
     scene.activeCamera.speed = 0.5;
     this.camera.angularSensibility = 5000;
@@ -1315,7 +1315,7 @@ export class BaseApp {
     this.xr = await scene.createDefaultXRExperienceAsync({
       floorMeshes: [environment.ground]
     });
-
+    environment.ground.isPickable = false;
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
