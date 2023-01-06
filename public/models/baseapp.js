@@ -1305,7 +1305,7 @@ export class BaseApp {
     scene.activeCamera.panningSensibility = 300;
     */
     scene.activeCamera.position = new BABYLON.Vector3(5, 5, 0);
-    scene.activeCamera.setTarget(BABYLON.Vector3.Zero());
+    scene.activeCamera.setTarget(new BABYLON.Vector3(0, 4, 0));
     scene.activeCamera.speed = 0.5;
     this.camera.angularSensibility = 5000;
     scene.activeCamera.storeState();

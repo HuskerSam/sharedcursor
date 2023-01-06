@@ -309,7 +309,14 @@ export class StoryApp extends BaseApp {
       if (this.gameSubscription)
         this.gameSubscription();
       this.gameSubscription = firebase.firestore().doc(`Games/${this.currentGame}`)
-        .onSnapshot((doc) => this.paintGameData(doc));
+        .onSnapshot((doc) => {
+          if (doc.data())
+            this.paintGameData(doc);
+          else {
+            alert("Game doesn't exist");
+            window.location = "/dashboard";
+          }
+        });
     }
   }
   async getJSONFile(path) {
