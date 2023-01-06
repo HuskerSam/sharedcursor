@@ -22,9 +22,9 @@ export default class GameCards {
   }
   static async loadDecks() {
     await Promise.all([
-      await GameCards.readJSONFile(`/match/solarsystemdeck.json`, 'solarsystemCardDeck'),
-      await GameCards.readJSONFile(`/match/moons1deck.json`, 'moons1CardDeck'),
-      await GameCards.readJSONFile(`/match/moons2deck.json`, 'moons2CardDeck')
+      await GameCards.readJSONFile(`/story/solarsystemdeck.json`, 'solarsystemCardDeck'),
+      await GameCards.readJSONFile(`/story/moons1deck.json`, 'moons1CardDeck'),
+      await GameCards.readJSONFile(`/story/moons2deck.json`, 'moons2CardDeck')
     ]);
 
     let allCards = {};
