@@ -1,5 +1,5 @@
 [{
-    "name": "Terra",
+    "name": "Angel Husker",
     "path": "terra.glb",
     "x": 3,
     "z": 3,
@@ -29,7 +29,7 @@
     ]
   },
   {
-    "name": "Jade",
+    "name": "Jade Husker",
     "path": "jade.glb",
     "x": -3,
     "z": 3,
@@ -41,7 +41,7 @@
     "defaultPath": []
   },
   {
-    "name": "Raven",
+    "name": "Raven Husker",
     "path": "raven.glb",
     "x": -3,
     "z": -3,
@@ -53,7 +53,7 @@
     "defaultPath": []
   },
   {
-    "name": "Elihu",
+    "name": "Elihu Husker",
     "path": "elihu.glb",
     "x": 3,
     "z": -3,

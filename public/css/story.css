@@ -112,6 +112,7 @@ body {
   left: 0;
   bottom: 0;
   width: 10em;
+  display: none;
 }
 
 .bottom_options_panel * {

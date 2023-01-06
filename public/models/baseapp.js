@@ -1283,8 +1283,9 @@ export class BaseApp {
     this.env = environment;
     this.env.groundMaterial.alpha = 0.4;
 
-    scene.createDefaultCamera(true, true, true);
+    scene.createDefaultCamera(false, true, true);
     this.camera = scene.activeCamera;
+    /*
     this.camera.wheelPrecision = 10;
     this.camera.lowerRadiusLimit = 5;
     this.camera.upperRadiusLimit = 35;
@@ -1302,7 +1303,11 @@ export class BaseApp {
     scene.activeCamera.setPosition(this.cameraMetaX.position);
     scene.activeCamera.setTarget(this.cameraMetaX.target);
     scene.activeCamera.panningSensibility = 300;
-
+    */
+    scene.activeCamera.position = new BABYLON.Vector3(-5, 5, -5);
+    scene.activeCamera.setTarget(BABYLON.Vector3.Zero());
+    scene.activeCamera.speed = 0.5;
+    this.camera.angularSensibility = 5000;
     scene.activeCamera.storeState();
 
     this.initSkybox();

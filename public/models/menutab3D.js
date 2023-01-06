@@ -122,16 +122,6 @@ export default class MenuTab3D {
       this.currentSelectedTab = menuTabToShow;
     }
   }
-  updateMenuBar() {
-    this.menuIconButtons.forEach(mesh => {
-      let mat = mesh.material;
-      let colors = U3D.get3DColors(this.app.activeSeatIndex);
-
-      mat.emissiveColor = colors;
-      mat.diffuseColor = colors;
-      mat.ambientColor = colors;
-    });
-  }
 
   initOptionsTab(parent) {
     let asteroidCountLabel = U3D.addTextPlane(this.app.scene, 'Asteroid Count');
@@ -316,6 +306,15 @@ export default class MenuTab3D {
     this.selectedRoundIndexPanel.position.z = 5;
     this.selectedRoundIndexPanel.scaling = U3D.v(2);
     this.selectedRoundIndexPanel.parent = this.scoreMenuTab;
+
+    this.menuIconButtons.forEach(mesh => {
+      let mat = mesh.material;
+      let colors = U3D.get3DColors(this.app.activeSeatIndex);
+
+      mat.emissiveColor = colors;
+      mat.diffuseColor = colors;
+      mat.ambientColor = colors;
+    });
   }
 
   async initFocusedAssetPanel(parent) {

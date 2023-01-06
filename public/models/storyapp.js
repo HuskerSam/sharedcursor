@@ -151,6 +151,8 @@ export class StoryApp extends BaseApp {
 
     this.paintedBoardTurn = this.turnNumber;
 
+    this.enterNotInXR();
+
     this.runRender = true;
     this.paintGameData();
   }
@@ -170,6 +172,13 @@ export class StoryApp extends BaseApp {
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = -3;
+    this.menuBarTabButtonsTN.position.z = 3;
+
+    this.browserScreenMenuTN = new BABYLON.TransformNode("browserScreenMenuTN", this.scene);
+    this.browserScreenMenuTN.position.x = 0;
+    this.browserScreenMenuTN.position.y = -6;
+    this.browserScreenMenuTN.position.z = 5;
+    this.browserScreenMenuTN.parent = this.camera;
   }
 
   async loadStaticAsset(name, sceneParent, profile, scene, meta = null) {
@@ -537,8 +546,6 @@ export class StoryApp extends BaseApp {
     super.paintDock();
     if (this.avatarHelper)
       this.avatarHelper.updatePlayerDock();
-    if (this.menuTab3D)
-      this.menuTab3D.updateMenuBar();
   }
   updateUserPresence() {
     super.updateUserPresence();
@@ -560,9 +567,11 @@ export class StoryApp extends BaseApp {
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
   }
   enterNotInXR() {
-    this.menuBarLeftTN.position = U3D.vector(-10, 1, -10);
-    this.menuBarLeftTN.scaling = U3D.v(1, 1, 1);
-    this.menuBarLeftTN.parent = null;
+    //  this.menuBarLeftTN.position = U3D.vector(-10, 1, -10);
+
+    this.menuBarLeftTN.scaling = U3D.v(0.2, 0.2, 0.2);
+    this.menuBarLeftTN.parent = this.browserScreenMenuTN;
+    this.menuBarLeftTN.billboardMode = 0;
 
     this.inXR = false;
 
