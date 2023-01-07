@@ -13,7 +13,6 @@ export class StoryApp extends BaseApp {
     this.apiType = 'story';
     this.cache = {};
     this.staticBoardObjects = {};
-    this.playerMoonAssets = new Array(4);
     this._paintedBoardTurn = null;
     this.minimumPrequel = -5;
 
@@ -106,9 +105,13 @@ export class StoryApp extends BaseApp {
       this.asteroidHelper.loadAsteroids()
     ]);
 
+    this.playerMoonAssets = new Array(4);
     let loadingHTML = '';
     loadingResults.forEach(assetMesh => {
       let meta = assetMesh.assetMeta;
+
+      if (meta.seatIndex !== undefined)
+        this.playerMoonAssets[meta.seatIndex] = assetMesh;
 
       let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
       let smallLink = '';
@@ -661,7 +664,7 @@ export class StoryApp extends BaseApp {
   spinPauseMesh(meta, stop = false, mesh) {
     if (!stop) {
       if (!meta.activeSelectedObject)
-        this.menuTab3D.showAssetNamePlate(meta);
+        this.showAssetNamePlate(meta);
 
       if (meta.rotationAnimation)
         meta.rotationAnimation.pause();
@@ -682,7 +685,7 @@ export class StoryApp extends BaseApp {
       }
     } else {
       if (!meta.activeSelectedObject)
-        this.menuTab3D.hideAssetNamePlate(meta);
+        this.hideAssetNamePlate(meta);
 
       if (meta.rotationAnimation && meta.rotationAnimation._paused)
         meta.rotationAnimation.restart();
@@ -745,6 +748,52 @@ export class StoryApp extends BaseApp {
       */
     }
   }
+    showAssetNamePlate(meta) {
+      if (this.displayedNamePlate)
+        this.displayedNamePlate.dispose(false, true);
+
+      let nameDesc = meta.name;
+      if (meta.solarPosition)
+        nameDesc += ` (${meta.solarPosition})`;
+      if (meta.asteroidType) {
+        nameDesc = nameDesc.replace('.obj', '');
+        nameDesc = nameDesc.charAt(0).toUpperCase() + nameDesc.slice(1);
+      }
+
+      let color = "rgb(200, 0, 0)";
+      if (meta.color)
+        color = meta.color;
+
+      let width = 3;
+      let height = 2;
+      if (nameDesc.length > 6) {
+        //  height = 2;
+        width = 6;
+      }
+
+      let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
+      if (meta.avatarType) {
+        let colors = U3D.get3DColors(meta.seatIndex);
+        color = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
+        yOffset = 2.25;
+      }
+
+      this.displayedNamePlate = U3D.addDefaultText(this.scene, nameDesc, color, 'transparent');
+      this.displayedNamePlate.billboardMode = 7;
+      this.displayedNamePlate.position.y = yOffset;
+      this.displayedNamePlate.parent = meta.basePivot;
+      if (meta.assetSymbolPanel)
+        meta.assetSymbolPanel.setEnabled(false);
+    }
+    hideAssetNamePlate(meta) {
+      if (this.displayedNamePlate) {
+        this.displayedNamePlate.dispose(false, true);
+        this.displayedNamePlate = null;
+      }
+
+      if (meta.assetSymbolPanel)
+        meta.assetSymbolPanel.setEnabled(true);
+    }
   yButtonPress() {
     this.clearActiveFollowMeta();
     this.aimCamera(this.cameraMetaX);

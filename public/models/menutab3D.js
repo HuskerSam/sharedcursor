@@ -26,15 +26,15 @@ export default class MenuTab3D {
   initOptionsBar() {
     let scoreMenuBtn = this.addActionPanelButton('score', () => this.selectedMenuBarTab(this.scoreMenuTab));
     scoreMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    scoreMenuBtn.position = U3D.v(-20, 0, 0);
+    scoreMenuBtn.position = U3D.v(-14, 0, 0);
 
     let optionsMenuBtn = this.addActionPanelButton('gear', () => this.selectedMenuBarTab(this.optionsMenuTab));
     optionsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    optionsMenuBtn.position = U3D.v(-14, 0, 0);
+    optionsMenuBtn.position = U3D.v(-10, 0, 0);
 
     let playersMoonsMenuBtn = this.addActionPanelButton('diversity', () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    playersMoonsMenuBtn.position = U3D.v(-8, 0, 0);
+    playersMoonsMenuBtn.position = U3D.v(-6, 0, 0);
 
     let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
@@ -153,6 +153,12 @@ export default class MenuTab3D {
       this.currentSelectedTab = menuTabToShow;
     }
   }
+  removeDisposeActionMesh(mesh) {
+    if (!mesh)
+      return;
+    this.seatIndexColoredButtons = this.seatIndexColoredButtons.filter(colorMesh => colorMesh != mesh)
+    mesh.dispose(false, true);
+  }
 
   initOptionsTab() {
     let asteroidCountLabel = this.addActionPanelLabel('Asteroid Count');
@@ -168,34 +174,28 @@ export default class MenuTab3D {
     asteroidUpCountBtn.parent = this.optionsMenuTab;
     this.updateAsteroidOptions();
   }
-  _removeDisposeActionMesh(mesh) {
-    if (!mesh)
-      return;
-    this.seatIndexColoredButtons = this.seatIndexColoredButtons.filter(colorMesh => colorMesh != mesh)
-    mesh.dispose(false, true);
-  }
   updateAsteroidOptions() {
-    this._removeDisposeActionMesh(this.asteroidCountLabel);
+    this.removeDisposeActionMesh(this.asteroidCountLabel);
     let count = this.app.asteroidHelper.getAsteroidCount(this.app.profile.asteroidCount);
     this.asteroidCountLabel = this.addActionPanelLabel(count.toString(), "Impact");
     this.asteroidCountLabel.position = U3D.v(5, 7, 0);
     this.asteroidCountLabel.parent = this.optionsMenuTab;
 
-    this._removeDisposeActionMesh(this.asteroidWireframeBtn);
+    this.removeDisposeActionMesh(this.asteroidWireframeBtn);
     let wireframe = this.app.profile.asteroidWireframe === true;
     let wireframeDesc = wireframe ? 'Solid' : 'Wireframe';
     this.asteroidWireframeBtn = this.addActionPanelLabel(wireframeDesc, "Arial", () => this.app.asteroidChangeMaterial(!wireframe, null, null));
     this.asteroidWireframeBtn.position = U3D.v(-28, 12.5, 0);
     this.asteroidWireframeBtn.parent = this.optionsMenuTab;
 
-    this._removeDisposeActionMesh(this.asteroidTextureBtn);
+    this.removeDisposeActionMesh(this.asteroidTextureBtn);
     let profileTexture = this.app.profile.asteroidColorOnly === true;
     let profileDesc = profileTexture ? 'Color' : 'Rocky';
     this.asteroidTextureBtn = this.addActionPanelLabel(profileDesc, "Arial", () => this.app.asteroidChangeMaterial(null, !profileTexture, null));
     this.asteroidTextureBtn.position = U3D.v(-14, 12.5, 0);
     this.asteroidTextureBtn.parent = this.optionsMenuTab;
 
-    this._removeDisposeActionMesh(this.asteroidInternalLogos);
+    this.removeDisposeActionMesh(this.asteroidInternalLogos);
     let includeLogos = this.app.profile.asteroidExcludeLogos === true;
     let logoDesc = includeLogos ? 'Logos' : 'No Logos';
     this.asteroidInternalLogos = this.addActionPanelLabel(logoDesc, "Arial", () => this.app.asteroidChangeMaterial(null, null, !includeLogos));
@@ -220,7 +220,7 @@ export default class MenuTab3D {
   updateRoundAndScoreStatus() {
     if (this.app.boardTurnLabel !== this.paintedLabel) {
       this.paintedLabel = this.app.boardTurnLabel;
-      this._removeDisposeActionMesh(this.selectedRoundIndexPanel);
+      this.removeDisposeActionMesh(this.selectedRoundIndexPanel);
       this.selectedRoundIndexPanel = this.addActionPanelLabel(this.app.boardTurnLabel);
       this.selectedRoundIndexPanel.parent = this.scoreMenuTab;
       this.selectedRoundIndexPanel.position = U3D.v(-21, 6, 0);
@@ -487,60 +487,46 @@ export default class MenuTab3D {
     }
   }
 
-  showAssetNamePlate(meta) {
-    if (this.displayedNamePlate)
-      this.displayedNamePlate.dispose(false, true);
+  _initMoonFlagPole(seatIndex) {
+    let flagPoleHolder = new BABYLON.TransformNode('flagpoleholder' + seatIndex, this.app.scene);
+    let moonAssetId = this.app.playerMoonAssets[seatIndex].assetMeta.id;
+    flagPoleHolder.parent = this.app.parentPivot(moonAssetId);
+    flagPoleHolder.scaling = U3D.v(0.2);
+    flagPoleHolder.position.y = 0.45;
+    flagPoleHolder.billboardMode = 7;
 
-    let nameDesc = meta.name;
-    if (meta.solarPosition)
-      nameDesc += ` (${meta.solarPosition})`;
-    if (meta.asteroidType) {
-      nameDesc = nameDesc.replace('.obj', '');
-      nameDesc = nameDesc.charAt(0).toUpperCase() + nameDesc.slice(1);
-    }
+    let moonFlagBack = BABYLON.MeshBuilder.CreatePlane("flagback" + seatIndex, {
+      height: 1.75,
+      width: 2.5,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.app.scene);
+    moonFlagBack.material = this.dockSeatContainers[seatIndex].playerColorMaterial;
+    moonFlagBack.parent = flagPoleHolder;
+    moonFlagBack.position.y = 4.5;
+    moonFlagBack.position.x = 1.25;
+    let moonFlagPole = BABYLON.MeshBuilder.CreateCylinder("flagpole" + seatIndex, {
+      height: 3,
+      diameter: 0.25,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.app.scene);
+    moonFlagPole.material = this.dockSeatContainers[seatIndex].playerColorMaterial;
+    moonFlagPole.parent = flagPoleHolder;
+    moonFlagPole.position.y = 3.5;
+    moonFlagPole.position.x = 0;
 
-    let color = "rgb(200, 0, 0)";
-    if (meta.color)
-      color = meta.color;
-
-    let width = 3;
-    let height = 2;
-    if (nameDesc.length > 6) {
-      //  height = 2;
-      width = 6;
-    }
-
-    let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
-    if (meta.avatarType) {
-      let colors = U3D.get3DColors(meta.seatIndex);
-      color = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
-      yOffset = 2.25;
-    }
-
-    this.displayedNamePlate = U3D.addDefaultText(this.app.scene, nameDesc, color, 'transparent');
-    this.displayedNamePlate.billboardMode = 7;
-    this.displayedNamePlate.position.y = yOffset;
-    this.displayedNamePlate.parent = meta.basePivot;
-    if (meta.assetSymbolPanel)
-      meta.assetSymbolPanel.setEnabled(false);
+    let imageFront = BABYLON.MeshBuilder.CreatePlane("avatarimageplane" + seatIndex, {
+        height: 1.5,
+        width: 1.5,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      },
+      this.app.scene);
+    imageFront.position.y = 4.5;
+    imageFront.position.x = 1.25;
+    imageFront.position.z = -0.05;
+    imageFront.material = this.dockSeatContainers[seatIndex].playerImageMaterial;
+    imageFront.parent = flagPoleHolder;
   }
-  hideAssetNamePlate(meta) {
-    if (this.displayedNamePlate) {
-      this.displayedNamePlate.dispose(false, true);
-      this.displayedNamePlate = null;
-    }
-
-    if (meta.assetSymbolPanel)
-      meta.assetSymbolPanel.setEnabled(true);
-  }
-
   initPlayerPanel() {
-    for (let key in this.app.staticBoardObjects) {
-      let assetMesh = this.app.staticBoardObjects[key];
-      if (assetMesh.assetMeta.seatIndex !== undefined)
-        this.app.playerMoonAssets[assetMesh.assetMeta.seatIndex] = assetMesh;
-    }
-
     this.dockSeatContainers = [];
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let colors = U3D.get3DColors(seatIndex);
@@ -548,77 +534,38 @@ export default class MenuTab3D {
 
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
       this.dockSeatContainers.push(dockSeatContainer);
-      dockSeatContainer.position.x = -26 + (seatIndex * 6);
+      dockSeatContainer.position.x = -18 + (seatIndex * 7);
       dockSeatContainer.parent = this.app.menuTab3D.playerMoonPanelTab;
 
-      let moonCloneMeta = this.app.playerMoonAssets[seatIndex].assetMeta;
-      let moonCloneTN = new BABYLON.TransformNode('moonCloneTN' + seatIndex, this.app.scene);
-      moonCloneTN.position.y = 6;
-      moonCloneTN.position.z = 10;
-      moonCloneTN.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.menuTab3D.setSelectedAsset(moonCloneMeta);
-        }
-      };
-      moonCloneTN.parent = this.dockSeatContainers[seatIndex];
+      dockSeatContainer.playerImageMaterial = new BABYLON.StandardMaterial('playerlogomatertial' + seatIndex, this.app.scene);
+      dockSeatContainer.playerImageMaterial.alpha = 0;
 
-      let moonFlagBack = BABYLON.MeshBuilder.CreatePlane("flagback" + seatIndex, {
-        height: 1.75,
-        width: 2.5,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      dockSeatContainer.playerColorMaterial = new BABYLON.StandardMaterial('playercolormaterial' + seatIndex, this.app.scene);
+      dockSeatContainer.playerColorMaterial.diffuseColor = playerColor;
+      dockSeatContainer.playerColorMaterial.ambientColor = playerColor;
+      dockSeatContainer.playerColorMaterial.emissiveColor = playerColor;
+
+      this._initMoonFlagPole(seatIndex);
+
+      let seatMenuContainerTN = new BABYLON.TransformNode('seatMenuContainerTN' + seatIndex, this.app.scene);
+      seatMenuContainerTN.position.y = 6;
+      seatMenuContainerTN.position.z = 10;
+      seatMenuContainerTN.parent = this.dockSeatContainers[seatIndex];
+
+      let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("seatBackPanel" + seatIndex, {
+        height: 8,
+        width: 6
       }, this.app.scene);
-      moonFlagBack.material = new BABYLON.StandardMaterial('flagmaterial' + seatIndex, this.app.scene);
-      moonFlagBack.material.diffuseColor = playerColor;
-      moonFlagBack.material.ambientColor = playerColor;
-      moonFlagBack.material.emissiveColor = playerColor;
-      moonFlagBack.parent = moonCloneTN;
-      moonFlagBack.position.y = 4.5;
-      moonFlagBack.position.x = 1.25;
-      let moonFlagPole = BABYLON.MeshBuilder.CreateCylinder("flagpole" + seatIndex, {
-        height: 3,
-        diameter: 0.25,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      }, this.app.scene);
-      moonFlagPole.material = moonFlagBack.material;
-      moonFlagPole.parent = moonCloneTN;
-      moonFlagPole.position.y = 3.5;
-      moonFlagPole.position.x = 0;
-      dockSeatContainer.moonCloneTN = moonCloneTN;
+      let panelMat = new BABYLON.StandardMaterial("menuCardBackPanel" + seatIndex, this.app.scene);
+      let t = new BABYLON.Texture('/images/cardhollow.png', this.app.scene);
+      panelMat.opacityTexture = t;
+      panelMat.diffuseColor = playerColor;
+      panelMat.ambientColor = playerColor;
+      panelMat.emissiveColor = playerColor;
 
-      let moonFlagBack2 = moonFlagBack.clone();
-      let moonFlagPole2 = moonFlagPole.clone();
-      let flagPoleHolder = new BABYLON.TransformNode('flagpoleholder' + seatIndex, this.app.scene);
-      flagPoleHolder.parent = this.app.parentPivot(moonCloneMeta.id);
-      flagPoleHolder.scaling = U3D.v(0.2);
-      flagPoleHolder.position.y = 0.45;
-      moonFlagBack2.parent = flagPoleHolder;
-      moonFlagPole2.parent = flagPoleHolder;
-
-      let playerImagePlane = BABYLON.MeshBuilder.CreatePlane("avatarimageplane" + seatIndex, {
-          height: 1.5,
-          width: 1.5,
-          sideOrientation: BABYLON.Mesh.DOUBLESIDE
-        },
-        this.app.scene);
-      playerImagePlane.position.y = 4.5;
-      playerImagePlane.position.x = 1.25;
-      playerImagePlane.position.z = -0.05;
-      dockSeatContainer.playerImageMaterial = new BABYLON.StandardMaterial('avatarshowmat' + seatIndex, this.app.scene);
-      playerImagePlane.material = dockSeatContainer.playerImageMaterial;
-      playerImagePlane.parent = dockSeatContainer.moonCloneTN;
-      playerImagePlane.setEnabled(false);
-      let playerImagePlane1 = playerImagePlane.clone();
-      let playerImagePlane2 = playerImagePlane.clone();
-      playerImagePlane1.setEnabled(false);
-      playerImagePlane2.setEnabled(false);
-      playerImagePlane1.parent = flagPoleHolder;
-      playerImagePlane2.parent = flagPoleHolder;
-      dockSeatContainer.playerImagePlane = playerImagePlane;
-      dockSeatContainer.playerImagePlane1 = playerImagePlane1;
-      dockSeatContainer.playerImagePlane2 = playerImagePlane2;
-      playerImagePlane2.position.z = 0.05;
+      seatBackPanel.material = panelMat;
+      seatBackPanel.parent = seatMenuContainerTN;
+      //      seatBackPanel.position = U3D.v();
     }
   }
   async updateUserPresence() {
@@ -658,114 +605,6 @@ export default class MenuTab3D {
       }
     }
   }
-
-  _renderPlayerSeat(seatIndex, seatData, active) {
-    let seatContainer = this.dockSeatContainers[seatIndex];
-    if (seatContainer.playerDetailsTN) {
-      seatContainer.playerDetailsTN.dispose(false, true);
-      seatContainer.playerDetailsTN = null;
-    }
-    seatContainer.playerDetailsTN = new BABYLON.TransformNode("playerDetailsTN" + seatIndex, this.app.scene);
-    seatContainer.playerDetailsTN.parent = seatContainer;
-
-    seatContainer.playerImagePlane.setEnabled(false);
-    seatContainer.playerImagePlane1.setEnabled(false);
-    seatContainer.playerImagePlane2.setEnabled(false);
-
-    let colors = U3D.get3DColors(seatIndex);
-    let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
-    if (active) {
-      let meta = seatContainer.assetMeta;
-
-      if (seatData.seated) {
-        let names = seatData.name.split(' ');
-        seatContainer.namePlate1 = U3D.addDefaultText(this.app.scene, names[0], rgb, 'transparent');
-        seatContainer.namePlate1.position.z = 3;
-        seatContainer.namePlate1.position.y = 6.25;
-        seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
-
-        if (names[1]) {
-          seatContainer.namePlate2 = U3D.addDefaultText(this.app.scene, names[1], rgb, 'transparent');
-          seatContainer.namePlate2.position.z = 3;
-          seatContainer.namePlate2.position.y = 5.25;
-          seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
-        }
-
-        if (this.app.uid === seatData.uid || this.app.isOwner) {
-          let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
-          let color = gameOwnerNotPlayer ? "#ff2222" : '#00dd00';
-          let standBtn = U3D.addDefaultText(this.app.scene, "X", color);
-          standBtn.scaling = U3D.v(1.25, 1.25, 1.25);
-          standBtn.position.x = 1;
-          standBtn.position.y = 7;
-          standBtn.position.z = 4;
-          standBtn.parent = seatContainer.playerDetailsTN;
-          standBtn.assetMeta = {
-            appClickable: true,
-            clickCommand: 'customClick',
-            handlePointerDown: async (pointerInfo, mesh, meta) => {
-              this.app._gameAPIStand(seatIndex);
-              seatContainer.sitStandButton.dispose(false, true);
-              seatContainer.sitStandButton = null;
-            }
-          };
-          seatContainer.sitStandButton = standBtn;
-        }
-
-        if (seatContainer.playerImageMaterial.diffuseTexture)
-          seatContainer.playerImageMaterial.diffuseTexture.dispose();
-
-        let t = new BABYLON.Texture(seatData.image, this.app.scene);
-        t.vScale = 1;
-        t.uScale = 1;
-        t.hasAlpha = true;
-        seatContainer.playerImageMaterial.diffuseTexture = t;
-        seatContainer.playerImageMaterial.emissiveTexture = t;
-        seatContainer.playerImageMaterial.ambientTexture = t;
-        seatContainer.playerImagePlane.setEnabled(true);
-        seatContainer.playerImagePlane1.setEnabled(true);
-        seatContainer.playerImagePlane2.setEnabled(true);
-      } else {
-        let sitBtn = U3D.addDefaultText(this.app.scene, "Sit", rgb);
-        sitBtn.position.y = 7;
-        sitBtn.position.z = 4;
-        sitBtn.scaling = U3D.v(2, 2, 2);
-        sitBtn.assetMeta = {
-          seatIndex,
-          appClickable: true,
-          clickCommand: 'customClick',
-          handlePointerDown: async (pointerInfo, mesh, meta) => {
-            this.app.dockSit(seatIndex);
-            seatContainer.sitStandButton.dispose(false, true);
-            seatContainer.sitStandButton = null;
-          }
-        };
-        sitBtn.parent = seatContainer.playerDetailsTN;
-        seatContainer.sitStandButton = sitBtn;
-      }
-    } else {
-      seatContainer.namePlate1 = U3D.addDefaultText(this.app.scene, 'Husker AI', rgb, 'transparent');
-      seatContainer.namePlate1.position.z = 3;
-      seatContainer.namePlate1.position.y = 5.5;
-      seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
-
-      if (seatContainer.playerImageMaterial.diffuseTexture)
-        seatContainer.playerImageMaterial.diffuseTexture.dispose();
-
-      let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent('/symbol/herbie.png') + '?alt=media';
-      let t = new BABYLON.Texture(path, this.app.scene);
-      t.vScale = 1;
-      t.uScale = 1;
-      t.hasAlpha = true;
-      seatContainer.playerImageMaterial.diffuseTexture = t;
-      seatContainer.playerImageMaterial.emissiveTexture = t;
-      seatContainer.playerImageMaterial.ambientTexture = t;
-      seatContainer.playerImagePlane.setEnabled(true);
-      seatContainer.playerImagePlane1.setEnabled(true);
-      seatContainer.playerImagePlane2.setEnabled(true);
-    }
-  }
-
   async updatePlayerDock() {
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let active = (seatIndex < this.app.seatCount)
@@ -776,13 +615,108 @@ export default class MenuTab3D {
 
       if (this['dockSeatCache' + seatIndex] !== cacheValue) {
         this['dockSeatCache' + seatIndex] = cacheValue;
-        this._renderPlayerSeat(seatIndex, seatData, active);
+        let seatContainer = this.dockSeatContainers[seatIndex];
+        if (seatContainer.playerDetailsTN) {
+          seatContainer.playerDetailsTN.dispose(false, true);
+          seatContainer.playerDetailsTN = null;
+        }
+        seatContainer.playerDetailsTN = new BABYLON.TransformNode("playerDetailsTN" + seatIndex, this.app.scene);
+        seatContainer.playerDetailsTN.parent = seatContainer;
+
+        let colors = U3D.get3DColors(seatIndex);
+        let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
+        if (active) {
+          let meta = seatContainer.assetMeta;
+
+          if (seatData.seated) {
+            let names = seatData.name.split(' ');
+            seatContainer.namePlate1 = U3D.addDefaultText(this.app.scene, names[0], rgb, 'transparent');
+            seatContainer.namePlate1.position.z = 3;
+            seatContainer.namePlate1.position.y = 6.25;
+            seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
+
+            if (names[1]) {
+              seatContainer.namePlate2 = U3D.addDefaultText(this.app.scene, names[1], rgb, 'transparent');
+              seatContainer.namePlate2.position.z = 3;
+              seatContainer.namePlate2.position.y = 5.25;
+              seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
+            }
+
+            if (this.app.uid === seatData.uid || this.app.isOwner) {
+              let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
+              let color = gameOwnerNotPlayer ? "#ff2222" : '#00dd00';
+              let standBtn = U3D.addDefaultText(this.app.scene, "X", color);
+              standBtn.scaling = U3D.v(1.25, 1.25, 1.25);
+              standBtn.position.x = 1;
+              standBtn.position.y = 7;
+              standBtn.position.z = 4;
+              standBtn.parent = seatContainer.playerDetailsTN;
+              standBtn.assetMeta = {
+                appClickable: true,
+                clickCommand: 'customClick',
+                handlePointerDown: async (pointerInfo, mesh, meta) => {
+                  this.app._gameAPIStand(seatIndex);
+                  seatContainer.sitStandButton.dispose(false, true);
+                  seatContainer.sitStandButton = null;
+                }
+              };
+              seatContainer.sitStandButton = standBtn;
+            }
+
+            if (seatContainer.playerImageMaterial.diffuseTexture)
+              seatContainer.playerImageMaterial.diffuseTexture.dispose();
+
+            let t = new BABYLON.Texture(seatData.image, this.app.scene);
+            t.vScale = 1;
+            t.uScale = 1;
+            t.hasAlpha = true;
+            seatContainer.playerImageMaterial.diffuseTexture = t;
+            seatContainer.playerImageMaterial.emissiveTexture = t;
+            seatContainer.playerImageMaterial.ambientTexture = t;
+            seatContainer.playerImageMaterial.alpha = 1;
+          } else {
+            let sitBtn = U3D.addDefaultText(this.app.scene, "Sit", rgb);
+            sitBtn.position.y = 7;
+            sitBtn.position.z = 4;
+            sitBtn.scaling = U3D.v(2, 2, 2);
+            sitBtn.assetMeta = {
+              seatIndex,
+              appClickable: true,
+              clickCommand: 'customClick',
+              handlePointerDown: async (pointerInfo, mesh, meta) => {
+                this.app.dockSit(seatIndex);
+                seatContainer.sitStandButton.dispose(false, true);
+                seatContainer.sitStandButton = null;
+              }
+            };
+            sitBtn.parent = seatContainer.playerDetailsTN;
+            seatContainer.sitStandButton = sitBtn;
+            seatContainer.playerImageMaterial.alpha = 0;
+          }
+        } else {
+          seatContainer.namePlate1 = U3D.addDefaultText(this.app.scene, 'Husker AI', rgb, 'transparent');
+          seatContainer.namePlate1.position.z = 3;
+          seatContainer.namePlate1.position.y = 5.5;
+          seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
+
+          if (seatContainer.playerImageMaterial.diffuseTexture)
+            seatContainer.playerImageMaterial.diffuseTexture.dispose();
+
+          let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent('/symbol/herbie.png') + '?alt=media';
+          let t = new BABYLON.Texture(path, this.app.scene);
+          t.vScale = 1;
+          t.uScale = 1;
+          t.hasAlpha = true;
+          seatContainer.playerImageMaterial.diffuseTexture = t;
+          seatContainer.playerImageMaterial.emissiveTexture = t;
+          seatContainer.playerImageMaterial.ambientTexture = t;
+          seatContainer.playerImageMaterial.alpha = 1;
+        }
       }
     }
 
     this.updateUserPresence();
   }
-
   getSeatData(seatIndex) {
     let key = 'seat' + seatIndex.toString();
     let name = '';
@@ -811,5 +745,4 @@ export default class MenuTab3D {
       uid: this.app.gameData[key]
     };
   }
-
 }
