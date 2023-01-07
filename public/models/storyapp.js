@@ -160,8 +160,8 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.position.y = 3;
-    this.menuBarLeftTN.position.z = 10;
+    this.menuBarLeftTN.position.y = 5;
+    this.menuBarLeftTN.position.z = 12;
     this.menuBarLeftTN.billboardMode = 7;
 
     this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
@@ -171,13 +171,13 @@ export class StoryApp extends BaseApp {
 
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-    this.menuBarTabButtonsTN.position.y = -3;
-    this.menuBarTabButtonsTN.position.z = 10;
+    this.menuBarTabButtonsTN.position.y = 2;
+    this.menuBarTabButtonsTN.position.z = 12;
 
     this.browserScreenMenuTN = new BABYLON.TransformNode("browserScreenMenuTN", this.scene);
     this.browserScreenMenuTN.position.x = 0;
-    this.browserScreenMenuTN.position.y = -5.25;
-    this.browserScreenMenuTN.position.z = 6;
+    this.browserScreenMenuTN.position.y = -6;
+    this.browserScreenMenuTN.position.z = 2;
     this.browserScreenMenuTN.parent = this.camera;
   }
 
@@ -574,8 +574,8 @@ export class StoryApp extends BaseApp {
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
   }
   enterNotInXR() {
-    this.menuBarLeftTN.position = U3D.v(1, 3, 3);
-    this.menuBarLeftTN.scaling = U3D.v(0.2, 0.2, 0.2);
+    this.menuBarLeftTN.position = U3D.v(0.75, 4.25, 1.5);
+    this.menuBarLeftTN.scaling = U3D.v(0.1, 0.1, 0.1);
     this.menuBarLeftTN.parent = this.browserScreenMenuTN;
     this.menuBarLeftTN.billboardMode = 0;
 

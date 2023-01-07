@@ -20,54 +20,46 @@ export default class MenuTab3D {
     return this.app.staticBoardObjects[name];
   }
   initOptionsBar() {
-    let scoreMenuBtn = this.addActionPanelButton('score', async (pointerInfo, mesh, meta) => {
-      this.selectedMenuBarTab(this.scoreMenuTab);
-    });
+    let scoreMenuBtn = this.addActionPanelButton('score', () => this.selectedMenuBarTab(this.scoreMenuTab));
     scoreMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    scoreMenuBtn.position.x = -25;
+    scoreMenuBtn.position = U3D.v(-20, 0, 0);
 
-    let optionsMenuBtn = this.addActionPanelButton('gear', async (pointerInfo, mesh, meta) => {
-      this.selectedMenuBarTab(this.optionsMenuTab);
-    });
+    let optionsMenuBtn = this.addActionPanelButton('gear', () => this.selectedMenuBarTab(this.optionsMenuTab));
     optionsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    optionsMenuBtn.position.x = -20;
+    optionsMenuBtn.position = U3D.v(-14, 0, 0);
 
-    let playersMoonsMenuBtn = this.addActionPanelButton('diversity', async (pointerInfo, mesh, meta) => {
-      this.selectedMenuBarTab(this.playerMoonPanelTab);
-    });
+    let playersMoonsMenuBtn = this.addActionPanelButton('diversity', () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    playersMoonsMenuBtn.position.x = -15;
+    playersMoonsMenuBtn.position = U3D.v(-8, 0, 0);
 
-    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', async (pointerInfo, mesh, meta) => {
-      this.selectedMenuBarTab(this.focusPanelTab);
-    });
+    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    selectedObjectMenuBtn.position.x = -10;
+    selectedObjectMenuBtn.position = U3D.v(-2, 0, 0);
 
     this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', this.app.scene);
     this.scoreMenuTab.parent = this.app.menuBarLeftTN;
-    this.scoreMenuTab.position.y = 0;
+    this.scoreMenuTab.position = U3D.v(0, 4, 10);
     this.scoreMenuTab.setEnabled(false);
     this.initScoreTab();
 
     this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', this.app.scene);
     this.optionsMenuTab.parent = this.app.menuBarLeftTN;
-    this.optionsMenuTab.position.y = 0;
+    this.optionsMenuTab.position = U3D.v(0, 4, 10);
     this.optionsMenuTab.setEnabled(false);
     this.initOptionsTab(this.optionsMenuTab);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
-    this.focusPanelTab.position.y = 0;
+    this.focusPanelTab.position = U3D.v(0, 4, 10);
     this.focusPanelTab.setEnabled(false);
     this.initFocusedAssetPanel(this.focusPanelTab);
 
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.app.scene);
     this.playerMoonPanelTab.parent = this.app.menuBarLeftTN;
-    this.playerMoonPanelTab.position.y = 0;
+    this.playerMoonPanelTab.position = U3D.v(0, 4, 10);
     this.playerMoonPanelTab.setEnabled(false);
   }
-  addActionPanelLabel(text, font_family = "Arial") {
+  addActionPanelLabel(text, font_family = "Arial", handlePointerDown) {
     let id = text;
     let font_size = 192;
     let paddingSides = 10;
@@ -94,17 +86,25 @@ export default class MenuTab3D {
     mat.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
     mat.ambientColor = new BABYLON.Color3(0.25, 0, 1);
 
-    let plane = BABYLON.MeshBuilder.CreatePlane(id + "textplane", {
+    let mesh = BABYLON.MeshBuilder.CreatePlane(id + "textplane", {
       width: planeWidth,
       height: planeHeight,
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, this.app.scene);
-    plane.isPickable = false;
-    plane.material = mat;
+    mesh.material = mat;
 
-    this.seatIndexColoredButtons.push(plane);
+    if (handlePointerDown) {
+      mesh.assetMeta = {
+        appClickable: true,
+        clickCommand: 'customClick',
+        handlePointerDown
+      };
+    } else {
+      mesh.isPickable = false;
+    }
 
-    return plane;
+    this.seatIndexColoredButtons.push(mesh);
+    return mesh;
   }
   addActionPanelButton(iconName, handlePointerDown) {
     let texturePath = '/fontcons/' + iconName + '.svg';
@@ -133,7 +133,6 @@ export default class MenuTab3D {
     }
 
     this.seatIndexColoredButtons.push(mesh);
-
     return mesh;
   }
   selectedMenuBarTab(menuTabToShow) {
@@ -175,56 +174,25 @@ export default class MenuTab3D {
       this.asteroidWireframeBtn.dispose(false, true);
     let wireframe = this.app.profile.asteroidWireframe === true;
     let wireframeDesc = wireframe ? 'Solid' : 'Wireframe';
-
-
     this.asteroidWireframeBtn = U3D.addDefaultText(this.app.scene, wireframeDesc);
-    this.asteroidWireframeBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidChangeMaterial(!wireframe, null, null);
-      }
-    };
-    this.asteroidWireframeBtn.position.x = -24;
-    this.asteroidWireframeBtn.position.y = 11;
-    this.asteroidWireframeBtn.position.z = 10;
-    this.asteroidWireframeBtn.scaling = U3D.v(3);
+    this.asteroidWireframeBtn = this.addActionPanelLabel(wireframeDesc, "Arial", () => this.app.asteroidChangeMaterial(!wireframe, null, null));
+    this.asteroidWireframeBtn.position = U3D.v(-28, 12.5, 0);
     this.asteroidWireframeBtn.parent = this.optionsMenuTab;
 
     if (this.asteroidTextureBtn)
       this.asteroidTextureBtn.dispose(false, true);
     let profileTexture = this.app.profile.asteroidColorOnly === true;
     let profileDesc = profileTexture ? 'Color' : 'Rocky';
-    this.asteroidTextureBtn = U3D.addDefaultText(this.app.scene, profileDesc);
-    this.asteroidTextureBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidChangeMaterial(null, !profileTexture, null);
-      }
-    };
-    this.asteroidTextureBtn.position.x = -14;
-    this.asteroidTextureBtn.position.y = 11;
-    this.asteroidTextureBtn.position.z = 10;
-    this.asteroidTextureBtn.scaling = U3D.v(3);
+    this.asteroidTextureBtn = this.addActionPanelLabel(profileDesc, "Arial", () => this.app.asteroidChangeMaterial(null, !profileTexture, null));
+    this.asteroidTextureBtn.position = U3D.v(-14, 12.5, 0);
     this.asteroidTextureBtn.parent = this.optionsMenuTab;
 
     if (this.asteroidInternalLogos)
       this.asteroidInternalLogos.dispose(false, true);
     let includeLogos = this.app.profile.asteroidExcludeLogos === true;
     let logoDesc = includeLogos ? 'Logos' : 'No Logos';
-    this.asteroidInternalLogos = U3D.addDefaultText(this.app.scene, logoDesc);
-    this.asteroidInternalLogos.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.asteroidChangeMaterial(null, null, !includeLogos);
-      }
-    };
-    this.asteroidInternalLogos.position.x = -4;
-    this.asteroidInternalLogos.position.y = 11;
-    this.asteroidInternalLogos.position.z = 10;
-    this.asteroidInternalLogos.scaling = U3D.v(3);
+    this.asteroidInternalLogos = this.addActionPanelLabel(logoDesc, "Arial", () => this.app.asteroidChangeMaterial(null, null, !includeLogos));
+    this.asteroidInternalLogos.position = U3D.v(0, 12.5, 0);
     this.asteroidInternalLogos.parent = this.optionsMenuTab;
 
     this._refreshSeatIndexStatus();
