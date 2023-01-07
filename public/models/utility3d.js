@@ -605,10 +605,13 @@ export default class Utility3D {
       if (!window.staticMaterialContainer[meta.extended.texturePath]) {
         let texture = new BABYLON.Texture(meta.extended.texturePath);
         let material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
-        material.diffuseTexture = texture;
         material.ambientTexture = texture;
+
         if (!meta.noEmissive)
           material.emissiveTexture = texture;
+        else
+          material.diffuseTexture = texture;
+
         if (meta.cloneDiffuseForBump) {
           material.bumpTexture = texture;
           if (meta.invertBump) {

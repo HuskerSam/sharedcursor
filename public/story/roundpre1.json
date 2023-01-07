@@ -1,18 +1,4 @@
 {
   "actions": [
-    {
-      "action": "avatarMessage",
-      "seatIndex": 0,
-      "text": "Things started out so peacefully...",
-      "timeToShow": 8000,
-      "timeToBlock": 10000
-    },
-    {
-      "action": "avatarMessage",
-      "seatIndex": 0,
-      "text": "Planets spin and moons move around",
-      "timeToShow": 8000,
-      "timeToBlock": 10000
-    }
   ]
 }

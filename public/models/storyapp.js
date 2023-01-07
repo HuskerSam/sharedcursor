@@ -161,7 +161,7 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
     this.menuBarLeftTN.position.y = 3;
-    this.menuBarLeftTN.position.z = 3;
+    this.menuBarLeftTN.position.z = 10;
     this.menuBarLeftTN.billboardMode = 7;
 
     this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
@@ -172,7 +172,7 @@ export class StoryApp extends BaseApp {
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = -3;
-    this.menuBarTabButtonsTN.position.z = 3;
+    this.menuBarTabButtonsTN.position.z = 10;
 
     this.browserScreenMenuTN = new BABYLON.TransformNode("browserScreenMenuTN", this.scene);
     this.browserScreenMenuTN.position.x = 0;
