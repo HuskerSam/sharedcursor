@@ -144,7 +144,6 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    this.asteroidHelper.asteroidUpdateMaterials();
     this.actionCardHelper = new ActionCards(this, this.menuTab3D.playerCardsTN);
 
     let delta = new Date().getTime() - startTime.getTime();
@@ -197,8 +196,8 @@ export class StoryApp extends BaseApp {
       U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
     scaleMesh.setEnabled(true);
     if (meta.wireframe) {
-      scaleMesh.material = this.asteroidHelper.selectedAsteroidMaterial;
-      scaleMesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.selectedAsteroidMaterial);
+      scaleMesh.material = this.asteroidHelper.asteroidMaterial;
+      scaleMesh.getChildMeshes().forEach(mesh => mesh.material = this.asteroidHelper.asteroidMaterial);
     }
 
     let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
@@ -356,29 +355,6 @@ export class StoryApp extends BaseApp {
   }
 
   //profile related
-  async asteroidChangeMaterial(wireframe, colorOnly, excludeLogos) {
-    let updatePacket = {};
-
-    if (wireframe !== null) {
-      updatePacket.asteroidWireframe = wireframe;
-      this.profile.asteroidWireframe = wireframe;
-    }
-    if (colorOnly !== null) {
-      updatePacket.asteroidColorOnly = colorOnly;
-      this.profile.asteroidColorOnly = colorOnly;
-    }
-    if (excludeLogos !== null) {
-      updatePacket.asteroidExcludeLogos = excludeLogos;
-      this.profile.asteroidExcludeLogos = excludeLogos;
-    }
-
-    this.asteroidHelper.asteroidUpdateMaterials();
-    this.menuTab3D.updateAsteroidOptions();
-
-    await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
-      merge: true
-    });
-  }
   async updateProfileMeshOverride(id, size) {
     if (!this.profile.assetSizeOverrides)
       this.profile.assetSizeOverrides = {};

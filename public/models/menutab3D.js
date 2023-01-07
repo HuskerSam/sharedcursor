@@ -50,7 +50,6 @@ export default class MenuTab3D {
     this.optionsMenuTab.parent = this.app.menuBarLeftTN;
     this.optionsMenuTab.position = U3D.v(0, 4, 20);
     this.optionsMenuTab.setEnabled(false);
-    this.initOptionsTab();
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
@@ -162,31 +161,6 @@ export default class MenuTab3D {
   }
 
   initOptionsTab() {
-    this.updateAsteroidOptions();
-  }
-  updateAsteroidOptions() {
-    this.removeDisposeActionMesh(this.asteroidWireframeBtn);
-    let wireframe = this.app.profile.asteroidWireframe === true;
-    let wireframeDesc = wireframe ? 'Solid' : 'Wireframe';
-    this.asteroidWireframeBtn = this.addActionPanelLabel(wireframeDesc, "Arial", () => this.app.asteroidChangeMaterial(!wireframe, null, null));
-    this.asteroidWireframeBtn.position = U3D.v(-28, 12.5, 0);
-    this.asteroidWireframeBtn.parent = this.optionsMenuTab;
-
-    this.removeDisposeActionMesh(this.asteroidTextureBtn);
-    let profileTexture = this.app.profile.asteroidColorOnly === true;
-    let profileDesc = profileTexture ? 'Color' : 'Rocky';
-    this.asteroidTextureBtn = this.addActionPanelLabel(profileDesc, "Arial", () => this.app.asteroidChangeMaterial(null, !profileTexture, null));
-    this.asteroidTextureBtn.position = U3D.v(-14, 12.5, 0);
-    this.asteroidTextureBtn.parent = this.optionsMenuTab;
-
-    this.removeDisposeActionMesh(this.asteroidInternalLogos);
-    let includeLogos = this.app.profile.asteroidExcludeLogos === true;
-    let logoDesc = includeLogos ? 'Logos' : 'No Logos';
-    this.asteroidInternalLogos = this.addActionPanelLabel(logoDesc, "Arial", () => this.app.asteroidChangeMaterial(null, null, !includeLogos));
-    this.asteroidInternalLogos.position = U3D.v(0, 12.5, 0);
-    this.asteroidInternalLogos.parent = this.optionsMenuTab;
-
-    this._refreshSeatIndexStatus();
   }
   initScoreTab() {
     let nextTurnButton = this.addActionPanelLabel('Finish Turn', "Arial", () => this.app.clickEndTurn());
@@ -356,7 +330,7 @@ export default class MenuTab3D {
     U3D.sizeNodeToFit(mesh, factor);
     mesh.setEnabled(true);
 
-    if (assetMeta.asteroidType)
+    if (assetMeta.asteroidType || assetMeta.wireframe)
       mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;
 
     if (this.selectedAssetLabel)

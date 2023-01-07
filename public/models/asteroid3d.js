@@ -6,6 +6,65 @@ export default class Asteroid3D {
     this.asteroidOrbitTime = 300000;
     this.asteroidMaterial = new BABYLON.StandardMaterial('asteroidMaterial', this.app.scene);
     this.selectedAsteroidMaterial = new BABYLON.StandardMaterial('selectedAsteroidMaterial', this.app.scene);
+
+    this.asteroidMaterial.wireframe = true;
+    let t11 = new BABYLON.Texture('/images/rockymountain.jpg', this.app.scene);
+    this.asteroidMaterial.diffuseTexture = t11;
+    this.asteroidMaterial.emissiveTexture = t11;
+    this.asteroidMaterial.ambientTexture = t11;
+
+    this.selectedAsteroidMaterial.diffuseTexture = t11;
+    this.selectedAsteroidMaterial.emissiveTexture = t11;
+    this.selectedAsteroidMaterial.ambientTexture = t11;
+
+    this.asteroidSymbolMesh = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
+      height: 1,
+      width: 1,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    this.asteroidSymbolMesh.setEnabled(false);
+
+    let imgPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
+      encodeURIComponent('atari.svg') + '?alt=media';
+    let m = new BABYLON.StandardMaterial('symbolshowmatasteroid', this.app.scene);
+    let t = new BABYLON.Texture(imgPath, this.app.scene);
+    t.hasAlpha = true;
+    m.diffuseTexture = t;
+    m.emissiveTexture = t;
+    m.ambientTexture = t;
+    this.asteroidSymbolMesh.material = m;
+
+    this.asteroidSymbolMesh2 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid2', {
+      height: 1,
+      width: 1,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    this.asteroidSymbolMesh2.setEnabled(false);
+    let imgPath2 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
+      encodeURIComponent('commodore.svg') + '?alt=media';
+    let m2 = new BABYLON.StandardMaterial('symbolshowmatasteroid2', this.app.scene);
+    let t2 = new BABYLON.Texture(imgPath2, this.app.scene);
+    t2.hasAlpha = true;
+    m2.diffuseTexture = t2;
+    m2.emissiveTexture = t2;
+    m2.ambientTexture = t2;
+    this.asteroidSymbolMesh2.material = m2;
+
+    this.asteroidSymbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid3', {
+      height: 1,
+      width: 1,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.scene);
+    this.asteroidSymbolMesh3.setEnabled(false);
+    let imgPath3 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
+      encodeURIComponent('herbie.png') + '?alt=media';
+    let m3 = new BABYLON.StandardMaterial('symbolshowmatasteroid3', this.app.scene);
+    let t3 = new BABYLON.Texture(imgPath3, this.app.scene);
+    t3.hasAlpha = true;
+    m3.diffuseTexture = t3;
+    m3.emissiveTexture = t3;
+    m3.ambientTexture = t3;
+    this.asteroidSymbolMesh3.material = m3;
   }
   async loadAsteroids() {
     let scene = this.app.scene;
@@ -117,9 +176,21 @@ export default class Asteroid3D {
       extended: {}
     };
 
+    let delta = "";
+    if (Math.floor(Math.random() * 2) === 0) {
+      delta = "2";
+    }
+    if (Math.floor(Math.random() * 8) === 0) {
+      delta = "3";
+    }
+    const asteroidSymbol = this['asteroidSymbolMesh' + delta].clone("symbolshow1asteroid" + delta);
+    asteroidSymbol.setEnabled(true);
+    asteroidSymbol.parent = mesh;
+
     this.loadedAsteroids[asteroid] = {
       orbitWrapper,
-      mesh
+      mesh,
+      asteroidSymbol
     };
   }
   buildAsteroidPath() {
@@ -160,143 +231,5 @@ export default class Asteroid3D {
     let path = curve.getPoints();
 
     return path;
-  }
-  retargetAnimationGroup(animationGroup, targetSkeleton) {
-    //console.log("Retargeting animation group: " + animationGroup.name);
-    animationGroup.targetedAnimations.forEach((targetedAnimation) => {
-      const newTargetBone = targetSkeleton.bones.filter((bone) => {
-        return bone.name === targetedAnimation.target.name
-      })[0];
-      //console.log("Retargeting bone: " + target.name + "->" + newTargetBone.name);
-      targetedAnimation.target = newTargetBone ? newTargetBone.getTransformNode() : null;
-    });
-  }
-  asteroidUpdateMaterials() {
-    let name = 'asteroidmaterial';
-    let scene = this.app.scene;
-
-    if (this.selectedAsteroidMaterial.diffuseTexture) {
-      this.selectedAsteroidMaterial.diffuseTexture.dispose();
-      this.selectedAsteroidMaterial.diffuseTexture = null;
-    }
-    if (this.selectedAsteroidMaterial.ambientTexture) {
-      this.selectedAsteroidMaterial.ambientTexture.dispose();
-      this.selectedAsteroidMaterial.ambientTexture = null;
-    }
-    if (this.selectedAsteroidMaterial.emissiveTexture) {
-      this.selectedAsteroidMaterial.emissiveTexture.dispose();
-      this.selectedAsteroidMaterial.emissiveTexture = null;
-    }
-
-    if (this.asteroidMaterial.diffuseTexture) {
-      this.asteroidMaterial.diffuseTexture.dispose();
-      this.asteroidMaterial.diffuseTexture = null;
-    }
-    if (this.asteroidMaterial.ambientTexture) {
-      this.asteroidMaterial.ambientTexture.dispose();
-      this.asteroidMaterial.ambientTexture = null;
-    }
-    if (this.asteroidMaterial.emissiveTexture) {
-      this.asteroidMaterial.emissiveTexture.dispose();
-      this.asteroidMaterial.emissiveTexture = null;
-    }
-
-    this.asteroidMaterial.wireframe = this.app.profile.asteroidWireframe === true;
-    this.selectedAsteroidMaterial.wireframe = this.app.profile.asteroidWireframe !== true;
-    if (this.app.profile.asteroidColorOnly) {
-      this.asteroidMaterial.diffuseColor = new BABYLON.Color3(0.35, 0.35, 0.35);
-      this.selectedAsteroidMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
-      this.selectedAsteroidMaterial.ambientColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-      this.selectedAsteroidMaterial.emissiveColor = new BABYLON.Color3(0.75, 0.75, 0.75);
-    } else {
-      let t = new BABYLON.Texture('/images/rockymountain.jpg', this.app.scene);
-      this.asteroidMaterial.diffuseTexture = t;
-
-      this.selectedAsteroidMaterial.diffuseTexture = t;
-      this.selectedAsteroidMaterial.emissiveTexture = t;
-      this.selectedAsteroidMaterial.ambientTexture = t;
-      this.selectedAsteroidMaterial.wireframe = this.app.profile.asteroidWireframe !== true;
-    }
-    this.__addLogosToAsteroids();
-  }
-  __addLogosToAsteroids() {
-    let includeLogos = this.app.profile.asteroidExcludeLogos === true;
-
-    if (!this.asteroidSymbolMesh) {
-      this.asteroidSymbolMesh = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
-        height: 1,
-        width: 1,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      }, this.scene);
-      this.asteroidSymbolMesh.setEnabled(false);
-
-      let imgPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
-        encodeURIComponent('atari.svg') + '?alt=media';
-      let m = new BABYLON.StandardMaterial('symbolshowmatasteroid', this.app.scene);
-      let t = new BABYLON.Texture(imgPath, this.app.scene);
-      t.hasAlpha = true;
-
-      m.diffuseTexture = t;
-      m.emissiveTexture = t;
-      m.ambientTexture = t;
-      this.asteroidSymbolMesh.material = m;
-
-      this.asteroidSymbolMesh2 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid2', {
-        height: 1,
-        width: 1,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      }, this.scene);
-      this.asteroidSymbolMesh2.setEnabled(false);
-
-      let imgPath2 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
-        encodeURIComponent('commodore.svg') + '?alt=media';
-      let m2 = new BABYLON.StandardMaterial('symbolshowmatasteroid2', this.app.scene);
-      let t2 = new BABYLON.Texture(imgPath2, this.app.scene);
-      t2.hasAlpha = true;
-
-      m2.diffuseTexture = t2;
-      m2.emissiveTexture = t2;
-      m2.ambientTexture = t2;
-      this.asteroidSymbolMesh2.material = m2;
-
-      this.asteroidSymbolMesh3 = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid3', {
-        height: 1,
-        width: 1,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      }, this.scene);
-      this.asteroidSymbolMesh3.setEnabled(false);
-
-      let imgPath3 = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsymbol%2F' +
-        encodeURIComponent('herbie.png') + '?alt=media';
-      let m3 = new BABYLON.StandardMaterial('symbolshowmatasteroid3', this.app.scene);
-      let t3 = new BABYLON.Texture(imgPath3, this.app.scene);
-      t3.hasAlpha = true;
-
-      m3.diffuseTexture = t3;
-      m3.emissiveTexture = t3;
-      m3.ambientTexture = t3;
-      this.asteroidSymbolMesh3.material = m3;
-    }
-
-    for (let name in this.loadedAsteroids) {
-      if (this.loadedAsteroids[name].asteroidSymbol) {
-        this.loadedAsteroids[name].asteroidSymbol.dispose();
-        this.loadedAsteroids[name].asteroidSymbol = null;
-      }
-
-      if (!includeLogos) {
-        let delta = "";
-        if (Math.floor(Math.random() * 2) === 0) {
-          delta = "2";
-        }
-        if (Math.floor(Math.random() * 8) === 0) {
-          delta = "3";
-        }
-        const asteroidSymbol = this['asteroidSymbolMesh' + delta].clone("symbolshow1asteroid" + delta);
-        asteroidSymbol.setEnabled(true);
-        asteroidSymbol.parent = this.loadedAsteroids[name].mesh;
-        this.loadedAsteroids[name].asteroidSymbol = asteroidSymbol;
-      }
-    }
   }
 }
