@@ -141,7 +141,6 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    await this.avatarHelper.initPlayerPanel();
     this.asteroidHelper.asteroidUpdateMaterials();
     this.actionCardHelper = new ActionCards(this, this.menuTab3D.playerCardsTN);
 
@@ -537,10 +536,10 @@ export class StoryApp extends BaseApp {
     let name = this.gameData.name.replace(' Avenue', '').replace(' Street', '');
     this.game_header_panel.innerHTML = `${name}`;
 
+    this.updateUserPresence();
+
     if (!this.avatarHelper || !this.avatarHelper.avatarsLoaded)
       return;
-
-    this.updateUserPresence();
 
     document.body.classList.add('avatars_loaded');
   }
@@ -551,13 +550,14 @@ export class StoryApp extends BaseApp {
   }
   async paintDock() {
     super.paintDock();
-    if (this.avatarHelper)
-      this.avatarHelper.updatePlayerDock();
+    this.menuTab3D.updatePlayerDock();
   }
   updateUserPresence() {
+    if (!this.avatarHelper || !this.avatarHelper.avatarsLoaded)
+      return;
+
     super.updateUserPresence();
-    if (this.avatarHelper)
-      this.avatarHelper.updateUserPresence();
+    this.menuTab3D.updateUserPresence();
   }
 
   enterXR() {
@@ -770,10 +770,6 @@ export class StoryApp extends BaseApp {
 
     return rotation;
   }
-  updateAvatarRender() {
-    if (this.avatarHelper)
-      this.avatarHelper.updateAvatarRender();
-  }
 
   get selectedAsset() {
     if (!this.menuTab3D)
@@ -782,9 +778,9 @@ export class StoryApp extends BaseApp {
   }
 
   async paintBoard() {
+    this.menuTab3D.updateRoundAndScoreStatus();
     if (this._renderedBoardTurn !== this.paintedBoardTurn) {
       this.boardTurnFirstLoad = true;
-      this.menuTab3D.updateMenubarLabel();
       this._renderedBoardTurn = this.paintedBoardTurn;
       this.initListenGameRound(this._renderedBoardTurn);
 

@@ -1200,7 +1200,6 @@ export class BaseApp {
     this.engine.runRenderLoop(() => {
       if (this.runRender) {
         this.scene.render();
-        this.updateAvatarRender();
       }
 
       if (this.activeFollowMeta && this.xr.baseExperience.state === 3 && this.activeFollowMeta.basePivot) {
@@ -1223,7 +1222,6 @@ export class BaseApp {
       this.engine.resize();
     });
   }
-  updateAvatarRender() {}
   async initGraphics() {
     if (this.engine)
       return;
