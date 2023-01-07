@@ -356,21 +356,6 @@ export class StoryApp extends BaseApp {
   }
 
   //profile related
-  async asteroidCountChange(delta) {
-    let asteroidCount = this.asteroidHelper.getAsteroidCount(this.profile.asteroidCount);
-    asteroidCount = this.asteroidHelper.getAsteroidCount(asteroidCount + delta);
-
-    this.profile.asteroidCount = asteroidCount;
-    this.clearActiveFollowMeta();
-    this.asteroidHelper.loadAsteroids();
-    this.asteroidHelper.asteroidUpdateMaterials();
-    this.menuTab3D.updateAsteroidOptions();
-
-    if (this.fireToken)
-      await firebase.firestore().doc(`Users/${this.uid}`).update({
-        asteroidCount
-      });
-  }
   async asteroidChangeMaterial(wireframe, colorOnly, excludeLogos) {
     let updatePacket = {};
 
@@ -748,52 +733,53 @@ export class StoryApp extends BaseApp {
       */
     }
   }
-    showAssetNamePlate(meta) {
-      if (this.displayedNamePlate)
-        this.displayedNamePlate.dispose(false, true);
+  showAssetNamePlate(meta) {
+    if (this.displayedNamePlate)
+      this.displayedNamePlate.dispose(false, true);
 
-      let nameDesc = meta.name;
-      if (meta.solarPosition)
-        nameDesc += ` (${meta.solarPosition})`;
-      if (meta.asteroidType) {
-        nameDesc = nameDesc.replace('.obj', '');
-        nameDesc = nameDesc.charAt(0).toUpperCase() + nameDesc.slice(1);
-      }
-
-      let color = "rgb(200, 0, 0)";
-      if (meta.color)
-        color = meta.color;
-
-      let width = 3;
-      let height = 2;
-      if (nameDesc.length > 6) {
-        //  height = 2;
-        width = 6;
-      }
-
-      let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
-      if (meta.avatarType) {
-        let colors = U3D.get3DColors(meta.seatIndex);
-        color = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
-        yOffset = 2.25;
-      }
-
-      this.displayedNamePlate = U3D.addDefaultText(this.scene, nameDesc, color, 'transparent');
-      this.displayedNamePlate.billboardMode = 7;
-      this.displayedNamePlate.position.y = yOffset;
-      this.displayedNamePlate.parent = meta.basePivot;
-      if (meta.assetSymbolPanel)
-        meta.assetSymbolPanel.setEnabled(false);
+    let nameDesc = meta.name;
+    if (meta.solarPosition)
+      nameDesc += ` (${meta.solarPosition})`;
+    if (meta.asteroidType) {
+      nameDesc = nameDesc.replace('.obj', '');
+      nameDesc = nameDesc.charAt(0).toUpperCase() + nameDesc.slice(1);
     }
-    hideAssetNamePlate(meta) {
-      if (this.displayedNamePlate) {
-        this.displayedNamePlate.dispose(false, true);
-        this.displayedNamePlate = null;
-      }
 
-      if (meta.assetSymbolPanel)
-        meta.assetSymbolPanel.setEnabled(true);
+    let color = U3D.color("0.8,0,0");
+    switch (meta.objectType) {
+      case 'moon':
+        color = U3D.color("1,0.8,0.25");
+      case 'planet':
+        color = U3D.color("0.25,0.25,1");
+      case 'dwarf':
+        color = U3D.color("0.8,0.25,0.8");
+      case 'nearearth':
+        color = U3D.color("0.8,0.25,0.25");
+      case 'star':
+        color = U3D.color("0.8,0.8,0.8");
     }
+
+    let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
+    if (meta.avatarType) {
+      color = U3D.get3DColors(meta.seatIndex);
+      yOffset = 2.25;
+    }
+    this.displayedNamePlate = U3D.addTextPlane(this.scene, nameDesc, color);
+    this.displayedNamePlate.billboardMode = 7;
+    this.displayedNamePlate.position.y = yOffset;
+    this.displayedNamePlate.parent = meta.basePivot;
+    if (meta.assetSymbolPanel)
+      meta.assetSymbolPanel.setEnabled(false);
+  }
+  hideAssetNamePlate(meta) {
+    if (this.displayedNamePlate) {
+      this.displayedNamePlate.dispose(false, true);
+      this.displayedNamePlate = null;
+    }
+
+    if (meta.assetSymbolPanel)
+      meta.assetSymbolPanel.setEnabled(true);
+  }
   yButtonPress() {
     this.clearActiveFollowMeta();
     this.aimCamera(this.cameraMetaX);
@@ -1156,14 +1142,13 @@ export class StoryApp extends BaseApp {
       avatarMeta.chatTextPlane3.dispose(true, true);
     }
 
-    let color = "#000000";
+    let color = U3D.color('0,0,0');
     if (seatIndex > 2)
-      color = "#ffffff";
+      color = U3D.color('1,1,1');
 
     let line1Words = words.slice(0, 4);
     let line1 = line1Words.join(' ');
-    let id = 'chattextfor' + seatIndex;
-    let chatTextPlane = U3D.addTextPlane(this.scene, line1, id, "Arial", "", color);
+    let chatTextPlane = U3D.addTextPlane(this.scene, color, line1);
     avatarMeta.chatTextPlane = chatTextPlane;
     chatTextPlane.parent = avatarMeta.chatBubble;
     chatTextPlane.position.z = -0.01;
@@ -1176,8 +1161,7 @@ export class StoryApp extends BaseApp {
     let line2 = line2Words.join(' ');
     if (!line2Show)
       line2 = '';
-    let id2 = 'chattextfor2' + seatIndex;
-    let chatTextPlane2 = U3D.addTextPlane(this.scene, line2, id2, "Arial", "", color);
+    let chatTextPlane2 = U3D.addTextPlane(this.scene, color, line2);
     chatTextPlane2.parent = chatTextPlane;
     chatTextPlane2.position.y = -1.1;
     avatarMeta.chatTextPlane2 = chatTextPlane2;
@@ -1187,8 +1171,7 @@ export class StoryApp extends BaseApp {
     let line3 = line3Words.join(' ');
     if (!line3Show)
       line3 = '';
-    let id3 = 'chattextfor3' + seatIndex;
-    let chatTextPlane3 = U3D.addTextPlane(this.scene, line3, id3, "Arial", "", color);
+    let chatTextPlane3 = U3D.addTextPlane(this.scene, color, line3);
     chatTextPlane3.parent = chatTextPlane;
     chatTextPlane3.position.y = -2.2;
     avatarMeta.chatTextPlane3 = chatTextPlane3;

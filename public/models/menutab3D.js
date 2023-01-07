@@ -42,29 +42,29 @@ export default class MenuTab3D {
 
     this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', this.app.scene);
     this.scoreMenuTab.parent = this.app.menuBarLeftTN;
-    this.scoreMenuTab.position = U3D.v(0, 4, 10);
+    this.scoreMenuTab.position = U3D.v(0, 4, 20);
     this.scoreMenuTab.setEnabled(false);
     this.initScoreTab();
 
     this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', this.app.scene);
     this.optionsMenuTab.parent = this.app.menuBarLeftTN;
-    this.optionsMenuTab.position = U3D.v(0, 4, 10);
+    this.optionsMenuTab.position = U3D.v(0, 4, 20);
     this.optionsMenuTab.setEnabled(false);
     this.initOptionsTab();
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
-    this.focusPanelTab.position = U3D.v(0, 4, 10);
+    this.focusPanelTab.position = U3D.v(0, 4, 20);
     this.focusPanelTab.setEnabled(false);
     this.initFocusedAssetPanel(this.focusPanelTab);
 
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.app.scene);
     this.playerMoonPanelTab.parent = this.app.menuBarLeftTN;
-    this.playerMoonPanelTab.position = U3D.v(0, 4, 10);
+    this.playerMoonPanelTab.position = U3D.v(0, 4, 20);
     this.playerMoonPanelTab.setEnabled(false);
     this.initPlayerPanel();
   }
-  addActionPanelLabel(text, font_family = "Arial", handlePointerDown) {
+  addActionPanelLabel(text, font_family = "Arial", handlePointerDown, dontAddToUpdateArray = false) {
     let id = text;
     let font_size = 192;
     let paddingSides = 10;
@@ -109,7 +109,8 @@ export default class MenuTab3D {
       mesh.isPickable = false;
     }
 
-    this.seatIndexColoredButtons.push(mesh);
+    if (!dontAddToUpdateArray)
+      this.seatIndexColoredButtons.push(mesh);
     return mesh;
   }
   addActionPanelButton(iconName, handlePointerDown) {
@@ -161,26 +162,9 @@ export default class MenuTab3D {
   }
 
   initOptionsTab() {
-    let asteroidCountLabel = this.addActionPanelLabel('Asteroid Count');
-    asteroidCountLabel.position = U3D.v(-25, 7, 0);
-    asteroidCountLabel.parent = this.optionsMenuTab;
-
-    let asteroidDownCountBtn = this.addActionPanelButton('minus', () => this.app.asteroidCountChange(-20));
-    asteroidDownCountBtn.position = U3D.v(-12, 7, 0);
-    asteroidDownCountBtn.parent = this.optionsMenuTab;
-
-    let asteroidUpCountBtn = this.addActionPanelButton('plus', () => this.app.asteroidCountChange(20));
-    asteroidUpCountBtn.position = U3D.v(-6, 7, 0);
-    asteroidUpCountBtn.parent = this.optionsMenuTab;
     this.updateAsteroidOptions();
   }
   updateAsteroidOptions() {
-    this.removeDisposeActionMesh(this.asteroidCountLabel);
-    let count = this.app.asteroidHelper.getAsteroidCount(this.app.profile.asteroidCount);
-    this.asteroidCountLabel = this.addActionPanelLabel(count.toString(), "Impact");
-    this.asteroidCountLabel.position = U3D.v(5, 7, 0);
-    this.asteroidCountLabel.parent = this.optionsMenuTab;
-
     this.removeDisposeActionMesh(this.asteroidWireframeBtn);
     let wireframe = this.app.profile.asteroidWireframe === true;
     let wireframeDesc = wireframe ? 'Solid' : 'Wireframe';
@@ -232,93 +216,41 @@ export default class MenuTab3D {
   async initFocusedAssetPanel(parent) {
     let scene = this.app.scene;
 
-    let followSelectedMetaBtn = U3D.addDefaultText(scene, 'Follow [B]', "rgb(0, 200, 0)");
-    followSelectedMetaBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.bButtonPress();
-      }
-    };
-    followSelectedMetaBtn.position.x = -1;
-    followSelectedMetaBtn.position.y = -3.5;
-    followSelectedMetaBtn.position.z = -5;
-    followSelectedMetaBtn.scaling = U3D.v(2, 2, 2);
+    let followSelectedMetaBtn = this.addActionPanelLabel("Follow [B]", "Arial", () => this.app.bButtonPress());
+    followSelectedMetaBtn.position = U3D.v(-1, 10, 5);
     followSelectedMetaBtn.parent = parent;
 
-    let followStopBtn = U3D.addDefaultText(scene, 'Stop [A]', "rgb(200, 0, 0)");
-    followStopBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.app.aButtonPress();
-      }
-    };
-    followStopBtn.position.x = 5.75;
-    followStopBtn.position.y = -3.5;
-    followStopBtn.position.z = -5;
-    followStopBtn.scaling = U3D.v(2, 2, 2);
+    let followStopBtn = this.addActionPanelLabel('Stop [A]', "Arial", () => this.app.aButtonPress());
+    followStopBtn.position = U3D.v(5.75, 10, 5);
     followStopBtn.parent = parent;
 
-    let nextSelectedMetaBtn = this.addActionPanelButton('next', async (pointerInfo, mesh, meta) => {
-      this.nextSelectedObject();
-    });
-    nextSelectedMetaBtn.position.x = 7.5;
-    nextSelectedMetaBtn.position.y = 5;
-    nextSelectedMetaBtn.position.z = -5;
+    let nextSelectedMetaBtn = this.addActionPanelButton('next', () => this.nextSelectedObject());
+    nextSelectedMetaBtn.position = U3D.v(7.5, 5, 5);
     nextSelectedMetaBtn.parent = parent;
 
-    let previousSelectedMetaBtn = this.addActionPanelButton('previous', async (pointerInfo, mesh, meta) => {
-      this.nextSelectedObject(true);
-    });
-    previousSelectedMetaBtn.position.x = -3.5;
-    previousSelectedMetaBtn.position.y = 5;
-    previousSelectedMetaBtn.position.z = -5;
+    let previousSelectedMetaBtn = this.addActionPanelButton('previous', () => this.nextSelectedObject(true));
+    previousSelectedMetaBtn.position = U3D.v(-3.5, 5, 5);
     previousSelectedMetaBtn.parent = parent;
 
-    this.normalAssetSizeBtn = U3D.addDefaultText(scene, 'Better');
-    this.normalAssetSizeBtn.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.normalAssetSizeBtn.setEnabled(false);
-        this.updateAssetSize('normal');
-      }
-    };
-    this.normalAssetSizeBtn.position.x = 2.9;
-    this.normalAssetSizeBtn.position.y = -1.25;
-    this.normalAssetSizeBtn.position.z = -5;
-    this.normalAssetSizeBtn.scaling = U3D.v(2);
+    this.normalAssetSizeBtn = this.addActionPanelLabel('Better', "Georgia", () => {
+      this.normalAssetSizeBtn.setEnabled(false);
+      this.updateAssetSize('normal');
+    });
+    this.normalAssetSizeBtn.position = U3D.v(2.9, 12, 5);
     this.normalAssetSizeBtn.parent = parent;
 
-    this.assetPanelHugeButton = U3D.addDefaultText(scene, 'Best');
-    this.assetPanelHugeButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.assetPanelHugeButton.setEnabled(false);
-        this.updateAssetSize('huge');
-      }
-    };
-    this.assetPanelHugeButton.position.x = 6.75;
-    this.assetPanelHugeButton.position.y = -1.25;
-    this.assetPanelHugeButton.position.z = -5;
-    this.assetPanelHugeButton.scaling = U3D.v(2);
+    this.assetPanelHugeButton = this.addActionPanelLabel('Best', "Georgia", () => {
+      this.assetPanelHugeButton.setEnabled(false);
+      this.updateAssetSize('huge');
+    });
+    this.assetPanelHugeButton.position = U3D.v(6.75, 12, 5);
     this.assetPanelHugeButton.parent = parent;
 
-    this.assetSmallSizeButton = U3D.addDefaultText(scene, 'Normal');
-    this.assetSmallSizeButton.assetMeta = {
-      appClickable: true,
-      clickCommand: 'customClick',
-      handlePointerDown: async (pointerInfo, mesh, meta) => {
-        this.assetSmallSizeButton.setEnabled(false);
-        this.updateAssetSize('small');
-      }
-    };
-    this.assetSmallSizeButton.position.x = -1.75;
-    this.assetSmallSizeButton.position.y = -1.25;
-    this.assetSmallSizeButton.position.z = -5;
-    this.assetSmallSizeButton.scaling = U3D.v(2);
+    this.assetSmallSizeButton = this.addActionPanelLabel('Normal', "Georgia", () => {
+      this.assetSmallSizeButton.setEnabled(false);
+      this.updateAssetSize('small');
+    });
+    this.assetSmallSizeButton.position = U3D.v(-1.75, 12, 5)
     this.assetSmallSizeButton.parent = parent;
 
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
@@ -430,7 +362,7 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose(false, true);
 
-    this.selectedAssetLabel = U3D.addDefaultText(this.app.scene, desc, "#0000FF", "#ffffff");
+    this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("0,0,1"));
     this.selectedAssetLabel.position.x = 2;
     this.selectedAssetLabel.position.y = 1.5;
     this.selectedAssetLabel.position.z = -4;
@@ -549,7 +481,6 @@ export default class MenuTab3D {
 
       let seatMenuContainerTN = new BABYLON.TransformNode('seatMenuContainerTN' + seatIndex, this.app.scene);
       seatMenuContainerTN.position.y = 6;
-      seatMenuContainerTN.position.z = 10;
       seatMenuContainerTN.parent = this.dockSeatContainers[seatIndex];
 
       let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("seatBackPanel" + seatIndex, {
@@ -565,7 +496,6 @@ export default class MenuTab3D {
 
       seatBackPanel.material = panelMat;
       seatBackPanel.parent = seatMenuContainerTN;
-      //      seatBackPanel.position = U3D.v();
     }
   }
   async updateUserPresence() {
@@ -623,44 +553,38 @@ export default class MenuTab3D {
         seatContainer.playerDetailsTN = new BABYLON.TransformNode("playerDetailsTN" + seatIndex, this.app.scene);
         seatContainer.playerDetailsTN.parent = seatContainer;
 
-        let colors = U3D.get3DColors(seatIndex);
-        let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
+        let color = U3D.get3DColors(seatIndex);
         if (active) {
           let meta = seatContainer.assetMeta;
 
           if (seatData.seated) {
             let names = seatData.name.split(' ');
-            seatContainer.namePlate1 = U3D.addDefaultText(this.app.scene, names[0], rgb, 'transparent');
-            seatContainer.namePlate1.position.z = 3;
-            seatContainer.namePlate1.position.y = 6.25;
+            seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
+            seatContainer.namePlate1.position = U3D.v(0, 3, 6.25);
             seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
 
             if (names[1]) {
-              seatContainer.namePlate2 = U3D.addDefaultText(this.app.scene, names[1], rgb, 'transparent');
-              seatContainer.namePlate2.position.z = 3;
-              seatContainer.namePlate2.position.y = 5.25;
+              seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, names[1], color);
+              seatContainer.namePlate2.position = U3D.v(0, 5.25, 3);
               seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
             }
 
             if (this.app.uid === seatData.uid || this.app.isOwner) {
               let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
-              let color = gameOwnerNotPlayer ? "#ff2222" : '#00dd00';
-              let standBtn = U3D.addDefaultText(this.app.scene, "X", color);
+              let character = gameOwnerNotPlayer ? "B" : 'X';
+
+              let standBtn = U3D.addTextPlane(this.app.scene, "character", color);
               standBtn.scaling = U3D.v(1.25, 1.25, 1.25);
-              standBtn.position.x = 1;
-              standBtn.position.y = 7;
-              standBtn.position.z = 4;
+              standBtn.position = U3D.v(1, 7, 4);
               standBtn.parent = seatContainer.playerDetailsTN;
               standBtn.assetMeta = {
                 appClickable: true,
                 clickCommand: 'customClick',
-                handlePointerDown: async (pointerInfo, mesh, meta) => {
+                handlePointerDown: async () => {
                   this.app._gameAPIStand(seatIndex);
-                  seatContainer.sitStandButton.dispose(false, true);
-                  seatContainer.sitStandButton = null;
+                  standBtn.dispose(false, true);
                 }
               };
-              seatContainer.sitStandButton = standBtn;
             }
 
             if (seatContainer.playerImageMaterial.diffuseTexture)
@@ -675,7 +599,7 @@ export default class MenuTab3D {
             seatContainer.playerImageMaterial.ambientTexture = t;
             seatContainer.playerImageMaterial.alpha = 1;
           } else {
-            let sitBtn = U3D.addDefaultText(this.app.scene, "Sit", rgb);
+            let sitBtn = U3D.addTextPlane(this.app.scene, "Sit", color);
             sitBtn.position.y = 7;
             sitBtn.position.z = 4;
             sitBtn.scaling = U3D.v(2, 2, 2);
@@ -685,16 +609,14 @@ export default class MenuTab3D {
               clickCommand: 'customClick',
               handlePointerDown: async (pointerInfo, mesh, meta) => {
                 this.app.dockSit(seatIndex);
-                seatContainer.sitStandButton.dispose(false, true);
-                seatContainer.sitStandButton = null;
+                sitBtn.dispose(false, true);
               }
             };
             sitBtn.parent = seatContainer.playerDetailsTN;
-            seatContainer.sitStandButton = sitBtn;
             seatContainer.playerImageMaterial.alpha = 0;
           }
         } else {
-          seatContainer.namePlate1 = U3D.addDefaultText(this.app.scene, 'Husker AI', rgb, 'transparent');
+          seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, 'Husker AI', color);
           seatContainer.namePlate1.position.z = 3;
           seatContainer.namePlate1.position.y = 5.5;
           seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;

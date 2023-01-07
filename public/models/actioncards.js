@@ -30,7 +30,7 @@ export default class ActionCards {
       this.cardPositions.push(cardHolder);
 
       let localIndex = cardIndex;
-      let playActionCardBtn = U3D.addDefaultText(this.scene, 'Play', "#ffffff", "#00aa00");
+      let playActionCardBtn = U3D.addTextPlane(this.scene, U3D.color("1,0,1"), 'Play');
       playActionCardBtn.position.y = this.cardHeight / 2 - 0.55;
       playActionCardBtn.position.z = -0.05;
       playActionCardBtn.parent = cardHolder;
@@ -44,7 +44,7 @@ export default class ActionCards {
       cardHolder.playButton = playActionCardBtn;
       cardHolder.playButton.setEnabled(false);
 
-      let discardActionCardBtn = U3D.addDefaultText(this.scene, 'Recycle', "#ffffff", "#ff0000");
+      let discardActionCardBtn = U3D.addTextPlane(this.scene, U3D.color("0, 1, 1"), 'Recycle');
       discardActionCardBtn.position.y = -this.cardHeight / 2 + 0.55;
       discardActionCardBtn.position.z = -0.05;
       discardActionCardBtn.parent = cardHolder;
@@ -110,9 +110,9 @@ export default class ActionCards {
 
       if (cardHolder.assetName)
         cardHolder.assetName.dispose(false, true);
-      cardHolder.assetName = U3D.addDefaultText(this.app.scene, meta.name, "#0000FF", "#ffffff");
+      cardHolder.assetName = U3D.addTextPlane(this.app.scene, meta.name, U3D.color("0,0,1"));
       cardHolder.assetName.position.x = -this.cardWidth / 2 + 0.5;
-      cardHolder.assetName.position.y = 0; //this.cardHeight / 2;
+      cardHolder.assetName.position.y = 0;
       cardHolder.assetName.position.z = -0.05;
       cardHolder.assetName.rotation.z = Math.PI / 2;
       cardHolder.assetName.scaling = U3D.v(0.75);
@@ -120,9 +120,9 @@ export default class ActionCards {
 
       if (cardHolder.assetType)
         cardHolder.assetType.dispose(false, true);
-      cardHolder.assetType = U3D.addDefaultText(this.app.scene, meta.shortDescription, "#0000FF", "#ffffff");
+      cardHolder.assetType = U3D.addTextPlane(this.app.scene, meta.shortDescription, U3D.color("0,0,1"));
       cardHolder.assetType.position.x = this.cardWidth / 2 - 0.5;
-      cardHolder.assetType.position.y = 0; //this.cardHeight / 2;
+      cardHolder.assetType.position.y = 0;
       cardHolder.assetType.position.z = -0.05;
       cardHolder.assetType.rotation.z = Math.PI / 2;
       cardHolder.assetType.scaling = U3D.v(0.75);

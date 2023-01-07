@@ -23,11 +23,7 @@ export default class Asteroid3D {
     let ratio = 0;
     let max = asteroids.length;
 
-    let count = 20;
-    if (this.app.profile.asteroidCount === 'all')
-      count = max;
-    else if (this.app.profile.asteroidCount)
-      count = Number(this.app.profile.asteroidCount);
+    let count = 40;
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {
@@ -174,16 +170,6 @@ export default class Asteroid3D {
       //console.log("Retargeting bone: " + target.name + "->" + newTargetBone.name);
       targetedAnimation.target = newTargetBone ? newTargetBone.getTransformNode() : null;
     });
-  }
-  getAsteroidCount(profileString) {
-    if (!profileString)
-      profileString = 20;
-    let count = Number(profileString);
-    if (count > U3D.getAsteroids().length)
-      count = U3D.getAsteroids().length;
-    if (count < 20)
-      count = 20;
-    return count;
   }
   asteroidUpdateMaterials() {
     let name = 'asteroidmaterial';
