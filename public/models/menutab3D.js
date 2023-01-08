@@ -10,35 +10,54 @@ export default class MenuTab3D {
     if (this.seatIndexButtonColorCache === this.app.activeSeatIndex && !forceRefresh)
       return;
 
+    let colors = U3D.get3DColors(this.app.activeSeatIndex);
     this.seatIndexButtonColorCache = this.app.activeSeatIndex;
     this.seatIndexColoredButtons.forEach(mesh => {
       let mat = mesh.material;
-      let colors = U3D.get3DColors(this.app.activeSeatIndex);
 
-      mat.emissiveColor = colors;
-      mat.diffuseColor = colors;
-      mat.ambientColor = colors;
+      if (mesh.button3DType) {
+        mesh.mesh.material.albedoColor = colors;
+      } else {
+        mat.emissiveColor = colors;
+        mat.diffuseColor = colors;
+        mat.ambientColor = colors;
+      }
     });
+
+    this.playerCardHollowMaterial.diffuseColor = colors;
+    this.playerCardHollowMaterial.ambientColor = colors;
+    this.playerCardHollowMaterial.emissiveColor = colors;
   }
   obj(name) {
     return this.app.staticBoardObjects[name];
   }
   initOptionsBar() {
-    let scoreMenuBtn = this.addActionPanelButton('score', () => this.selectedMenuBarTab(this.scoreMenuTab));
+    let scoreMenuBtn = this.addActionPanelButton('score', "History", () => this.selectedMenuBarTab(this.scoreMenuTab));
     scoreMenuBtn.parent = this.app.menuBarTabButtonsTN;
     scoreMenuBtn.position = U3D.v(-14, 0, 0);
 
-    let optionsMenuBtn = this.addActionPanelButton('gear', () => this.selectedMenuBarTab(this.optionsMenuTab));
+    let optionsMenuBtn = this.addActionPanelButton('gear', "Options", () => this.selectedMenuBarTab(this.optionsMenuTab));
     optionsMenuBtn.parent = this.app.menuBarTabButtonsTN;
     optionsMenuBtn.position = U3D.v(-10, 0, 0);
 
-    let playersMoonsMenuBtn = this.addActionPanelButton('diversity', () => this.selectedMenuBarTab(this.playerMoonPanelTab));
+    let playersMoonsMenuBtn = this.addActionPanelButton('diversity', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
     playersMoonsMenuBtn.position = U3D.v(-6, 0, 0);
 
-    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', () => this.selectedMenuBarTab(this.focusPanelTab));
+    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', "Cards", () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
     selectedObjectMenuBtn.position = U3D.v(-2, 0, 0);
+
+    let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("menuTabButtonsPanel", {
+      height: 4,
+      width: 18
+    }, this.app.scene);
+    this.playerCardHollowMaterial = new BABYLON.StandardMaterial("menuCardBackPanel", this.app.scene);
+    let t = new BABYLON.Texture('/images/cardhollow.png', this.app.scene);
+    this.playerCardHollowMaterial.opacityTexture = t;
+    seatBackPanel.material = this.playerCardHollowMaterial;
+    seatBackPanel.parent = this.app.menuBarTabButtonsTN;
+    seatBackPanel.position = U3D.v(-8, 0, 0.05);
 
     this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', this.app.scene);
     this.scoreMenuTab.parent = this.app.menuBarLeftTN;
@@ -112,33 +131,22 @@ export default class MenuTab3D {
       this.seatIndexColoredButtons.push(mesh);
     return mesh;
   }
-  addActionPanelButton(iconName, handlePointerDown) {
+  addActionPanelButton(iconName, text, handlePointerDown) {
     let texturePath = '/fontcons/' + iconName + '.svg';
-    let mesh = BABYLON.MeshBuilder.CreatePlane(iconName, {
-      width: 3,
-      height: 3,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.scene);
-    let mat = new BABYLON.StandardMaterial(iconName + 'disc-mat', this.scene);
-
-    let tex = new BABYLON.Texture(texturePath, this.scene, false, false);
-    tex.hasAlpha = true;
-    mat.opacityTexture = tex;
-    mat.emissiveColor = new BABYLON.Color3(0, 0.5, 1);
-    mat.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
-    mat.ambientColor = new BABYLON.Color3(0.25, 0, 1);
-    mesh.material = mat;
-    mesh.rotation.x = Math.PI;
+    let button = new BABYLON.GUI.HolographicButton(iconName);
+    let mesh = new BABYLON.TransformNode(iconName + 'TN', this.app.scene);
+    this.app.gui3DManager.addControl(button);
+    button.linkToTransformNode(mesh);
+    button.scaling = U3D.v(3);
+    button.text = text;
+    button.imageUrl = texturePath;
 
     if (handlePointerDown) {
-      mesh.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown
-      };
+      button.onPointerDownObservable.add(() => {
+        handlePointerDown();
+      });
     }
 
-    this.seatIndexColoredButtons.push(mesh);
     return mesh;
   }
   selectedMenuBarTab(menuTabToShow) {
@@ -160,18 +168,17 @@ export default class MenuTab3D {
     mesh.dispose(false, true);
   }
 
-  initOptionsTab() {
-  }
+  initOptionsTab() {}
   initScoreTab() {
     let nextTurnButton = this.addActionPanelLabel('Finish Turn', "Arial", () => this.app.clickEndTurn());
     nextTurnButton.parent = this.scoreMenuTab;
     nextTurnButton.position = U3D.v(-5, 6, 0);
 
-    let nextSelectedMetaBtn = this.addActionPanelButton('next', () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
+    let nextSelectedMetaBtn = this.addActionPanelButton('next', "Next Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
     nextSelectedMetaBtn.parent = this.scoreMenuTab;
     nextSelectedMetaBtn.position = U3D.v(-14, 6, 0);
 
-    let previousSelectedMetaBtn = this.addActionPanelButton('previous', () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
+    let previousSelectedMetaBtn = this.addActionPanelButton('previous', "Previous Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
     previousSelectedMetaBtn.position = U3D.v(-28, 6, 0);
     previousSelectedMetaBtn.parent = this.scoreMenuTab;
   }
@@ -198,11 +205,11 @@ export default class MenuTab3D {
     followStopBtn.position = U3D.v(5.75, 10, 5);
     followStopBtn.parent = parent;
 
-    let nextSelectedMetaBtn = this.addActionPanelButton('next', () => this.nextSelectedObject());
+    let nextSelectedMetaBtn = this.addActionPanelButton('next', "Next Asset", () => this.nextSelectedObject());
     nextSelectedMetaBtn.position = U3D.v(7.5, 5, 5);
     nextSelectedMetaBtn.parent = parent;
 
-    let previousSelectedMetaBtn = this.addActionPanelButton('previous', () => this.nextSelectedObject(true));
+    let previousSelectedMetaBtn = this.addActionPanelButton('previous', "Previous Asset", () => this.nextSelectedObject(true));
     previousSelectedMetaBtn.position = U3D.v(-3.5, 5, 5);
     previousSelectedMetaBtn.parent = parent;
 
@@ -534,22 +541,21 @@ export default class MenuTab3D {
           if (seatData.seated) {
             let names = seatData.name.split(' ');
             seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
-            seatContainer.namePlate1.position = U3D.v(0, 3, 6.25);
+            seatContainer.namePlate1.position = U3D.v(0, 4.5, 6.25);
             seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
 
             if (names[1]) {
               seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, names[1], color);
-              seatContainer.namePlate2.position = U3D.v(0, 5.25, 3);
+              seatContainer.namePlate2.position = U3D.v(0, 3, 3);
               seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
             }
 
             if (this.app.uid === seatData.uid || this.app.isOwner) {
               let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
-              let character = gameOwnerNotPlayer ? "B" : 'X';
+              let character = gameOwnerNotPlayer ? "Boot" : 'Stand';
 
-              let standBtn = U3D.addTextPlane(this.app.scene, "character", color);
-              standBtn.scaling = U3D.v(1.25, 1.25, 1.25);
-              standBtn.position = U3D.v(1, 7, 4);
+              let standBtn = U3D.addTextPlane(this.app.scene, character, color);
+              standBtn.position = U3D.v(1, 7, 0);
               standBtn.parent = seatContainer.playerDetailsTN;
               standBtn.assetMeta = {
                 appClickable: true,
@@ -575,8 +581,7 @@ export default class MenuTab3D {
           } else {
             let sitBtn = U3D.addTextPlane(this.app.scene, "Sit", color);
             sitBtn.position.y = 7;
-            sitBtn.position.z = 4;
-            sitBtn.scaling = U3D.v(2, 2, 2);
+            sitBtn.position.z = 0;
             sitBtn.assetMeta = {
               seatIndex,
               appClickable: true,
