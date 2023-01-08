@@ -707,7 +707,8 @@ export default class Utility3D {
     };
   }
   static sizeNodeToFit(node, size) {
-    node.refreshBoundingInfo(true);
+    if (node.refreshBoundingInfo)
+      node.refreshBoundingInfo(true);
     node.computeWorldMatrix(true);
     const boundingInfo = node.getHierarchyBoundingVectors(true);
     const currentLength = boundingInfo.max.subtract(boundingInfo.min);

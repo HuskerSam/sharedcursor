@@ -540,7 +540,7 @@ export class StoryApp extends BaseApp {
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
   }
   enterNotInXR() {
-    this.menuBarLeftTN.position = U3D.v(0.75, 4.25, 1.5);
+    this.menuBarLeftTN.position = U3D.v(0.75, 4.05, 1.5);
     this.menuBarLeftTN.scaling = U3D.v(0.1, 0.1, 0.1);
     this.menuBarLeftTN.parent = this.browserScreenMenuTN;
     this.menuBarLeftTN.billboardMode = 0;

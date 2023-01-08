@@ -45,7 +45,7 @@ export default class MenuTab3D {
     return this.app.staticBoardObjects[name];
   }
   initOptionsBar() {
-    let scoreMenuBtn = this.addActionPanelButton('score', "History", () => this.selectedMenuBarTab(this.scoreMenuTab));
+    let scoreMenuBtn = this.addActionPanelButton('rocket', "History", () => this.selectedMenuBarTab(this.scoreMenuTab));
     scoreMenuBtn.parent = this.app.menuBarTabButtonsTN;
     scoreMenuBtn.position = U3D.v(-14, 0, 0);
 
@@ -468,11 +468,11 @@ export default class MenuTab3D {
       this._initMoonFlagPole(seatIndex);
 
       let seatMenuContainerTN = new BABYLON.TransformNode('seatMenuContainerTN' + seatIndex, this.app.scene);
-      seatMenuContainerTN.position.y = 7;
+      seatMenuContainerTN.position.y = 6;
       seatMenuContainerTN.parent = this.dockSeatContainers[seatIndex];
 
       let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("seatBackPanel" + seatIndex, {
-        height: 17,
+        height: 15,
         width: 5.5
       }, this.app.scene);
       let panelMat = new BABYLON.StandardMaterial("menuCardBackPanel" + seatIndex, this.app.scene);
@@ -493,22 +493,26 @@ export default class MenuTab3D {
       cloneMesh.parent = avatarTN;
       avatarTN.parent = dockSeatContainer;
       avatarTN.rotation.y = Math.PI;
+      let cloneMoon = this.app.playerMoonAssets[seatIndex].baseMesh.clone();
+      U3D.sizeNodeToFit(cloneMoon, 3);
+      cloneMoon.position = U3D.v(0, 9, -2);
+      cloneMoon.parent = avatarTN;
     }
 
     this.selectedPlayerDescriptionPanel = BABYLON.MeshBuilder.CreatePlane("currentSeatDescriptionWrapper", {
-      height: 17,
+      height: 24,
       width: 12
     }, this.app.scene);
     this.selectedPlayerDescriptionPanel.isPickable = false;
     this.selectedPlayerDescriptionTextPanel = BABYLON.MeshBuilder.CreatePlane("currentSeatDescriptionText", {
-      height: 16.25,
+      height: 23.25,
       width: 11.25
     }, this.app.scene);
     this.selectedPlayerDescriptionTextPanel.isPickable = false;
     this.selectedPlayerDescriptionTextPanel.parent = this.selectedPlayerDescriptionPanel;
     this.selectedPlayerDescriptionTextPanel.position = U3D.v(0, 0, 0.05);
     this.selectedPlayerDescriptionPanel.material = this.playerCardHollowMaterial;
-    this.selectedPlayerDescriptionPanel.position = U3D.v(10, 5, 4);
+    this.selectedPlayerDescriptionPanel.position = U3D.v(10, 5, 5);
     this.selectedPlayerDescriptionPanel.parent = this.playerMoonPanelTab;
     this.playerDescriptionAdvancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
       this.selectedPlayerDescriptionTextPanel, 2048, 2048, false);
@@ -521,7 +525,7 @@ export default class MenuTab3D {
     this.selectedPlayerText3D.textVerticalAlignment = BABYLON.GUI.TextBlock.VERTICAL_ALIGNMENT_TOP;
     this.selectedPlayerText3D.paddingLeft = "5%";
     this.selectedPlayerText3D.paddingRight = "5%";
-    this.selectedPlayerText3D.paddingTop = "5%";
+    this.selectedPlayerText3D.paddingTop = "2%";
     this.playerDescriptionAdvancedTexture.addControl(this.selectedPlayerText3D);
   }
   _updateCurrentSelectedPlayerDescription() {
@@ -561,7 +565,7 @@ export default class MenuTab3D {
             diameter: 0.5,
             segments: 8
           }, this.app.scene);
-          sphere.position.y = 9.5;
+          sphere.position.y = 7.5;
           sphere.position.x = -1.5;
           sphere.material = mat1;
           sphere.parent = seat;
@@ -586,6 +590,17 @@ export default class MenuTab3D {
         let color = U3D.get3DColors(seatIndex);
         let meta = seatContainer.assetMeta;
 
+        if (!seatContainer.logoHolder) {
+          seatContainer.logoHolder = BABYLON.MeshBuilder.CreatePlane("avatarimageplanemenubar" + seatIndex, {
+            height: 1.5,
+            width: 1.5
+          },
+          this.app.scene);
+          seatContainer.logoHolder.position = U3D.v(0, 12, 0);
+          seatContainer.logoHolder.material = seatContainer.playerImageMaterial;
+          seatContainer.logoHolder.parent = seatContainer.playerDetailsTN;
+        }
+
         if (seatContainer.namePlate1) {
           seatContainer.namePlate1.dispose(false, true);
           seatContainer.namePlate2.dispose(false, true);
@@ -601,13 +616,13 @@ export default class MenuTab3D {
         if (seatData.seated) {
           let names = seatData.name.split(' ');
           seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
-          seatContainer.namePlate1.position = U3D.v(0, 11.4, 0);
+          seatContainer.namePlate1.position = U3D.v(0, 9.9, 0);
           seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
 
           let name2 = '';
           if (names[1]) name2 = names[1];
           seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, name2, color);
-          seatContainer.namePlate2.position = U3D.v(0, 10.5, 0);
+          seatContainer.namePlate2.position = U3D.v(0, 9, 0);
           seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
 
           if (this.app.uid === seatData.uid || this.app.isOwner) {
@@ -617,11 +632,10 @@ export default class MenuTab3D {
             if (!seatContainer.standButton) {
               seatContainer.standButton = this.addActionPanelButton('xmark', character, () => {
                 this.app._gameAPIStand(seatIndex);
-                seatContainer.standButton.isVisible = false;
-                seatContainer.standButton.mesh.setEnabled(false);
+                seatContainer.standButton.setEnabled(false);
               });
               seatContainer.standButton.parent = seatContainer.playerDetailsTN;
-              seatContainer.standButton.position = U3D.v(1, 9, 0);
+              seatContainer.standButton.position = U3D.v(0, 16, 0);
             }
             seatContainer.standButton.text = character;
             seatContainer.standButton.setEnabled(true);
@@ -642,11 +656,10 @@ export default class MenuTab3D {
           if (!seatContainer.sitButton) {
             seatContainer.sitButton = this.addActionPanelButton('anchor', "Sit down", () => {
               this.app.dockSit(seatIndex);
-              seatContainer.sitButton.isVisible = false;
               seatContainer.sitButton.setEnabled(false);
             });
             seatContainer.sitButton.parent = seatContainer.playerDetailsTN;
-            seatContainer.sitButton.position = U3D.v(1, 9, 0);
+            seatContainer.sitButton.position = U3D.v(0, 16, 0);
           }
           seatContainer.sitButton.setEnabled(true);
           seatContainer.playerImageMaterial.alpha = 0;
