@@ -23,7 +23,7 @@ export default class ActionCards {
       this.cardPositions.push(cardHolder);
 
       let localIndex = cardIndex;
-      let playActionCardBtn = U3D.addTextPlane(this.scene, U3D.color("1,0,1"), 'Play');
+      let playActionCardBtn = U3D.addTextPlane(this.scene, 'Play', U3D.color("1,0,1"));
       playActionCardBtn.position.y = this.cardHeight / 2 - 0.55;
       playActionCardBtn.position.z = -0.05;
       playActionCardBtn.parent = cardHolder;
@@ -37,7 +37,7 @@ export default class ActionCards {
       cardHolder.playButton = playActionCardBtn;
       cardHolder.playButton.setEnabled(false);
 
-      let discardActionCardBtn = U3D.addTextPlane(this.scene, U3D.color("0, 1, 1"), 'Recycle');
+      let discardActionCardBtn = U3D.addTextPlane(this.scene, 'Recycle', U3D.color("0, 1, 1"));
       discardActionCardBtn.position.y = -this.cardHeight / 2 + 0.55;
       discardActionCardBtn.position.z = -0.05;
       discardActionCardBtn.parent = cardHolder;

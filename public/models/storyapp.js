@@ -174,7 +174,7 @@ export class StoryApp extends BaseApp {
 
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
-    this.menuBarTabButtonsTN.position.y = 2;
+    this.menuBarTabButtonsTN.position.y = 1.5;
     this.menuBarTabButtonsTN.position.z = 12;
 
     this.browserScreenMenuTN = new BABYLON.TransformNode("browserScreenMenuTN", this.scene);
@@ -1126,7 +1126,7 @@ export class StoryApp extends BaseApp {
 
     let line1Words = words.slice(0, 4);
     let line1 = line1Words.join(' ');
-    let chatTextPlane = U3D.addTextPlane(this.scene, color, line1);
+    let chatTextPlane = U3D.addTextPlane(this.scene, line1, color);
     avatarMeta.chatTextPlane = chatTextPlane;
     chatTextPlane.parent = avatarMeta.chatBubble;
     chatTextPlane.position.z = -0.01;
@@ -1139,7 +1139,7 @@ export class StoryApp extends BaseApp {
     let line2 = line2Words.join(' ');
     if (!line2Show)
       line2 = '';
-    let chatTextPlane2 = U3D.addTextPlane(this.scene, color, line2);
+    let chatTextPlane2 = U3D.addTextPlane(this.scene, line2, color);
     chatTextPlane2.parent = chatTextPlane;
     chatTextPlane2.position.y = -1.1;
     avatarMeta.chatTextPlane2 = chatTextPlane2;
@@ -1149,7 +1149,7 @@ export class StoryApp extends BaseApp {
     let line3 = line3Words.join(' ');
     if (!line3Show)
       line3 = '';
-    let chatTextPlane3 = U3D.addTextPlane(this.scene, color, line3);
+    let chatTextPlane3 = U3D.addTextPlane(this.scene, line3, color);
     chatTextPlane3.parent = chatTextPlane;
     chatTextPlane3.position.y = -2.2;
     avatarMeta.chatTextPlane3 = chatTextPlane3;

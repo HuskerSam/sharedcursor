@@ -45,41 +45,37 @@ export default class MenuTab3D {
     return this.app.staticBoardObjects[name];
   }
   initOptionsBar() {
-    let scoreMenuBtn = this.addActionPanelButton('rocket', "History", () => this.selectedMenuBarTab(this.scoreMenuTab));
-    scoreMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    scoreMenuBtn.position = U3D.v(-14, 0, 0);
+    this.nextTurnButton = this.addActionPanelButton('/fontcons/rocket.svg', 'End Round', () => this.app.clickEndTurn());
+    this.nextTurnButton.parent = this.app.menuBarTabButtonsTN;
+    this.nextTurnButton.position = U3D.v(-2, 0, 0);
+    this.nextTurnButton.setEnabled(false);
 
-    let optionsMenuBtn = this.addActionPanelButton('gear', "Options", () => this.selectedMenuBarTab(this.optionsMenuTab));
-    optionsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    optionsMenuBtn.position = U3D.v(-10, 0, 0);
+    this.nextSelectedRoundButton = this.addActionPanelButton('/fontcons/next.svg', "Next Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
+    this.nextSelectedRoundButton.parent = this.app.menuBarTabButtonsTN;
+    this.nextSelectedRoundButton.position = U3D.v(-2, 0, 0);
+    this.nextSelectedRoundButton.setEnabled(false);
 
-    let playersMoonsMenuBtn = this.addActionPanelButton('diversity', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
+    this.previousTurnButton = this.addActionPanelButton('/fontcons/previous.svg', "Previous Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
+    this.previousTurnButton.parent = this.app.menuBarTabButtonsTN;
+    this.previousTurnButton.position = U3D.v(-14, 0, 0);
+    this.previousTurnButton.setEnabled(false);
+
+    let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/diversity.svg', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    playersMoonsMenuBtn.position = U3D.v(-6, 0, 0);
+    playersMoonsMenuBtn.position = U3D.v(-10, 0, 0);
 
-    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
+    let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/inspectobject.svg', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    selectedObjectMenuBtn.position = U3D.v(-2, 0, 0);
+    selectedObjectMenuBtn.position = U3D.v(-6, 0, 0);
 
     let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("menuTabButtonsPanel", {
-      height: 4,
+      height: 5,
       width: 18
     }, this.app.scene);
     seatBackPanel.material = this.playerCardHollowMaterial;
     seatBackPanel.parent = this.app.menuBarTabButtonsTN;
     seatBackPanel.isPickable = false;
-    seatBackPanel.position = U3D.v(-8, 0, 0.05);
-
-    this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', this.app.scene);
-    this.scoreMenuTab.parent = this.app.menuBarLeftTN;
-    this.scoreMenuTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
-    this.scoreMenuTab.setEnabled(false);
-    this.initScoreTab();
-
-    this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', this.app.scene);
-    this.optionsMenuTab.parent = this.app.menuBarLeftTN;
-    this.optionsMenuTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
-    this.optionsMenuTab.setEnabled(false);
+    seatBackPanel.position = U3D.v(-8, 0.5, 0.05);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
@@ -93,59 +89,9 @@ export default class MenuTab3D {
     this.playerMoonPanelTab.setEnabled(false);
     this.initPlayerPanel();
   }
-  addActionPanelLabel(text, font_family = "Arial", handlePointerDown, dontAddToUpdateArray = false) {
-    let id = text;
-    let font_size = 192;
-    let paddingSides = 10;
-    let bold = '';
-    let font = bold + " " + font_size + "px " + font_family;
-    let planeHeight = 4;
-    let DTHeight = 1.5 * font_size;
-    let ratio = planeHeight / DTHeight;
-    let temp = new BABYLON.DynamicTexture(id + "dt2", {}, this.app.scene);
-    let tmpctx = temp.getContext();
-    tmpctx.font = font;
-    let DTWidth = tmpctx.measureText(text).width + paddingSides;
-    temp.dispose();
-    let planeWidth = DTWidth * ratio;
-    let dynamicTexture = new BABYLON.DynamicTexture(id + "dt", {
-      width: DTWidth,
-      height: DTHeight
-    }, this.app.scene, false);
-    dynamicTexture.hasAlpha = true;
-    dynamicTexture.drawText(text, null, 205, font, 'rgb(255, 255, 255)', 'transparent', true);
-
-    let mat = new BABYLON.StandardMaterial(id + "mat", this.app.scene);
-    mat.opacityTexture = dynamicTexture;
-    mat.emissiveColor = new BABYLON.Color3(0, 0.5, 1);
-    mat.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
-    mat.ambientColor = new BABYLON.Color3(0.25, 0, 1);
-
-    let mesh = BABYLON.MeshBuilder.CreatePlane(id + "textplane", {
-      width: planeWidth,
-      height: planeHeight,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE
-    }, this.app.scene);
-    mesh.material = mat;
-
-    if (handlePointerDown) {
-      mesh.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown
-      };
-    } else {
-      mesh.isPickable = false;
-    }
-
-    if (!dontAddToUpdateArray)
-      this.seatIndexColoredButtons.push(mesh);
-    return mesh;
-  }
-  addActionPanelButton(iconName, text, handlePointerDown) {
-    let texturePath = '/fontcons/' + iconName + '.svg';
-    let button = new BABYLON.GUI.HolographicButton(iconName);
-    let mesh = new BABYLON.TransformNode(iconName + 'TN', this.app.scene);
+  addActionPanelButton(texturePath, text, handlePointerDown) {
+    let button = new BABYLON.GUI.HolographicButton(texturePath);
+    let mesh = new BABYLON.TransformNode(texturePath + 'TN', this.app.scene);
     this.app.gui3DManager.addControl(button);
     button.linkToTransformNode(mesh);
     button.scaling = U3D.v(3);
@@ -179,28 +125,30 @@ export default class MenuTab3D {
     mesh.dispose(false, true);
   }
 
-  initOptionsTab() {}
-  initScoreTab() {
-    let nextTurnButton = this.addActionPanelLabel('Finish Turn', "Arial", () => this.app.clickEndTurn());
-    nextTurnButton.parent = this.scoreMenuTab;
-    nextTurnButton.position = U3D.v(-5, 6, 0);
-
-    let nextSelectedMetaBtn = this.addActionPanelButton('next', "Next Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
-    nextSelectedMetaBtn.parent = this.scoreMenuTab;
-    nextSelectedMetaBtn.position = U3D.v(-14, 6, 0);
-
-    let previousSelectedMetaBtn = this.addActionPanelButton('previous', "Previous Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
-    previousSelectedMetaBtn.position = U3D.v(-28, 6, 0);
-    previousSelectedMetaBtn.parent = this.scoreMenuTab;
-  }
   updateRoundAndScoreStatus() {
     if (this.app.boardTurnLabel !== this.paintedLabel) {
       this.paintedLabel = this.app.boardTurnLabel;
-      this.removeDisposeActionMesh(this.selectedRoundIndexPanel);
-      this.selectedRoundIndexPanel = this.addActionPanelLabel(this.app.boardTurnLabel);
-      this.selectedRoundIndexPanel.parent = this.scoreMenuTab;
-      this.selectedRoundIndexPanel.position = U3D.v(-21, 6, 0);
+
+      if (this.selectedRoundIndexPanel)
+        this.selectedRoundIndexPanel.dispose(false, true);
+
+      let color = U3D.get3DColors(this.app.activeSeatIndex);
+      this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, this.app.boardTurnLabel, color);
+      this.selectedRoundIndexPanel.parent = this.app.menuBarTabButtonsTN;
+      this.selectedRoundIndexPanel.position = U3D.v(-14, 2.25, 0);
     }
+
+    let playerUp = this.app.uid === this.app.gameData['seat' + this.app.activeSeatIndex];
+    if (this.app._paintedBoardTurn === null) {
+      this.nextSelectedRoundButton.setEnabled(false);
+      this.nextTurnButton.setEnabled(playerUp);
+    } else {
+      this.nextSelectedRoundButton.setEnabled(true);
+      this.nextTurnButton.setEnabled(false);
+    }
+
+    let minPrequel = this.app.paintedBoardTurn === this.app.minimumPrequel;
+    this.previousTurnButton.setEnabled(!minPrequel);
 
     this._refreshSeatIndexStatus(true);
   }
@@ -208,37 +156,37 @@ export default class MenuTab3D {
   async initFocusedAssetPanel() {
     let scene = this.app.scene;
 
-    let nextSelectedMetaBtn = this.addActionPanelButton('next', "Next Asset", () => this.nextSelectedObject());
+    let nextSelectedMetaBtn = this.addActionPanelButton('/fontcons/next.svg', "Next Asset", () => this.nextSelectedObject());
     nextSelectedMetaBtn.position = U3D.v(-6, 0, 0);
     nextSelectedMetaBtn.parent = this.focusPanelTab;
 
-    let previousSelectedMetaBtn = this.addActionPanelButton('previous', "Previous Asset", () => this.nextSelectedObject(true));
+    let previousSelectedMetaBtn = this.addActionPanelButton('/fontcons/previous.svg', "Previous Asset", () => this.nextSelectedObject(true));
     previousSelectedMetaBtn.position = U3D.v(-10, 0, 0);
     previousSelectedMetaBtn.parent = this.focusPanelTab;
 
-    let followSelectedMetaBtn = this.addActionPanelButton("eye", "Follow [B]", () => this.app.bButtonPress());
+    let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/eye.svg", "Follow [B]", () => this.app.bButtonPress());
     followSelectedMetaBtn.position = U3D.v(-14, 0, 0);
     followSelectedMetaBtn.parent = this.focusPanelTab;
 
-    let followStopBtn = this.addActionPanelButton("xmark", 'Stop [A]', () => this.app.aButtonPress());
+    let followStopBtn = this.addActionPanelButton("/fontcons/xmark.svg", 'Stop [A]', () => this.app.aButtonPress());
     followStopBtn.position = U3D.v(-18, 0, 0);
     followStopBtn.parent = this.focusPanelTab;
 
-    this.normalAssetSizeBtn = this.addActionPanelButton("military", 'Better', () => {
+    this.normalAssetSizeBtn = this.addActionPanelButton("/fontcons/military.svg", 'Better', () => {
       this.normalAssetSizeBtn.setEnabled(false);
       this.updateAssetSize('normal');
     });
     this.normalAssetSizeBtn.position = U3D.v(-18, 4, 0);
     this.normalAssetSizeBtn.parent = this.focusPanelTab;
 
-    this.assetPanelHugeButton = this.addActionPanelButton("moon", 'Best', () => {
+    this.assetPanelHugeButton = this.addActionPanelButton("/fontcons/moon.svg", 'Best', () => {
       this.assetPanelHugeButton.setEnabled(false);
       this.updateAssetSize('huge');
     });
     this.assetPanelHugeButton.position = U3D.v(-14, 4, 0);
     this.assetPanelHugeButton.parent = this.focusPanelTab;
 
-    this.assetSmallSizeButton = this.addActionPanelButton("robot", 'Normal', () => {
+    this.assetSmallSizeButton = this.addActionPanelButton("/fontcons/robot.svg", 'Normal', () => {
       this.assetSmallSizeButton.setEnabled(false);
       this.updateAssetSize('small');
     });
@@ -592,10 +540,10 @@ export default class MenuTab3D {
 
         if (!seatContainer.logoHolder) {
           seatContainer.logoHolder = BABYLON.MeshBuilder.CreatePlane("avatarimageplanemenubar" + seatIndex, {
-            height: 1.5,
-            width: 1.5
-          },
-          this.app.scene);
+              height: 1.5,
+              width: 1.5
+            },
+            this.app.scene);
           seatContainer.logoHolder.position = U3D.v(0, 12, 0);
           seatContainer.logoHolder.material = seatContainer.playerImageMaterial;
           seatContainer.logoHolder.parent = seatContainer.playerDetailsTN;
@@ -630,7 +578,7 @@ export default class MenuTab3D {
             let character = gameOwnerNotPlayer ? "Boot" : 'Stand';
 
             if (!seatContainer.standButton) {
-              seatContainer.standButton = this.addActionPanelButton('xmark', character, () => {
+              seatContainer.standButton = this.addActionPanelButton('/fontcons/xmark.svg', character, () => {
                 this.app._gameAPIStand(seatIndex);
                 seatContainer.standButton.setEnabled(false);
               });
@@ -654,7 +602,7 @@ export default class MenuTab3D {
           seatContainer.playerImageMaterial.alpha = 1;
         } else {
           if (!seatContainer.sitButton) {
-            seatContainer.sitButton = this.addActionPanelButton('anchor', "Sit down", () => {
+            seatContainer.sitButton = this.addActionPanelButton('/fontcons/anchor.svg', "Sit down", () => {
               this.app.dockSit(seatIndex);
               seatContainer.sitButton.setEnabled(false);
             });
