@@ -5,6 +5,14 @@ export default class MenuTab3D {
     this.app = app;
     this.scene = app.scene;
     this.seatIndexColoredButtons = [];
+
+    this.playerCardHollowMaterial = new BABYLON.StandardMaterial("menuCardBackPanel", this.app.scene);
+    let t = new BABYLON.Texture('/images/cardhollow.png', this.app.scene);
+    this.playerCardHollowMaterial.opacityTexture = t;
+
+    let t2 = new BABYLON.Texture('/images/cardback.png', this.app.scene);
+    this.playerCardbackMaterial = new BABYLON.StandardMaterial("cardbackmaterial", this.app.scene);
+    this.playerCardbackMaterial.opacityTexture = t2;
   }
   _refreshSeatIndexStatus(forceRefresh = false) {
     if (this.seatIndexButtonColorCache === this.app.activeSeatIndex && !forceRefresh)
@@ -27,6 +35,9 @@ export default class MenuTab3D {
     this.playerCardHollowMaterial.diffuseColor = colors;
     this.playerCardHollowMaterial.ambientColor = colors;
     this.playerCardHollowMaterial.emissiveColor = colors;
+    this.playerCardbackMaterial.diffuseColor = colors;
+    this.playerCardbackMaterial.ambientColor = colors;
+    this.playerCardbackMaterial.emissiveColor = colors;
   }
   obj(name) {
     return this.app.staticBoardObjects[name];
@@ -44,7 +55,7 @@ export default class MenuTab3D {
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
     playersMoonsMenuBtn.position = U3D.v(-6, 0, 0);
 
-    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', "Cards", () => this.selectedMenuBarTab(this.focusPanelTab));
+    let selectedObjectMenuBtn = this.addActionPanelButton('inspectobject', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
     selectedObjectMenuBtn.position = U3D.v(-2, 0, 0);
 
@@ -52,33 +63,30 @@ export default class MenuTab3D {
       height: 4,
       width: 18
     }, this.app.scene);
-    this.playerCardHollowMaterial = new BABYLON.StandardMaterial("menuCardBackPanel", this.app.scene);
-    let t = new BABYLON.Texture('/images/cardhollow.png', this.app.scene);
-    this.playerCardHollowMaterial.opacityTexture = t;
     seatBackPanel.material = this.playerCardHollowMaterial;
     seatBackPanel.parent = this.app.menuBarTabButtonsTN;
     seatBackPanel.position = U3D.v(-8, 0, 0.05);
 
     this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', this.app.scene);
     this.scoreMenuTab.parent = this.app.menuBarLeftTN;
-    this.scoreMenuTab.position = U3D.v(0, 4, 20);
+    this.scoreMenuTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
     this.scoreMenuTab.setEnabled(false);
     this.initScoreTab();
 
     this.optionsMenuTab = new BABYLON.TransformNode('optionsMenuTab', this.app.scene);
     this.optionsMenuTab.parent = this.app.menuBarLeftTN;
-    this.optionsMenuTab.position = U3D.v(0, 4, 20);
+    this.optionsMenuTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
     this.optionsMenuTab.setEnabled(false);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
-    this.focusPanelTab.position = U3D.v(0, 4, 20);
+    this.focusPanelTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
     this.focusPanelTab.setEnabled(false);
-    this.initFocusedAssetPanel(this.focusPanelTab);
+    this.initFocusedAssetPanel();
 
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.app.scene);
     this.playerMoonPanelTab.parent = this.app.menuBarLeftTN;
-    this.playerMoonPanelTab.position = U3D.v(0, 4, 20);
+    this.playerMoonPanelTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
     this.playerMoonPanelTab.setEnabled(false);
     this.initPlayerPanel();
   }
@@ -194,50 +202,50 @@ export default class MenuTab3D {
     this._refreshSeatIndexStatus(true);
   }
 
-  async initFocusedAssetPanel(parent) {
+  async initFocusedAssetPanel() {
     let scene = this.app.scene;
 
-    let followSelectedMetaBtn = this.addActionPanelLabel("Follow [B]", "Arial", () => this.app.bButtonPress());
-    followSelectedMetaBtn.position = U3D.v(-1, 10, 5);
-    followSelectedMetaBtn.parent = parent;
-
-    let followStopBtn = this.addActionPanelLabel('Stop [A]', "Arial", () => this.app.aButtonPress());
-    followStopBtn.position = U3D.v(5.75, 10, 5);
-    followStopBtn.parent = parent;
-
     let nextSelectedMetaBtn = this.addActionPanelButton('next', "Next Asset", () => this.nextSelectedObject());
-    nextSelectedMetaBtn.position = U3D.v(7.5, 5, 5);
-    nextSelectedMetaBtn.parent = parent;
+    nextSelectedMetaBtn.position = U3D.v(-6, 0, 0);
+    nextSelectedMetaBtn.parent = this.focusPanelTab;
 
     let previousSelectedMetaBtn = this.addActionPanelButton('previous', "Previous Asset", () => this.nextSelectedObject(true));
-    previousSelectedMetaBtn.position = U3D.v(-3.5, 5, 5);
-    previousSelectedMetaBtn.parent = parent;
+    previousSelectedMetaBtn.position = U3D.v(-10, 0, 0);
+    previousSelectedMetaBtn.parent = this.focusPanelTab;
 
-    this.normalAssetSizeBtn = this.addActionPanelLabel('Better', "Georgia", () => {
+    let followSelectedMetaBtn = this.addActionPanelButton("eye", "Follow [B]", () => this.app.bButtonPress());
+    followSelectedMetaBtn.position = U3D.v(-14, 0, 0);
+    followSelectedMetaBtn.parent = this.focusPanelTab;
+
+    let followStopBtn = this.addActionPanelButton("xmark", 'Stop [A]', () => this.app.aButtonPress());
+    followStopBtn.position = U3D.v(-18, 0, 0);
+    followStopBtn.parent = this.focusPanelTab;
+
+    this.normalAssetSizeBtn = this.addActionPanelButton("military", 'Better', () => {
       this.normalAssetSizeBtn.setEnabled(false);
       this.updateAssetSize('normal');
     });
-    this.normalAssetSizeBtn.position = U3D.v(2.9, 12, 5);
-    this.normalAssetSizeBtn.parent = parent;
+    this.normalAssetSizeBtn.position = U3D.v(-18, 4, 0);
+    this.normalAssetSizeBtn.parent = this.focusPanelTab;
 
-    this.assetPanelHugeButton = this.addActionPanelLabel('Best', "Georgia", () => {
+    this.assetPanelHugeButton = this.addActionPanelButton("moon", 'Best', () => {
       this.assetPanelHugeButton.setEnabled(false);
       this.updateAssetSize('huge');
     });
-    this.assetPanelHugeButton.position = U3D.v(6.75, 12, 5);
-    this.assetPanelHugeButton.parent = parent;
+    this.assetPanelHugeButton.position = U3D.v(-14, 4, 0);
+    this.assetPanelHugeButton.parent = this.focusPanelTab;
 
-    this.assetSmallSizeButton = this.addActionPanelLabel('Normal', "Georgia", () => {
+    this.assetSmallSizeButton = this.addActionPanelButton("robot", 'Normal', () => {
       this.assetSmallSizeButton.setEnabled(false);
       this.updateAssetSize('small');
     });
-    this.assetSmallSizeButton.position = U3D.v(-1.75, 12, 5)
-    this.assetSmallSizeButton.parent = parent;
+    this.assetSmallSizeButton.position = U3D.v(-10, 4, 0);
+    this.assetSmallSizeButton.parent = this.focusPanelTab;
 
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
 
     this.playerCardsTN = new BABYLON.TransformNode('playerCardsTN', scene);
-    this.playerCardsTN.parent = parent;
+    this.playerCardsTN.parent = this.focusPanelTab;
     this.playerCardsTN.position.y = 6;
     this.playerCardsTN.position.z = 4;
   }
@@ -345,7 +353,7 @@ export default class MenuTab3D {
 
     this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("0,0,1"));
     this.selectedAssetLabel.position.x = 2;
-    this.selectedAssetLabel.position.y = 1.5;
+    this.selectedAssetLabel.position.y = 0;
     this.selectedAssetLabel.position.z = -4;
     this.selectedAssetLabel.scaling = U3D.v(1.5);
     this.selectedAssetLabel.parent = this.focusPanelTab;

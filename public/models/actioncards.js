@@ -8,13 +8,6 @@ export default class ActionCards {
     this.cardWidth = 5;
     this.cardHeight = 7;
 
-    let cardBackTexture = new BABYLON.Texture('/images/cardback.png', this.app.scene);
-    this.cardbackMaterial = new BABYLON.StandardMaterial("cardbackmaterial", this.app.scene);
-    this.cardbackMaterial.diffuseTexture = cardBackTexture;
-    //this.cardbackMaterial.ambientTexture = cardBackTexture;
-    //this.cardbackMaterial.emissiveTexture = cardBackTexture;
-    cardBackTexture.hasAlpha = true;
-
     for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
@@ -62,7 +55,7 @@ export default class ActionCards {
         width: this.cardWidth,
         height: this.cardHeight
       }, this.app.scene);
-      plane.material = this.cardbackMaterial;
+      plane.material = this.app.menuTab3D.playerCardbackMaterial;
       plane.parent = cardHolder;
     }
 
