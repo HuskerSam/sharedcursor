@@ -65,6 +65,7 @@ export default class MenuTab3D {
     }, this.app.scene);
     seatBackPanel.material = this.playerCardHollowMaterial;
     seatBackPanel.parent = this.app.menuBarTabButtonsTN;
+    seatBackPanel.isPickable = false;
     seatBackPanel.position = U3D.v(-8, 0, 0.05);
 
     this.scoreMenuTab = new BABYLON.TransformNode('scoreMenuTab', this.app.scene);
@@ -322,6 +323,7 @@ export default class MenuTab3D {
     } else {
       mesh = await U3D.loadStaticMesh(this.app.scene, assetMeta.containerPath, assetMeta);
     }
+    U3D.sizeNodeToFit(mesh, 10);
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);
     mesh.parent = animDetails.rotationPivot;
@@ -338,11 +340,6 @@ export default class MenuTab3D {
         this.app.pauseAssetSpin(pointerInfo, mesh, meta);
       }
     };
-    let factor = 3;
-    if (this.app.inXR) {
-      factor = 0.35;
-    }
-    U3D.sizeNodeToFit(mesh, factor);
     mesh.setEnabled(true);
 
     if (assetMeta.asteroidType || assetMeta.wireframe)
@@ -354,7 +351,7 @@ export default class MenuTab3D {
     this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("0,0,1"));
     this.selectedAssetLabel.position.x = 2;
     this.selectedAssetLabel.position.y = 0;
-    this.selectedAssetLabel.position.z = -4;
+    this.selectedAssetLabel.position.z = 0;
     this.selectedAssetLabel.scaling = U3D.v(1.5);
     this.selectedAssetLabel.parent = this.focusPanelTab;
 
