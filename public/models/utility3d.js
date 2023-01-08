@@ -832,6 +832,7 @@ export default class Utility3D {
       height: planeHeight,
       sideOrientation: BABYLON.Mesh.DOUBLESIDE
     }, scene);
+    plane.isPickable = false;
     plane.material = mat;
 
     return plane;

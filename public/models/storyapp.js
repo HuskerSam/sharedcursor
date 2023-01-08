@@ -1074,10 +1074,12 @@ export class StoryApp extends BaseApp {
       chatBubbleMesh.scaling = U3D.v(-1, 1, 1);
       chatBubbleMesh.rotation.x = Math.PI;
       chatBubbleMesh.parent = chatTN;
+      chatBubbleMesh.isPickable = false;
 
       chatTN.position.y = 3.5;
       chatTN.rotation.y = Math.PI;
       chatTN.billboardMode = 7;
+      chatTN.isPickable = false;
 
       chatTN.parent = this.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
       this.avatarMetas[seatIndex].chatPanel = chatTN;
