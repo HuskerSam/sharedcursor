@@ -353,33 +353,6 @@ export class BaseApp {
     return true;
   }
   initGameOptionsPanel() {
-    document.querySelector('.player_dock .dock_pos_0 .sit_button')
-      .addEventListener('click', e => this.dockSit(0, e));
-    document.querySelector('.player_dock .dock_pos_1 .sit_button')
-      .addEventListener('click', e => this.dockSit(1, e));
-    document.querySelector('.player_dock .dock_pos_2 .sit_button')
-      .addEventListener('click', e => this.dockSit(2, e));
-    document.querySelector('.player_dock .dock_pos_3 .sit_button')
-      .addEventListener('click', e => this.dockSit(3, e));
-
-    document.querySelector('.player_dock .dock_pos_0 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(0, e));
-    document.querySelector('.player_dock .dock_pos_1 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(1, e));
-    document.querySelector('.player_dock .dock_pos_2 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(2, e));
-    document.querySelector('.player_dock .dock_pos_3 .stand_button')
-      .addEventListener('click', e => this.gameAPIToggle(3, e));
-
-    this.seat0_name = document.querySelector('.seat0_name');
-    this.seat1_name = document.querySelector('.seat1_name');
-    this.seat2_name = document.querySelector('.seat2_name');
-    this.seat3_name = document.querySelector('.seat3_name');
-    this.seat0_img = document.querySelector('.seat0_img');
-    this.seat1_img = document.querySelector('.seat1_img');
-    this.seat2_img = document.querySelector('.seat2_img');
-    this.seat3_img = document.querySelector('.seat3_img');
-
     this.gameid_span = document.querySelector('.gameid_span');
     this.turnindex_span = document.querySelector('.turnindex_span');
     this.turnphase_span = document.querySelector('.turnphase_span');
@@ -414,15 +387,6 @@ export class BaseApp {
         this.sendGameMessage();
     });
     this.messages_list = document.querySelector('.messages_list');
-
-    this.match_start = document.querySelector('.match_start');
-    this.match_start.addEventListener('click', e => this.startGame());
-    this.match_finish = document.querySelector('.match_finish');
-    this.match_finish.addEventListener('click', e => this.finishGame());
-    this.match_reset = document.querySelector('.match_reset');
-    this.match_reset.addEventListener('click', e => this.resetGame());
-
-    this.game_mode_status = document.querySelector('.game_mode_status');
 
     this.code_link_href = document.querySelector('.code_link_href');
     this.code_link_copy = document.querySelector('.code_link_copy');
@@ -503,29 +467,6 @@ export class BaseApp {
     }
   }
   updateUserPresence() {
-    let memberDivs = document.querySelectorAll('.member_online_status');
-    memberDivs.forEach(div => {
-      if (this.userPresenceStatus[div.dataset.uid])
-        div.classList.add('online')
-      else
-        div.classList.remove('online');
-    })
-
-    document.body.classList.remove('seat_user_online0');
-    document.body.classList.remove('seat_user_online1');
-    document.body.classList.remove('seat_user_online2');
-    document.body.classList.remove('seat_user_online3');
-
-    if (this.gameData) {
-      if (this.userPresenceStatus[this.gameData['seat0']])
-        document.body.classList.add('seat_user_online0');
-      if (this.userPresenceStatus[this.gameData['seat1']])
-        document.body.classList.add('seat_user_online1');
-      if (this.userPresenceStatus[this.gameData['seat2']])
-        document.body.classList.add('seat_user_online2');
-      if (this.userPresenceStatus[this.gameData['seat3']])
-        document.body.classList.add('seat_user_online3');
-    }
   }
   updateTabView() {}
   gameTypeMetaData() {
@@ -940,124 +881,10 @@ export class BaseApp {
     }, 3000);
   }
 
-  _paintDockSeats() {
-    let gameOwner = (this.gameData.createUser === this.uid);
-    let limit1 = this.gameData.seatsPerUser === 'one';
-    let numberCurrentSeats = this.gameData.runningNumberOfSeats;
-    if (this.gameData.mode === 'ready')
-      numberCurrentSeats = this.gameData.numberOfSeats;
-
-    for (let c = 0; c < numberCurrentSeats; c++) {
-      let key = 'seat' + c.toString();
-      let seat = document.querySelector(`.player_dock .dock_seat${c.toString()}`);
-      let spans = seat.querySelectorAll('span');
-
-      if (this.gameData[key]) {
-        let name = this.gameData.memberNames[this.gameData[key]];
-        if (!name) name = "Anonymous";
-        let nEle = seat.parentElement.querySelector('.score_panel .name');
-        nEle.innerHTML = name.slice(0, 8);
-
-        spans[0].style.backgroundImage = 'url(' + this._gameMemberData(this.gameData[key]).img + ")";
-        seat.parentElement.classList.remove('dock_seat_open');
-
-        if (this.gameData[key] === this.uid || gameOwner)
-          seat.parentElement.classList.add('dock_seat_stand');
-        else
-          seat.parentElement.classList.remove('dock_seat_stand');
-      } else {
-        seat.parentElement.querySelector('.score_panel .name').innerHTML = '&nbsp;';
-
-        seat.parentElement.classList.remove('dock_seat_stand');
-        spans[0].style.backgroundImage = '';
-
-        if (this.userSeated && limit1)
-          seat.parentElement.classList.remove('dock_seat_open');
-        else
-          seat.parentElement.classList.add('dock_seat_open');
-      }
-
-      let pts = this.gameData['seatPoints' + c.toString()];
-      if (!pts)
-        pts = 0;
-      seat.parentElement.querySelector('.score_panel .pts').innerHTML = `${pts} pt${pts === 1 ? '' : 's'}`;
-    }
-
-    for (let c = numberCurrentSeats, l = 4; c < l; c++) {
-      let key = 'seat' + c.toString();
-      let seat = document.querySelector(`.player_dock .dock_seat${c.toString()}`);
-      seat.parentElement.classList.remove('dock_seat_stand');
-      seat.parentElement.classList.remove('dock_seat_open');
-    }
-  }
   get seatCount() {
-    let numSeats = this.gameData.runningNumberOfSeats;
-    if (this.gameData.mode === 'ready')
-      numSeats = this.gameData.numberOfSeats;
-    return numSeats;
+    return 4;
   }
-  paintDock() {
-    document.body.classList.remove('seatcount_1');
-    document.body.classList.remove('seatcount_2');
-    document.body.classList.remove('seatcount_3');
-    document.body.classList.remove('seatcount_4');
-    document.body.classList.remove('runningseatcount_1');
-    document.body.classList.remove('runningseatcount_2');
-    document.body.classList.remove('runningseatcount_3');
-    document.body.classList.remove('runningseatcount_4');
-
-    document.body.classList.add('seatcount_' + this.gameData.numberOfSeats.toString());
-    if (!this.gameData.runningNumberOfSeats)
-      this.gameData.runningNumberOfSeats = 1;
-    let numSeats = this.seatCount;
-    document.body.classList.add('runningseatcount_' + numSeats.toString());
-    if (numSeats < 3) {
-      document.body.classList.remove('large_board');
-      document.body.classList.add('small_board');
-    } else {
-      document.body.classList.add('large_board');
-      document.body.classList.remove('small_board');
-    }
-
-    this.seatsFull = 0;
-    this.userSeated = false;
-    for (let c = 0; c < this.gameData.numberOfSeats; c++) {
-      let seatKey = 'seat' + c.toString();
-      if (this.gameData[seatKey])
-        this.seatsFull++;
-
-      if (this.gameData[seatKey] === this.uid)
-        this.userSeated = true;
-    }
-
-    this._paintDockSeats();
-
-    let userRunState = (this.seatsFull === this.gameData.numberOfSeats) ? 'Ready' : 'Not Ready';
-    let mode = this.gameData.mode;
-    if (mode === 'running')
-      userRunState = 'In Progress';
-    if (mode === 'end')
-      userRunState = 'Final';
-    this.game_mode_status.innerHTML = userRunState;
-
-    if (this.userSeated)
-      document.body.classList.add('current_user_seated');
-    else
-      document.body.classList.remove('current_user_seated');
-
-    if (this.seatsFull === this.gameData.numberOfSeats) {
-      this.match_start.removeAttribute('disabled');
-    } else {
-      this.match_start.setAttribute('disabled', true);
-    }
-
-    document.body.classList.remove('current_seat_0');
-    document.body.classList.remove('current_seat_1');
-    document.body.classList.remove('current_seat_2');
-    document.body.classList.remove('current_seat_3');
-
-    document.body.classList.add('current_seat_' + this.gameData.currentSeat.toString());
-  }
+  paintDock() {}
   paintOptions() {
     if (this.gameData.createUser === this.uid) {
       document.body.classList.add('game_owner');

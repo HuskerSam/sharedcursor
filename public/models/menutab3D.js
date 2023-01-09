@@ -60,6 +60,10 @@ export default class MenuTab3D {
     this.previousTurnButton.position = U3D.v(-14, 0, 0);
     this.previousTurnButton.setEnabled(false);
 
+    let homeBtn = this.addActionPanelButton('/fontcons/home.png', "Teleport Home [Y]", () => this.app.yButtonPress());
+    homeBtn.parent = this.app.menuBarTabButtonsTN;
+    homeBtn.position = U3D.v(-18, 0, 0);
+
     let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/group.png', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
     playersMoonsMenuBtn.position = U3D.v(-10, 0, 0);
@@ -70,12 +74,12 @@ export default class MenuTab3D {
 
     let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("menuTabButtonsPanel", {
       height: 5,
-      width: 18
+      width: 22
     }, this.app.scene);
     seatBackPanel.material = this.playerCardHollowMaterial;
     seatBackPanel.parent = this.app.menuBarTabButtonsTN;
     seatBackPanel.isPickable = false;
-    seatBackPanel.position = U3D.v(-8, 0.5, 0.05);
+    seatBackPanel.position = U3D.v(-10, 0.5, 0.05);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
@@ -85,7 +89,7 @@ export default class MenuTab3D {
 
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.app.scene);
     this.playerMoonPanelTab.parent = this.app.menuBarLeftTN;
-    this.playerMoonPanelTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
+    this.playerMoonPanelTab.position = U3D.v(0, 6.5, this.app.menuBarTabButtonsTN.position.z);
     this.playerMoonPanelTab.setEnabled(false);
     this.initPlayerPanel();
   }
@@ -172,18 +176,18 @@ export default class MenuTab3D {
     followStopBtn.position = U3D.v(-10, 0, 0);
     followStopBtn.parent = this.focusPanelTab;
 
-    this.normalAssetSizeBtn = this.addActionPanelButton("/fontcons/military.svg", 'Better', () => {
+    this.normalAssetSizeBtn = this.addActionPanelButton("/fontcons/biggersize.png", 'Big Size', () => {
       this.normalAssetSizeBtn.setEnabled(false);
       this.updateAssetSize('normal');
     });
-    this.normalAssetSizeBtn.position = U3D.v(-18, 4, 0);
+    this.normalAssetSizeBtn.position = U3D.v(-18, 0, 0);
     this.normalAssetSizeBtn.parent = this.focusPanelTab;
 
-    this.assetSmallSizeButton = this.addActionPanelButton("/fontcons/robot.svg", 'Normal', () => {
+    this.assetSmallSizeButton = this.addActionPanelButton("/fontcons/smallersize.png", 'Normal Size', () => {
       this.assetSmallSizeButton.setEnabled(false);
       this.updateAssetSize('small');
     });
-    this.assetSmallSizeButton.position = U3D.v(-10, 4, 0);
+    this.assetSmallSizeButton.position = U3D.v(-18, 0, 0);
     this.assetSmallSizeButton.parent = this.focusPanelTab;
 
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
@@ -562,10 +566,11 @@ export default class MenuTab3D {
 
           if (this.app.uid === seatData.uid || this.app.isOwner) {
             let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
-            let character = gameOwnerNotPlayer ? "Boot" : 'Stand';
+            let character = gameOwnerNotPlayer ? "Boot Player" : 'Stand Up';
+            let icon =  gameOwnerNotPlayer ? "/fontcons/remove.png" : "/fontcons/remove.png";
 
             if (!seatContainer.standButton) {
-              seatContainer.standButton = this.addActionPanelButton('/fontcons/xmark.svg', character, () => {
+              seatContainer.standButton = this.addActionPanelButton(icon, character, () => {
                 this.app._gameAPIStand(seatIndex);
                 seatContainer.standButton.setEnabled(false);
               });
@@ -589,7 +594,7 @@ export default class MenuTab3D {
           seatContainer.playerImageMaterial.alpha = 1;
         } else {
           if (!seatContainer.sitButton) {
-            seatContainer.sitButton = this.addActionPanelButton('/fontcons/anchor.svg', "Sit down", () => {
+            seatContainer.sitButton = this.addActionPanelButton('/fontcons/greenchair.png', "Sit down", () => {
               this.app.dockSit(seatIndex);
               seatContainer.sitButton.setEnabled(false);
             });

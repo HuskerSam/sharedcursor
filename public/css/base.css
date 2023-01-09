@@ -595,22 +595,6 @@ a {
   border: solid 1px silver;
 }
 
-.seat_user_online0 .dock_pos_0 .online_status {
-  background: rgb(50, 255, 50);
-}
-
-.seat_user_online1 .dock_pos_1 .online_status {
-  background: rgb(50, 255, 50);
-}
-
-.seat_user_online2 .dock_pos_2 .online_status {
-  background: rgb(50, 255, 50);
-}
-
-.seat_user_online3 .dock_pos_3 .online_status {
-  background: rgb(50, 255, 50);
-}
-
 .match_reset {
   display: none;
 }
@@ -641,28 +625,6 @@ button.match_finish.admin_only, button.match_start.admin_only, button.match_rese
 
 .game_owner.mode_ready button.match_start.admin_only {
   display: inline-block;
-}
-
-.match_board_outer {
-  display: flex;
-  flex-direction: column;
-  border-top: solid 6px rgb(127, 127, 127);
-}
-
-.current_seat_0 .match_board_outer {
-  border-top: solid 6px rgb(220, 220, 0);
-}
-
-.current_seat_1 .match_board_outer {
-  border-top: solid 6px rgb(0, 210, 220);
-}
-
-.current_seat_2 .match_board_outer {
-  border-top: solid 6px rgb(230, 0, 230);
-}
-
-.current_seat_3 .match_board_outer {
-  border-top: solid 6px rgb(150, 130, 255);
 }
 
 .match_start {
@@ -696,16 +658,6 @@ button.match_finish.admin_only, button.match_start.admin_only, button.match_rese
   line-height: inherit;
   padding: 14px;
   padding-bottom: 0px;
-}
-
-.mode_running .player_dock .dock_seat0, .mode_running .player_dock .dock_seat1,
-.mode_running .player_dock .dock_seat2, .mode_running .player_dock .dock_seat3 {
-  opacity: .5;
-}
-
-.current_seat_0 .player_dock .dock_seat0, .current_seat_1 .player_dock .dock_seat1,
-.current_seat_2 .player_dock .dock_seat2, .current_seat_3 .player_dock .dock_seat3 {
-  opacity: 1;
 }
 
 .btn i.material-icons {
@@ -968,10 +920,4 @@ a:hover, a.nav-link:hover, .nav-link:hover, button:hover, a.btn:hover, button.bt
 
 .seat_stati .points {
   padding-left: 12px;
-}
-
-
-.player_dock {
-  display: flex;
-  flex-direction: row;
 }

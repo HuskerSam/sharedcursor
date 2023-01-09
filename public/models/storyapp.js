@@ -54,9 +54,6 @@ export class StoryApp extends BaseApp {
     this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
     this.menu_bar_toggle.addEventListener('click', e => document.body.classList.toggle('menu_bar_expanded'));
 
-    this.end_turn_button = document.querySelector('.end_turn_button');
-    this.end_turn_button.addEventListener('click', e => this._endTurn());
-
     this.buttonOneRed = document.querySelector('.choice-button-one');
     this.buttonOneRed.addEventListener('click', e => this.aButtonPress());
     this.buttonTwo = document.querySelector('.choice-button-two');
@@ -280,7 +277,7 @@ export class StoryApp extends BaseApp {
   aimCamera(locationMeta) {
     this.camera.restoreState();
     if (locationMeta) {
-      this.camera.setPosition(locationMeta.position);
+      this.camera.position = U3D.vector(locationMeta.position);
       this.camera.setTarget(locationMeta.target);
     }
 
@@ -481,19 +478,6 @@ export class StoryApp extends BaseApp {
     this.player_total_points.innerHTML = pts;
     this.player_total_for_turn.innerHTML = this.gameData.pairsInARowMatched;
     this.player_dock_prompt.innerHTML = phaseDesc;
-
-    this.currentplayer_score_dock.classList.remove('seat_color_0');
-    this.currentplayer_score_dock.classList.remove('seat_color_1');
-    this.currentplayer_score_dock.classList.remove('seat_color_2');
-    this.currentplayer_score_dock.classList.remove('seat_color_3');
-
-    this.match_board_wrapper.classList.remove('seat_color_0');
-    this.match_board_wrapper.classList.remove('seat_color_1');
-    this.match_board_wrapper.classList.remove('seat_color_2');
-    this.match_board_wrapper.classList.remove('seat_color_3');
-
-    this.currentplayer_score_dock.classList.add('seat_color_' + seatIndex);
-    this.match_board_wrapper.classList.add('seat_color_' + seatIndex);
 
     let name = this.gameData.name.replace(' Avenue', '').replace(' Street', '');
     this.game_header_panel.innerHTML = `${name}`;
