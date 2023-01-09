@@ -117,9 +117,6 @@ export class StoryApp extends BaseApp {
 
       let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
       let smallLink = '';
-      let largeLink = '';
-      if (meta.largeglbpath)
-        largeLink = `<a href="${meta.extended.largeGlbPath}" target="_blank">Large</a>&nbsp;`;
       if (meta.smallglbpath)
         smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
 
@@ -129,7 +126,6 @@ export class StoryApp extends BaseApp {
         &nbsp;
         ${smallLink}
         ${normalLink}
-        ${largeLink}
         <br>
         <a href="${meta.url}" target="_blank">wiki</a>
         &nbsp; ${imgHTML}

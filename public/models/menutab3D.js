@@ -45,26 +45,26 @@ export default class MenuTab3D {
     return this.app.staticBoardObjects[name];
   }
   initOptionsBar() {
-    this.nextTurnButton = this.addActionPanelButton('/fontcons/rocket.svg', 'End Round', () => this.app.clickEndTurn());
+    this.nextTurnButton = this.addActionPanelButton('/fontcons/completecheck.png', 'Complete Round', () => this.app.clickEndTurn());
     this.nextTurnButton.parent = this.app.menuBarTabButtonsTN;
     this.nextTurnButton.position = U3D.v(-2, 0, 0);
     this.nextTurnButton.setEnabled(false);
 
-    this.nextSelectedRoundButton = this.addActionPanelButton('/fontcons/next.svg', "Next Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
+    this.nextSelectedRoundButton = this.addActionPanelButton('/fontcons/nextround.png', "Next Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
     this.nextSelectedRoundButton.parent = this.app.menuBarTabButtonsTN;
     this.nextSelectedRoundButton.position = U3D.v(-2, 0, 0);
     this.nextSelectedRoundButton.setEnabled(false);
 
-    this.previousTurnButton = this.addActionPanelButton('/fontcons/previous.svg', "Previous Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
+    this.previousTurnButton = this.addActionPanelButton('/fontcons/previousround.png', "Previous Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
     this.previousTurnButton.parent = this.app.menuBarTabButtonsTN;
     this.previousTurnButton.position = U3D.v(-14, 0, 0);
     this.previousTurnButton.setEnabled(false);
 
-    let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/diversity.svg', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
+    let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/group.png', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
     playersMoonsMenuBtn.position = U3D.v(-10, 0, 0);
 
-    let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/inspectobject.svg', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
+    let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/redtarget.png', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
     selectedObjectMenuBtn.position = U3D.v(-6, 0, 0);
 
@@ -79,7 +79,7 @@ export default class MenuTab3D {
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
-    this.focusPanelTab.position = U3D.v(0, 6, this.app.menuBarTabButtonsTN.position.z);
+    this.focusPanelTab.position = U3D.v(0, 6.5, this.app.menuBarTabButtonsTN.position.z);
     this.focusPanelTab.setEnabled(false);
     this.initFocusedAssetPanel();
 
@@ -156,20 +156,20 @@ export default class MenuTab3D {
   async initFocusedAssetPanel() {
     let scene = this.app.scene;
 
-    let nextSelectedMetaBtn = this.addActionPanelButton('/fontcons/next.svg', "Next Asset", () => this.nextSelectedObject());
-    nextSelectedMetaBtn.position = U3D.v(-6, 0, 0);
+    let nextSelectedMetaBtn = this.addActionPanelButton('/fontcons/nextgt.png', "Next Asset", () => this.nextSelectedObject());
+    nextSelectedMetaBtn.position = U3D.v(-2, 0, 0);
     nextSelectedMetaBtn.parent = this.focusPanelTab;
 
-    let previousSelectedMetaBtn = this.addActionPanelButton('/fontcons/previous.svg', "Previous Asset", () => this.nextSelectedObject(true));
-    previousSelectedMetaBtn.position = U3D.v(-10, 0, 0);
+    let previousSelectedMetaBtn = this.addActionPanelButton('/fontcons/previouslt.png', "Previous Asset", () => this.nextSelectedObject(true));
+    previousSelectedMetaBtn.position = U3D.v(-6, 0, 0);
     previousSelectedMetaBtn.parent = this.focusPanelTab;
 
-    let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/eye.svg", "Follow [B]", () => this.app.bButtonPress());
+    let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/follow.png", "Follow [B]", () => this.app.bButtonPress());
     followSelectedMetaBtn.position = U3D.v(-14, 0, 0);
     followSelectedMetaBtn.parent = this.focusPanelTab;
 
-    let followStopBtn = this.addActionPanelButton("/fontcons/xmark.svg", 'Stop [A]', () => this.app.aButtonPress());
-    followStopBtn.position = U3D.v(-18, 0, 0);
+    let followStopBtn = this.addActionPanelButton("/fontcons/stopsign.png", 'Stop [A]', () => this.app.aButtonPress());
+    followStopBtn.position = U3D.v(-10, 0, 0);
     followStopBtn.parent = this.focusPanelTab;
 
     this.normalAssetSizeBtn = this.addActionPanelButton("/fontcons/military.svg", 'Better', () => {
@@ -178,13 +178,6 @@ export default class MenuTab3D {
     });
     this.normalAssetSizeBtn.position = U3D.v(-18, 4, 0);
     this.normalAssetSizeBtn.parent = this.focusPanelTab;
-
-    this.assetPanelHugeButton = this.addActionPanelButton("/fontcons/moon.svg", 'Best', () => {
-      this.assetPanelHugeButton.setEnabled(false);
-      this.updateAssetSize('huge');
-    });
-    this.assetPanelHugeButton.position = U3D.v(-14, 4, 0);
-    this.assetPanelHugeButton.parent = this.focusPanelTab;
 
     this.assetSmallSizeButton = this.addActionPanelButton("/fontcons/robot.svg", 'Normal', () => {
       this.assetSmallSizeButton.setEnabled(false);
@@ -205,28 +198,22 @@ export default class MenuTab3D {
     if (meta.asteroidType || meta.avatarType) {
       this.normalAssetSizeBtn.setEnabled(false);
       this.assetSmallSizeButton.setEnabled(false);
-      this.assetPanelHugeButton.setEnabled(false);
 
       return;
     }
 
     let smallSize = meta.smallglbpath ? true : false;
-    let hugeSize = meta.largeglbpath ? true : false;
 
     let isSmallSize = meta.extended.smallGlbPath === meta.extended.glbPath;
-    let isHugeSize = meta.extended.largeGlbPath === meta.extended.glbPath;
     let isNormalSize = meta.extended.normalGlbPath === meta.extended.glbPath;
 
     this.normalAssetSizeBtn.setEnabled(!isNormalSize);
     this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
-    this.assetPanelHugeButton.setEnabled(hugeSize && !isHugeSize);
   }
   async updateAssetSize(size) {
     let meta = this.selectedObjectMeta;
     let id = meta.id;
     if (this.obj(id)) {
-      if (size === 'huge')
-        meta.containerPath = meta.extended.largeGlbPath;
       if (size === 'normal')
         meta.containerPath = meta.extended.normalGlbPath;
       if (size === 'small')

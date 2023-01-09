@@ -340,7 +340,6 @@
     "symbol": "/symbol/phoebe.png",
     "solarPosition": "S28",
     "glbpath": "/solar/s28_phoebe.glb",
-    "largeglbpath": "/solar/s28_phoebehuge.glb",
     "smallglbpath": "/solar/s28_phoebesmall.glb",
     "sizeBoxFit": 1.5,
     "symbolY": 1.5,

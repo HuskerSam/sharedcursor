@@ -8,10 +8,10 @@ export default class ActionCards {
     this.cardWidth = 5;
     this.cardHeight = 7;
 
-    for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
+    for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
-      cardHolder.position.x = -1 * (cardIndex % 3) * this.cardWidth * 1.25 - 14;
+      cardHolder.position.x = -1 * (cardIndex % 3) * this.cardWidth * 1.25 - 8;
       if (cardIndex > 2) {
         cardHolder.position.y = 8;
         cardHolder.position.z = 6;
@@ -65,7 +65,7 @@ export default class ActionCards {
     let actionCards = this.app.actionCards;
 
     let promises = [];
-    for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
+    for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       promises.push(this.renderPlayerCard(cardIndex));
     }
 

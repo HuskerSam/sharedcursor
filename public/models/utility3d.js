@@ -665,9 +665,6 @@ export default class Utility3D {
     let smallGlbPath = '';
     if (meta.smallglbpath)
       smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
-    let largeGlbPath = '';
-    if (meta.largeglbpath)
-      largeGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.largeglbpath) + '?alt=media';
     let glbPath = normalGlbPath;
 
     if (smallGlbPath)
@@ -679,10 +676,6 @@ export default class Utility3D {
     if (override === 'small') {
       if (smallGlbPath)
         glbPath = smallGlbPath;
-    }
-    if (override === 'huge') {
-      if (largeGlbPath)
-        glbPath = largeGlbPath;
     }
 
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
@@ -700,7 +693,6 @@ export default class Utility3D {
       symbolPath,
       normalGlbPath,
       smallGlbPath,
-      largeGlbPath,
       texturePath,
       specularPower,
       glbPath
