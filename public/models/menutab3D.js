@@ -47,33 +47,33 @@ export default class MenuTab3D {
   initOptionsBar() {
     this.nextTurnButton = this.addActionPanelButton('/fontcons/completecheck.png', 'Complete Round', () => this.app.clickEndTurn());
     this.nextTurnButton.parent = this.app.menuBarTabButtonsTN;
-    this.nextTurnButton.position = U3D.v(-2, 0, 0);
+    this.nextTurnButton.position = U3D.v(-14, 0, 0);
     this.nextTurnButton.setEnabled(false);
 
     this.nextSelectedRoundButton = this.addActionPanelButton('/fontcons/nextround.png', "Next Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn + 1);
     this.nextSelectedRoundButton.parent = this.app.menuBarTabButtonsTN;
-    this.nextSelectedRoundButton.position = U3D.v(-2, 0, 0);
+    this.nextSelectedRoundButton.position = U3D.v(-14, 0, 0);
     this.nextSelectedRoundButton.setEnabled(false);
 
     this.previousTurnButton = this.addActionPanelButton('/fontcons/previousround.png', "Previous Round", () => this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1);
     this.previousTurnButton.parent = this.app.menuBarTabButtonsTN;
-    this.previousTurnButton.position = U3D.v(-14, 0, 0);
+    this.previousTurnButton.position = U3D.v(-18, 0, 0);
     this.previousTurnButton.setEnabled(false);
 
     let homeBtn = this.addActionPanelButton('/fontcons/home.png', "Teleport Home [Y]", () => this.app.yButtonPress());
     homeBtn.parent = this.app.menuBarTabButtonsTN;
-    homeBtn.position = U3D.v(-18, 0, 0);
+    homeBtn.position = U3D.v(-10, 0, 0);
 
     let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/group.png', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    playersMoonsMenuBtn.position = U3D.v(-10, 0, 0);
+    playersMoonsMenuBtn.position = U3D.v(-6, 0, 0);
 
     let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/redtarget.png', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    selectedObjectMenuBtn.position = U3D.v(-6, 0, 0);
+    selectedObjectMenuBtn.position = U3D.v(-2, 0, 0);
 
     let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("menuTabButtonsPanel", {
-      height: 5,
+      height: 5.5,
       width: 22
     }, this.app.scene);
     seatBackPanel.material = this.playerCardHollowMaterial;
@@ -136,10 +136,17 @@ export default class MenuTab3D {
       if (this.selectedRoundIndexPanel)
         this.selectedRoundIndexPanel.dispose(false, true);
 
-      let color = U3D.get3DColors(this.app.activeSeatIndex);
+      let color;
+      if (this.app._paintedBoardTurn === null)
+        color = U3D.color("0,1,0");
+      else if (this.app.paintedBoardTurn >= 0)
+        color = U3D.color("1,1,1");
+      else
+        color = U3D.color("1, 0.5, 0");
       this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, this.app.boardTurnLabel, color);
       this.selectedRoundIndexPanel.parent = this.app.menuBarTabButtonsTN;
-      this.selectedRoundIndexPanel.position = U3D.v(-14, 2.25, 0);
+      this.selectedRoundIndexPanel.scaling = U3D.v(2);
+      this.selectedRoundIndexPanel.position = U3D.v(-16, 2.35, 0);
     }
 
     let playerUp = this.app.uid === this.app.gameData['seat' + this.app.activeSeatIndex];
@@ -289,12 +296,10 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose(false, true);
 
-    this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("0,0,1"));
-    this.selectedAssetLabel.position.x = 2;
-    this.selectedAssetLabel.position.y = 0;
-    this.selectedAssetLabel.position.z = 0;
-    this.selectedAssetLabel.scaling = U3D.v(1.5);
-    this.selectedAssetLabel.parent = this.focusPanelTab;
+    this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("1,1,1"));
+    this.selectedAssetLabel.position = U3D.v(-4, 2.35, 0);
+    this.selectedAssetLabel.scaling = U3D.v(2);
+    this.selectedAssetLabel.parent = this.app.menuBarTabButtonsTN;
 
     this.updateAssetSizeButtons();
     if (this.app.actionCardHelper)
@@ -567,7 +572,7 @@ export default class MenuTab3D {
           if (this.app.uid === seatData.uid || this.app.isOwner) {
             let gameOwnerNotPlayer = (this.app.uid !== seatData.uid && this.app.isOwner);
             let character = gameOwnerNotPlayer ? "Boot Player" : 'Stand Up';
-            let icon =  gameOwnerNotPlayer ? "/fontcons/remove.png" : "/fontcons/remove.png";
+            let icon = gameOwnerNotPlayer ? "/fontcons/remove.png" : "/fontcons/remove.png";
 
             if (!seatContainer.standButton) {
               seatContainer.standButton = this.addActionPanelButton(icon, character, () => {

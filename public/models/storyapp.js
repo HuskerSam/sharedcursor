@@ -817,11 +817,11 @@ export class StoryApp extends BaseApp {
       this._paintedBoardTurn = null;
 
     if (this._paintedBoardTurn === null)
-      this.boardTurnLabel = "Current";
+      this.boardTurnLabel = "Live " + (this.turnNumber + 1).toString();
     else if (this._paintedBoardTurn < 0)
       this.boardTurnLabel = "Prequel " + (-1 * this._paintedBoardTurn).toString();
     else
-      this.boardTurnLabel = "Round " + (this._paintedBoardTurn + 1).toString();
+      this.boardTurnLabel = "History " + (this._paintedBoardTurn + 1).toString();
 
     this.paintBoard();
   }
