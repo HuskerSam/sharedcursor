@@ -183,60 +183,7 @@ export default class MenuTab3D {
     followStopBtn.position = U3D.v(-10, 0, 0);
     followStopBtn.parent = this.focusPanelTab;
 
-    this.normalAssetSizeBtn = this.addActionPanelButton("/fontcons/biggersize.png", 'Big Size', () => {
-      this.normalAssetSizeBtn.setEnabled(false);
-      this.updateAssetSize('normal');
-    });
-    this.normalAssetSizeBtn.position = U3D.v(-18, 0, 0);
-    this.normalAssetSizeBtn.parent = this.focusPanelTab;
-
-    this.assetSmallSizeButton = this.addActionPanelButton("/fontcons/smallersize.png", 'Normal Size', () => {
-      this.assetSmallSizeButton.setEnabled(false);
-      this.updateAssetSize('small');
-    });
-    this.assetSmallSizeButton.position = U3D.v(-18, 0, 0);
-    this.assetSmallSizeButton.parent = this.focusPanelTab;
-
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
-
-  }
-  updateAssetSizeButtons() {
-    let meta = this.selectedObjectMeta;
-    if (meta.asteroidType || meta.avatarType) {
-      this.normalAssetSizeBtn.setEnabled(false);
-      this.assetSmallSizeButton.setEnabled(false);
-
-      return;
-    }
-
-    let smallSize = meta.smallglbpath ? true : false;
-
-    let isSmallSize = meta.extended.smallGlbPath === meta.extended.glbPath;
-    let isNormalSize = meta.extended.normalGlbPath === meta.extended.glbPath;
-
-    this.normalAssetSizeBtn.setEnabled(!isNormalSize);
-    this.assetSmallSizeButton.setEnabled(smallSize && !isSmallSize);
-  }
-  async updateAssetSize(size) {
-    let meta = this.selectedObjectMeta;
-    let id = meta.id;
-    if (this.obj(id)) {
-      if (size === 'normal')
-        meta.containerPath = meta.extended.normalGlbPath;
-      if (size === 'small')
-        meta.containerPath = meta.extended.smallGlbPath;
-
-      let freshMesh = await U3D.loadStaticMesh(this.app.scene, meta.containerPath, meta);
-      freshMesh.parent = this.obj(id).baseMesh.parent;
-      U3D.sizeNodeToFit(freshMesh, meta.sizeBoxFit);
-      freshMesh.setEnabled(true);
-      this.obj(id).baseMesh.dispose();
-      this.obj(id).baseMesh = freshMesh;
-    }
-
-    await this.app.updateProfileMeshOverride(id, size);
-    this.obj(id).assetMeta.extended = U3D.processStaticAssetMeta(this.obj(id).assetMeta, this.app.profile);
-    this.setSelectedAsset(this.obj(id).assetMeta);
   }
   async setSelectedAsset(assetMeta) {
     this.spinPauseMeta = assetMeta;
@@ -297,7 +244,6 @@ export default class MenuTab3D {
     this.selectedAssetLabel.scaling = U3D.v(2);
     this.selectedAssetLabel.parent = this.app.menuBarTabButtonsTN;
 
-    this.updateAssetSizeButtons();
     if (this.app.actionCardHelper)
       this.app.actionCardHelper.updateCardsForPlayer();
   }

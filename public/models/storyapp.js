@@ -112,16 +112,11 @@ export class StoryApp extends BaseApp {
       if (meta.seatIndex !== undefined)
         this.playerMoonAssets[meta.seatIndex] = assetMesh;
 
-      let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Normal</a>&nbsp;`;
-      let smallLink = '';
-      if (meta.smallglbpath)
-        smallLink = `<a href="${meta.extended.smallGlbPath}" target="_blank">Small</a>&nbsp;`;
-
+      let normalLink = `<a href="${meta.extended.glbPath}" target="_blank">Asset</a>&nbsp;`;
       let imgHTML = meta.symbol ? `<img src="${meta.extended.symbolPath}" class="symbol_image">` : '';
 
       loadingHTML += `${meta.name}:
         &nbsp;
-        ${smallLink}
         ${normalLink}
         <br>
         <a href="${meta.url}" target="_blank">wiki</a>
@@ -347,23 +342,6 @@ export class StoryApp extends BaseApp {
   }
   get activeMoon() {
     return this.playerMoonAssets[this.activeSeatIndex];
-  }
-
-  //profile related
-  async updateProfileMeshOverride(id, size) {
-    if (!this.profile.assetSizeOverrides)
-      this.profile.assetSizeOverrides = {};
-
-    this.profile.assetSizeOverrides[id] = size;
-
-    let updatePacket = {
-      assetSizeOverrides: {
-        [id]: size
-      }
-    };
-    await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
-      merge: true
-    });
   }
 
   //game logic

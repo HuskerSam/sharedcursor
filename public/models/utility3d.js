@@ -612,7 +612,11 @@ export default class Utility3D {
         else
           material.diffuseTexture = texture;
 
-        if (meta.cloneDiffuseForBump) {
+        if (meta.bumpPath) {
+          material.bumpTexture = new BABYLON.Texture(meta.extended.bumpPath);
+          material.invertNormalMapX = true;
+          material.invertNormalMapY = true;
+        } else if (meta.cloneDiffuseForBump) {
           material.bumpTexture = texture;
           if (meta.invertBump) {
             material.invertNormalMapX = true;
@@ -656,30 +660,8 @@ export default class Utility3D {
     return resultMesh;
   }
   static processStaticAssetMeta(meta, profile) {
-
-    let override = '';
-    if (profile.assetSizeOverrides && profile.assetSizeOverrides[meta.id])
-      override = profile.assetSizeOverrides[meta.id];
-
-    let normalGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
-    let smallGlbPath = '';
-    if (meta.smallglbpath)
-      smallGlbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.smallglbpath) + '?alt=media';
-    let glbPath = normalGlbPath;
-
-    if (smallGlbPath)
-      glbPath = smallGlbPath;
-
-    if (override === 'normal') {
-      glbPath = normalGlbPath;
-    }
-    if (override === 'small') {
-      if (smallGlbPath)
-        glbPath = smallGlbPath;
-    }
-
+    let glbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
     let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-
     let texturePath = null;
     let specularPower = null;
     if (meta.texturePath) {
@@ -688,12 +670,15 @@ export default class Utility3D {
       if (meta.specularPower)
         specularPower = meta.specularPower;
     }
+    let bumpPath = null;
+    if (meta.bumpPath) {
+      bumpPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.bumpPath) + '?alt=media';
+    }
 
     return {
       symbolPath,
-      normalGlbPath,
-      smallGlbPath,
       texturePath,
+      bumpPath,
       specularPower,
       glbPath
     };
