@@ -139,7 +139,7 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    this.actionCardHelper = new ActionCards(this, this.menuTab3D.playerCardsTN);
+    this.actionCardHelper = new ActionCards(this, this.menuTab3D.focusPanelTab);
 
     let delta = new Date().getTime() - startTime.getTime();
     console.log('init3D', delta);

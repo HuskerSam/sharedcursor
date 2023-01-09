@@ -199,10 +199,6 @@ export default class MenuTab3D {
 
     this.setSelectedAsset(this.obj('e1_luna').assetMeta);
 
-    this.playerCardsTN = new BABYLON.TransformNode('playerCardsTN', scene);
-    this.playerCardsTN.parent = this.focusPanelTab;
-    this.playerCardsTN.position.y = 6;
-    this.playerCardsTN.position.z = 4;
   }
   updateAssetSizeButtons() {
     let meta = this.selectedObjectMeta;

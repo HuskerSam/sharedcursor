@@ -5,73 +5,57 @@ export default class ActionCards {
     this.app = app;
     this.cardPanel = panel;
     this.cardPositions = [];
-    this.cardWidth = 5;
-    this.cardHeight = 7;
+    this.cardWidth = 8;
+    this.cardHeight = 6.25;
 
     for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
-      cardHolder.position.x = -1 * (cardIndex % 3) * this.cardWidth * 1.25 - 8;
-      if (cardIndex > 2) {
-        cardHolder.position.y = 8;
-        cardHolder.position.z = 6;
-      } else {
-
-        cardHolder.position.z = 5;
-      }
+      let x = -14;
+      let y = 5.25;
+      let z = 0;
+      if (cardIndex % 2 === 1)
+        x += this.cardWidth + 0.1;
+      if (cardIndex > 1)
+        y += this.cardHeight + 0.25;
+      cardHolder.position = U3D.v(x, y, z);
 
       this.cardPositions.push(cardHolder);
 
       let localIndex = cardIndex;
-      let playActionCardBtn = U3D.addTextPlane(this.scene, 'Play', U3D.color("1,0,1"));
-      playActionCardBtn.position.y = this.cardHeight / 2 - 0.55;
-      playActionCardBtn.position.z = -0.05;
-      playActionCardBtn.parent = cardHolder;
-      playActionCardBtn.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.playCard(localIndex);
-        }
-      };
-      cardHolder.playButton = playActionCardBtn;
+      cardHolder.playButton = this.app.menuTab3D.addActionPanelButton('/fontcons/action.png', "Play Card",
+        () => this.app.playCard(localIndex));
+      cardHolder.playButton.scaling = U3D.v(0.5);
+      cardHolder.playButton.position = U3D.v(-1.5, 1.5, 0);
+      cardHolder.playButton.parent = cardHolder;
       cardHolder.playButton.setEnabled(false);
 
-      let discardActionCardBtn = U3D.addTextPlane(this.scene, 'Recycle', U3D.color("0, 1, 1"));
-      discardActionCardBtn.position.y = -this.cardHeight / 2 + 0.55;
-      discardActionCardBtn.position.z = -0.05;
-      discardActionCardBtn.parent = cardHolder;
-      discardActionCardBtn.assetMeta = {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.discardCard(localIndex);
-        }
-      };
-      cardHolder.discardButton = discardActionCardBtn;
+      cardHolder.discardButton = this.app.menuTab3D.addActionPanelButton('/fontcons/discard.png', "Discard",
+        () => this.app.discardCard(localIndex));
+      cardHolder.discardButton.scaling = U3D.v(0.5);
+      cardHolder.discardButton.position = U3D.v(-1.5, -0.5, 0);
+      cardHolder.discardButton.parent = cardHolder;
       cardHolder.discardButton.setEnabled(false);
 
       let plane = BABYLON.MeshBuilder.CreatePlane("random", {
-        width: this.cardWidth,
-        height: this.cardHeight
+        height: 5,
+        width: 3
       }, this.app.scene);
+      plane.position = U3D.v(this.cardWidth / 2 - 3, this.cardHeight / 2 - 3, 1.75);
       plane.material = this.app.menuTab3D.playerCardbackMaterial;
+      plane.isPickable = false;
       plane.parent = cardHolder;
     }
 
     this.updateCardsForPlayer();
   }
-  async updateCardsForPlayer() {
+  updateCardsForPlayer() {
     let actionCards = this.app.actionCards;
-
-    let promises = [];
     for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
-      promises.push(this.renderPlayerCard(cardIndex));
+      this.renderPlayerCard(cardIndex);
     }
-
-    await Promise.all(promises);
   }
-  async renderPlayerCard(rawCardIndex) {
+  renderPlayerCard(rawCardIndex) {
     let cardHolder = this.cardPositions[rawCardIndex];
     let cardIndex = rawCardIndex;
 
@@ -81,45 +65,21 @@ export default class ActionCards {
         cardHolder.assetMesh.dispose(false, true);
 
       let cardMeta = this.app.actionCards[cardIndex];
-      let meta = Object.assign({}, window.allStaticAssetMeta[cardMeta.gameCard]);
-      meta.extended = U3D.processStaticAssetMeta(meta, {});
-      let mesh = await U3D.loadStaticMesh(this.app.scene, meta.extended.glbPath);
+      let meta = window.allStaticAssetMeta[cardMeta.gameCard];
+      let mesh = this.app.staticBoardObjects[cardMeta.gameCard].baseMesh.clone();
       mesh.setEnabled(true);
       U3D.sizeNodeToFit(mesh, 3);
       mesh.parent = cardHolder;
-      mesh.position.z = -1.5;
-      Object.assign(meta, {
-        appClickable: true,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          let id = cardMeta.gameCard;
-          this.app.menuTab3D.setSelectedAsset(this.app.staticBoardObjects[id].assetMeta);
-        }
-      });
-      mesh.assetMeta = meta;
-
+      mesh.position = U3D.v(this.cardWidth / 2 - 3, this.cardHeight / 2 - 2.75, -1.5);
+      mesh.isPickable = false;
       cardHolder.assetMesh = mesh;
-
 
       if (cardHolder.assetName)
         cardHolder.assetName.dispose(false, true);
-      cardHolder.assetName = U3D.addTextPlane(this.app.scene, meta.name, U3D.color("0,0,1"));
-      cardHolder.assetName.position.x = -this.cardWidth / 2 + 0.5;
-      cardHolder.assetName.position.y = 0;
-      cardHolder.assetName.position.z = -0.05;
-      cardHolder.assetName.rotation.z = Math.PI / 2;
-      cardHolder.assetName.scaling = U3D.v(0.75);
+      cardHolder.assetName = U3D.addTextPlane(this.app.scene, meta.shortDescription, U3D.color("1,1,1"));
+      cardHolder.assetName.position = U3D.v(0, -this.cardHeight / 2 + 0.25, 0);
+      cardHolder.assetName.scaling = U3D.v(1.25);
       cardHolder.assetName.parent = cardHolder;
-
-      if (cardHolder.assetType)
-        cardHolder.assetType.dispose(false, true);
-      cardHolder.assetType = U3D.addTextPlane(this.app.scene, meta.shortDescription, U3D.color("0,0,1"));
-      cardHolder.assetType.position.x = this.cardWidth / 2 - 0.5;
-      cardHolder.assetType.position.y = 0;
-      cardHolder.assetType.position.z = -0.05;
-      cardHolder.assetType.rotation.z = Math.PI / 2;
-      cardHolder.assetType.scaling = U3D.v(0.75);
-      cardHolder.assetType.parent = cardHolder;
     }
 
     let types = ['planet', 'moon', 'dwarf', 'nearearth']
