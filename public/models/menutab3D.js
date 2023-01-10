@@ -59,15 +59,15 @@ export default class MenuTab3D {
     homeBtn.parent = this.app.menuBarTabButtonsTN;
     homeBtn.position = U3D.v(leftEdge + 2 * buttonSpace, 0, 0);
 
-    let cardsBtn = this.addActionPanelButton('/fontcons/cards.png', "Players", () => this.selectedMenuBarTab(this.cardsPanelTab));
+    let cardsBtn = this.addActionPanelButton('/fontcons/cards.png', "Action Cards", () => this.selectedMenuBarTab(this.cardsPanelTab));
     cardsBtn.parent = this.app.menuBarTabButtonsTN;
     cardsBtn.position = U3D.v(leftEdge + 3 * buttonSpace, 0, 0);
 
-    let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/group.png', "Players", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
+    let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/group.png', "Player Avatars", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
     playersMoonsMenuBtn.position = U3D.v(leftEdge + 4 * buttonSpace, 0, 0);
 
-    let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/redtarget.png', "Selection", () => this.selectedMenuBarTab(this.focusPanelTab));
+    let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/redtarget.png', "Selected Target", () => this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
     selectedObjectMenuBtn.position = U3D.v(leftEdge + 5 * buttonSpace, 0, 0);
 
