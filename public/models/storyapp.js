@@ -321,7 +321,6 @@ export class StoryApp extends BaseApp {
       this.boardResetRoundData = await this.getJSONFile('/story/defaultround.json'),
       this.avatarMetas = await this.getJSONFile('/story/avatars.json')
     ]);
-    this._initGameDataBasedContent();
     await super.load();
   }
 
@@ -398,6 +397,8 @@ export class StoryApp extends BaseApp {
     if (!this.gameData)
       return;
 
+    this._initGameDataBasedContent();
+
     if (!this.runRender)
       return;
 
@@ -408,8 +409,6 @@ export class StoryApp extends BaseApp {
 
     this._updateGameMembersList();
     this.paintDock();
-
-
     this.paintBoard();
 
     if (this.gameData.mode !== this.previousMode)

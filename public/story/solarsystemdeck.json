@@ -186,6 +186,7 @@
     "symbol": "/symbol/eris.png",
     "symbolY": 1.75,
     "texturePath": "/solar/eris2k.jpg",
+    "cloneDiffuseForBump": true,
     "sizeBoxFit": 1.75,
     "url": "https://en.wikipedia.org/wiki/Eris",
     "x": -10,
