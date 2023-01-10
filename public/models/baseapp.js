@@ -1054,12 +1054,8 @@ export class BaseApp {
       return;
 
     this.cameraMetaX = {
-      position: new BABYLON.Vector3(12, 15, 12),
-      target: new BABYLON.Vector3(5, 1, 5)
-    };
-    this.cameraMetaY = {
-      position: new BABYLON.Vector3(30, 6, 30),
-      target: new BABYLON.Vector3(-10, 1, -10)
+      position: U3D.v(5,5,0),
+      target: U3D.v(0,4,0)
     };
 
     await this.initBabylonEngine(".popup-canvas", true);
@@ -1129,8 +1125,8 @@ export class BaseApp {
     scene.activeCamera.setTarget(this.cameraMetaX.target);
     scene.activeCamera.panningSensibility = 300;
     */
-    scene.activeCamera.position = new BABYLON.Vector3(5, 5, 0);
-    scene.activeCamera.setTarget(new BABYLON.Vector3(0, 4, 0));
+    scene.activeCamera.position = U3D.vector(this.cameraMetaX.position);
+    scene.activeCamera.setTarget(U3D.vector(this.cameraMetaX.target));
     scene.activeCamera.speed = 0.5;
     this.camera.angularSensibility = 5000;
     scene.activeCamera.storeState();

@@ -134,7 +134,7 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    this.actionCardHelper = new ActionCards(this, this.menuTab3D.focusPanelTab);
+    this.actionCardHelper = new ActionCards(this, this.menuTab3D.cardsPanelTab);
 
     let delta = new Date().getTime() - startTime.getTime();
     console.log('init3D', delta);
@@ -320,7 +320,8 @@ export class StoryApp extends BaseApp {
       this.actionCards = await this.getJSONFile('/story/actioncards.json'),
       this.boardResetRoundData = await this.getJSONFile('/story/defaultround.json'),
       this.avatarMetas = await this.getJSONFile('/story/avatars.json')
-    ])
+    ]);
+    this._initGameDataBasedContent();
     await super.load();
   }
 
@@ -396,8 +397,6 @@ export class StoryApp extends BaseApp {
 
     if (!this.gameData)
       return;
-
-    this._initGameDataBasedContent();
 
     if (!this.runRender)
       return;
