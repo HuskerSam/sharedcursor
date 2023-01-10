@@ -260,15 +260,15 @@ export default class MenuTab3D {
       this.selectedAssetLabel.dispose(false, true);
     this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("1,1,1"));
     this.selectedAssetLabel.position = U3D.v(-4, 2, 0);
-    //this.selectedAssetLabel.scaling = U3D.v(2);
     this.selectedAssetLabel.parent = this.app.menuBarTabButtonsTN;
 
     if (this.selectedAssetMiniClone)
       this.selectedAssetMiniClone.dispose();
     this.selectedAssetMiniClone = menubarMesh;
     this.selectedAssetMiniClone.parent = this.app.menuBarTabButtonsTN;
-    this.selectedAssetMiniClone.position = U3D.v(-2, 0, -1);
-    this.selectedAssetMiniClone.rotation = U3D.v(0, Math.PI, 0);
+    let y = assetMeta.avatarType ? -0.75 : 0.5;
+    this.selectedAssetMiniClone.position = U3D.v(-2, y, -1);
+    this.selectedAssetMiniClone.rotation = U3D.v(0, 0, 0);
 
     if (this.app.actionCardHelper)
       this.app.actionCardHelper.updateCardsForPlayer();

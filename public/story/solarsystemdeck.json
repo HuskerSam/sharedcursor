@@ -260,6 +260,8 @@
     "symbol": "/symbol/ceres.png",
     "texturePath": "/solar/ceres.jpg",
     "bumpPath": "/solar/ceresbump.jpg",
+    "emissiveBlack": true,
+    "specularPower": 128,
     "symbolY": 1.75,
     "sizeBoxFit": 1.75,
     "url": "https://en.wikipedia.org/wiki/Ceres",
