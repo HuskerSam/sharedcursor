@@ -651,8 +651,9 @@ export default class Utility3D {
       resultMesh = result.rootNodes[0];
     }
     resultMesh.setEnabled(false);
+    scene.mainLight.excludedMeshes.push(resultMesh);
 
-    if (scene.baseShadowGenerator) {      
+    if (scene.baseShadowGenerator) {
       if (meta && meta.noShadow) {
         scene.lights[0].excludedMeshes.push(resultMesh);
       } else {

@@ -8,14 +8,21 @@ export default class Asteroid3D {
     this.selectedAsteroidMaterial = new BABYLON.StandardMaterial('selectedAsteroidMaterial', this.app.scene);
 
     this.asteroidMaterial.wireframe = true;
-    let t11 = new BABYLON.Texture('/images/rockymountain.jpg', this.app.scene);
+    let t11 = new BABYLON.Texture('/images/asteroid2diff.jpg', this.app.scene);
+    let t12 = new BABYLON.Texture('/images/asteroid2normal.jpg', this.app.scene);
+    t11.vScale = 2;
+    t11.uScale = 2;
+    t12.vScale = 2;
+    t12.uScale = 2;
     this.asteroidMaterial.diffuseTexture = t11;
     this.asteroidMaterial.emissiveTexture = t11;
     this.asteroidMaterial.ambientTexture = t11;
+    this.asteroidMaterial.bumpTexture = t12;
 
     this.selectedAsteroidMaterial.diffuseTexture = t11;
     this.selectedAsteroidMaterial.emissiveTexture = t11;
     this.selectedAsteroidMaterial.ambientTexture = t11;
+    this.asteroidMaterial.bumpTexture = t12;
 
     this.asteroidSymbolMesh = BABYLON.MeshBuilder.CreatePlane('symbolshow1asteroid', {
       height: 1,
@@ -131,7 +138,7 @@ export default class Asteroid3D {
     let containerPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F' +
       encodeURIComponent(asteroid) + '?alt=media';
     let mesh = await U3D.loadStaticMesh(scene, containerPath);
-    U3D.sizeNodeToFit(mesh, 1.5);
+    U3D.sizeNodeToFit(mesh, 3);
     mesh.setEnabled(true);
 
     mesh.material = this.asteroidMaterial;

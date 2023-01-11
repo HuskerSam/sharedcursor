@@ -622,6 +622,10 @@ export class StoryApp extends BaseApp {
         }
       }
 
+      if (meta.asteroidType) {
+        meta.basePivot.material = this.asteroidHelper.selectedAsteroidMaterial;
+      }
+
       if (!this.inXR) {
         this.camera.detachControl(this.canvas)
       }
@@ -639,6 +643,10 @@ export class StoryApp extends BaseApp {
       if (avatarMeta && avatarMeta.positionAnimation) {
         avatarMeta.positionAnimation.restart();
         avatarMeta.walkingAnimation.restart();
+      }
+
+      if (meta.asteroidType) {
+        meta.basePivot.material = this.asteroidHelper.asteroidMaterial;
       }
 
       if (!this.inXR) {

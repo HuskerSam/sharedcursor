@@ -108,7 +108,7 @@ export default class MenuTab3D {
     scalingSliderTN.scaling = U3D.v(5);
 
     this.sliderPanelAdvTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
-      scalingSliderTN, 2048, 2048, true);
+      scalingSliderTN, 512, 512, true);
     this.scalingSlider3D = new BABYLON.GUI.Slider();
     this.scalingSlider3D.minimum = 0.1;
     this.scalingSlider3D.maximum = 1;
@@ -307,9 +307,6 @@ export default class MenuTab3D {
       }
     };
     mesh.setEnabled(true);
-
-    if (assetMeta.asteroidType || assetMeta.wireframe)
-      mesh.material = this.app.asteroidHelper.selectedAsteroidMaterial;
 
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose(false, true);
