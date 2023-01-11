@@ -22,16 +22,15 @@ export default class ActionCards {
 
       this.cardPositions.push(cardHolder);
 
-      let localIndex = cardIndex;
-      cardHolder.playButton = this.app.menuTab3D.addActionPanelButton('/fontcons/action.png', "Select Card",
-        () => this.app.playCard(localIndex));
+      cardHolder.playButton = this.app.menuTab3D.addActionPanelButton('/fontcons/action.png?cardindex=' + cardIndex, "Select Card",
+        () => this.app.playCard(cardIndex));
       cardHolder.playButton.scaling = U3D.v(0.5);
       cardHolder.playButton.position = U3D.v(this.cardWidth / 2 - 1.25, 0.8, 0);
       cardHolder.playButton.parent = cardHolder;
       cardHolder.playButton.setEnabled(false);
 
-      cardHolder.discardButton = this.app.menuTab3D.addActionPanelButton('/fontcons/discard.png', "Recycle Card",
-        () => this.app.discardCard(localIndex));
+      cardHolder.discardButton = this.app.menuTab3D.addActionPanelButton('/fontcons/discard.png?cardindex=' + cardIndex, "Recycle Card",
+        () => this.app.discardCard(cardIndex));
       cardHolder.discardButton.scaling = U3D.v(0.5);
       cardHolder.discardButton.position = U3D.v(this.cardWidth / 2 - 1.25, -0.8, 0);
       cardHolder.discardButton.parent = cardHolder;
