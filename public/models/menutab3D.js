@@ -138,20 +138,19 @@ export default class MenuTab3D {
     this.helpSlate.dimensions = new BABYLON.Vector2(2, 2);
     this.helpSlate.titleBarHeight = 0.5;
     this.helpSlate.title = "Storyverse Background";
-    /*
-        let tn = new BABYLON.TransformNode("slatetntemp", this.app.scene);
-        tn.position.z = 100;
-        tn.parent = this.app.xr.baseExperience.camera;
-        tn.dispose();
-    */
+
     this.helpSlate.content = new BABYLON.GUI.Image("cat", "https://placekitten.com/300/300");
-    //  this.helpSlate.position = tn.getAbsolutePosition();
     this.app.gui3DManager.addControl(this.helpSlate);
+    this.helpSlate.defaultBehavior.followBehavior.defaultDistance = 7;
+    this.helpSlate.defaultBehavior.followBehavior.minimumDistance = 5;
+    this.helpSlate.defaultBehavior.followBehavior.maximumDistance = 12;
+    this.helpSlate.defaultBehavior.followBehavior.lerpTime = 250;
 
-    //this.helpSlate.resetDefaultAspectAndPose();
-    //this.helpSlate.dimensions = new BABYLON.Vector2(2, 2);
-
-    //    this.helpSlate._followButton.dispose();
+    this.helpSlate.defaultBehavior.followBehavior.recenter();
+    if (!this.helpSlate.defaultBehavior.followBehaviorEnabled) {
+      this.helpSlate.defaultBehavior.followBehaviorEnabled = true;
+      setTimeout(() => this.helpSlate.defaultBehavior.followBehaviorEnabled = false, 1000);
+    }
   }
   addActionPanelButton(texturePath, text, handlePointerDown) {
     let button = new BABYLON.GUI.HolographicButton(texturePath);
@@ -276,7 +275,7 @@ export default class MenuTab3D {
       cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
       meshHeight = 12;
 
-    //  this.selectedContainerTransform.position.y = 3;
+      //  this.selectedContainerTransform.position.y = 3;
 
       this.lastFocusedMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
     } else if (assetMeta.asteroidType) {
@@ -296,10 +295,10 @@ export default class MenuTab3D {
     mesh.showBoundingBox = false;
 
     let boundingBox = new BABYLON.Mesh("boundingBoxselectedAsset", this.app.scene);
-//    if (assetMeta.avatarType)
-      boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2), U3D.v(meshHeight / 2)));
-//    else
-//      boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2 - 0.25), U3D.v(meshHeight / 2 + 0.25)));
+    //    if (assetMeta.avatarType)
+    boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2), U3D.v(meshHeight / 2)));
+    //    else
+    //      boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2 - 0.25), U3D.v(meshHeight / 2 + 0.25)));
     boundingBox.showBoundingBox = true;
     boundingBox.isPickable = false;
     boundingBox.parent = this.selectedContainerTransform;
@@ -332,7 +331,7 @@ export default class MenuTab3D {
       this.selectedAssetMiniClone.dispose();
     this.selectedAssetMiniClone = menubarMesh;
     this.selectedAssetMiniClone.parent = this.app.menuBarTabButtonsTN;
-  //  let y = assetMeta.avatarType ?  0 : 0.5;
+    //  let y = assetMeta.avatarType ?  0 : 0.5;
     this.selectedAssetMiniClone.position = U3D.v(-2, 0.5, -1);
     this.selectedAssetMiniClone.rotation = U3D.v(0, 0, 0);
 
