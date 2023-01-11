@@ -466,8 +466,7 @@ export class BaseApp {
 
     }
   }
-  updateUserPresence() {
-  }
+  updateUserPresence() {}
   updateTabView() {}
   gameTypeMetaData() {
     return {
@@ -1054,22 +1053,17 @@ export class BaseApp {
       return;
 
     this.cameraMetaX = {
-      position: U3D.v(5,5,0),
-      target: U3D.v(0,4,0)
+      position: U3D.v(5, 3, 0),
+      target: U3D.v(0, 2, 0)
     };
 
     await this.initBabylonEngine(".popup-canvas", true);
   }
   async createScene() {
     let scene = new BABYLON.Scene(this.engine);
-
     this.scene = scene;
-
     this.scene.autoClear = false; // Color buffer
     this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
-
-    //this.scene.onBeforeRenderObservable.add(() => {});
-
     if (this.instrumentationOn) {
       let instrumentation = new BABYLON.SceneInstrumentation(this.scene);
       instrumentation.captureFrameTime = true;
@@ -1079,52 +1073,18 @@ export class BaseApp {
       }, 300);
     }
 
-    if (this.urlParams.get('pointlight')) {
-      this.mainLight = new BABYLON.PointLight("light1", new BABYLON.Vector3(5, 35, 5), scene);
-    } else {
-      this.mainLight = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(1, -5, 1), scene);
-    }
-    this.mainLight.intensity = 0.8;
-
-    const shadowGenerator = new BABYLON.CascadedShadowGenerator(4096, this.mainLight);
-    shadowGenerator.stabilizeCascades = true;
-    shadowGenerator.autoCalcDepthBounds = true;
-    shadowGenerator.penumbraDarkness = 0;
-    shadowGenerator.lambda = 1;
-    shadowGenerator.cascadeBlendPercentage = 0;
-    this.scene.baseShadowGenerator = shadowGenerator;
-
     let environment = scene.createDefaultEnvironment({
       createSkybox: false,
+      groundOpacity: 0.25,
       groundSize: 150,
-      groundShadowLevel: 0,
-      enableGroundMirror: true
+      enableGroundShadow: false,
+      enableGroundMirror: false
     });
-    environment.setMainColor(BABYLON.Color3.FromHexString("#4444ff"));
     this.env = environment;
-    this.env.groundMaterial.alpha = 0.4;
 
     scene.createDefaultCamera(false, true, true);
     this.camera = scene.activeCamera;
-    /*
-    this.camera.wheelPrecision = 10;
-    this.camera.lowerRadiusLimit = 5;
-    this.camera.upperRadiusLimit = 35;
-    this.camera.wheelDeltaPercentage = 0.01;
-    this.camera.allowUpsideDown = false;
-    this.camera.maxZ = 750;
-    this.camera.panningAxis.y = 0;
-    this.camera.panningAxis.z = 1;
-    this.camera.upperBetaLimit = 1.5;
-    this.camera.lowerBetaLimit = 0.25;
 
-    scene.activeCamera.useAutoRotationBehavior = true;
-    scene.activeCamera.beta -= 0.2;
-
-    scene.activeCamera.setPosition(this.cameraMetaX.position);
-    scene.activeCamera.setTarget(this.cameraMetaX.target);
-    scene.activeCamera.panningSensibility = 300;
-    */
     scene.activeCamera.position = U3D.vector(this.cameraMetaX.position);
     scene.activeCamera.setTarget(U3D.vector(this.cameraMetaX.target));
     scene.activeCamera.speed = 0.5;
@@ -1235,7 +1195,7 @@ export class BaseApp {
       this.photoDome = new BABYLON.PhotoDome(
         "photoDome",
         equipath, {
-          resolution: 128,
+          resolution: 256,
           size: 150
         },
         this.scene

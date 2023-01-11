@@ -69,7 +69,8 @@ export default class Avatar3D {
       newModel.particleTN.position.z = -0.25;
       newModel.particleTN.rotation.x = -Math.PI / 2;
 
-      scene.baseShadowGenerator.addShadowCaster(mesh);
+      if (scene.baseShadowGenerator)
+        scene.baseShadowGenerator.addShadowCaster(mesh);
 
       avatarPositionTN.assetMeta = {
         name: avatarMeta.name,

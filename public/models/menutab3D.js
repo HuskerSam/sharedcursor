@@ -98,25 +98,59 @@ export default class MenuTab3D {
     this.cardsPanelTab.setEnabled(false);
     this.initCardPanel();
 
-
-
-    this.scalingSlider3D = new BABYLON.GUI.Slider3D("slider1");
-    this.scalingSlider3D.maximum = 1;
-    this.scalingSlider3D.minimum = 0.1;
-    this.app.gui3DManager.addControl(this.scalingSlider3D);
-    let scalingSliderTN = new BABYLON.TransformNode('scalingSliderTN', this.app.scene);
+    let scalingSliderTN = BABYLON.MeshBuilder.CreatePlane('scalingSliderTN', {
+      height: 5,
+      width: 5
+    }, this.app.scene);
     scalingSliderTN.parent = this.app.menuBarLeftTN;
-    scalingSliderTN.position = U3D.v(-20.5, 10, -1);
-    //scalingSliderTN.scaling = U3D.v(5);
-
+    scalingSliderTN.position = U3D.v(leftEdge + 0.5, 6.75, 0);
     scalingSliderTN.rotation = U3D.v(0, 0, Math.PI / 2);
+    scalingSliderTN.scaling = U3D.v(5);
 
-    this.scalingSlider3D.linkToTransformNode(scalingSliderTN);
-    this.scalingSlider3D.scaling = U3D.v(8, 6, 8);
+    this.sliderPanelAdvTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
+      scalingSliderTN, 2048, 2048, true);
+    this.scalingSlider3D = new BABYLON.GUI.Slider();
+    this.scalingSlider3D.minimum = 0.1;
+    this.scalingSlider3D.maximum = 1;
     this.scalingSlider3D.value = 1;
+    this.scalingSlider3D.height = "90px";
+    this.scalingSlider3D.width = "320px";
+    this.scalingSlider3D.color = "rgb(255,255,255)";
+    this.scalingSlider3D.thumbColor = "rgb(255,127,0)";
+    this.scalingSlider3D.thumbWidth = "75px";
     this.scalingSlider3D.onValueChangedObservable.add((value) => {
       this.app.sceneTransformNode.scaling = U3D.v(value);
     });
+    this.sliderPanelAdvTexture.addControl(this.scalingSlider3D);
+
+    let helpButton = this.addActionPanelButton('/fontcons/help.png', "Help", () => this.showHelpSlate());
+    helpButton.parent = this.app.menuBarLeftTN;
+    helpButton.scaling = U3D.v(0.5);
+    helpButton.position = U3D.v(leftEdge - 1, 7, 0);
+  }
+  showHelpSlate() {
+    if (this.helpSlate)
+      this.helpSlate.dispose();
+
+    this.helpSlate = new BABYLON.GUI.HolographicSlate("helpSlatePopup");
+    this.helpSlate.minDimensions = new BABYLON.Vector2(1, 1);
+    this.helpSlate.dimensions = new BABYLON.Vector2(2, 2);
+    this.helpSlate.titleBarHeight = 0.5;
+    this.helpSlate.title = "Storyverse Background";
+/*
+    let tn = new BABYLON.TransformNode("slatetntemp", this.app.scene);
+    tn.position.z = 100;
+    tn.parent = this.app.xr.baseExperience.camera;
+    tn.dispose();
+*/
+    this.helpSlate.content = new BABYLON.GUI.Image("cat", "https://placekitten.com/300/300");
+  //  this.helpSlate.position = tn.getAbsolutePosition();
+    this.app.gui3DManager.addControl(this.helpSlate);
+
+    //this.helpSlate.resetDefaultAspectAndPose();
+    //this.helpSlate.dimensions = new BABYLON.Vector2(2, 2);
+
+//    this.helpSlate._followButton.dispose();
   }
   addActionPanelButton(texturePath, text, handlePointerDown) {
     let button = new BABYLON.GUI.HolographicButton(texturePath);
@@ -634,43 +668,6 @@ export default class MenuTab3D {
   }
 
   initCardPanel() {
-    /*
-        let cardSlateTN = new BABYLON.TransformNode('cardSlateTN', this.app.scene);
-        cardSlateTN.parent = this.cardsPanelTab;
-        cardSlateTN.position = U3D.v(10, 10, 8);
-        cardSlateTN.rotation = U3D.v(0, Math.PI / 2, 0);
-        cardSlateTN.scaling = U3D.v(0.5);
-        this.cardSlateTN = cardSlateTN;
-
-        this.selectedCardSlate = new BABYLON.GUI.HolographicSlate("selectedCardSlate");
-        this.selectedCardSlate.minDimensions = new BABYLON.Vector2(5, 5);
-        this.selectedCardSlate.dimensions = new BABYLON.Vector2(5, 5);
-        this.selectedCardSlate.titleBarHeight = 0;
-        this.selectedCardSlate.title = "Use Action Card";
-        this.selectedCardSlate.position = U3D.v(0);
-        this.app.gui3DManager.addControl(this.selectedCardSlate);
-        //  this.selectedCardSlate._gizmo.updateGizmoRotationToMatchAttachedMesh = false;
-        //  this.selectedCardSlate._gizmo.updateGizmoPositionToMatchAttachedMesh = false;
-
-        //this.selectedCardSlate.rotation = U3D.v(0, 0, 0);
-
-        this.selectedCardText = new BABYLON.GUI.TextBlock("selectedCardText");
-        this.selectedCardText.fontFamily = "Helvetica";
-        this.selectedCardText.textWrapping = true;
-        this.selectedCardText.fontSize = "24px";
-        this.selectedCardText.textHorizontalAlignment = BABYLON.GUI.TextBlock.HORIZONTAL_ALIGNMENT_LEFT;
-        this.selectedCardText.textVerticalAlignment = BABYLON.GUI.TextBlock.VERTICAL_ALIGNMENT_TOP;
-        this.selectedCardText.paddingLeft = "5%";
-        this.selectedCardText.paddingRight = "5%";
-        this.selectedCardText.paddingTop = "2%";
-        this.selectedCardText.color = 'white';
-        this.selectedCardText.text = 'this is my text and it took a long time to put this much type in here ... ha ha ha ... now sing a sing and make this longer...';
-        //    this.app.gui3DManager.addControl(this.selectedCardText);
-        this.selectedCardSlate.resetDefaultAspectAndPose = () => {};
-        this.selectedCardSlate.content = this.selectedCardText;
-
-      this.selectedCardSlate.linkToTransformNode(cardSlateTN);
-      */
 
   }
 }
