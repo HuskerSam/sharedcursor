@@ -72,6 +72,8 @@ export class StoryApp extends BaseApp {
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
     this.rocketHelper = new Rocket3D(this);
+    this.invisibleMaterial = new BABYLON.StandardMaterial("invisiblematerial", this.scene);
+    this.invisibleMaterial.alpha = 0;
 
     if (this.urlParams.get('showguides'))
       U3D.createGuides(this.scene);
@@ -205,8 +207,16 @@ export class StoryApp extends BaseApp {
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
     let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta);
-    if (!meta.texturePath)
+    let boundingMesh = scaleMesh;
+    if (!meta.texturePath) {
       U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
+      let boundingInfo = scaleMesh.getHierarchyBoundingVectors(true);
+      boundingMesh = new BABYLON.Mesh("boundingBoxselectedAsset" + meta.id, this.scene);
+      boundingMesh.setBoundingInfo(new BABYLON.BoundingInfo(boundingInfo.min, boundingInfo.max));
+      boundingMesh.isPickable = false;
+      scaleMesh.parent = boundingMesh;
+    }
+    meta.boundingMesh = boundingMesh;
     scaleMesh.setEnabled(true);
     if (meta.wireframe) {
       scaleMesh.material = this.asteroidHelper.asteroidMaterial;
@@ -214,7 +224,7 @@ export class StoryApp extends BaseApp {
     }
 
     let meshPivot = new BABYLON.TransformNode('outerassetwrapper' + name, scene);
-    scaleMesh.parent = meshPivot;
+    boundingMesh.parent = meshPivot;
     meta.basePivot = meshPivot;
 
     let outerPivot = meshPivot;

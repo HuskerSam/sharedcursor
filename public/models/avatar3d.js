@@ -58,19 +58,20 @@ export default class Avatar3D {
       initedAvatars[seatIndex].animationGroups[0].stop();
 
       let mesh = initedAvatars[seatIndex].rootNodes[0];
-      let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + mesh.id);
+      let meshPicker = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(mesh);
+      meshPicker.material = this.app.invisibleMaterial;
+      meshPicker.visibility = 1;
+
+      let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + seatIndex);
       avatarPositionTN.position.x = avatarMeta.x;
       avatarPositionTN.position.z = avatarMeta.z;
-      mesh.parent = avatarPositionTN;
+      meshPicker.parent = avatarPositionTN;
       newModel.avatarPositionTN = avatarPositionTN;
       newModel.particleTN = new BABYLON.TransformNode("particleTNavatar" + seatIndex, this.app.scene);
       newModel.particleTN.parent = avatarPositionTN;
       newModel.particleTN.position.y = 0.8;
       newModel.particleTN.position.z = -0.25;
       newModel.particleTN.rotation.x = -Math.PI / 2;
-
-      if (scene.baseShadowGenerator)
-        scene.baseShadowGenerator.addShadowCaster(mesh);
 
       avatarPositionTN.assetMeta = {
         name: avatarMeta.name,
@@ -79,6 +80,8 @@ export default class Avatar3D {
         avatarType: true,
         seatIndex,
         basePivot: avatarPositionTN,
+        baseMesh: mesh,
+        boundingMesh: meshPicker,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
           this.app.pauseAssetSpin(pointerInfo, mesh, meta);

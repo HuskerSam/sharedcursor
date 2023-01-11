@@ -193,7 +193,7 @@ export default class Asteroid3D {
     }
     const asteroidSymbol = this['asteroidSymbolMesh' + delta].clone("symbolshow1asteroid" + delta);
     asteroidSymbol.setEnabled(true);
-    asteroidSymbol.parent = mesh;
+    asteroidSymbol.parent = orbitWrapper;
 
     this.loadedAsteroids[asteroid] = {
       orbitWrapper,
