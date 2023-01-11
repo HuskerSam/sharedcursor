@@ -659,30 +659,6 @@ export default class Utility3D {
     }
     return resultMesh;
   }
-  static processStaticAssetMeta(meta, profile) {
-    let glbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
-    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
-    let texturePath = null;
-    let specularPower = null;
-    if (meta.texturePath) {
-      texturePath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.texturePath) + '?alt=media';
-      glbPath = null;
-      if (meta.specularPower)
-        specularPower = meta.specularPower;
-    }
-    let bumpPath = null;
-    if (meta.bumpPath) {
-      bumpPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.bumpPath) + '?alt=media';
-    }
-
-    return {
-      symbolPath,
-      texturePath,
-      bumpPath,
-      specularPower,
-      glbPath
-    };
-  }
   static sizeNodeToFit(node, size) {
     if (node.refreshBoundingInfo)
       node.refreshBoundingInfo(true);

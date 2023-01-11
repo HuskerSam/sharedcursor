@@ -83,6 +83,7 @@ export default class Avatar3D {
           this.app.pauseAssetSpin(pointerInfo, mesh, meta);
         }
       };
+      avatarPositionTN.parent = this.app.sceneTransformNode;
     }
 
     this.initedAvatars = initedAvatars;

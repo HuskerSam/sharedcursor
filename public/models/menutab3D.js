@@ -96,7 +96,27 @@ export default class MenuTab3D {
     this.cardsPanelTab.parent = this.app.menuBarLeftTN;
     this.cardsPanelTab.position = U3D.v(0, 6.5, this.app.menuBarTabButtonsTN.position.z);
     this.cardsPanelTab.setEnabled(false);
-    //this.initCardPanel();
+    this.initCardPanel();
+
+
+
+    this.scalingSlider3D = new BABYLON.GUI.Slider3D("slider1");
+    this.scalingSlider3D.maximum = 1;
+    this.scalingSlider3D.minimum = 0.1;
+    this.app.gui3DManager.addControl(this.scalingSlider3D);
+    let scalingSliderTN = new BABYLON.TransformNode('scalingSliderTN', this.app.scene);
+    scalingSliderTN.parent = this.app.menuBarLeftTN;
+    scalingSliderTN.position = U3D.v(-20.5, 10, -1);
+    //scalingSliderTN.scaling = U3D.v(5);
+
+    scalingSliderTN.rotation = U3D.v(0, 0, Math.PI / 2);
+
+    this.scalingSlider3D.linkToTransformNode(scalingSliderTN);
+    this.scalingSlider3D.scaling = U3D.v(8, 6, 8);
+    this.scalingSlider3D.value = 1;
+    this.scalingSlider3D.onValueChangedObservable.add((value) => {
+      this.app.sceneTransformNode.scaling = U3D.v(value);
+    });
   }
   addActionPanelButton(texturePath, text, handlePointerDown) {
     let button = new BABYLON.GUI.HolographicButton(texturePath);
@@ -225,8 +245,8 @@ export default class MenuTab3D {
     }
     mesh = cloneMesh.clone();
     menubarMesh = cloneMesh.clone();
-    U3D.sizeNodeToFit(mesh, meshHeight);
     U3D.sizeNodeToFit(menubarMesh, 2.5);
+    U3D.sizeNodeToFit(mesh, meshHeight);
 
     let boundingBox = new BABYLON.Mesh("boundingBoxselectedAsset", this.app.scene);
     if (assetMeta.avatarType)
@@ -234,6 +254,7 @@ export default class MenuTab3D {
     else
       boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2 - 0.25), U3D.v(meshHeight / 2 + 0.25)));
     boundingBox.showBoundingBox = true;
+    boundingBox.isPickable = false;
     boundingBox.parent = this.selectedContainerTransform;
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);
@@ -294,7 +315,7 @@ export default class MenuTab3D {
       if (index > 3)
         index = 0;
 
-      this.setSelectedAsset(this.app.avatarHelper.initedAvatars[index].TN2.assetMeta);
+      this.setSelectedAsset(this.app.avatarMetas[index]);
     } else if (meta.actionCardType) {
       let index = meta.cardIndex + 1;
       if (index > 5) index = 0;
@@ -613,6 +634,43 @@ export default class MenuTab3D {
   }
 
   initCardPanel() {
+    /*
+        let cardSlateTN = new BABYLON.TransformNode('cardSlateTN', this.app.scene);
+        cardSlateTN.parent = this.cardsPanelTab;
+        cardSlateTN.position = U3D.v(10, 10, 8);
+        cardSlateTN.rotation = U3D.v(0, Math.PI / 2, 0);
+        cardSlateTN.scaling = U3D.v(0.5);
+        this.cardSlateTN = cardSlateTN;
+
+        this.selectedCardSlate = new BABYLON.GUI.HolographicSlate("selectedCardSlate");
+        this.selectedCardSlate.minDimensions = new BABYLON.Vector2(5, 5);
+        this.selectedCardSlate.dimensions = new BABYLON.Vector2(5, 5);
+        this.selectedCardSlate.titleBarHeight = 0;
+        this.selectedCardSlate.title = "Use Action Card";
+        this.selectedCardSlate.position = U3D.v(0);
+        this.app.gui3DManager.addControl(this.selectedCardSlate);
+        //  this.selectedCardSlate._gizmo.updateGizmoRotationToMatchAttachedMesh = false;
+        //  this.selectedCardSlate._gizmo.updateGizmoPositionToMatchAttachedMesh = false;
+
+        //this.selectedCardSlate.rotation = U3D.v(0, 0, 0);
+
+        this.selectedCardText = new BABYLON.GUI.TextBlock("selectedCardText");
+        this.selectedCardText.fontFamily = "Helvetica";
+        this.selectedCardText.textWrapping = true;
+        this.selectedCardText.fontSize = "24px";
+        this.selectedCardText.textHorizontalAlignment = BABYLON.GUI.TextBlock.HORIZONTAL_ALIGNMENT_LEFT;
+        this.selectedCardText.textVerticalAlignment = BABYLON.GUI.TextBlock.VERTICAL_ALIGNMENT_TOP;
+        this.selectedCardText.paddingLeft = "5%";
+        this.selectedCardText.paddingRight = "5%";
+        this.selectedCardText.paddingTop = "2%";
+        this.selectedCardText.color = 'white';
+        this.selectedCardText.text = 'this is my text and it took a long time to put this much type in here ... ha ha ha ... now sing a sing and make this longer...';
+        //    this.app.gui3DManager.addControl(this.selectedCardText);
+        this.selectedCardSlate.resetDefaultAspectAndPose = () => {};
+        this.selectedCardSlate.content = this.selectedCardText;
+
+      this.selectedCardSlate.linkToTransformNode(cardSlateTN);
+      */
 
   }
 }

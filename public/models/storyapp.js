@@ -65,7 +65,7 @@ export class StoryApp extends BaseApp {
   }
   async _initContent3D() {
     let startTime = new Date();
-    this.sceneTransformNode = null;
+    this.sceneTransformNode = new BABYLON.TransformNode('sceneBaseNodeForScale', this.scene);
     this.gui3DManager = new BABYLON.GUI.GUI3DManager(this.scene);
 
     this.createMenu3DWrapper();
@@ -85,15 +85,15 @@ export class StoryApp extends BaseApp {
     let deck = GameCards.getCardDeck('solarsystem');
 
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.scene));
     });
     deck = GameCards.getCardDeck('moons1');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.scene));
     });
     deck = GameCards.getCardDeck('moons2');
     deck.forEach(card => {
-      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.profile, this.scene));
+      promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.scene));
     });
 
     this.avatarHelper = new Avatar3D(this);
@@ -152,7 +152,7 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.position = U3D.v(1, 0.5, 1);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
     this.menuBarLeftTN.position.y = 5;
-    this.menuBarLeftTN.position.z = 12;
+    this.menuBarLeftTN.position.z = 2;
     this.menuBarLeftTN.billboardMode = 7;
 
     this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
@@ -171,11 +171,34 @@ export class StoryApp extends BaseApp {
     this.browserScreenMenuTN.position.z = 2;
     this.browserScreenMenuTN.parent = this.camera;
   }
+  _processStaticAssetMeta(meta) {
+    let glbPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
+    let symbolPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.symbol) + '?alt=media';
+    let texturePath = null;
+    let specularPower = null;
+    if (meta.texturePath) {
+      texturePath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.texturePath) + '?alt=media';
+      glbPath = null;
+      if (meta.specularPower)
+        specularPower = meta.specularPower;
+    }
+    let bumpPath = null;
+    if (meta.bumpPath) {
+      bumpPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.bumpPath) + '?alt=media';
+    }
 
-  async loadStaticAsset(name, sceneParent, profile, scene, meta = null) {
+    return {
+      symbolPath,
+      texturePath,
+      bumpPath,
+      specularPower,
+      glbPath
+    };
+  }
+  async loadStaticAsset(name, sceneParent, scene, meta = null) {
     if (!meta) {
       meta = Object.assign({}, window.allStaticAssetMeta[name]);
-      meta.extended = U3D.processStaticAssetMeta(meta, profile);
+      meta.extended = this._processStaticAssetMeta(meta);
     }
 
     if (meta.sizeBoxFit === undefined)

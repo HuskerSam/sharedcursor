@@ -175,6 +175,7 @@ export default class Asteroid3D {
       containerPath,
       extended: {}
     };
+    orbitWrapper.parent = this.app.sceneTransformNode;
 
     let delta = "";
     if (Math.floor(Math.random() * 2) === 0) {
