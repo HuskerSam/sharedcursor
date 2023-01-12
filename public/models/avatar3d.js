@@ -92,7 +92,8 @@ export default class Avatar3D {
       let color = U3D.get3DColors(seatIndex);
       let plane = BABYLON.MeshBuilder.CreatePlane("random", {
         height: 1.5,
-        width: 1.5
+        width: 1.5,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
       }, this.app.scene);
       plane.position = U3D.v(0, 0, 0);
       plane.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);

@@ -110,10 +110,9 @@ export default class MenuTab3D {
     this.sliderPanelAdvTexture.scaling = U3D.v(0.25);
     this.sliderPanelAdvTexture.addControl(this.scalingSlider3D);
 
-    let helpButton = this.addActionPanelButton('/fontcons/help.png', "Help", () => this.showHelpSlate());
+    let helpButton = this.addActionPanelButton('/fontcons/help.png', "Storyverse Overview", () => this.showHelpSlate());
     helpButton.parent = this.app.menuBarTabButtonsTN;
-    helpButton.scaling = U3D.v(0.5);
-    helpButton.position = U3D.v(leftEdge - 4.25, 4, 0);
+    helpButton.position = U3D.v(leftEdge - 4.25, 5, 0);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
@@ -261,9 +260,9 @@ export default class MenuTab3D {
 
     this.selectedContainerTransform = new BABYLON.TransformNode('selectedContainerTransform', this.app.scene);
     this.selectedContainerTransform.parent = this.focusPanelTab;
-    this.selectedContainerTransform.position.x = -5;
+    this.selectedContainerTransform.position.x = -10;
     this.selectedContainerTransform.position.z = 4;
-    this.selectedContainerTransform.position.y = 10;
+    this.selectedContainerTransform.position.y = 7;
     this.selectedContainerTransform.rotation.y = Math.PI;
 
     let result, mesh, menubarMesh;
@@ -274,8 +273,6 @@ export default class MenuTab3D {
       let avatar = this.app.avatarHelper.initedAvatars[assetMeta.seatIndex];
       cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
       meshHeight = 12;
-      this.selectedContainerTransform.position.y = 7;
-
       this.lastFocusedMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
     } else if (assetMeta.asteroidType) {
       cloneMesh = assetMeta.basePivot;
@@ -480,8 +477,19 @@ export default class MenuTab3D {
 
       let avatarName = U3D.addTextPlane(this.app.scene, avatarMeta.name, playerColor);
       avatarName.scaling = U3D.v(2.25);
-      avatarName.position = U3D.v(0, this.dockSeatHeight / 2 + 3.5, -0.05);
+      avatarName.position = U3D.v(0, this.dockSeatHeight / 2 + 3.6, -0.05);
       avatarName.parent = dockSeatContainer;
+
+      let logoHolder2 = BABYLON.MeshBuilder.CreatePlane("avatarimageplaneworld" + seatIndex, {
+          height: 0.67,
+          width: 0.67,
+          sideOrientation: BABYLON.Mesh.DOUBLESIDE
+        },
+        this.app.scene);
+      logoHolder2.position = U3D.v(0, 0, 0);
+      logoHolder2.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
+      logoHolder2.material = dockSeatContainer.playerImageMaterial;
+      logoHolder2.parent = this.app.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
     }
 
   }
@@ -588,8 +596,10 @@ export default class MenuTab3D {
         if (seatContainer.namePlate1) {
           seatContainer.namePlate1.dispose(false, true);
           seatContainer.namePlate2.dispose(false, true);
+          seatContainer.avatarNamePlate.dispose(false, true);
           seatContainer.namePlate1 = null;
           seatContainer.namePlate2 = null;
+          seatContainer.avatarNamePlate = null;
         }
 
         seatContainer.standButton.setEnabled(false);
@@ -630,6 +640,12 @@ export default class MenuTab3D {
           seatContainer.playerImageMaterial.emissiveTexture = t;
           seatContainer.playerImageMaterial.ambientTexture = t;
           seatContainer.playerImageMaterial.alpha = 1;
+
+          seatContainer.avatarNamePlate = U3D.addTextPlane(this.app.scene, seatData.name, color);
+          seatContainer.avatarNamePlate.position = U3D.v(0, 0, -1);
+          seatContainer.avatarNamePlate.rotation = U3D.v(Math.PI / 2, 0, Math.PI);
+          seatContainer.avatarNamePlate.scaling = U3D.v(0.3);
+          seatContainer.avatarNamePlate.parent = this.app.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
         } else {
           seatContainer.sitButton.setEnabled(true);
           seatContainer.playerImageMaterial.alpha = 0;
