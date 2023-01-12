@@ -269,12 +269,12 @@ export default class MenuTab3D {
     let result, mesh, menubarMesh;
     let meshHeight = 10;
     let cloneMesh;
+    let boundsWrapperNeeded = false;
     if (assetMeta.avatarType) {
       let avatar = this.app.avatarHelper.initedAvatars[assetMeta.seatIndex];
       cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
       meshHeight = 12;
-
-      //  this.selectedContainerTransform.position.y = 3;
+      this.selectedContainerTransform.position.y = 7;
 
       this.lastFocusedMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
     } else if (assetMeta.asteroidType) {
@@ -283,25 +283,31 @@ export default class MenuTab3D {
     } else {
       cloneMesh = this.app.staticBoardObjects[assetMeta.id].baseMesh;
       this.lastFocusedMesh = this.obj(assetMeta.id).boundingMesh;
+
+      if (!assetMeta.texturePath)
+        boundsWrapperNeeded = true;
     }
     this.lastFocusedMesh.showBoundingBox = true;
 
     mesh = cloneMesh.clone();
     menubarMesh = cloneMesh.clone();
+    mesh.parent = null;
+    menubarMesh.parent = null;
     U3D.sizeNodeToFit(menubarMesh, 2.5);
     U3D.sizeNodeToFit(mesh, meshHeight);
     menubarMesh.showBoundingBox = false;
-    mesh.showBoundingBox = false;
 
-    let boundingBox = new BABYLON.Mesh("boundingBoxselectedAsset", this.app.scene);
-    //    if (assetMeta.avatarType)
-    boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2), U3D.v(meshHeight / 2)));
-    //    else
-    //      boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2 - 0.25), U3D.v(meshHeight / 2 + 0.25)));
-    boundingBox.showBoundingBox = true;
-    boundingBox.isPickable = false;
-    boundingBox.parent = this.selectedContainerTransform;
-    boundingBox.position.y = 0.25;
+    if (boundsWrapperNeeded) {
+      let boundingBox = new BABYLON.Mesh("boundingBoxselectedAsset", this.app.scene);
+      boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2), U3D.v(meshHeight / 2)));
+      boundingBox.showBoundingBox = true;
+      boundingBox.isPickable = false;
+      boundingBox.parent = this.selectedContainerTransform;
+      boundingBox.position.y = 0.25;
+      mesh.showBoundingBox = false;
+    } else {
+      mesh.showBoundingBox = true;
+    }
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);
     mesh.parent = animDetails.rotationPivot;
@@ -354,11 +360,11 @@ export default class MenuTab3D {
       let key = keys[nextIndex];
       this.setSelectedAsset(this.app.asteroidHelper.loadedAsteroids[key].orbitWrapper.assetMeta);
     } else if (meta.avatarType) {
-      let index = meta.seatIndex++;
+      let index = meta.seatIndex + 1;
       if (index > 3)
         index = 0;
 
-      this.setSelectedAsset(this.app.avatarMetas[index]);
+      this.setSelectedAsset(this.app.avatarHelper.initedAvatars[index].avatarPositionTN.assetMeta);
     } else if (meta.actionCardType) {
       let index = meta.cardIndex + 1;
       if (index > 5) index = 0;
@@ -523,8 +529,8 @@ export default class MenuTab3D {
     let colors = U3D.get3DColors(seatIndex);
     let color = U3D.colorRGB255(colors.r + "," + colors.g + "," + colors.b);
     let avatarMeta = this.app.avatarMetas[seatIndex];
-  //  this.selectedPlayerText3D.color = 'white';
-  //  this.selectedPlayerText3D.text = avatarMeta.description;
+    //  this.selectedPlayerText3D.color = 'white';
+    //  this.selectedPlayerText3D.text = avatarMeta.description;
   }
   async updateUserPresence() {
     if (!this.dockSeatContainers)

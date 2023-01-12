@@ -33,7 +33,7 @@ export default class Avatar3D {
 
     ]
 
-    this.dockDiscRadius = 0.6;
+    this.playerShieldTexture = new BABYLON.Texture('/images/shieldopen.png', this.app.scene);
   }
 
   async loadAndInitAvatars() {
@@ -84,10 +84,24 @@ export default class Avatar3D {
         boundingMesh: meshPicker,
         clickCommand: 'customClick',
         handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.pauseAssetSpin(pointerInfo, mesh, meta);
+          this.app.pauseAssetSpin(pointerInfo, mesh, avatarPositionTN.assetMeta);
         }
       };
       avatarPositionTN.parent = this.app.sceneTransformNode;
+
+      let color = U3D.get3DColors(seatIndex);
+      let plane = BABYLON.MeshBuilder.CreatePlane("random", {
+        height: 1.5,
+        width: 1.5
+      }, this.app.scene);
+      plane.position = U3D.v(0, 0, 0);
+      plane.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
+      plane.material = new BABYLON.StandardMaterial("shieldMat" + seatIndex, this.app.scene);
+      plane.material.opacityTexture = this.playerShieldTexture;
+      plane.material.diffuseColor = color;
+      plane.material.diffuseColor = color;
+      plane.material.emissiveColor = color;
+      plane.parent = avatarPositionTN;
     }
 
     this.initedAvatars = initedAvatars;
