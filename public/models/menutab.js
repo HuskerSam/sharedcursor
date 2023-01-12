@@ -113,7 +113,7 @@ export default class MenuTab3D {
     let helpButton = this.addActionPanelButton('/fontcons/help.png', "Help", () => this.showHelpSlate());
     helpButton.parent = this.app.menuBarTabButtonsTN;
     helpButton.scaling = U3D.v(0.5);
-    helpButton.position = U3D.v(leftEdge - 7, 1, 0);
+    helpButton.position = U3D.v(leftEdge - 4.25, 4, 0);
 
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
     this.focusPanelTab.parent = this.app.menuBarLeftTN;
@@ -385,14 +385,14 @@ export default class MenuTab3D {
 
   initPlayerPanel() {
     this.dockSeatContainers = [];
-    this.dockSeatHeight = 12.5;
-    this.dockSeatWidth = 5.25;
+    this.dockSeatHeight = 14;
+    this.dockSeatWidth = 6;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let colors = U3D.get3DColors(seatIndex);
       let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
-      dockSeatContainer.position = U3D.v(-18 + (seatIndex * this.dockSeatWidth), 8.5, 0);
+      dockSeatContainer.position = U3D.v(-20 + (seatIndex * this.dockSeatWidth), 8.5, 0);
       dockSeatContainer.parent = this.playerMoonPanelTab;
       this.dockSeatContainers.push(dockSeatContainer);
 
@@ -425,7 +425,7 @@ export default class MenuTab3D {
       let avatarTN = new BABYLON.TransformNode('seatavatarTN' + seatIndex, this.app.scene);
       cloneMesh.parent = avatarTN;
       avatarTN.parent = dockSeatContainer;
-      U3D.sizeNodeToFit(cloneMesh, 1.75);
+      U3D.sizeNodeToFit(cloneMesh, 2);
       cloneMesh.showBoundingBox = false;
       avatarTN.rotation.y = Math.PI;
       avatarTN.position = U3D.v(0, -1.25, 0);
@@ -433,7 +433,7 @@ export default class MenuTab3D {
       cloneMoon.parent = avatarTN;
       cloneMoon.showBoundingBox = false;
       U3D.sizeNodeToFit(cloneMoon, 1.2);
-      cloneMoon.position = U3D.v(0, this.dockSeatHeight / 2 - 0.1, -1.75);
+      cloneMoon.position = U3D.v(0.75, this.dockSeatHeight / 2 - 1, -1.75);
 
       dockSeatContainer.standButton = this.addActionPanelButton("/fontcons/remove.png?seatindex=" + seatIndex.toString(), 'Free Avatar', () => {
         this.app._gameAPIStand(seatIndex);
@@ -441,7 +441,7 @@ export default class MenuTab3D {
       });
       dockSeatContainer.standButton.parent = dockSeatContainer;
       dockSeatContainer.standButton.scaling = U3D.v(0.5);
-      dockSeatContainer.standButton.position = U3D.v(1.25, this.dockSeatHeight / 2 - 1.25, 0);
+      dockSeatContainer.standButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, 0);
 
       dockSeatContainer.sitButton = this.addActionPanelButton('/fontcons/greenchair.png?seatindex=' + seatIndex.toString(), "Play Avatar", () => {
         this.app.dockSit(seatIndex);
@@ -449,7 +449,7 @@ export default class MenuTab3D {
       });
       dockSeatContainer.sitButton.parent = dockSeatContainer;
       dockSeatContainer.sitButton.scaling = U3D.v(0.5);
-      dockSeatContainer.sitButton.position = U3D.v(1.25, this.dockSeatHeight / 2 - 1.25, 0);
+      dockSeatContainer.sitButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, 0);
 
       let logoHolder = BABYLON.MeshBuilder.CreatePlane("avatarimageplanemenubar" + seatIndex, {
           height: 1,
@@ -466,7 +466,7 @@ export default class MenuTab3D {
       moonName.position = U3D.v(0, this.dockSeatHeight / 2 + 1, -0.05);
       moonName.parent = dockSeatContainer;
     }
-
+/*
     this.selectedPlayerDescriptionPanel = BABYLON.MeshBuilder.CreatePlane("currentSeatDescriptionWrapper", {
       height: 24,
       width: 12
@@ -495,6 +495,7 @@ export default class MenuTab3D {
     this.selectedPlayerText3D.paddingRight = "5%";
     this.selectedPlayerText3D.paddingTop = "2%";
     this.playerDescriptionAdvancedTexture.addControl(this.selectedPlayerText3D);
+    */
   }
   _initMoonFlagPole(seatIndex) {
     let flagPoleHolder = new BABYLON.TransformNode('flagpoleholder' + seatIndex, this.app.scene);
@@ -540,8 +541,8 @@ export default class MenuTab3D {
     let colors = U3D.get3DColors(seatIndex);
     let color = U3D.colorRGB255(colors.r + "," + colors.g + "," + colors.b);
     let avatarMeta = this.app.avatarMetas[seatIndex];
-    this.selectedPlayerText3D.color = 'white';
-    this.selectedPlayerText3D.text = avatarMeta.description;
+  //  this.selectedPlayerText3D.color = 'white';
+  //  this.selectedPlayerText3D.text = avatarMeta.description;
   }
   async updateUserPresence() {
     if (!this.dockSeatContainers)
@@ -572,8 +573,8 @@ export default class MenuTab3D {
             diameter: 0.5,
             segments: 8
           }, this.app.scene);
-          sphere.position.y = 5.15;
-          sphere.position.x = -1.75;
+          sphere.position.y = this.dockSeatHeight / 2 - 0.75;
+          sphere.position.x = -2;
           sphere.material = mat1;
           sphere.parent = seat;
           seat.onlineSphere = sphere;
@@ -594,7 +595,6 @@ export default class MenuTab3D {
           seatContainer.playerDetailsTN.parent = seatContainer;
         }
 
-        let color = U3D.get3DColors(seatIndex);
         let meta = seatContainer.assetMeta;
 
         if (seatContainer.namePlate1) {
@@ -611,13 +611,13 @@ export default class MenuTab3D {
           let names = seatData.name.split(' ');
           let color = U3D.color('0,0,0');
           seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
-          seatContainer.namePlate1.position = U3D.v(0, this.dockSeatHeight / -2 + 1.5, -0.05);
+          seatContainer.namePlate1.position = U3D.v(1, this.dockSeatHeight / -2 + 1.25, -1);
           seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
 
           let name2 = '';
           if (names[1]) name2 = names[1];
           seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, name2, color);
-          seatContainer.namePlate2.position = U3D.v(0, this.dockSeatHeight / -2 + 0.75, -0.05);
+          seatContainer.namePlate2.position = U3D.v(1, this.dockSeatHeight / -2 + 2, -1.5);
           seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
 
           if (this.app.uid === seatData.uid || this.app.isOwner) {

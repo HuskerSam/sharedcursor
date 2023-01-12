@@ -1,7 +1,7 @@
 import BaseApp from '/models/baseapp.js';
 import GameCards from '/models/gamecards.js';
 import U3D from '/models/utility3d.js';
-import MenuTab3D from '/models/menutab3d.js';
+import MenuTab3D from '/models/menutab.js';
 import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
 import ActionCards from '/models/actioncards.js';
@@ -516,7 +516,7 @@ export class StoryApp extends BaseApp {
   }
 
   enterXR() {
-    this.menuBarLeftTN.position = U3D.v(0.05, 0.05, -0.05);
+    this.menuBarLeftTN.position = U3D.v(0.05, 0.05, -0.15);
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
     this.menuBarLeftTN.billboardMode = 7;
