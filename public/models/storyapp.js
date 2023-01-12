@@ -516,7 +516,7 @@ export class StoryApp extends BaseApp {
   }
 
   enterXR() {
-    this.menuBarLeftTN.position = U3D.v(0.05, 0.05, -0.15);
+    this.menuBarLeftTN.position = U3D.v(-0.25, 0.05, -0.15);
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
     this.menuBarLeftTN.billboardMode = 7;
