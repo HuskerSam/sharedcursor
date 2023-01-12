@@ -365,14 +365,14 @@ export default class MenuTab3D {
 
   initPlayerPanel() {
     this.dockSeatContainers = [];
-    this.dockSeatHeight = 17;
-    this.dockSeatWidth = 6;
+    this.dockSeatHeight = 14;
+    this.dockSeatWidth = 6.5;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
       let colors = U3D.get3DColors(seatIndex);
       let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
-      dockSeatContainer.position = U3D.v(-20 + (seatIndex * this.dockSeatWidth), 7, 0);
+      dockSeatContainer.position = U3D.v(-20 + (seatIndex * this.dockSeatWidth), 6, 0);
       dockSeatContainer.parent = this.playerMoonPanelTab;
       this.dockSeatContainers.push(dockSeatContainer);
 
@@ -387,8 +387,8 @@ export default class MenuTab3D {
       this._initMoonFlagPole(seatIndex);
 
       let seatBackPanel = BABYLON.MeshBuilder.CreatePlane("seatBackPanel" + seatIndex, {
-        height: this.dockSeatHeight + 0.25,
-        width: this.dockSeatWidth - 0.25
+        height: this.dockSeatHeight + 0.5,
+        width: this.dockSeatWidth - 0.5
       }, this.app.scene);
       let panelMat = new BABYLON.StandardMaterial("menuCardBackPanel" + seatIndex, this.app.scene);
       let t = new BABYLON.Texture('/images/cardhollow.png', this.app.scene);
@@ -409,7 +409,7 @@ export default class MenuTab3D {
       U3D.sizeNodeToFit(cloneMesh, 2.4);
       cloneMesh.showBoundingBox = false;
       avatarTN.rotation.y = Math.PI;
-      avatarTN.position = U3D.v(0, -0.25, 0);
+      avatarTN.position = U3D.v(0, -1.5, 0);
       cloneMesh.isPickable = true;
       cloneMesh.assetMeta = {
         appClickable: true,
@@ -423,7 +423,7 @@ export default class MenuTab3D {
       cloneMoon.showBoundingBox = false;
       cloneMoon.isPickable = true;
       cloneMoon.parent = dockSeatContainer;
-      U3D.sizeNodeToFit(cloneMoon, 1.4);
+      U3D.sizeNodeToFit(cloneMoon, 1.35);
       cloneMoon.assetMeta = {
         appClickable: true,
         clickCommand: "customClick",
@@ -434,7 +434,7 @@ export default class MenuTab3D {
       dockSeatContainer.moonAnimDetails = U3D.selectedRotationAnimation(cloneMoon, this.app.scene);
       cloneMoon.parent = dockSeatContainer.moonAnimDetails.rotationPivot;
       dockSeatContainer.moonAnimDetails.rotationPivot.parent = dockSeatContainer;
-      dockSeatContainer.moonAnimDetails.rotationPivot.position = U3D.v(0, this.dockSeatHeight / 2 - 2.5, 1.75);
+      dockSeatContainer.moonAnimDetails.rotationPivot.position = U3D.v(0, this.dockSeatHeight / 2 - 2.25, 1.65);
       cloneMoon.position = U3D.v(0);
       dockSeatContainer.moonAnimDetails.runningAnimation.pause();
 
@@ -455,28 +455,41 @@ export default class MenuTab3D {
       dockSeatContainer.sitButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, 0);
 
       let logoHolder = BABYLON.MeshBuilder.CreatePlane("avatarimageplanemenubar" + seatIndex, {
-          height: 1.5,
-          width: 1.5
+          height: 1,
+          width: 1
         },
         this.app.scene);
-      logoHolder.position = U3D.v(0, this.dockSeatHeight / -2 + 3.75, 0);
+      logoHolder.position = U3D.v(-1.5, this.dockSeatHeight / -2 + 1.35, 0);
       logoHolder.material = dockSeatContainer.playerImageMaterial;
       logoHolder.parent = dockSeatContainer;
+
+      let ofNameX = 1.25;
+      let moonNameX = 0.25;
+      if (seatIndex === 1) {
+        ofNameX = 1.4;
+        moonNameX = 0.75;
+      } else if (seatIndex === 2) {
+        ofNameX = 2.25;
+        moonNameX = 0.25;
+      } else if (seatIndex === 3) {
+        ofNameX = 1.85;
+        moonNameX = 0.5;
+      }
 
       let moonDesc = this.app.playerMoonAssets[seatIndex].assetMeta.name;
       let moonName = U3D.addTextPlane(this.app.scene, moonDesc, playerColor);
       moonName.scaling = U3D.v(2.25);
-      moonName.position = U3D.v(0, this.dockSeatHeight / 2 + 1, 0);
+      moonName.position = U3D.v(moonNameX, this.dockSeatHeight / 2 + 1, 0);
       moonName.parent = dockSeatContainer;
 
       let ofName = U3D.addTextPlane(this.app.scene, 'of', U3D.color('1,1,1'));
       ofName.scaling = U3D.v(1.25);
-      ofName.position = U3D.v(0, this.dockSeatHeight / 2 + 2.25, 0);
+      ofName.position = U3D.v(-this.dockSeatWidth / 2 + ofNameX, this.dockSeatHeight / 2 + 1, 0);
       ofName.parent = dockSeatContainer;
 
       let avatarName = U3D.addTextPlane(this.app.scene, avatarMeta.name, playerColor);
       avatarName.scaling = U3D.v(2.25);
-      avatarName.position = U3D.v(0, this.dockSeatHeight / 2 + 3.6, 0);
+      avatarName.position = U3D.v(0, this.dockSeatHeight / 2 + 2.5, 0);
       avatarName.parent = dockSeatContainer;
 
       let logoHolder2 = BABYLON.MeshBuilder.CreatePlane("avatarimageplaneworld" + seatIndex, {
@@ -601,15 +614,15 @@ export default class MenuTab3D {
 
           let color = U3D.get3DColors(seatIndex);
           seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
-          seatContainer.namePlate1.position = U3D.v(0, this.dockSeatHeight / -2 + 2, -0.05);
+          seatContainer.namePlate1.position = U3D.v(0.85, this.dockSeatHeight / -2 + 1.45, 0);
           seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
-          seatContainer.namePlate1.scaling = U3D.v(1.25);
+          seatContainer.namePlate1.scaling = U3D.v(0.8);
 
           let name2 = '';
           if (names[1]) name2 = names[1];
           seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, name2, color);
-          seatContainer.namePlate2.scaling = U3D.v(1.25);
-          seatContainer.namePlate2.position = U3D.v(0, this.dockSeatHeight / -2 + 1.15, -0.05);
+          seatContainer.namePlate2.scaling = U3D.v(0.8);
+          seatContainer.namePlate2.position = U3D.v(0.85, this.dockSeatHeight / -2 + 0.75, 0);
           seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
 
           if (this.app.uid === seatData.uid || this.app.isOwner) {
