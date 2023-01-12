@@ -6,6 +6,7 @@ import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
 import ActionCards from '/models/actioncards.js';
 import Rocket3D from '/models/rocket3d.js';
+import HelpSlate from '/models/helpslate.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -72,6 +73,7 @@ export class StoryApp extends BaseApp {
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
     this.rocketHelper = new Rocket3D(this);
+    this.helpSlateHelper = new HelpSlate(this);
     this.invisibleMaterial = new BABYLON.StandardMaterial("invisiblematerial", this.scene);
     this.invisibleMaterial.alpha = 0;
 

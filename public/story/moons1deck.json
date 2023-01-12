@@ -137,6 +137,7 @@
     "symbol": "/symbol/io.png",
     "solarPosition": "J5",
     "texturePath": "/solar/io4k.jpg",
+    "cloneDiffuseForBump": true,
     "emissiveBlack": true,
     "specularPower": 128,
     "sizeBoxFit": 1.75,
