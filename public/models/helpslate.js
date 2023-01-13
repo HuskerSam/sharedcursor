@@ -5,79 +5,70 @@ export default class HelpSlate {
     this.app = app;
     this.idCounter = 0;
   }
+  _initHelpPanel() {
+    this.inited = true;
+
+    this.helpSlateTN = BABYLON.MeshBuilder.CreatePlane('helpSlatePanel', {
+      height: 2,
+      width: 2
+    }, this.app.scene);
+
+    this.helpSlateAdvancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
+      this.helpSlateTN, 1024, 1024, true);
+
+    this.scrollViewer = new BABYLON.GUI.ScrollViewer();
+    this.scrollViewer.width = 1;
+    this.scrollViewer.height = 1;
+    this.scrollViewer.background = "#0000BB";
+
+    this.stackPanel = new BABYLON.GUI.StackPanel();
+    this.stackPanel.width = "100%";
+    this.stackPanel.clipChildren = false;
+    this.stackPanel.clipContent = false;
+    this.stackPanel.adaptHeightToChildren = true;
+    this.scrollViewer.addControl(this.stackPanel);
+    this.helpSlateAdvancedTexture.addControl(this.scrollViewer);
+
+    let tb = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 3);
+    this.stackPanel.addControl(tb);
+    let tb2 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
+    this.stackPanel.addControl(tb2);
+    let tb3 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
+    this.stackPanel.addControl(tb3);
+    let tb4 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
+    this.stackPanel.addControl(tb4);
+    let tb5 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
+    this.stackPanel.addControl(tb5);
+
+  }
   showHelpSlate() {
-    if (this.helpSlate)
-      this.helpSlate.dispose();
+    if (!this.inited)
+      this._initHelpPanel();
 
-    this.helpSlate = new BABYLON.GUI.HolographicSlate("helpSlatePopup");
-    this.helpSlate.minDimensions = new BABYLON.Vector2(1, 1);
-    this.helpSlate.dimensions = new BABYLON.Vector2(2, 2);
-    this.helpSlate.titleBarHeight = 0.5;
-    this.helpSlate.title = "Storyverse";
-    this.app.gui3DManager.addControl(this.helpSlate);
-    this.helpSlate.defaultBehavior.followBehavior.defaultDistance = 7;
-    this.helpSlate.defaultBehavior.followBehavior.minimumDistance = 5;
-    this.helpSlate.defaultBehavior.followBehavior.maximumDistance = 12;
-    this.helpSlate.defaultBehavior.followBehavior.lerpTime = 250;
-    this.helpSlate.defaultBehavior.followBehavior.recenter();
-    if (!this.helpSlate.defaultBehavior.followBehaviorEnabled) {
-      this.helpSlate.defaultBehavior.followBehaviorEnabled = true;
-      setTimeout(() => this.helpSlate.defaultBehavior.followBehaviorEnabled = false, 1000);
-    }
+    this.helpSlateTN.parent = this.app.scene.activeCamera;
+    this.helpSlateTN.position = U3D.v(0, 0, 5);
+    let pos = this.helpSlateTN.getAbsolutePosition();
+    this.helpSlateTN.parent = null;
+    this.helpSlateTN.position = U3D.v(pos.x, 2.5, pos.z);
+    let cameraPos = U3D.v(this.app.scene.activeCamera.position.x, 1, this.app.scene.activeCamera.position.z)
+    this.helpSlateTN.lookAt(cameraPos, Math.PI, -0.35, 0);
 
-    this.helpSlate.content = new BABYLON.GUI.Grid();
-
-/*
-    let buttonLeft = BABYLON.GUI.Button.CreateSimpleButton("left", "Accept");
-    let buttonRight = BABYLON.GUI.Button.CreateSimpleButton("right", "Decline");
-
-    buttonLeft.width = 0.5;
-    buttonLeft.height = 0.2;
-    buttonLeft.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-    buttonLeft.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-    buttonLeft.textBlock.color = "white";
-    buttonLeft.onPointerUpObservable.add(() => {
-      alert("yay!");
-      // dialogSlate.dispose();
-    });
-
-    buttonRight.width = 0.5;
-    buttonRight.height = 0.2;
-    buttonRight.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    buttonRight.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-    buttonRight.textBlock.color = "white";
-    buttonRight.onPointerUpObservable.add(() => {
-      alert("aww...");
-      // dialogSlate.dispose();
-    });
-*/
-//    this.helpSlate.content.addControl(buttonLeft);
-  //  this.helpSlate.content.addControl(buttonRight);
-    //this.helpSlate.content.addControl(title);
-    //this.helpSlate.content.addControl(text);
-    //this.helpSlate.content.background = "#000080";
   }
   addBlock(contentText, contentImage, seatIndex) {
     this.idCounter++;
-    let title = new BABYLON.GUI.TextBlock("title" + this.idCounter);
+
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);
+    text.resizeToFit = true;
 
-    title.height = 0.2;
-    title.color = "green";
-    title.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
-    title.setPadding("5%", "5%", "5%", "5%");
-    title.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    title.text = "Elihu Husker";
-    title.fontWeight = "bold";
-
-    text.height = 0.8;
     text.color = "white";
+    text.width = 1;
+    text.fontSize = "64px";
     text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
-    text.setPadding("5%", "5%", "5%", "5%");
-    text.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    text.text = "If humans can change the orbit of a planet, other lifeforms have already been doing it."
+    text.setPadding("0", "5%", "5%", "5%");
+    text.text = contentText;
 
-    this.helpSlate.content.addControl(title);
-    this.helpSlate.content.addControl(text);
+    return text;
   }
 }
