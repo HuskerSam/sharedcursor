@@ -5,7 +5,7 @@ export default class HelpSlate {
     this.app = app;
     this.idCounter = 0;
   }
-  _initHelpPanel() {
+  async _initHelpPanel() {
     this.inited = true;
 
     this.helpSlateTN = BABYLON.MeshBuilder.CreatePlane('helpSlatePanel', {
@@ -25,6 +25,14 @@ export default class HelpSlate {
     this.scrollViewer.scrollBackground = "transparent";
     this.scrollViewer.forceVerticalBar = true;
     this.scrollViewer.isPointerBlocker = true;
+    this.scrollViewer.verticalBar.onPointerDownObservable.add(() => {
+      if (!this.app.inXR)
+        this.app.camera.detachControl(this.app.canvas);
+    });
+    this.scrollViewer.verticalBar.onPointerUpObservable.add(() => {
+      if (!this.app.inXR)
+        this.app.camera.attachControl(this.app.canvas);
+    });
 
     this.stackPanel = new BABYLON.GUI.StackPanel();
     this.stackPanel.width = "100%";
@@ -39,34 +47,34 @@ export default class HelpSlate {
     this.closeButtonHB.linkToTransformNode(this.closeButton);
     this.closeButtonHB.text = "Close Help";
     this.closeButtonHB.scaling = U3D.v(0.25);
-    this.closeButtonHB.imageUrl = '/fontcons/remove.png';
+    this.closeButtonHB.imageUrl = '/fontcons/remove.png?helpstateclosetn';
     this.closeButtonHB.onPointerDownObservable.add(() => this.closeHelpSlate());
     this.closeButton.parent = this.helpSlateTN;
-    this.closeButton.position = U3D.v(1.15, 0.85 0);
+    this.closeButton.position = U3D.v(1.15, 0.875, 0);
 
-    let tb = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 3);
-    this.stackPanel.addControl(tb);
-    let tb2 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
-    this.stackPanel.addControl(tb2);
-    let tb3 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
-    this.stackPanel.addControl(tb3);
-    let tb4 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
-    this.stackPanel.addControl(tb4);
-    let tb5 = this.addBlock("If humans can change the orbit of a planet, other lifeforms have already been doing it.", null, 2);
-    this.stackPanel.addControl(tb5);
+
+    this.helpItems = await this.app.getJSONFile('/story/helpitems.json');
+    this.helpItems.forEach((item, index) => {
+      let seatIndex = item.seatIndex;
+      if (seatIndex === -1)
+        seatIndex = index % 4;
+
+      let tb = this.addBlock(item.description, item.image, seatIndex);
+      this.stackPanel.addControl(tb);
+    });
+
     this.scrollViewer.freezeControls = true;
-
   }
   closeHelpSlate() {
     this.helpSlateTN.setEnabled(false);
     this.helpSlateShown = false;
   }
-  showHelpSlate() {
+  async showHelpSlate() {
     if (!this.inited)
-      this._initHelpPanel();
+      await this._initHelpPanel();
 
     if (this.helpSlateShown && this.lastHelpShow && Date.now() - this.lastHelpShow < 1000)
-        return this.closeHelpSlate();
+      return this.closeHelpSlate();
 
     this.lastHelpShow = new Date();
     this.helpSlateShown = true;

@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Impossible News",
+    "image": "",
+    "description": "If humans can change the orbit of a planet, other lifeforms have already been doing it.",
+    "seatIndex": 3,
+    "link": ""
+  },
+  {
+    "title": "",
+    "image": "",
+    "description": "",
+    "link": "",
+    "seatIndex": -1
+  },
+  {
+    "title": "The Solarverse",
+    "image": "/images/protoplanetdisc.png",
+    "description": "Stars emit a sphere of matter that quickly morphs into a disc shape. When planets are freshly accreted the minerals are spread evenly thru the crust.\n    Planets without recent moons tidally lock (i.e. Mercury) with the Sun - resulting in hot and cold sides of the planet.\n    The inner planets without moons acrete mostly heavier elements.",
+    "seatIndex": 3
+  },
+  {
+    "title": "The Galactic Year",
+    "image": "/images/milkyway.svg",
+    "link": "https://en.wikipedia.org/wiki/Galactic_year",
+    "description": "Galatic years last about 225 million Earth years - considering the ellipitical orbit of the Sun around the Milky Way\n      Earth is in the same position as when Permian–Triassic extinction event hit 200 million years ago killing 57% of biological life,\n      the cause being carbon dioxide emissions - Earth must once again prepare for new moons. This means ramping up rocket fuel production\n      and advancing AI to track space objects.\n      <br>\n      Once a galactic year the Copinerican System (our solar system) passes closest to the Milky Way black hole.\n      This is when we can dump extra moons and need to fight off new arrivals.",
+    "seatIndex": -1
+  }
+]
