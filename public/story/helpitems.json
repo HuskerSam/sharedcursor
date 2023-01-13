@@ -1,29 +1,36 @@
 [
   {
     "title": "Impossible News",
-    "image": "",
-    "description": "If humans can change the orbit of a planet, other lifeforms have already been doing it.",
+    "image": "/images/heliosheet.gif",
+    "description": "If humans can change the orbit of a planet, other lifeforms have already been doing it. The following storyverse is based on controlling many moons - some in prograde others in retrograde orbit are used to transform gaseous planets into more useful forms.",
     "seatIndex": 3,
     "link": ""
   },
   {
-    "title": "",
-    "image": "",
-    "description": "",
-    "link": "",
-    "seatIndex": -1
-  },
-  {
     "title": "The Solarverse",
     "image": "/images/protoplanetdisc.png",
-    "description": "Stars emit a sphere of matter that quickly morphs into a disc shape. When planets are freshly accreted the minerals are spread evenly thru the crust.\n    Planets without recent moons tidally lock (i.e. Mercury) with the Sun - resulting in hot and cold sides of the planet.\n    The inner planets without moons acrete mostly heavier elements.",
-    "seatIndex": 3
+    "description": "Stars emit a sphere of matter that quickly morphs into a disc shape. When planets are freshly accreted the minerals are spread evenly thru the crust. Planets without recent moons tidally lock (i.e. Mercury) with the Sun - resulting in hot and cold sides of the planet. The inner planets without moons acrete mostly heavier elements.",
+    "seatIndex": 0
   },
   {
     "title": "The Galactic Year",
-    "image": "/images/milkyway.svg",
+    "image": "/images/milkyway.jpg",
+    "link": "https://en.wikipedia.org/wiki/Cretaceous%E2%80%93Paleogene_extinction_event",
+    "description": "Galatic years last about 225 million Earth years - considering the ellipitical orbit of the Sun around the Milky Way Earth is in the same position as when Permian–Triassic extinction event hit 200 million years ago killing 57% of biological life, the cause being carbon dioxide emissions - Earth must once again prepare for new moons. This means ramping up rocket fuel production and advancing AI to track space objects. Once a galactic year the Copinerican System (our solar system) passes closest to the Milky Way black hole. This is when we can dump extra moons and need to fight off new arrivals.",
+    "seatIndex": 1
+  },
+  {
+    "title": "Leaving Venus and arriving",
+    "image": "/images/chicxulub.jpg",
     "link": "https://en.wikipedia.org/wiki/Galactic_year",
-    "description": "Galatic years last about 225 million Earth years - considering the ellipitical orbit of the Sun around the Milky Way\n      Earth is in the same position as when Permian–Triassic extinction event hit 200 million years ago killing 57% of biological life,\n      the cause being carbon dioxide emissions - Earth must once again prepare for new moons. This means ramping up rocket fuel production\n      and advancing AI to track space objects.\n      <br>\n      Once a galactic year the Copinerican System (our solar system) passes closest to the Milky Way black hole.\n      This is when we can dump extra moons and need to fight off new arrivals.",
+    "description": "Venus is still spinning retrograde today! Io defeated Ceres and used the planet to power migrating the Avians to Jupiter. Apollo blew up into pieces forming the asteroid belt and the retrograde moons around Saturn and Jupiter. Luna is our planet engineering tool, but at times she must go out and fight.",
+    "seatIndex": 2
+  },
+  {
+    "title": "Spaceships orbit in the Kuiper Belt",
+    "image": "/images/noahs_moon.png",
+    "link": "https://en.wikipedia.org/wiki/Kuiper_belt",
+    "description": "A large body as a lead blocker at high speed absorbing small particle collisions is the only way to reliability survive system hopping.",
     "seatIndex": -1
   }
 ]

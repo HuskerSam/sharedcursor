@@ -20,7 +20,7 @@ export default class HelpSlate {
     this.scrollViewer.width = 1;
     this.scrollViewer.height = 1;
     this.scrollViewer.barSize = 75;
-    this.scrollViewer.background = "rgba(0,0,0,0.5)";
+    this.scrollViewer.background = "transparent";
     this.scrollViewer.barBackground = "transparent";
     this.scrollViewer.scrollBackground = "transparent";
     this.scrollViewer.forceVerticalBar = true;
@@ -55,11 +55,7 @@ export default class HelpSlate {
 
     this.helpItems = await this.app.getJSONFile('/story/helpitems.json');
     this.helpItems.forEach((item, index) => {
-      let seatIndex = item.seatIndex;
-      if (seatIndex === -1)
-        seatIndex = index % 4;
-
-      let tb = this.addBlock(item.description, item.image, seatIndex);
+      let tb = this.addBlock(item);
       this.stackPanel.addControl(tb);
     });
 
@@ -89,27 +85,82 @@ export default class HelpSlate {
     this.helpSlateTN.setEnabled(true);
 
   }
-  addBlock(contentText, contentImage, seatIndex) {
-    this.idCounter++;
-
-    let panel = new BABYLON.GUI.StackPanel();
-    panel.width = "100%";
-    panel.adaptHeightToChildren = true;
+  addBlock(helpBlock) {
+    let seatIndex = helpBlock.seatIndex;
+    if (seatIndex === -1)
+      seatIndex = this.idCounter % 4;
 
     let avatarMeta = this.app.avatarMetas[seatIndex];
+    let colors = U3D.get3DColors(seatIndex);
+    let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
+
+    let blockBackground = 'rgba(0,0,0,0.85)';
+    let blockWrapperPanel = new BABYLON.GUI.StackPanel();
+    blockWrapperPanel.background = blockBackground;
+    blockWrapperPanel.adaptHeightToChildren = true;
+
+    let headerPanel = new BABYLON.GUI.StackPanel();
+    let title = new BABYLON.GUI.TextBlock("title" + this.idCounter);
+    title.resizeToFit = true;
+    title.color = rgb;
+    title.fontWeight = 'bold';
+    title.width = 1;
+    title.fontSize = "64px";
+    title.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
+    title.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    title.setPadding("30px", "10px", "30px", "10px");
+    title.text = helpBlock.title;
+    headerPanel.addControl(title);
+
+    blockWrapperPanel.addControl(headerPanel);
+
+    var image2 = new BABYLON.GUI.Image("helpimage" + this.idCounter, helpBlock.image);
+    image2.width = "100%";
+    image2.height = "500px";
+    image2.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
+    blockWrapperPanel.addControl(image2);
+
+    let button = BABYLON.GUI.Button.CreateImageButton("speakername" + this.idCounter, 'Narration', '/fontcons/ear.png?abc=' +  this.idCounter);
+    button.width = "350px";
+    button.height = "150px";
+    button.fontSize = "40px";
+    button.color = 'black';
+    button.cornerRadius = 35;
+    button.background = rgb;
+    button.setPadding("30px", "20px", "30px", "20px");
+
+    blockWrapperPanel.addControl(button);
+    button.onPointerClickObservable.add(() => {
+      this.app.avatarShowMessage(seatIndex, helpBlock.description);
+    });
 
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);
     text.resizeToFit = true;
-
-    text.color = "white";
+    text.color = rgb;
     text.width = 1;
-    text.fontSize = "64px";
+    text.fontSize = "48px";
     text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
     text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-    //    text.setPadding("0", "5%", "5%", "5%");
-    text.text = contentText;
+    text.setPadding("35px", "35px", "35px", "35px");
+    text.text = helpBlock.description;
+    blockWrapperPanel.addControl(text);
 
-    panel.addControl(text)
-    return panel;
+    let footerPanel = new BABYLON.GUI.StackPanel();
+    footerPanel.background = rgb;
+
+    let speaker = new BABYLON.GUI.TextBlock("speakername" + this.idCounter);
+    speaker.resizeToFit = true;
+    speaker.color = 'black';
+    speaker.fontSize = "48px";
+    speaker.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
+    speaker.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    speaker.setPadding("15px", "0px", "15px", "25px");
+    speaker.text = ' - as by ' + avatarMeta.name;
+    footerPanel.addControl(speaker);
+    blockWrapperPanel.addControl(footerPanel);
+
+    this.idCounter++;
+
+    return blockWrapperPanel;
   }
 }

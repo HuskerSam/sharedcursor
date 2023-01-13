@@ -203,7 +203,7 @@ export default class MenuTab3D {
         color = U3D.color("1, 0.5, 0");
       this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, this.app.boardTurnLabel, color);
       this.selectedRoundIndexPanel.parent = this.app.menuBarTabButtonsTN;
-      this.selectedRoundIndexPanel.scaling = U3D.v(2);
+      this.selectedRoundIndexPanel.scaling = U3D.v(1);
       this.selectedRoundIndexPanel.position = U3D.v(-18, 2.35, 0);
     }
 

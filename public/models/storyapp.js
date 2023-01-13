@@ -1060,7 +1060,7 @@ export class StoryApp extends BaseApp {
     asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
   }
 
-  async avatarShowMessage(seatIndex, text, timeToShow, timeToBlock) {
+  async avatarShowMessage(seatIndex, text, timeToShow = 10000, timeToBlock = 5000) {
     if (!this.avatarMetas[seatIndex].chatPanel) {
       let chatTN = new BABYLON.TransformNode('chattnfor' + seatIndex, this.scene);
 
