@@ -95,7 +95,7 @@ export default class Avatar3D {
         width: 1.5,
         sideOrientation: BABYLON.Mesh.DOUBLESIDE
       }, this.app.scene);
-      plane.position = U3D.v(0, 0, 0);
+      plane.position = U3D.v(0, 0.05, 0);
       plane.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
       plane.material = new BABYLON.StandardMaterial("shieldMat" + seatIndex, this.app.scene);
       plane.material.opacityTexture = this.playerShieldTexture;

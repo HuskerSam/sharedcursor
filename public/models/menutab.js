@@ -506,7 +506,7 @@ export default class MenuTab3D {
           sideOrientation: BABYLON.Mesh.DOUBLESIDE
         },
         this.app.scene);
-      logoHolder2.position = U3D.v(0, 0, 0);
+      logoHolder2.position = U3D.v(0, 0.05, -1.5);
       logoHolder2.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
       logoHolder2.material = dockSeatContainer.playerImageMaterial;
       logoHolder2.parent = this.app.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
@@ -654,7 +654,7 @@ export default class MenuTab3D {
           seatContainer.playerImageMaterial.alpha = 1;
 
           seatContainer.avatarNamePlate = U3D.addTextPlane(this.app.scene, seatData.name, color);
-          seatContainer.avatarNamePlate.position = U3D.v(0, 0, -1);
+          seatContainer.avatarNamePlate.position = U3D.v(0, 0.05, -1);
           seatContainer.avatarNamePlate.rotation = U3D.v(Math.PI / 2, 0, Math.PI);
           seatContainer.avatarNamePlate.scaling = U3D.v(0.3);
           seatContainer.avatarNamePlate.parent = this.app.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
