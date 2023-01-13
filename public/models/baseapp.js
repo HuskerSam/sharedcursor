@@ -1059,6 +1059,27 @@ export class BaseApp {
 
     await this.initBabylonEngine(".popup-canvas", true);
   }
+  toggleXRMovementType() {
+    if (!this.currentXRFeature) {
+      this.xr.baseExperience.featuresManager.disableFeature(BABYLON.WebXRFeatureName.TELEPORTATION);
+      this.xr.baseExperience.featuresManager.enableFeature(BABYLON.WebXRFeatureName.MOVEMENT, "stable", {
+        xrInput: this.xr.input,
+        movementSpeed: 0.075,
+        rotationSpeed: 0.15
+      });
+      this.currentXRFeature = 'movement';
+      //this.xr.teleportation.setSelectionFeature(null);
+    } else {
+      this.xr.baseExperience.featuresManager.disableFeature(BABYLON.WebXRFeatureName.MOVEMENT);
+
+      this.xr.teleportation = this.xr.baseExperience.featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, "stable", {
+        xrInput: this.xr.input,
+        floorMeshes: [this.env.ground]
+      });
+      this.xr.teleportation.setSelectionFeature(this.xr.pointerSelection);
+      this.currentXRFeature = false;
+    }
+  }
   async createScene() {
     let scene = new BABYLON.Scene(this.engine);
     this.scene = scene;
@@ -1096,10 +1117,11 @@ export class BaseApp {
     scene.activeCamera.storeState();
 
     this.initSkybox();
-
     this.xr = await scene.createDefaultXRExperienceAsync({
       floorMeshes: [environment.ground]
     });
+    this.toggleXRMovementType();
+
     environment.ground.isPickable = false;
     this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {

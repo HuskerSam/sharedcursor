@@ -518,6 +518,7 @@ export class StoryApp extends BaseApp {
   }
 
   enterXR() {
+    super.enterXR();
     this.menuBarLeftTN.position = U3D.v(-0.25, 0.05, -0.15);
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
@@ -761,7 +762,13 @@ export class StoryApp extends BaseApp {
     this.clearActiveFollowMeta();
     this.aimCamera(this.cameraMetaX);
   }
-  xButtonPress() {}
+  xButtonPress() {
+    this.toggleXRMovementType();
+    if (this.currentXRFeature)
+      this.menuTab3D.toggleBtn.holographicButton.imageUrl = '/fontcons/teleport.png';
+    else
+      this.menuTab3D.toggleBtn.holographicButton.imageUrl = '/fontcons/fly.png';
+  }
   bButtonPress() {
     this.setActiveFollowMeta();
   }

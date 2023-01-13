@@ -75,6 +75,11 @@ export default class MenuTab3D {
     homeBtn.parent = this.app.menuBarTabButtonsTN;
     homeBtn.position = U3D.v(leftEdge + 7.6 * buttonSpace, top, 0);
 
+    this.toggleBtn = this.addActionPanelButton('/fontcons/teleport.png', "Toggle Controls [X]", () =>
+      this.app.xButtonPress(), 1.5);
+    this.toggleBtn.parent = this.app.menuBarTabButtonsTN;
+    this.toggleBtn.position = U3D.v(leftEdge + 7.6 * buttonSpace, top - buttonSpace, 0);
+
     let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/follow.png", "Follow [B]", () =>
       this.app.bButtonPress(), 1.5);
     followSelectedMetaBtn.position = U3D.v(leftEdge + 8.6 * buttonSpace, top, 0);
@@ -166,6 +171,7 @@ export default class MenuTab3D {
       });
     }
 
+    mesh.holographicButton = button;
     return mesh;
   }
   selectedMenuBarTab(menuTabToShow) {
@@ -271,7 +277,7 @@ export default class MenuTab3D {
       if (!assetMeta.texturePath)
         boundsWrapperNeeded = true;
     }
-    this.lastFocusedMesh.showBoundingBox = true;
+    //this.lastFocusedMesh.showBoundingBox = true;
 
     mesh = cloneMesh.clone();
     menubarMesh = cloneMesh.clone();
@@ -284,13 +290,13 @@ export default class MenuTab3D {
     if (boundsWrapperNeeded) {
       let boundingBox = new BABYLON.Mesh("boundingBoxselectedAsset", this.app.scene);
       boundingBox.setBoundingInfo(new BABYLON.BoundingInfo(U3D.v(meshHeight / -2), U3D.v(meshHeight / 2)));
-      boundingBox.showBoundingBox = true;
+      //boundingBox.showBoundingBox = true;
       boundingBox.isPickable = false;
       boundingBox.parent = this.selectedContainerTransform;
       boundingBox.position.y = 0.25;
       mesh.showBoundingBox = false;
     } else {
-      mesh.showBoundingBox = true;
+      //mesh.showBoundingBox = true;
     }
 
     let animDetails = U3D.selectedRotationAnimation(mesh, this.app.scene, assetMeta.avatarType);
@@ -313,7 +319,7 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose(false, true);
     this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("1,1,1"));
-    this.selectedAssetLabel.position = U3D.v(-4, 2, 0);
+    this.selectedAssetLabel.position = U3D.v(-10, 2, 0);
     this.selectedAssetLabel.parent = this.app.menuBarTabButtonsTN;
 
     if (this.selectedAssetMiniClone)
