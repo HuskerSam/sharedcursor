@@ -159,6 +159,8 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.position.z = 2;
     this.menuBarLeftTN.billboardMode = 7;
 
+    this.menuBarShowWebXRInterval = setInterval(() => this.updateMenuBarShowWebXR(), 100);
+
     this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
     this.menuBarRightTN.position = U3D.v(-5, 1, -5);
     this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
@@ -517,6 +519,24 @@ export class StoryApp extends BaseApp {
     this.menuTab3D.updateUserPresence();
   }
 
+  updateMenuBarShowWebXR() {
+    if (!this.inXR && this.menuBarVisible)
+      return;
+
+    if (this.inXR) {
+      let rotation = this.getAbsoluteRotation(this.leftHandedControllerGrip);
+      let str = rotation.x.toFixed(2) + ',' + rotation.y.toFixed(2) + "," + rotation.z.toFixed(2);
+
+      let show = rotation.x > 0.25;
+      if (this.menuBarVisible !== show) {
+        this.menuBarVisible = show;
+        this.menuBarLeftTN.setEnabled(show);
+      }
+    } else {
+      this.menuBarVisible = true;
+      this.menuBarLeftTN.setEnabled(true);
+    }
+  }
   enterXR() {
     super.enterXR();
     this.menuBarLeftTN.position = U3D.v(-0.25, 0.05, -0.15);
@@ -1306,5 +1326,15 @@ export class StoryApp extends BaseApp {
       positions,
       rotations
     };
+  }
+  showOPtionalNote(str) {
+    if (this.temporaryHelperNote)
+      this.temporaryHelperNote.dispose(false, true);
+
+    this.temporaryHelperNote = U3D.addTextPlane(this.scene, str, U3D.color('1,1,1'));
+    this.temporaryHelperNote.parent = this.menuBarTabButtonsTN;
+    this.temporaryHelperNote.scaling = U3D.v(1);
+    this.temporaryHelperNote.position = U3D.v(-18, 4, 0);
+
   }
 }
