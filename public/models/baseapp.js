@@ -63,15 +63,13 @@ export class BaseApp {
     if (this.loadCallback)
       this.loadCallback();
   }
-  async readJSONFile(path, varName) {
-    if (window[varName]) return;
-
+  async readJSONFile(path) {
     try {
       let response = await fetch(path);
-      window[varName] = await response.json();
+      return await response.json();
     } catch (e) {
-      console.log('ERROR with download of ' + varName, e);
-      window[varName] = {};
+      console.log('ERROR with download of ' + path, e);
+      return {};
     }
   }
   authUpdateStatusUI() {
@@ -154,13 +152,13 @@ export class BaseApp {
       });
   }
   async _authCreateDefaultProfile() {
-    await this.readJSONFile(`/profile/logos.json`, 'profileLogos');
+    this.profileLogos = await this.readJSONFile(`/profile/logos.json`);
     let displayImage = '';
-    if (window.profileLogos) {
-      let keys = Object.keys(window.profileLogos);
+    if (this.profileLogos) {
+      let keys = Object.keys(this.profileLogos);
       let index = Math.floor(Math.random() * keys.length);
       let key = keys[index];
-      displayImage = window.profileLogos[key];
+      displayImage = this.profileLogos[key];
     }
     this.profile = {
       points: 0,

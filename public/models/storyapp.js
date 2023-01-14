@@ -1,5 +1,4 @@
 import BaseApp from '/models/baseapp.js';
-import GameCards from '/models/gamecards.js';
 import U3D from '/models/utility3d.js';
 import MenuTab3D from '/models/menutab.js';
 import Asteroid3D from '/models/asteroid3d.js';
@@ -86,17 +85,13 @@ export class StoryApp extends BaseApp {
 
     this.addLineToLoading('Loading Assets...<br>');
     let promises = [];
-    let deck = GameCards.getCardDeck('solarsystem');
-
-    deck.forEach(card => {
+    this.solarSystemDeck.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.scene));
     });
-    deck = GameCards.getCardDeck('moons1');
-    deck.forEach(card => {
+    this.moonsDeck1.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.scene));
     });
-    deck = GameCards.getCardDeck('moons2');
-    deck.forEach(card => {
+    this.moonsDeck2.forEach(card => {
       promises.push(this.loadStaticAsset(card.id, this.sceneTransformNode, this.scene));
     });
 
@@ -138,7 +133,7 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    this.actionCardHelper = new ActionCards(this, this.menuTab3D.cardsPanelTab);
+    this.actionCardHelper = new ActionCards(this);
 
     let delta = new Date().getTime() - startTime.getTime();
     console.log('init3D', delta);
@@ -194,7 +189,7 @@ export class StoryApp extends BaseApp {
   }
   async loadStaticAsset(name, sceneParent, scene, meta = null) {
     if (!meta) {
-      meta = Object.assign({}, window.allStaticAssetMeta[name]);
+      meta = Object.assign({}, this.allStaticAssetMeta[name]);
       meta.extended = this._processStaticAssetMeta(meta);
     }
 
@@ -342,9 +337,23 @@ export class StoryApp extends BaseApp {
     let response = await fetch(path);
     return await response.json();
   }
+  async _loadDecks() {
+    await Promise.all([
+      this.solarSystemDeck = await this.readJSONFile(`/story/solarsystemdeck.json`),
+      this.moonsDeck1 = await this.readJSONFile(`/story/moons1deck.json`),
+      this.moonsDeck2 = await this.readJSONFile(`/story/moons2deck.json`)
+    ]);
+
+    let allCards = {};
+    this.solarSystemDeck.forEach(card => allCards[card.id] = card);
+    this.moonsDeck1.forEach(card => allCards[card.id] = card);
+    this.moonsDeck2.forEach(card => allCards[card.id] = card);
+
+    return allCards;
+  }
   async load() {
     await Promise.all([
-      window.allStaticAssetMeta = await GameCards.loadDecks(),
+      this.allStaticAssetMeta = await this._loadDecks(),
       this.actionCards = await this.getJSONFile('/story/actioncards.json'),
       this.boardResetRoundData = await this.getJSONFile('/story/defaultround.json'),
       this.avatarMetas = await this.getJSONFile('/story/avatars.json')

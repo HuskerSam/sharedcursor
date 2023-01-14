@@ -1,12 +1,12 @@
 import U3D from '/models/utility3d.js';
 
 export default class ActionCards {
-  constructor(app, panel) {
+  constructor(app) {
     this.app = app;
-    this.cardPanel = panel;
+    this.cardPanel = this.app.menuTab3D.cardsPanelTab;
     this.cardPositions = [];
-    this.cardWidth = 10;
-    this.cardHeight = 7;
+    this.cardWidth = 14;
+    this.cardHeight = 8;
 
     for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
@@ -15,22 +15,22 @@ export default class ActionCards {
       let y = this.cardHeight / 2 + 0.25;
       let z = 0;
       if (cardIndex % 2 === 1)
-        x = this.cardWidth / 2 + 0.25;
+        x = this.cardWidth / 2 + 0.125;
       if (cardIndex > 1)
         y = this.cardHeight * 1.5 + 0.5;
-      cardHolder.position = U3D.v(x, y, z);
+      cardHolder.position = U3D.v(x, y - 2, z);
 
       this.cardPositions.push(cardHolder);
 
       cardHolder.playButton = this.app.menuTab3D.addActionPanelButton('/fontcons/action.png?cardindex=' + cardIndex, "Select Card",
-        () => this.app.playCard(cardIndex), 1.5);
-      cardHolder.playButton.position = U3D.v(this.cardWidth / 2 - 1.25, 0.8, 0);
+        () => this.app.playCard(cardIndex), 2.25);
+      cardHolder.playButton.position = U3D.v(this.cardWidth / 2 - 2, 1.4, 0);
       cardHolder.playButton.parent = cardHolder;
       cardHolder.playButton.setEnabled(false);
 
       cardHolder.discardButton = this.app.menuTab3D.addActionPanelButton('/fontcons/discard.png?cardindex=' + cardIndex, "Recycle Card",
-        () => this.app.discardCard(cardIndex), 1.5);
-      cardHolder.discardButton.position = U3D.v(this.cardWidth / 2 - 1.25, -0.8, 0);
+        () => this.app.discardCard(cardIndex), 2.25);
+      cardHolder.discardButton.position = U3D.v(this.cardWidth / 2 - 2, -1.4, 0);
       cardHolder.discardButton.parent = cardHolder;
       cardHolder.discardButton.setEnabled(false);
 
@@ -66,10 +66,10 @@ export default class ActionCards {
         cardHolder.assetMesh.dispose(false, true);
 
       let cardMeta = this.app.actionCards[cardIndex];
-      let meta = window.allStaticAssetMeta[cardMeta.gameCard];
+      let meta = this.app.allStaticAssetMeta[cardMeta.gameCard];
       let mesh = this.app.staticBoardObjects[cardMeta.gameCard].baseMesh.clone();
       mesh.setEnabled(true);
-      U3D.sizeNodeToFit(mesh, 4);
+      U3D.sizeNodeToFit(mesh, 6);
       mesh.parent = cardHolder.cardAssetHolder;
       mesh.isPickable = false;
       cardHolder.assetMesh = mesh;
@@ -89,12 +89,12 @@ export default class ActionCards {
       cardHolder.assetDescription.parent = cardHolder;
     }
 
-    let types = ['planet', 'moon', 'dwarf', 'nearearth']
-    if (types.indexOf(this.app.selectedAsset.objectType) !== -1) {
+    //let types = ['planet', 'moon', 'dwarf', 'nearearth']
+    //if (types.indexOf(this.app.selectedAsset.objectType) !== -1) {
       cardHolder.playButton.setEnabled(true);
-    } else {
-      cardHolder.playButton.setEnabled(false);
-    }
+  //  } else {
+  //    cardHolder.playButton.setEnabled(false);
+//    }
 
     cardHolder.discardButton.setEnabled(true);
   }

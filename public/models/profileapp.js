@@ -1,6 +1,5 @@
 import BaseApp from '/models/baseapp.js';
 import Utility from '/models/utility.js';
-import GameCards from '/models/gamecards.js';
 
 export class ProfileApp extends BaseApp {
   constructor() {
@@ -189,16 +188,15 @@ export class ProfileApp extends BaseApp {
     this.scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
   }
   async load() {
-    await GameCards.loadDecks();
     await super.load();
   }
   async initPresetLogos() {
-    await this.readJSONFile(`/profile/logos.json`, 'profileLogos');
+    this.profileLogos = await this.readJSONFile(`/profile/logos.json`);
     let html = '<option value="">Select a preset image</option>';
 
-    for (let logo in window.profileLogos) {
+    for (let logo in this.profileLogos) {
       let desc = logo.replaceAll('-', ' ').replaceAll('_', '&');
-      html += `<option value="${window.profileLogos[logo]}">${desc}</option>`
+      html += `<option value="${this.profileLogos[logo]}">${desc}</option>`
     }
 
     this.profile_display_image_preset.innerHTML = html;
@@ -295,44 +293,9 @@ export class ProfileApp extends BaseApp {
       }
 
       this.initGraphics();
-
-      this.updateMatchedCards();
     }
 
     super.authUpdateStatusUI();
-  }
-  updateMatchedCards() {
-    if (!this.profile)
-      return;
-    let matchedCards = this.profile.matchedCards;
-    if (!matchedCards)
-      matchedCards = {};
-
-    let html = '<div class="card_list">';
-    for (let deck in matchedCards) {
-      let cards = matchedCards[deck];
-      let cardDeck = GameCards.getCardDeck(deck);
-
-      for (let cardIndex in cards) {
-        let meta = cardDeck[cardIndex];
-        let filling = GameCards._cardFilling(meta, true);
-
-        html += `<div class="matched_card" data-deck="${deck}" data-index="${cardIndex}" style="background:${meta.color}">
-          ${filling}
-        </div>`;
-      }
-    }
-    html += '</div>'
-    this.card_select_list.innerHTML = html;
-
-    this.cardWrappers = this.card_select_list.querySelectorAll('.matched_card');
-    this.cardWrappers.forEach(cardDom => cardDom.addEventListener('click', e => this.selectCard(cardDom)));
-  }
-  selectCard(cardDom) {
-    let deck = cardDom.dataset.deck;
-    let cardDeck = GameCards.getCardDeck(deck);
-    let meta = cardDeck[cardDom.dataset.index];
-    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' + encodeURIComponent(meta.glbpath) + '?alt=media';
   }
   uploadProfileImage() {
     this.file_upload_input.click();
