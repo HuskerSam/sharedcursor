@@ -47,15 +47,15 @@ export default class ActionCards {
       cardHolder.cardAssetHolder.position = U3D.v(-0.25, 0, 0);
       cardHolder.cardAssetHolder.rotation.z = Math.PI / 2;
     }
-
-    this.updateCardsForPlayer();
   }
+
   updateCardsForPlayer() {
     let actionCards = this.app.actionCards;
     for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       this.renderPlayerCard(cardIndex);
     }
   }
+
   renderPlayerCard(rawCardIndex) {
     let cardHolder = this.cardPositions[rawCardIndex];
     let cardIndex = rawCardIndex;

@@ -840,6 +840,7 @@ export class StoryApp extends BaseApp {
     } else
       this.updateBoardRoundData();
     this.updateAvatarPaths();
+    this.actionCardHelper.updateCardsForPlayer();
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {

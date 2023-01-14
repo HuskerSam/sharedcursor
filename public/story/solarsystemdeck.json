@@ -514,11 +514,7 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/103P/Hartley",
-    "loadDisabled": true,
-    "orbitRadius": 50,
-    "startRatio": 0,
-    "rotationTime": 50000,
-    "orbitTime": 50000
+    "loadDisabled": true
   },
   {
     "id": "comet_tempel",
@@ -532,10 +528,19 @@
     "py": -1,
     "pz": 0,
     "url": "https://en.wikipedia.org/wiki/Tempel_1",
-    "loadDisabled": true,
-    "orbitRadius": 50,
-    "startRatio": 0,
-    "rotationTime": 50000,
-    "orbitTime": 50000
+    "loadDisabled": true
+  },
+  {
+    "id": "probe_virtualization",
+    "name": "Virtualization",
+    "objectType": "probe",
+    "symbol": "/symbol/cleo.png",
+    "glbpath": "/mascots/babylonjslogo.glb",
+    "sizeBoxFit": 5,
+    "px": 0,
+    "py": -1,
+    "pz": 0,
+    "url": "https://www.babylonjs.com/",
+    "loadDisabled": true
   }
 ]

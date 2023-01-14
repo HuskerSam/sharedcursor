@@ -228,12 +228,16 @@ export default class MenuTab3D {
     let scene = this.app.scene;
 
     let nextSelectedMetaBtn = this.addActionPanelButton('/fontcons/nextgt.png', "Next Asset", () => this.nextSelectedObject());
-    nextSelectedMetaBtn.position = U3D.v(3, 0, 0);
+    nextSelectedMetaBtn.position = U3D.v(5 * this.buttonSpace, 0, 0);
     nextSelectedMetaBtn.parent = this.focusPanelTab;
 
     let previousSelectedMetaBtn = this.addActionPanelButton('/fontcons/previouslt.png', "Previous Asset", () => this.nextSelectedObject(true));
-    previousSelectedMetaBtn.position = U3D.v(-3, 0, 0);
+    previousSelectedMetaBtn.position = U3D.v(-5 * this.buttonSpace, 0, 0);
     previousSelectedMetaBtn.parent = this.focusPanelTab;
+
+    let loadISSBtn = this.addActionPanelButton('/fontcons/rocket.svg', "Load ISS", () => this.loadISS());
+    loadISSBtn.position = U3D.v(-7.5 * this.buttonSpace, 0, 0);
+    loadISSBtn.parent = this.focusPanelTab;
 
     this.setSelectedAsset(this.obj('e1_luna'));
   }
@@ -257,17 +261,17 @@ export default class MenuTab3D {
     this.selectedContainerTransform.parent = this.focusPanelTab;
     this.selectedContainerTransform.position.x = 0;
     this.selectedContainerTransform.position.z = 4;
-    this.selectedContainerTransform.position.y = 7;
+    this.selectedContainerTransform.position.y = 12;
     this.selectedContainerTransform.rotation.y = Math.PI;
 
     let result, mesh, menubarMesh;
-    let meshHeight = 10;
+    let meshHeight = 20;
     let cloneMesh;
     let boundsWrapperNeeded = false;
     if (assetMeta.avatarType) {
       let avatar = this.app.avatarHelper.initedAvatars[assetMeta.seatIndex];
       cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
-      meshHeight = 12;
+      meshHeight = 24;
       this.lastFocusedMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
     } else if (assetMeta.asteroidType) {
       cloneMesh = assetMeta.basePivot;
@@ -382,7 +386,7 @@ export default class MenuTab3D {
 
   initPlayerPanel() {
     this.dockSeatContainers = [];
-    this.dockSeatHeight = 14;
+    this.dockSeatHeight = 16;
     this.dockSeatWidth = 6.5;
     let left = this.dockSeatWidth * -1.5;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
@@ -390,7 +394,7 @@ export default class MenuTab3D {
       let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
-      dockSeatContainer.position = U3D.v(left + (seatIndex * this.dockSeatWidth), this.dockSeatHeight / 2, 0);
+      dockSeatContainer.position = U3D.v(left + (seatIndex * this.dockSeatWidth), this.dockSeatHeight / 2 - 1.75, 0);
       dockSeatContainer.parent = this.playerMoonPanelTab;
       this.dockSeatContainers.push(dockSeatContainer);
 
@@ -427,7 +431,7 @@ export default class MenuTab3D {
       U3D.sizeNodeToFit(cloneMesh, 2.4);
       cloneMesh.showBoundingBox = false;
       avatarTN.rotation.y = Math.PI;
-      avatarTN.position = U3D.v(0, -1.5, 0);
+      avatarTN.position = U3D.v(0, -1.75, 0);
       cloneMesh.isPickable = true;
       cloneMesh.assetMeta = {
         appClickable: true,
@@ -452,7 +456,7 @@ export default class MenuTab3D {
       dockSeatContainer.moonAnimDetails = U3D.selectedRotationAnimation(cloneMoon, this.app.scene);
       cloneMoon.parent = dockSeatContainer.moonAnimDetails.rotationPivot;
       dockSeatContainer.moonAnimDetails.rotationPivot.parent = dockSeatContainer;
-      dockSeatContainer.moonAnimDetails.rotationPivot.position = U3D.v(0, this.dockSeatHeight / 2 - 2.25, 1.65);
+      dockSeatContainer.moonAnimDetails.rotationPivot.position = U3D.v(0, this.dockSeatHeight / 2 - 2.5, 1.65);
       cloneMoon.position = U3D.v(0);
       dockSeatContainer.moonAnimDetails.runningAnimation.pause();
 
@@ -461,18 +465,18 @@ export default class MenuTab3D {
         dockSeatContainer.standButton.setEnabled(false);
       }, 1.5);
       dockSeatContainer.standButton.parent = dockSeatContainer;
-      dockSeatContainer.standButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, 0);
+      dockSeatContainer.standButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, -0.5);
 
       dockSeatContainer.sitButton = this.addActionPanelButton('/fontcons/greenchair.png?seatindex=' + seatIndex.toString(), "Play Avatar", () => {
         this.app.dockSit(seatIndex);
         dockSeatContainer.sitButton.setEnabled(false);
       }, 1.5);
       dockSeatContainer.sitButton.parent = dockSeatContainer;
-      dockSeatContainer.sitButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, 0);
+      dockSeatContainer.sitButton.position = U3D.v(1.5, this.dockSeatHeight / 2 - 1.25, -0.5);
 
       let logoHolder = BABYLON.MeshBuilder.CreatePlane("avatarimageplanemenubar" + seatIndex, {
-          height: 1,
-          width: 1
+          height: 1.5,
+          width: 1.5
         },
         this.app.scene);
       logoHolder.position = U3D.v(-1.5, this.dockSeatHeight / -2 + 1.35, 0);
@@ -630,15 +634,15 @@ export default class MenuTab3D {
 
           let color = U3D.get3DColors(seatIndex);
           seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
-          seatContainer.namePlate1.position = U3D.v(0.85, this.dockSeatHeight / -2 + 1.45, 0);
+          seatContainer.namePlate1.position = U3D.v(0.85, this.dockSeatHeight / -2 + 1.75, 0);
+          seatContainer.namePlate1.scaling = U3D.v(0.8, 1, 1);
           seatContainer.namePlate1.parent = seatContainer.playerDetailsTN;
-          seatContainer.namePlate1.scaling = U3D.v(0.8);
 
           let name2 = '';
           if (names[1]) name2 = names[1];
           seatContainer.namePlate2 = U3D.addTextPlane(this.app.scene, name2, color);
-          seatContainer.namePlate2.scaling = U3D.v(0.8);
-          seatContainer.namePlate2.position = U3D.v(0.85, this.dockSeatHeight / -2 + 0.75, 0);
+          seatContainer.namePlate2.position = U3D.v(0.85, this.dockSeatHeight / -2 + 0.8, 0);
+          seatContainer.namePlate2.scaling = U3D.v(0.8, 1, 1);
           seatContainer.namePlate2.parent = seatContainer.playerDetailsTN;
 
           if (this.app.uid === seatData.uid || this.app.isOwner) {
@@ -707,5 +711,23 @@ export default class MenuTab3D {
 
   initCardPanel() {
 
+  }
+
+  async loadISS() {
+    if (this.ISSLoaded)
+      return;
+    this.ISSLoaded = true;
+    let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fsolar%2F' +
+      encodeURIComponent('iss.glb') + '?alt=media';
+
+    if (!window.staticMeshContainer[path])
+      window.staticMeshContainer[path] = await U3D.loadContainer(this.app.scene, path);
+
+    let result = window.staticMeshContainer[path].instantiateModelsToScene();
+    let mesh = result.rootNodes[0];
+
+    U3D.sizeNodeToFit(mesh, 50);
+
+    mesh.position = U3D.v(5, 30, 5);
   }
 }
