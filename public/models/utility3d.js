@@ -598,45 +598,69 @@ export default class Utility3D {
     let resultMesh;
     let textureType = (meta && meta.extended.texturePath);
     if (textureType) {
+      let sphereSize = meta.sizeBoxFit;
+      let segments = 32;
+      if (meta.lava) {
+        sphereSize *= 50;
+        if (meta.lavaReduction !== undefined)
+          sphereSize *= meta.lavaReduction;
+      }
       let sphere = BABYLON.MeshBuilder.CreateSphere("basemeshsphere" + meta.id, {
-        diameter: meta.sizeBoxFit,
-        segments: 16
+        diameter: sphereSize,
+        segments
       }, scene);
       if (!window.staticMaterialContainer[meta.extended.texturePath]) {
         let texture = new BABYLON.Texture(meta.extended.texturePath);
-        let material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
-        material.ambientTexture = texture;
-
-        if (!meta.noEmissive)
-          material.emissiveTexture = texture;
-        else
+        let material;
+        if (meta.lava) {
+          material = new BABYLON.LavaMaterial("basemeshmatlava" + meta.id, scene);
+          material.noiseTexture = new BABYLON.Texture("/images/cloud.png", scene);
           material.diffuseTexture = texture;
 
-        if (meta.bumpPath) {
-          material.bumpTexture = new BABYLON.Texture(meta.extended.bumpPath);
-          material.invertNormalMapX = true;
-          material.invertNormalMapY = true;
-        } else if (meta.cloneDiffuseForBump) {
-          material.bumpTexture = texture;
-          if (meta.invertBump) {
+          if (meta.lavaSpeed !== undefined)
+          material.speed = meta.lavaSpeed;
+          if (meta.lavaMovingSpeed !== undefined)
+            material.movingSpeed = meta.lavaMovingSpeed;
+          if (meta.lavaFogColor !== undefined)
+            material.fogColor = this.color(meta.lavaFogColor);
+          if (meta.lavaFogDensity !== undefined)
+            material.fogDensity = meta.lavaFogDensity;
+        } else {
+          material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
+          material.ambientTexture = texture;
+
+          if (!meta.noEmissive)
+            material.emissiveTexture = texture;
+          else
+            material.diffuseTexture = texture;
+
+          if (meta.bumpPath) {
+            material.bumpTexture = new BABYLON.Texture(meta.extended.bumpPath);
             material.invertNormalMapX = true;
             material.invertNormalMapY = true;
+          } else if (meta.cloneDiffuseForBump) {
+            material.bumpTexture = texture;
+            if (meta.invertBump) {
+              material.invertNormalMapX = true;
+              material.invertNormalMapY = true;
+            }
+          }
+          if (meta.specularPower !== undefined)
+            material.specularPower = meta.specularPower;
+          else
+            material.specularPower = 16;
+
+          if (meta.emissiveBlack) {
+            material.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+            material.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+          }
+          if (meta.noShadow) {
+            material.diffuseColor = new BABYLON.Color3(9, 9, 0);
+            material.emissiveColor = new BABYLON.Color3(9, 9, 0);
           }
         }
-        if (meta.specularPower !== undefined)
-          material.specularPower = meta.specularPower;
-        else
-          material.specularPower = 16;
 
-        if (meta.emissiveBlack) {
-          material.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-          material.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-        }
-        if (meta.noShadow) {
-          material.diffuseColor = new BABYLON.Color3(9, 9, 0);
-          material.emissiveColor = new BABYLON.Color3(9, 9, 0);
-        }
-
+        material.unlit = true;
         window.staticMaterialContainer[meta.extended.texturePath] = material;
       }
       sphere.material = window.staticMaterialContainer[meta.extended.texturePath];
@@ -651,7 +675,6 @@ export default class Utility3D {
       resultMesh = result.rootNodes[0];
     }
     resultMesh.setEnabled(false);
-    scene.mainLight.excludedMeshes.push(resultMesh);
 
     return resultMesh;
   }

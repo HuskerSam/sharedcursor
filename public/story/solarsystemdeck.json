@@ -14,8 +14,11 @@
     "x": 18,
     "y": 12,
     "z": 5,
-    "noShadow": true,
-    "rotationTime": 28000
+    "rotationTime": 28000,
+    "lavaFogColor": "1,0.5,0",
+    "lavaSpeed": 1.25,
+    "lavaMovingSpeed": 0,
+    "lava": true
   },
   {
     "id": "mercury",
@@ -138,7 +141,13 @@
     "z": -27,
     "rx": 1.57,
     "ry": 0.3,
-    "rotationTime": 8000
+    "rotationTime": 32000,
+    "lavaFogColor": "0,1,1",
+    "lavaFogDensity": "0.7",
+    "lavaReduction": 1,
+    "lavaSpeed": 3,
+    "lavaMovingSpeed": 2,
+    "lava": true
   },
   {
     "id": "neptune",
@@ -155,7 +164,13 @@
     "x": 5,
     "y": 3,
     "z": -30,
-    "rotationTime": 7000
+    "rotationTime": 60000,
+    "lavaFogColor": "0,1,1",
+    "lavaFogDensity": "0.4",
+    "lavaReduction": 6,
+    "lavaSpeed": 1,
+    "lavaMovingSpeed": 1,
+    "lava": true
   },
   {
     "id": "pluto",

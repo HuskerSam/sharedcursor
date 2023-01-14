@@ -165,7 +165,13 @@
     "orbitRadius": 9,
     "orbitTime": 72000,
     "startRatio": 0.75,
-    "parent": "saturn"
+    "parent": "saturn",
+    "lavaFogColor": "0,0,0",
+    "lavaFogDensity": 0.05,
+    "lavaReduction": 3,
+    "lavaSpeed": 2,
+    "lavaMovingSpeed": 2,
+    "lava": true
   },
   {
     "id": "s15_tethys",
@@ -294,7 +300,13 @@
     "orbitRadius": 11,
     "orbitTime": 42000,
     "parent": "saturn",
-    "startRatio": 0.25
+    "startRatio": 0.25,
+    "lavaFogColor": "0.2,0.2,0",
+    "lavaFogDensity": 0.5,
+    "lavaReduction": 3,
+    "lavaSpeed": 2,
+    "lavaMovingSpeed": 2,
+    "lava": true
   },
   {
     "id": "s23_hyperion",

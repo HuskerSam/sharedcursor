@@ -198,8 +198,8 @@ export class StoryApp extends BaseApp {
     meta.containerPath = meta.extended.glbPath;
     let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta);
     let boundingMesh = scaleMesh;
+    U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
     if (!meta.texturePath) {
-      U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
       let boundingInfo = scaleMesh.getHierarchyBoundingVectors(true);
       boundingMesh = new BABYLON.Mesh("boundingBoxselectedAsset" + meta.id, this.scene);
       boundingMesh.setBoundingInfo(new BABYLON.BoundingInfo(boundingInfo.min, boundingInfo.max));
