@@ -302,7 +302,7 @@
     "parent": "saturn",
     "startRatio": 0.25,
     "lavaFogColor": "0.2,0.2,0",
-    "lavaFogDensity": 0.5,
+    "lavaFogDensity": 0.2,
     "lavaReduction": 3,
     "lavaSpeed": 2,
     "lavaMovingSpeed": 2,
