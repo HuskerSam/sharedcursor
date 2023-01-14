@@ -11,13 +11,13 @@ export default class ActionCards {
     for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       let cardHolder = new BABYLON.TransformNode('playercardholder' + cardIndex, this.app.scene);
       cardHolder.parent = this.cardPanel;
-      let x = -16;
-      let y = 5.25;
+      let x = -this.cardWidth / 2 - 0.25;
+      let y = this.cardHeight / 2 + 0.25;
       let z = 0;
       if (cardIndex % 2 === 1)
-        x += this.cardWidth + 0.5;
+        x = this.cardWidth / 2 + 0.25;
       if (cardIndex > 1)
-        y += this.cardHeight + 0.5;
+        y = this.cardHeight * 1.5 + 0.5;
       cardHolder.position = U3D.v(x, y, z);
 
       this.cardPositions.push(cardHolder);
