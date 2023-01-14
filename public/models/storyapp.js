@@ -161,11 +161,6 @@ export class StoryApp extends BaseApp {
 
     this.menuBarShowWebXRInterval = setInterval(() => this.updateMenuBarShowWebXR(), 100);
 
-    this.menuBarRightTN = new BABYLON.TransformNode('menuBarRightTN', this.scene);
-    this.menuBarRightTN.position = U3D.v(-5, 1, -5);
-    this.menuBarRightTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarRightTN.billboardMode = 7;
-
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarLeftTN;
     this.menuBarTabButtonsTN.position.y = 1.5;
@@ -524,30 +519,53 @@ export class StoryApp extends BaseApp {
       return;
 
     if (this.inXR) {
-      let rotation = this.getAbsoluteRotation(this.leftHandedControllerGrip);
-      let str = rotation.x.toFixed(2) + ',' + rotation.y.toFixed(2) + "," + rotation.z.toFixed(2);
+      let leftShow = false;
+      let rightShow = false;
+      if (this.leftHandedControllerGrip) {
+        let rotation = this.leftHandedControllerGrip.rotationQuaternion.toEulerAngles();
+        leftShow = (rotation.z > 0.9 || rotation.z < -1.5);
+      }
+      if (this.rightHandedControllerGrip) {
+        let rotation = this.rightHandedControllerGrip.rotationQuaternion.toEulerAngles();
+        rightShow = (rotation.z > 1.5 || rotation.z < -0.9);
+      }
+      let show = (leftShow || rightShow);
 
-      let show = rotation.x > 0.25;
       if (this.menuBarVisible !== show) {
+        if (leftShow)
+          this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
+        else if (rightShow)
+          this.menuBarLeftTN.parent = this.rightHandedControllerGrip;
+
         this.menuBarVisible = show;
         this.menuBarLeftTN.setEnabled(show);
       }
+
+      this.updateMenuBarPositionXR();
     } else {
       this.menuBarVisible = true;
       this.menuBarLeftTN.setEnabled(true);
     }
   }
+  updateMenuBarPositionXR() {
+    let leftShown = this.menuBarLeftTN.parent === this.leftHandedControllerGrip;
+    let rightShown = this.menuBarLeftTN.parent === this.rightHandedControllerGrip;
+
+    if (!leftShown || !rightShown)
+      return;
+
+    if (rightShown)
+      this.menuBarLeftTN.position = U3D.v(-0.3, 0.05, 0);
+    if (leftShown)
+      this.menuBarLeftTN.position = U3D.v(0.3, 0.05, 0);
+  }
   enterXR() {
     super.enterXR();
-    this.menuBarLeftTN.position = U3D.v(-0.25, 0.05, -0.15);
+    this.menuBarLeftTN.position = U3D.v(0, 0, 0);
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
-    this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
+    this.menuBarLeftTN.parent = null;
     this.menuBarLeftTN.billboardMode = 7;
     this.inXR = true;
-
-    this.menuBarRightTN.position = U3D.v(0.05, 0.05, -0.05);
-    this.menuBarRightTN.scaling = U3D.v(0.02, 0.02, 0.02);
-    this.menuBarRightTN.parent = this.rightHandedControllerGrip;
 
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
   }
@@ -558,10 +576,6 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN.billboardMode = 0;
 
     this.inXR = false;
-
-    this.menuBarRightTN.position = U3D.vector(-15, 1, -15);
-    this.menuBarRightTN.scaling = U3D.v(1, 1, 1);
-    this.menuBarRightTN.parent = null;
   }
   XRControllerAdded(model, handed) {
     if (handed === 'left') {
@@ -570,7 +584,6 @@ export class StoryApp extends BaseApp {
     }
     if (handed === 'right') {
       this.rightHandedControllerGrip = model.grip;
-      this.menuBarRightTN.parent = model.grip;
     }
   }
 
@@ -1327,7 +1340,7 @@ export class StoryApp extends BaseApp {
       rotations
     };
   }
-  showOPtionalNote(str) {
+  showOptionalNote(str) {
     if (this.temporaryHelperNote)
       this.temporaryHelperNote.dispose(false, true);
 
