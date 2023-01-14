@@ -600,7 +600,7 @@ export default class Utility3D {
     if (textureType) {
       let sphereSize = meta.sizeBoxFit;
       let segments = 32;
-      if (meta.lava) {
+      if (meta.lava || meta.furType) {
         sphereSize *= 50;
         if (meta.lavaReduction !== undefined)
           sphereSize *= meta.lavaReduction;
@@ -612,13 +612,30 @@ export default class Utility3D {
       if (!window.staticMaterialContainer[meta.extended.texturePath]) {
         let texture = new BABYLON.Texture(meta.extended.texturePath);
         let material;
-        if (meta.lava) {
+        if (meta.furType) {
+          material = new BABYLON.FurMaterial("basemeshmatlfur" + meta.id, scene);
+          material.furLength = 4;
+          material.furAngle = 0;
+          material.furColor = new BABYLON.Color3(0, 3, 1);
+          material.diffuseTexture = texture;
+          material.furTexture = BABYLON.FurMaterial.GenerateTexture("furTexture", scene);
+          material.furOcclusion = 0.25;
+          material.furSpacing = 1;
+          material.furDensity = 5;
+          material.furSpeed = 150;
+          material.furGravity = this.v(0, -1, 0);
+
+        	let quality = 30;
+          sphere.material = material;
+        	let shells = BABYLON.FurMaterial.FurifyMesh(sphere, quality);
+          console.log('fur', material);
+        } else if (meta.lava) {
           material = new BABYLON.LavaMaterial("basemeshmatlava" + meta.id, scene);
           material.noiseTexture = new BABYLON.Texture("/images/cloud.png", scene);
           material.diffuseTexture = texture;
 
           if (meta.lavaSpeed !== undefined)
-          material.speed = meta.lavaSpeed;
+            material.speed = meta.lavaSpeed;
           if (meta.lavaMovingSpeed !== undefined)
             material.movingSpeed = meta.lavaMovingSpeed;
           if (meta.lavaFogColor !== undefined)

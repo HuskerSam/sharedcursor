@@ -189,7 +189,8 @@
     "orbitRadius": 50,
     "startRatio": 0.25,
     "orbitTime": 50000,
-    "binaryOrbit": true
+    "binaryOrbit": true,
+    "furType": true
   },
   {
     "id": "eris",
@@ -276,9 +277,6 @@
     "image": "/cardimages/ceres.jpg",
     "symbol": "/symbol/ceres.png",
     "texturePath": "/solar/ceres.jpg",
-    "bumpPath": "/solar/ceresbump.jpg",
-    "emissiveBlack": true,
-    "specularPower": 128,
     "symbolY": 1.75,
     "sizeBoxFit": 1.75,
     "url": "https://en.wikipedia.org/wiki/Ceres",
@@ -287,7 +285,8 @@
     "z": 8,
     "orbitRadius": 25,
     "orbitTime": 45000,
-    "startRatio": 0.4
+    "startRatio": 0.4,
+    "furType": true
   },
   {
     "id": "itokawa",
