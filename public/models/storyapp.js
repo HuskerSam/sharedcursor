@@ -155,7 +155,7 @@ export class StoryApp extends BaseApp {
     this.menuBarLeftTN = new BABYLON.TransformNode('menuBarLeftTN', this.scene);
     this.menuBarLeftTN.position = U3D.v(1, 5, 2);
     this.menuBarLeftTN.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarLeftTN.billboardMode = 7;
+    this.menuBarLeftTN.billboardMode = 0;
 
     this.menuBarShowWebXRInterval = setInterval(() => this.updateMenuBarShowWebXR(), 100);
 
@@ -528,39 +528,29 @@ export class StoryApp extends BaseApp {
       let show = (leftShow || rightShow);
 
       if (this.menuBarVisible !== show) {
-        if (leftShow)
+        if (leftShow) {
+          this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 1);
           this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
-        else if (rightShow)
+        }
+        else if (rightShow) {
+          this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 1);
           this.menuBarLeftTN.parent = this.rightHandedControllerGrip;
+        }
 
         this.menuBarVisible = show;
         this.menuBarLeftTN.setEnabled(show);
       }
-
-      this.updateMenuBarPositionXR();
     } else {
       this.menuBarVisible = true;
       this.menuBarLeftTN.setEnabled(true);
     }
-  }
-  updateMenuBarPositionXR() {
-    let leftShown = this.menuBarLeftTN.parent === this.leftHandedControllerGrip;
-    let rightShown = this.menuBarLeftTN.parent === this.rightHandedControllerGrip;
-
-    if (!leftShown || !rightShown)
-      return;
-
-    if (rightShown)
-      this.menuBarLeftTN.position = U3D.v(-0.3, 0, 0);
-    if (leftShown)
-      this.menuBarLeftTN.position = U3D.v(0.3, 0, 0);
   }
   enterXR() {
     super.enterXR();
     this.menuBarLeftTN.position = U3D.v(0, 0, 0);
     this.menuBarLeftTN.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarLeftTN.parent = null;
-    this.menuBarLeftTN.billboardMode = 7;
+    this.menuBarLeftTN.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z + BABYLON.TransformNode.BILLBOARDMODE_Y;
     this.inXR = true;
 
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);

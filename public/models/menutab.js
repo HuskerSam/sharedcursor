@@ -146,13 +146,13 @@ export default class MenuTab3D {
     this.initFocusedAssetPanel();
 
     this.playerMoonPanelTab = new BABYLON.TransformNode('playerMoonPanelTab', this.app.scene);
-    this.playerMoonPanelTab.parent = this.app.menuBarLeftTN;
+    this.playerMoonPanelTab.parent = this.app.menuBarTabButtonsTN;
     this.playerMoonPanelTab.position = U3D.v(0, this.menuBarHeight, 0);
     this.playerMoonPanelTab.setEnabled(false);
     this.initPlayerPanel();
 
     this.cardsPanelTab = new BABYLON.TransformNode('cardsPanelTab', this.app.scene);
-    this.cardsPanelTab.parent = this.app.menuBarLeftTN;
+    this.cardsPanelTab.parent = this.app.menuBarTabButtonsTN;
     this.cardsPanelTab.position = U3D.v(0, this.menuBarHeight, 0);
     this.cardsPanelTab.setEnabled(false);
     this.initCardPanel();
