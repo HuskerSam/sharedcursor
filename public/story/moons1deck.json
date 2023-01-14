@@ -236,6 +236,7 @@
     "symbol": "/symbol/ariel.png",
     "solarPosition": "U3",
     "texturePath": "/solar/ariel2k.jpg",
+    "furType": true,
     "sizeBoxFit": 2,
     "symbolY": 1.5,
     "url": "https://en.wikipedia.org/wiki/Ariel_(moon)",
@@ -310,13 +311,14 @@
     "image": "/cardimages/moonlarissa.jpg",
     "symbol": "/symbol/larissa.png",
     "solarPosition": "N5",
-    "glbpath": "/solar/n5_larissa.glb",
+    "glbpath": "/solar/n5_larissa.obj",
     "sizeBoxFit": 2,
     "symbolY": 1.35,
     "url": "https://en.wikipedia.org/wiki/Larissa_(moon)",
     "orbitRadius": 6,
     "orbitTime": 19000,
-    "parent": "neptune"
+    "parent": "neptune",
+    "wireframe": true
   },
   {
     "id": "n7_proteus",
@@ -326,13 +328,14 @@
     "image": "/cardimages/moonproteus.jpg",
     "symbol": "/symbol/proteus.png",
     "solarPosition": "N7",
-    "glbpath": "/solar/n7_proteus.glb",
+    "glbpath": "/solar/n7_proteus.obj",
     "sizeBoxFit": 2,
     "symbolY": 1.35,
     "url": "https://en.wikipedia.org/wiki/Proteus_(moon)",
     "orbitRadius": 8,
     "orbitTime": 19000,
-    "parent": "neptune"
+    "parent": "neptune",
+    "wireframe": true
   },
   {
     "id": "n8_triton",
@@ -342,13 +345,14 @@
     "image": "/cardimages/moontriton.jpg",
     "symbol": "/symbol/triton.png",
     "solarPosition": "N14",
-    "texturePath": "/solar/triton2k.jpg",
+    "texturePath": "/solar/n8_triton1k.jpg",
     "sizeBoxFit": 2,
     "symbolY": 1.35,
     "url": "https://en.wikipedia.org/wiki/Triton_(moon)",
     "orbitRadius": 10,
     "orbitTime": 19000,
-    "parent": "neptune"
+    "parent": "neptune",
+    "lava": true
   },
   {
     "id": "p1_charon",
@@ -361,6 +365,7 @@
     "specularPower": 1,
     "sizeBoxFit": 1,
     "symbolY": -2,
+    "lava": true,
     "url": "https://en.wikipedia.org/wiki/Charon_(moon)",
     "orbitRadius": 3,
     "orbitTime": 10000,

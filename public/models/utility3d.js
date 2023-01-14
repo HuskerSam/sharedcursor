@@ -619,9 +619,9 @@ export default class Utility3D {
           material.furColor = new BABYLON.Color3(0, 3, 1);
           material.diffuseTexture = texture;
           material.furTexture = BABYLON.FurMaterial.GenerateTexture("furTexture", scene);
-          material.furOcclusion = 0.25;
-          material.furSpacing = 1;
-          material.furDensity = 5;
+          //material.furOcclusion = 0.25;
+          material.furSpacing = 6;
+          material.furDensity = 2;
           material.furSpeed = 150;
           material.furGravity = this.v(0, -1, 0);
 

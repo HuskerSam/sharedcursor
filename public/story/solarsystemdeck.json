@@ -1,5 +1,4 @@
-[
-  {
+[{
     "id": "sun",
     "name": "Sun",
     "objectType": "star",
@@ -142,11 +141,11 @@
     "rx": 1.57,
     "ry": 0.3,
     "rotationTime": 32000,
-    "lavaFogColor": "0,1,1",
+    "lavaFogColor": "0,0,0",
     "lavaFogDensity": "0.25",
-    "lavaReduction": 1,
-    "lavaSpeed": 3,
-    "lavaMovingSpeed": 2,
+    "lavaReduction": 3,
+    "lavaSpeed": 1,
+    "lavaMovingSpeed": 0.5,
     "lava": true
   },
   {
@@ -165,7 +164,7 @@
     "y": 3,
     "z": -30,
     "rotationTime": 60000,
-    "lavaFogColor": "0,1,1",
+    "lavaFogColor": "0,0,0",
     "lavaFogDensity": "0.2",
     "lavaReduction": 6,
     "lavaSpeed": 1,
@@ -188,9 +187,8 @@
     "z": 0,
     "orbitRadius": 50,
     "startRatio": 0.25,
-    "orbitTime": 50000,
-    "binaryOrbit": true,
-    "furType": true
+    "orbitTime": 90000,
+    "binaryOrbit": true
   },
   {
     "id": "eris",
@@ -212,7 +210,7 @@
     "z": 0,
     "orbitRadius": 50,
     "startRatio": 0,
-    "orbitTime": 50000
+    "orbitTime": 90000
   },
   {
     "id": "makemake",
@@ -230,7 +228,7 @@
     "z": 0,
     "orbitRadius": 50,
     "startRatio": 0.75,
-    "orbitTime": 50000
+    "orbitTime": 90000
   },
   {
     "id": "haumea",
@@ -248,7 +246,7 @@
     "z": 0,
     "orbitRadius": 50,
     "startRatio": 0.5,
-    "orbitTime": 50000
+    "orbitTime": 90000
   },
   {
     "id": "arrokoth",
@@ -266,7 +264,7 @@
     "z": 0,
     "orbitRadius": 50,
     "startRatio": 0.6,
-    "orbitTime": 50000
+    "orbitTime": 90000
   },
   {
     "id": "ceres",
@@ -277,6 +275,9 @@
     "image": "/cardimages/ceres.jpg",
     "symbol": "/symbol/ceres.png",
     "texturePath": "/solar/ceres.jpg",
+    "bumpPath": "/solar/ceresbump.jpg",
+    "emissiveBlack": true,
+    "specularPower": 128,
     "symbolY": 1.75,
     "sizeBoxFit": 1.75,
     "url": "https://en.wikipedia.org/wiki/Ceres",
@@ -284,9 +285,8 @@
     "y": 2,
     "z": 8,
     "orbitRadius": 25,
-    "orbitTime": 45000,
-    "startRatio": 0.4,
-    "furType": true
+    "orbitTime": 80000,
+    "startRatio": 0.4
   },
   {
     "id": "itokawa",
@@ -303,7 +303,7 @@
     "y": 2,
     "z": 9,
     "orbitRadius": 16.5,
-    "orbitTime": 30000,
+    "orbitTime": 80000,
     "startRatio": 0.2
   },
   {
@@ -322,7 +322,7 @@
     "y": 2,
     "z": 9,
     "orbitRadius": 16.5,
-    "orbitTime": 30000,
+    "orbitTime": 50000,
     "startRatio": 0.5
   },
   {
@@ -341,7 +341,7 @@
     "y": 2,
     "z": 9,
     "orbitRadius": 16.5,
-    "orbitTime": 30000,
+    "orbitTime": 50000,
     "startRatio": 0.8
   },
   {
@@ -463,12 +463,12 @@
   },
   {
     "id": "probe_lunar_lander",
-    "name": "LK Lunar Lander",
+    "name": "Lunar Lander",
     "shortDescription": "Expedition Lander",
     "objectType": "probe",
     "image": "/cardimages/lunarlander.jpg",
     "symbol": "/symbol/bird.png",
-    "glbpath": "/solar/lk_lander.glb",
+    "glbpath": "/solar/lander.glb",
     "sizeBoxFit": 5,
     "px": 0,
     "py": 1,
