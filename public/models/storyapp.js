@@ -45,11 +45,6 @@ export class StoryApp extends BaseApp {
 
     this.game_header_panel = document.querySelector('.game_header_panel');
 
-    this.settings_button = document.querySelector('.settings_button');
-    this.settings_button.addEventListener('click', e => {
-
-    });
-
     this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
     this.menu_bar_toggle.addEventListener('click', e => document.body.classList.toggle('menu_bar_expanded'));
 

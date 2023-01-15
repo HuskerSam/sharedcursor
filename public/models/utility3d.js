@@ -592,7 +592,6 @@ export default class Utility3D {
           let quality = 30;
           sphere.material = material;
           let shells = BABYLON.FurMaterial.FurifyMesh(sphere, quality);
-          console.log('fur', material);
         } else if (meta.lava) {
           texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.LavaMaterial("basemeshmatlava" + meta.id, scene);
@@ -643,8 +642,10 @@ export default class Utility3D {
           }
         }
 
+        if (!meta.lava) {
+          material.disableLighting = true;
+        }
         material.unlit = true;
-        material.disableLighting = true;
         material.backFaceCulling = false;
         window.staticMaterialContainer[meta.extended.texturePath] = material;
       }

@@ -241,7 +241,7 @@ export default class MenuTab3D {
 
     this.setSelectedAsset(this.obj('e1_luna'));
   }
-  setSelectedAsset(assetMeta) {
+  async setSelectedAsset(assetMeta) {
     this.spinPauseMeta = assetMeta;
     this.selectedObjectMeta = this.spinPauseMeta;
 
@@ -266,27 +266,36 @@ export default class MenuTab3D {
 
     let result, mesh, menubarMesh;
     let meshHeight = 20;
-    let cloneMesh;
     let boundsWrapperNeeded = false;
     if (assetMeta.avatarType) {
       let avatar = this.app.avatarHelper.initedAvatars[assetMeta.seatIndex];
-      cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
+      let cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
+      mesh = cloneMesh.clone();
+      menubarMesh = cloneMesh.clone();
       meshHeight = 24;
       this.lastFocusedMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
     } else if (assetMeta.asteroidType) {
-      cloneMesh = assetMeta.basePivot;
+      let cloneMesh = assetMeta.basePivot;
+      mesh = cloneMesh.clone();
+      menubarMesh = cloneMesh.clone();
       this.lastFocusedMesh = assetMeta.basePivot;
     } else {
-      cloneMesh = this.app.staticBoardObjects[assetMeta.id].baseMesh;
+      if (assetMeta.lava) {
+        mesh = await U3D.loadStaticMesh(this.app.scene, assetMeta.containerPath, assetMeta);
+        menubarMesh = this.app.staticBoardObjects[assetMeta.id].baseMesh.clone();
+//        menubarMesh = await U3D.loadStaticMesh(this.app.scene, assetMeta.containerPath, assetMeta);
+      } else {
+        let cloneMesh = this.app.staticBoardObjects[assetMeta.id].baseMesh;
+        mesh = cloneMesh.clone();
+        menubarMesh = cloneMesh.clone();
+      }
+
       this.lastFocusedMesh = this.obj(assetMeta.id).boundingMesh;
 
       if (!assetMeta.texturePath)
         boundsWrapperNeeded = true;
     }
-    //this.lastFocusedMesh.showBoundingBox = true;
 
-    mesh = cloneMesh.clone();
-    menubarMesh = cloneMesh.clone();
     mesh.parent = null;
     menubarMesh.parent = null;
     U3D.sizeNodeToFit(menubarMesh, 3.75);
