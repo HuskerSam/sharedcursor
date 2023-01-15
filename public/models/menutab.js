@@ -163,7 +163,7 @@ export default class MenuTab3D {
     let mesh = new BABYLON.TransformNode(texturePath + 'TN', this.app.scene);
     this.app.gui3DManager.addControl(button);
     button.linkToTransformNode(mesh);
-    button.scaling = U3D.v(scale);
+    button.scaling = U3D.v(scale, scale, 3);
     button.text = text;
     button.imageUrl = texturePath;
 

@@ -563,7 +563,7 @@ export default class Utility3D {
     if (textureType) {
       let sphereSize = meta.sizeBoxFit;
       let segments = 32;
-      if (meta.lava || meta.furType || meta.fireType) {
+      if (meta.lava || meta.furType) {
         sphereSize *= 50;
         if (meta.lavaReduction !== undefined)
           sphereSize *= meta.lavaReduction;
@@ -575,13 +575,7 @@ export default class Utility3D {
       if (!window.staticMaterialContainer[meta.extended.texturePath]) {
         let texture;
         let material;
-      if (meta.fireType) {
-          let texture = new BABYLON.FireProceduralTexture("fire", 256, scene);
-          material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
-          material.ambientTexture = texture;
-          material.emissiveTexture = texture;
-          material.diffuseTexture = texture;
-        } else if (meta.furType) {
+      if (meta.furType) {
           texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.FurMaterial("basemeshmatlfur" + meta.id, scene);
           material.furLength = 4;
