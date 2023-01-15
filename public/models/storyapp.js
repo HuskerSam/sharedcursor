@@ -825,7 +825,6 @@ export class StoryApp extends BaseApp {
     } else
       this.updateBoardRoundData();
     this.updateAvatarPaths();
-    this.actionCardHelper.updateCardsForPlayer();
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
@@ -885,6 +884,7 @@ export class StoryApp extends BaseApp {
     }
 
     this.iterateBoardRoundSequence();
+    this.actionCardHelper.updateCardsForPlayer();
   }
   async iterateBoardRoundSequence(reset) {
     if (reset)

@@ -3,6 +3,8 @@ const fetch = require('cross-fetch');
 const baseClass = require('./baseclass.js');
 const gameAPI = require('./gameapi.js');
 
+const actionCardsCount = 11;
+
 module.exports = class StoryAPI {
   static async _processUserAction(gameData, uid, action, card0, card1) {
     let isOwner = (uid === gameData.createUser);
@@ -174,6 +176,7 @@ module.exports = class StoryAPI {
         actions: []
       };
 
+      //compile last round to start new round
       if (roundIndex > 0) {
         let lastRoundPath = `Games/${gameId}/rounds/${roundIndex - 1}`;
         let lastRoundQuery = await firebaseAdmin.firestore().doc(lastRoundPath).get();
@@ -181,6 +184,9 @@ module.exports = class StoryAPI {
         if (lastRoundData)
           roundData.actions = StoryAPI.processActions(lastRoundData.actions);
       }
+
+      //verify 4 cards picked for user
+      StoryAPI._updateUserCardsForRound(roundData, roundIndex);
 
       Object.assign(updatePacket, roundData);
     }
@@ -201,6 +207,34 @@ module.exports = class StoryAPI {
     await firebaseAdmin.firestore().doc(roundPath).set(roundData, {
       merge: true
     });
+  }
+  static _updateUserCardsForRound(roundData, roundIndex) {
+    let seatIndex = roundIndex % 4;
+    let cards = Array(4).fill(-1);
+    roundData.actions.forEach(action => {
+      if (action.action === 'cardUpdate' && action.seatIndex === roundIndex)
+        cards[action.cardIndex] = action.cardId
+    });
+
+    for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
+      if (cards[cardIndex] === -1) {
+        let cardId = StoryAPI._getUniqueRandomCardIndex(cards);
+        roundData.actions.push({
+          action: 'cardUpdate',
+          seatIndex,
+          cardIndex,
+          cardId
+        });
+      }
+    }
+  }
+  static _getUniqueRandomCardIndex(cards) {
+    while (true) {
+      let newIndex = Math.floor(Math.random() * actionCardsCount);
+      if (cards.indexOf(newIndex) === -1)
+        return newIndex;
+    }
+    return -1;
   }
   static processActions(newActions) {
     let assets = {};
