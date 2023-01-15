@@ -76,13 +76,11 @@ body {
 }
 
 .menu_bar_expanded_options {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .5s;
+  display: none
 }
 
 .menu_bar_expanded .menu_bar_expanded_options {
-  max-height: 350px;
+  display: block;
 }
 
 .members_list {
@@ -119,8 +117,7 @@ body {
   pointer-events: auto;
 }
 
-.nontouch_button_options {
-}
+.nontouch_button_options {}
 
 .nontouch_button_options button {
   padding: .15em;

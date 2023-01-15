@@ -71,7 +71,12 @@ export default class ActionCards {
       mesh.setEnabled(true);
       U3D.sizeNodeToFit(mesh, 6);
       mesh.parent = cardHolder.cardAssetHolder;
-      mesh.isPickable = false;
+      mesh.assetMeta = {
+        activeSelectedObject: true,
+        appClickable: true,
+        clickCommand: 'customClick',
+        handlePointerDown: () => this.app.menuTab3D.setSelectedAsset(meta)
+      };
       cardHolder.assetMesh = mesh;
 
       if (cardHolder.assetName)
