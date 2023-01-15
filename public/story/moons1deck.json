@@ -264,7 +264,8 @@
     "orbitRadius": 4,
     "orbitTime": 33000,
     "startRatio": 0.5,
-    "parent": "uranus"
+    "parent": "uranus",
+    "fireType": true
   },
   {
     "id": "u5_titania",
@@ -352,7 +353,7 @@
     "orbitRadius": 10,
     "orbitTime": 19000,
     "parent": "neptune",
-    "lava": true
+    "fireType": true
   },
   {
     "id": "p1_charon",

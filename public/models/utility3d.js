@@ -552,43 +552,6 @@ export default class Utility3D {
     v.copyFrom(vector);
     return v;
   }
-
-  static curvePointsMerge(keyPoints) {
-    let count = keyPoints.length;
-    let fullCurve;
-
-    for (let c = 0; c < count; c++) {
-      let pt1 = keyPoints[c].v;
-
-      let index2 = c + 1;
-      if (c + 1 >= count)
-        index2 = 0;
-      let pt2 = keyPoints[index2].v;
-      let weight = keyPoints[index2].weight;
-      let curve = BABYLON.Curve3.ArcThru3Points(
-        pt1,
-        this.curveV(pt1, pt2),
-        pt2,
-        weight);
-      if (fullCurve)
-        fullCurve = fullCurve.continue(curve);
-      else
-        fullCurve = curve;
-    }
-
-    return fullCurve;
-  }
-  static curveV(v1, v2) {
-    let x = v1.x;
-    let z = v1.z;
-    if (Math.abs(v2.x) > Math.abs(v1.x))
-      x = v2.x;
-    if (Math.abs(v2.z) > Math.abs(v1.z))
-      z = v2.z;
-
-    return this.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
-  }
-
   static async loadStaticMesh(scene, path, meta) {
     if (!window.staticMeshContainer)
       window.staticMeshContainer = {};
@@ -600,7 +563,7 @@ export default class Utility3D {
     if (textureType) {
       let sphereSize = meta.sizeBoxFit;
       let segments = 32;
-      if (meta.lava || meta.furType) {
+      if (meta.lava || meta.furType || meta.fireType) {
         sphereSize *= 50;
         if (meta.lavaReduction !== undefined)
           sphereSize *= meta.lavaReduction;
@@ -610,9 +573,16 @@ export default class Utility3D {
         segments
       }, scene);
       if (!window.staticMaterialContainer[meta.extended.texturePath]) {
-        let texture = new BABYLON.Texture(meta.extended.texturePath);
+        let texture;
         let material;
-        if (meta.furType) {
+      if (meta.fireType) {
+          let texture = new BABYLON.FireProceduralTexture("fire", 256, scene);
+          material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
+          material.ambientTexture = texture;
+          material.emissiveTexture = texture;
+          material.diffuseTexture = texture;
+        } else if (meta.furType) {
+          texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.FurMaterial("basemeshmatlfur" + meta.id, scene);
           material.furLength = 4;
           material.furAngle = 0;
@@ -625,11 +595,12 @@ export default class Utility3D {
           material.furSpeed = 150;
           material.furGravity = this.v(0, -1, 0);
 
-        	let quality = 30;
+          let quality = 30;
           sphere.material = material;
-        	let shells = BABYLON.FurMaterial.FurifyMesh(sphere, quality);
+          let shells = BABYLON.FurMaterial.FurifyMesh(sphere, quality);
           console.log('fur', material);
         } else if (meta.lava) {
+          texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.LavaMaterial("basemeshmatlava" + meta.id, scene);
           material.noiseTexture = new BABYLON.Texture("/images/cloud.png", scene);
           material.diffuseTexture = texture;
@@ -643,6 +614,7 @@ export default class Utility3D {
           if (meta.lavaFogDensity !== undefined)
             material.fogDensity = meta.lavaFogDensity;
         } else {
+          texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
           material.ambientTexture = texture;
 
@@ -678,6 +650,8 @@ export default class Utility3D {
         }
 
         material.unlit = true;
+        material.disableLighting = true;
+        material.backFaceCulling = false;
         window.staticMaterialContainer[meta.extended.texturePath] = material;
       }
       sphere.material = window.staticMaterialContainer[meta.extended.texturePath];
@@ -737,6 +711,42 @@ export default class Utility3D {
     textPanel.position.y = meta.yOffset;
 
     return textPanel;
+  }
+
+  static curvePointsMerge(keyPoints) {
+    let count = keyPoints.length;
+    let fullCurve;
+
+    for (let c = 0; c < count; c++) {
+      let pt1 = keyPoints[c].v;
+
+      let index2 = c + 1;
+      if (c + 1 >= count)
+        index2 = 0;
+      let pt2 = keyPoints[index2].v;
+      let weight = keyPoints[index2].weight;
+      let curve = BABYLON.Curve3.ArcThru3Points(
+        pt1,
+        this.curveV(pt1, pt2),
+        pt2,
+        weight);
+      if (fullCurve)
+        fullCurve = fullCurve.continue(curve);
+      else
+        fullCurve = curve;
+    }
+
+    return fullCurve;
+  }
+  static curveV(v1, v2) {
+    let x = v1.x;
+    let z = v1.z;
+    if (Math.abs(v2.x) > Math.abs(v1.x))
+      x = v2.x;
+    if (Math.abs(v2.z) > Math.abs(v1.z))
+      z = v2.z;
+
+    return this.v(0.707 * x, v1.y + v2.y / 2.0, 0.707 * z);
   }
 
   static createGuides(scene, size = 30) {

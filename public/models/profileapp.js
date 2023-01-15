@@ -181,7 +181,6 @@ export class ProfileApp extends BaseApp {
     this.currentLoadedAvatar = new BABYLON.TransformNode("avatarwrapper", this.scene);
     avatarMesh.parent = this.currentLoadedAvatar;
     this.currentLoadedAvatar.rotation.y -= 2;
-    this.runRender = true;
     if (avatarMesh.modelAnimationGroup)
       avatarMesh.modelAnimationGroup.play();
     this.scene.activeCamera.setPosition(new BABYLON.Vector3(7, 4, 3.2));

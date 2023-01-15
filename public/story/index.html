@@ -27,13 +27,8 @@
   <meta property="og:title" content="Storyverse Editor" />
   <meta property="og:type" content="website" />
 
-  <meta property="og:image" content="https://moonfights.com/images/hops.gif" />
   <meta property="og:description" content="Edit your story verse with friends!" />
   <meta property="pagedate" content="01/01/2030" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
 
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/gamecards.css" />
@@ -46,6 +41,8 @@
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
   <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.lavaMaterial.js"></script>
   <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.furMaterial.js"></script>
+  <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+
   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
   <!-- Firebase links -->
@@ -99,113 +96,103 @@
     </div>
 
   </div>
-  <div class="modal fade" id="canvasDisplayModal" tabindex="-1" role="dialog" aria-labelledby="canvasDisplayModal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content app_panel">
-        <div class="modal-body" style="padding:0">
-          <div class="signed_in_options" style="text-align:center;">
-            <div class="btn-group tab_buttons" role="group">
-              <button class="btn btn-primary active" value="messages"><i class="material-icons">games</i></button>
-              <button class="btn btn-primary" value="members"><i class="material-icons">group</i></button>
-              <button class="btn btn-primary" value="options"><i class="material-icons smallerby4">settings</i></button>
-            </div>
-            &nbsp;
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+  <div style="display:none">
+    <div class="btn-group tab_buttons" role="group">
+      <button class="btn btn-primary active" value="messages">Msg</button>
+      <button class="btn btn-primary" value="members">Grp</button>
+      <button class="btn btn-primary" value="options">Settings</button>
+    </div>
+    <div class="tab-content game_options_panel_wrapper">
+      <div class="tab-pane fade show active" role="tabpanel">
+        <div class="address_bar">
+          <div>
+            <button class="code_link_copy btn btn-primary">Clipboard</button>
           </div>
-          <div class="tab-content game_options_panel_wrapper">
-            <div class="tab-pane fade show active" role="tabpanel">
-              <div class="address_bar">
-                <div>
-                  <button class="code_link_copy btn btn-primary"><i class="material-icons">content_copy</i></button>
-                </div>
-                <div style="flex:1;">
-                  <div class="game_header_panel"></div>
-                  <a href="#" style="display:none;" class="code_link_href">URL</a>
-                </div>
+          <div style="flex:1;">
+            <div class="game_header_panel"></div>
+            <a href="#" style="display:none;" class="code_link_href">URL</a>
+          </div>
+        </div>
+        <div class="mode_ready_view">
+          <div class="match_instructions">
+            <b>Map and describe your storyverse!</b>
+            <br><br>
+            <b>1 to 4 animated paths</b>
+          </div>
+        </div>
+        <div class="mode_running_view">
+          <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
+            <div style="display:flex;flex-direction:column;flex:3">
+              <div class="score_dock_row">
+                <span class="">round</span>
+                <span>points</span>
+                <span class="">streak</span>
               </div>
-              <div class="mode_ready_view">
-                <div class="match_instructions">
-                  <b>Map and describe your storyverse!</b>
-                  <br><br>
-                  <b>1 to 4 animated paths</b>
-                </div>
+              <div class="score_dock_row">
+                <div class="turn_number_div"></div>
+                <div class="player_total_points"></div>
+                <div class="player_total_for_turn"></div>
               </div>
-              <div class="mode_running_view">
-                <div class="currentplayer_score_dock" style="font-size:30px;display:flex;flex-direction:row">
-                  <div style="display:flex;flex-direction:column;flex:3">
-                    <div class="score_dock_row">
-                      <span class="">round</span>
-                      <span>points</span>
-                      <span class="">streak</span>
-                    </div>
-                    <div class="score_dock_row">
-                      <div class="turn_number_div"></div>
-                      <div class="player_total_points"></div>
-                      <div class="player_total_for_turn"></div>
-                    </div>
-                  </div>
-                  <div style="flex:2" class="">
-                    <button class="player_dock_prompt btn btn-primary"></button>
-                  </div>
-                </div>
-              </div>
-              <div class="mode_end_view">
-                <div class="match_result_message"></div>
-                <div class="match_end_display_promo">
-                  <a class="beer_name_anchor" target="_blank">
-                    <span class="beer_name"></span>
-                    <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open_in_new</i>
-                  </a>
-                </div>
-              </div>
+            </div>
+            <div style="flex:2" class="">
+              <button class="player_dock_prompt btn btn-primary"></button>
+            </div>
+          </div>
+        </div>
+        <div class="mode_end_view">
+          <div class="match_result_message"></div>
+          <div class="match_end_display_promo">
+            <a class="beer_name_anchor" target="_blank">
+              <span class="beer_name"></span>
+              <i class="material-icons" style="top:4px;font-size:28px;position:relative;">open</i>
+            </a>
+          </div>
+        </div>
 
-            </div>
-            <div class="tab-pane fade" role="tabpanel">
-              <div class="members_list"></div>
-              <div class="messages_list"></div>
-            </div>
-            <div class="tab-pane fade" role="tabpanel">
-              <div class="basic_options">
-                <div class="gameid_span"></div>
-                <div>
-                  <button class="show_loading_screen btn btn-primary">Show Loading Screen</button>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Visibility</label>
-                  <select class="visibility_select form-select form-select-lg">
-                    <option selected>public</option>
-                    <option>private</option>
-                  </select>
-                  <div class="visibility_display"></div>
-                </div>
-                <div class="options_edit_block" style="display:none">
-                  <label class="form-label">Seats</label>
-                  <select class="seat_count_select form-select form-select-lg">
-                    <option value="1">1 seat</option>
-                    <option selected value="2">2 seats</option>
-                    <option value="3">3 seats</option>
-                    <option value="4">4 seats</option>
-                  </select>
-                  <div class="seat_count_display"></div>
-                </div>
-                <div class="options_edit_block">
-                  <label class="form-label">Messaging</label>
-                  <select class="message_level_select form-select form-select-lg">
-                    <option value="seated">Seated</option>
-                    <option value="all">All</option>
-                  </select>
-                  <div class="message_level_display"></div>
-                </div>
-                <div class="options_edit_block" style="display:none">
-                  <label class="form-label">Seat Limit</label>
-                  <select class="seats_per_user_select form-select form-select-lg">
-                    <option value="one">One</option>
-                    <option value="none">None</option>
-                  </select>
-                  <div class="seats_per_user_display"></div>
-                </div>
-              </div>
-            </div>
+      </div>
+      <div class="tab-pane fade" role="tabpanel">
+        <div class="members_list"></div>
+        <div class="messages_list"></div>
+      </div>
+      <div class="tab-pane fade" role="tabpanel">
+        <div class="basic_options">
+          <div class="gameid_span"></div>
+          <div>
+            <button class="show_loading_screen btn btn-primary">Show Loading Screen</button>
+          </div>
+          <div class="options_edit_block">
+            <label class="form-label">Visibility</label>
+            <select class="visibility_select form-select form-select-lg">
+              <option selected>public</option>
+              <option>private</option>
+            </select>
+            <div class="visibility_display"></div>
+          </div>
+          <div class="options_edit_block" style="display:none">
+            <label class="form-label">Seats</label>
+            <select class="seat_count_select form-select form-select-lg">
+              <option value="1">1 seat</option>
+              <option selected value="2">2 seats</option>
+              <option value="3">3 seats</option>
+              <option value="4">4 seats</option>
+            </select>
+            <div class="seat_count_display"></div>
+          </div>
+          <div class="options_edit_block">
+            <label class="form-label">Messaging</label>
+            <select class="message_level_select form-select form-select-lg">
+              <option value="seated">Seated</option>
+              <option value="all">All</option>
+            </select>
+            <div class="message_level_display"></div>
+          </div>
+          <div class="options_edit_block" style="display:none">
+            <label class="form-label">Seat Limit</label>
+            <select class="seats_per_user_select form-select form-select-lg">
+              <option value="one">One</option>
+              <option value="none">None</option>
+            </select>
+            <div class="seats_per_user_display"></div>
           </div>
         </div>
       </div>
@@ -235,7 +222,7 @@
         </svg>
       </a>
       <a class="settings_button" style="flex:1;text-align:center">
-        <i class="material-icons">menu</i>
+        menu
       </a>
       <a class="menu_bar_toggle" style="flex:1"><span>▼</span></a>
     </div>

@@ -46,10 +46,9 @@ export class StoryApp extends BaseApp {
     this.game_header_panel = document.querySelector('.game_header_panel');
 
     this.settings_button = document.querySelector('.settings_button');
-    this.settings_button.addEventListener('click', e => this.modal.show());
+    this.settings_button.addEventListener('click', e => {
 
-    this.canvasDisplayModal = document.querySelector('#canvasDisplayModal');
-    this.modal = new bootstrap.Modal(this.canvasDisplayModal);
+    });
 
     this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
     this.menu_bar_toggle.addEventListener('click', e => document.body.classList.toggle('menu_bar_expanded'));
@@ -140,10 +139,10 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(`${delta} ms to load 3D content<br>`);
 
     this.paintedBoardTurn = this.turnNumber;
+    this.startEngine();
 
     this.enterNotInXR();
 
-    this.runRender = true;
     this.paintGameData();
   }
   createMenu3DWrapper() {
@@ -219,8 +218,12 @@ export class StoryApp extends BaseApp {
 
     let outerPivot = meshPivot;
     if (meta.symbol) {
-      meta.assetSymbolPanel = U3D.addSymbolPanel(meta, scene);
-      meta.assetSymbolPanel.parent = outerPivot;
+      let localMeta = meta;
+      let localOuterPivot = outerPivot;
+      setTimeout(() => {
+        localMeta.assetSymbolPanel = U3D.addSymbolPanel(localMeta, scene);
+        localMeta.assetSymbolPanel.parent = localOuterPivot;
+      }, 1000);
     }
 
     if (meta.rotationTime) {
@@ -428,18 +431,10 @@ export class StoryApp extends BaseApp {
     this.initGameMessageFeed();
   }
   async paintGameData(gameDoc = null) {
-    if (gameDoc)
-      this.gameData = gameDoc.data();
-
-    if (!this.gameData)
-      return;
-
+    if (gameDoc) this.gameData = gameDoc.data();
+    if (!this.gameData) return;
     this._initGameDataBasedContent();
-
-    if (!this.runRender)
-      return;
-
-    document.body.classList.add('game_loaded');
+    if (!this.engine3DStarted) return;
 
     this.queryStringPaintProcess();
     this.paintOptions();
@@ -452,13 +447,9 @@ export class StoryApp extends BaseApp {
       this.matchBoardRendered = false;
     this.previousMode = this.gameData.mode;
 
-    document.body.classList.remove('turnphase_select');
-    document.body.classList.remove('turnphase_result');
-    document.body.classList.remove('turnphase_clearprevious');
     let phase = "select";
     if (this.gameData.turnPhase)
       phase = this.gameData.turnPhase;
-    document.body.classList.add('turnphase_' + phase);
 
     let phaseDesc = 'Select';
     let disabled = true;
@@ -540,8 +531,7 @@ export class StoryApp extends BaseApp {
         if (leftShow) {
           this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 1);
           this.menuBarLeftTN.parent = this.leftHandedControllerGrip;
-        }
-        else if (rightShow) {
+        } else if (rightShow) {
           this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 1);
           this.menuBarLeftTN.parent = this.rightHandedControllerGrip;
         }

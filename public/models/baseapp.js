@@ -1011,20 +1011,12 @@ export class BaseApp {
     this.matchBoardRendered = false;
   }
 
-  async initBabylonEngine(canvasQuery = ".popup-canvas", initVR = false) {
-    this.canvas = document.querySelector(canvasQuery);
-    this.engine = new BABYLON.Engine(this.canvas, true);
-    BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
-    BABYLON.Animation.AllowMatricesInterpolation = true;
-
-    this.engine.enableOfflineSupport = false;
-    this.scene = await this.createScene();
-
-    this.runRender = false;
+  startEngine() {
+    if (this.engine3DStarted)
+      return;
+    this.engine3DStarted = true;
     this.engine.runRenderLoop(() => {
-      if (this.runRender) {
-        this.scene.render();
-      }
+      this.scene.render();
 
       if (this.activeFollowMeta && this.xr.baseExperience.state === 3 && this.activeFollowMeta.basePivot) {
         let position = new BABYLON.Vector3(0, 0, 0);
@@ -1041,10 +1033,6 @@ export class BaseApp {
       }
 
     });
-
-    window.addEventListener("resize", () => {
-      this.engine.resize();
-    });
   }
   async initGraphics() {
     if (this.engine)
@@ -1055,7 +1043,18 @@ export class BaseApp {
       target: U3D.v(0, 2, 0)
     };
 
-    await this.initBabylonEngine(".popup-canvas", true);
+
+    this.canvas = document.querySelector(".popup-canvas");
+    this.engine = new BABYLON.Engine(this.canvas, true);
+    BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
+    BABYLON.Animation.AllowMatricesInterpolation = true;
+
+    this.engine.enableOfflineSupport = false;
+    this.scene = await this.createScene();
+
+    window.addEventListener("resize", () => {
+      this.engine.resize();
+    });
   }
   toggleXRMovementType() {
     if (!this.currentXRFeature) {
