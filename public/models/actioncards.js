@@ -79,7 +79,7 @@ export default class ActionCards {
 
     cardHolder.cachedIndex = cardId;
     if (cardHolder.assetMesh) {
-      cardHolder.assetMesh.dispose(false, true);
+      cardHolder.assetMesh.dispose();
       cardHolder.assetMesh = null;
     }
 

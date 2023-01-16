@@ -70,8 +70,7 @@ export class StoryApp extends BaseApp {
     this.invisibleMaterial = new BABYLON.StandardMaterial("invisiblematerial", this.scene);
     this.invisibleMaterial.alpha = 0;
 
-    if (this.urlParams.get('showguides'))
-      U3D.createGuides(this.scene);
+//    if (this.urlParams.get('showguides'))
 
     this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
       this.clearActiveFollowMeta();
@@ -993,7 +992,7 @@ export class StoryApp extends BaseApp {
   }
 
   async discardCard(cardIndex) {
-
+    await this.sendRoundAction('recycleCard', cardIndex);
   }
   async playCard(cardIndex) {
     let cardDetails = this.actionCards[cardIndex];

@@ -427,7 +427,7 @@
     "id": "probe_shuttle",
     "name": "Space Shuttle",
     "objectType": "probe",
-    "shortDescription": "Nuclear Bomber",
+    "shortDescription": "LEO Bomber",
     "image": "/cardimages/probeshuttle.jpg",
     "symbol": "/symbol/bird.png",
     "glbpath": "/solar/shuttle.glb",

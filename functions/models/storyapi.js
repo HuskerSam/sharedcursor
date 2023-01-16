@@ -161,6 +161,7 @@ module.exports = class StoryAPI {
     let roundIndex = meta.roundIndex;
     let roundAction = meta.roundAction;
     let gameId = meta.gameId;
+    let seatIndex = roundIndex % 4;
 
     if (!roundIndex || roundIndex < 0)
       roundIndex = 0;
@@ -185,9 +186,6 @@ module.exports = class StoryAPI {
           roundData.actions = StoryAPI.processActions(lastRoundData.actions);
       }
 
-      //verify 4 cards picked for user
-      StoryAPI._updateUserCardsForRound(roundData, roundIndex);
-
       Object.assign(updatePacket, roundData);
     }
 
@@ -201,6 +199,16 @@ module.exports = class StoryAPI {
         targetId: meta.targetId,
         sourceId: meta.sourceId,
         originId: meta.originId
+      });
+    }
+    if (roundAction === 'recycleCard') {
+      let cards = StoryAPI._updateUserCardsForRound(roundData, roundIndex);
+      let cardId = StoryAPI._getUniqueRandomCardIndex(cards);
+      roundData.actions.push({
+        action: 'cardUpdate',
+        seatIndex,
+        cardIndex: meta.cardIndex,
+        cardId
       });
     }
 
@@ -225,8 +233,11 @@ module.exports = class StoryAPI {
           cardIndex,
           cardId
         });
+        cards[cardIndex] = cardId;
       }
     }
+
+    return cards;
   }
   static _getUniqueRandomCardIndex(cards) {
     while (true) {
