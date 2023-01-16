@@ -1092,12 +1092,12 @@ export class BaseApp {
     }
 
     this.mainLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, -1, 0), this.scene);
-    this.mainLight.intensity = 0.5;
+    this.mainLight.intensity = 1;
     this.scene.mainLight = this.mainLight;
 
     let environment = scene.createDefaultEnvironment({
       createSkybox: false,
-      groundOpacity: 0.35,
+      groundOpacity: 0,
       groundSize: 150,
       enableGroundShadow: false,
       enableGroundMirror: false

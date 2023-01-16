@@ -55,7 +55,6 @@ export default class ActionCards {
 
     let actionCards = this.app.actionCards;
     let cardIndexes = this.getRoundCardsForPlayer();
-    console.log(cardIndexes);
     for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
       this.renderPlayerCard(cardIndex, cardIndexes[cardIndex]);
     }
