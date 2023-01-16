@@ -240,7 +240,8 @@ module.exports = class StoryAPI {
     return cards;
   }
   static _getUniqueRandomCardIndex(cards) {
-    while (true) {
+    let loop = true;
+    while (loop) {
       let newIndex = Math.floor(Math.random() * actionCardsCount);
       if (cards.indexOf(newIndex) === -1)
         return newIndex;
