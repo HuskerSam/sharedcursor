@@ -575,7 +575,7 @@ export default class Utility3D {
       if (!window.staticMaterialContainer[meta.extended.texturePath]) {
         let texture;
         let material;
-      if (meta.furType) {
+        if (meta.furType) {
           texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.FurMaterial("basemeshmatlfur" + meta.id, scene);
           material.furLength = 4;
@@ -606,6 +606,7 @@ export default class Utility3D {
             material.fogColor = this.color(meta.lavaFogColor);
           if (meta.lavaFogDensity !== undefined)
             material.fogDensity = meta.lavaFogDensity;
+          material.unlit = true;
         } else {
           texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
@@ -640,12 +641,10 @@ export default class Utility3D {
             material.diffuseColor = new BABYLON.Color3(9, 9, 0);
             material.emissiveColor = new BABYLON.Color3(9, 9, 0);
           }
+
+          material.disableLighting = true;  //unlit = true?
         }
 
-        if (!meta.lava) {
-          material.disableLighting = true;
-        }
-        material.unlit = true;
         material.backFaceCulling = true;
         window.staticMaterialContainer[meta.extended.texturePath] = material;
       }
