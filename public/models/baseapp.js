@@ -1092,15 +1092,17 @@ export class BaseApp {
     }
 
     this.mainLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, -1, 0), this.scene);
-    this.mainLight.intensity = 0.5;
+    this.mainLight.intensity = 2;
     this.scene.mainLight = this.mainLight;
 
     let environment = scene.createDefaultEnvironment({
-      createSkybox: false,
-      groundOpacity: 0.35,
       groundSize: 150,
+      createSkybox: false,
       enableGroundShadow: false,
-      enableGroundMirror: false
+      enableGroundMirror: false,
+      groundOpacity: 0,
+      environmentTexture: null,
+      setupImageProcessing: false
     });
     this.env = environment;
 
@@ -1179,8 +1181,6 @@ export class BaseApp {
     });
 
     this.xr.baseExperience.onInitialXRPoseSetObservable.add(() => {
-      // append the initial position of the camera to the parent node
-      //childForCamera.position.addInPlace(xr.baseExperience.camera.position);
       this.xr.baseExperience.sessionManager.onXRFrameObservable.add(() => {
 
         if (this.activeFollowMeta && this.activeFollowMeta.basePivot) {
@@ -1211,26 +1211,33 @@ export class BaseApp {
     return scene;
   }
   initSkybox() {
-    let skyboxname = 'stars8k';
-    let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
+    const starFieldPT = new BABYLON.StarfieldProceduralTexture("starfieldPT", 512, this.scene, null, true);
+    starFieldPT.coordinatesMode = BABYLON.Texture.FIXED_EQUIRECTANGULAR_MIRRORED_MODE;
+    starFieldPT.darkmatter = 1.5;
+    starFieldPT.distfading = 0.75;
+  //  starFieldPT.beta = 0.1;
 
     if (!this.photoDome) {
       this.photoDome = new BABYLON.PhotoDome(
         "photoDome",
-        equipath, {
-          resolution: 256,
-          size: 150
+        null, {
+          resolution: 32,
+          size: 150,
+          useDirectMapping: true,
+          faceForward: false
         },
         this.scene
       );
       this.photoDome.imageMode = BABYLON.PhotoDome.MODE_MONOSCOPIC;
       this.photoDome.fovMultiplier = 2.0;
       this.photoDome.isPickable = false;
-    } else {
-      if (this.photoDome.photoTexture)
-        this.photoDome.photoTexture.dispose();
-      this.photoDome.photoTexture = new BABYLON.Texture(equipath, this.scene, false, true);
     }
+
+    if (this.photoDome.photoTexture)
+      this.photoDome.photoTexture.dispose();
+    //        this.photoDome.photoTexture = new BABYLON.Texture(equipath, this.scene, false, true);
+    this.photoDome.photoTexture = starFieldPT;
+
   }
 
   enterXR() {}
