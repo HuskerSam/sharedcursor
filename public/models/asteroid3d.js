@@ -8,6 +8,8 @@ export default class Asteroid3D {
     this.selectedAsteroidMaterial = new BABYLON.StandardMaterial('selectedAsteroidMaterial', this.app.scene);
 
     this.asteroidMaterial.wireframe = true;
+    this.asteroidMaterial.disableLighting = true
+    this.selectedAsteroidMaterial.disableLighting = true
     let t11 = new BABYLON.Texture('/images/asteroid2diff.jpg', this.app.scene);
     let t12 = new BABYLON.Texture('/images/asteroid2normal.jpg', this.app.scene);
     t11.vScale = 2;

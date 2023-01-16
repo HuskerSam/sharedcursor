@@ -63,6 +63,7 @@ export class StoryApp extends BaseApp {
     this.gui3DManager = new BABYLON.GUI.GUI3DManager(this.scene);
 
     this.createMenu3DWrapper();
+    this.scene.collisionsEnabled = false;
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
     this.rocketHelper = new Rocket3D(this);
