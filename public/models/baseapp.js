@@ -1092,7 +1092,7 @@ export class BaseApp {
     }
 
     this.mainLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, -1, 0), this.scene);
-    this.mainLight.intensity = 1;
+    this.mainLight.intensity = 0.8;
     this.scene.mainLight = this.mainLight;
 
     let environment = scene.createDefaultEnvironment({
@@ -1211,9 +1211,7 @@ export class BaseApp {
     return scene;
   }
   initSkybox() {
-    let skyboxname = 'stars8k';
-    let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/${skyboxname}.jpg`;
-
+    let equipath = `https://s3-us-west-2.amazonaws.com/hcwebflow/textures/sky/stars8k.jpg`;
     if (!this.photoDome) {
       this.photoDome = new BABYLON.PhotoDome(
         "photoDome",
