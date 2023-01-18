@@ -3,7 +3,7 @@ import U3D from '/models/utility3d.js';
 export default class Asteroid3D {
   constructor(app) {
     this.app = app;
-    this.asteroidOrbitTime = 300000;
+    this.asteroidOrbitFrameCount = 80000 / 1000 * 60;
     this.asteroidMaterial = new BABYLON.StandardMaterial('asteroidMaterial', this.app.scene);
     this.selectedAsteroidMaterial = new BABYLON.StandardMaterial('selectedAsteroidMaterial', this.app.scene);
 
@@ -116,7 +116,7 @@ export default class Asteroid3D {
     this.asteroidSymbolMeshName = U3D.generateNameMesh(scene);
 
     this.defaultAsteroidPath = this.buildAsteroidPath();
-    let endFrame = this.asteroidOrbitTime / 1000 * 60;
+    let endFrame = this.asteroidOrbitFrameCount;
     this.defaultAsteroidPositionKeys = [];
 
     let ptCount = this.defaultAsteroidPath.length - 1;
@@ -157,7 +157,7 @@ export default class Asteroid3D {
       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
     orbitWrapper.position.y = -1000;
-    let endFrame = this.asteroidOrbitTime / 1000 * 60;
+    let endFrame = this.asteroidOrbitFrameCount;
     positionAnim.setKeys(this.defaultAsteroidPositionKeys);
     if (!orbitWrapper.animations)
       orbitWrapper.animations = [];

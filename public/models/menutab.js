@@ -540,7 +540,7 @@ export default class MenuTab3D {
     flagPoleHolder.parent = this.app.parentPivot(moonAssetId);
     flagPoleHolder.scaling = U3D.v(0.2);
     flagPoleHolder.position.y = 0.45;
-    flagPoleHolder.billboardMode = 7;
+    flagPoleHolder.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Y;
 
     let moonFlagBack = BABYLON.MeshBuilder.CreatePlane("flagback" + seatIndex, {
       height: 1.75,

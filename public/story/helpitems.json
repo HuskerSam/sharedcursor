@@ -32,5 +32,40 @@
     "link": "https://en.wikipedia.org/wiki/Kuiper_belt",
     "description": "A large body as a lead blocker at high speed absorbing small particle collisions is the only way to reliability survive system hopping.",
     "seatIndex": -1
+  },
+  {
+    "title": "We can already see some new visitors!",
+    "image": "/images/tnos8.jpg",
+    "link": "https://en.wikipedia.org/wiki/Trans-Neptunian_object",
+    "description": "Usually the inner most planet of a solar system is consumed first, once it’s core is heated and used up, each successive planet is occupied.  These species are awaiting their turns.",
+    "seatIndex": -1
+  },
+  {
+    "title": "Solar wind sails to retrograde spin Luna",
+    "image": "/images/moonsolarblades.png",
+    "link": "https://en.wikipedia.org/wiki/Retrograde_and_prograde_motion",
+    "description": "The moon provides days and nights, tides and daily planet contortion. Luna reverses Earth's matgnetic field when deorbiting is required. notes https://en.wikipedia.org/wiki/Solar_maximum (11 years - reverses sun's magnetic field) sun storms - 3rd belt on van allen belt Magenetic energy obeys the law of conservation and builds up as the moon orbits. Gravity does not obey the law of conservation - it's force/energy creation is free. When the north pole reverses it releases the magnetic energy ejecting the moon from orbit.",
+    "seatIndex": -1
+  },
+  {
+    "title": "Abiogenic petroleum fuels life.",
+    "image": "/images/ammonia.webp",
+    "link": "https://en.wikipedia.org/wiki/Abiogenic_petroleum_origin",
+    "description": "The moon provides days and nights, tides and daily planet contortion. Luna reverses Earth's matgnetic field when deorbiting is required. notes https://en.wikipedia.org/wiki/Solar_maximum (11 years - reverses sun's magnetic field) sun storms - 3rd belt on van allen belt Magenetic energy obeys the law of conservation and builds up as the moon orbits. Gravity does not obey the law of conservation - it's force/energy creation is free. When the north pole reverses it releases the magnetic energy ejecting the moon from orbit.",
+    "seatIndex": -1
+  },
+  {
+    "title": "Natural reactors function under different conditions in a planet core.",
+    "image": "/images/u235.svg",
+    "link": "https://en.wikipedia.org/wiki/Natural_nuclear_fission_reactor",
+    "description": "The core is a natural uranium reactor that runs until the U235 is exhausted. The fine-structure constant is effected in the dense core to to use only the amount of U235 needed. U235 half is greatly increased when not in veins due to the nucleus with of 585 barns. If there is too much U235 remaining and the planet gets to making veins too thick - it will blow up the like Planet Apollo did. The planet cores fuse matter creating U235 and other heavy elements emitting them evenly throughout their crust.",
+    "seatIndex": -1
+  },
+  {
+    "title": "Solar wind provides backpressure and continually adds mass to the planets.",
+    "image": "/images/solardustcloud.jpg",
+    "link": "https://en.wikipedia.org/wiki/Solar_wind",
+    "description": "The solar wind makes it possible for atmospheres much more dense than planetational gravity can support. The planets grow slowly by accretion leading to a net gain in mass over time.",
+    "seatIndex": -1
   }
 ]

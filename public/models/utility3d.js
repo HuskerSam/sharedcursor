@@ -607,6 +607,7 @@ export default class Utility3D {
           if (meta.lavaFogDensity !== undefined)
             material.fogDensity = meta.lavaFogDensity;
           material.unlit = true;
+          //material.disableLighting = true;  //unlit = true?
         } else {
           texture = new BABYLON.Texture(meta.extended.texturePath);
           material = new BABYLON.StandardMaterial("basemeshmat" + meta.id, scene);
@@ -693,7 +694,7 @@ export default class Utility3D {
     if (meta.symbolY)
       extraY = meta.symbolY;
 
-    textPanel.billboardMode = 7;
+    textPanel.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Y;
 
     if (meta.parent === 'uranus') {
       textPanel.rotation.x -= 1.57;

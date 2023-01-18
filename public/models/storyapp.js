@@ -544,7 +544,7 @@ export class StoryApp extends BaseApp {
     this.menuBarTransformNode.position = U3D.v(0, 0, 0);
     this.menuBarTransformNode.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarTransformNode.parent = null;
-    this.menuBarTransformNode.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z;
+    this.menuBarTransformNode.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z + BABYLON.TransformNode.BILLBOARDMODE_Y;
     this.inXR = true;
 
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
@@ -757,7 +757,7 @@ export class StoryApp extends BaseApp {
       yOffset = 2.25;
     }
     this.displayedNamePlate = U3D.addTextPlane(this.scene, nameDesc, color);
-    this.displayedNamePlate.billboardMode = 7;
+    this.displayedNamePlate.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Y;
     this.displayedNamePlate.position.y = yOffset;
     this.displayedNamePlate.parent = meta.basePivot;
     if (meta.assetSymbolPanel)
@@ -1098,7 +1098,7 @@ export class StoryApp extends BaseApp {
 
       chatTN.position.y = 3.5;
       chatTN.rotation.y = Math.PI;
-      chatTN.billboardMode = 7;
+      chatTN.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Y;
       chatTN.isPickable = false;
 
       chatTN.parent = this.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;

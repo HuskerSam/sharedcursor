@@ -429,3 +429,9 @@ button.code_link {
 .night_mode input.game_code_start {
   color: white;
 }
+
+.create_new_solar_btn {
+  margin-top: 8px;
+  background: rgb(0, 200, 0);
+  border-color: rgb(0, 255, 0);
+}

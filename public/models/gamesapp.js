@@ -4,9 +4,6 @@ export class GamesApp extends BaseApp {
   constructor() {
     super();
 
-    this.create_new_match_btn = document.querySelector('.create_new_match_btn');
-    this.create_new_match_btn.addEventListener('click', e => this.createNewGame('match', this.create_new_match_btn));
-
     this.create_new_solar_btn = document.querySelector('.create_new_solar_btn');
     this.create_new_solar_btn.addEventListener('click', e => this.createNewGame('story', this.create_new_solar_btn));
 
