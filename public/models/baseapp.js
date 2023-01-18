@@ -377,15 +377,6 @@ export class BaseApp {
     this.games_tab_radios.forEach(ctl => ctl.addEventListener('input', e => this.updateTabView(e)));
     this.updateTabView();
 
-    this.send_message_list_button = document.querySelector('.send_message_list_button');
-    this.send_message_list_button.addEventListener('click', e => this.sendGameMessage());
-    this.message_list_input = document.querySelector('.message_list_input');
-    this.message_list_input.addEventListener("keyup", e => {
-      if (event.key === "Enter")
-        this.sendGameMessage();
-    });
-    this.messages_list = document.querySelector('.messages_list');
-
     this.code_link_href = document.querySelector('.code_link_href');
     this.code_link_copy = document.querySelector('.code_link_copy');
     if (this.code_link_copy)

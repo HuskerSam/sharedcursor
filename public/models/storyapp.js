@@ -47,15 +47,6 @@ export class StoryApp extends BaseApp {
 
     this.menu_bar_toggle = document.querySelector('.menu_bar_toggle');
     this.menu_bar_toggle.addEventListener('click', e => document.body.classList.toggle('menu_bar_expanded'));
-
-    this.buttonOneRed = document.querySelector('.choice-button-one');
-    this.buttonOneRed.addEventListener('click', e => this.aButtonPress());
-    this.buttonTwo = document.querySelector('.choice-button-two');
-    this.buttonTwo.addEventListener('click', e => this.bButtonPress());
-    this.buttonThree = document.querySelector('.choice-button-three');
-    this.buttonThree.addEventListener('click', e => this.xButtonPress());
-    this.buttonFour = document.querySelector('.choice-button-four');
-    this.buttonFour.addEventListener('click', e => this.yButtonPress());
   }
   async _initContent3D() {
     let startTime = new Date();
@@ -1330,5 +1321,46 @@ export class StoryApp extends BaseApp {
     this.temporaryHelperNote.scaling = U3D.v(1);
     this.temporaryHelperNote.position = U3D.v(-18, 4, 0);
 
+  }
+
+
+  updateGameMessagesFeed(snapshot) {
+    if (snapshot)
+      this.lastMessagesSnapshot = snapshot;
+    else if (this.lastMessagesSnapshot)
+      snapshot = this.lastMessagesSnapshot;
+    else
+      return;
+
+      /*
+    let html = '';
+    let msgCount = snapshot.size;
+    snapshot.forEach((doc) => html += this._renderMessageFeedLine(doc));
+
+    if (html === this.lastMessagesHTML)
+      return;
+
+    this.lastMessagesHTML = html;
+    this.messages_list.innerHTML = html;
+
+    if (snapshot.docs.length > 0) {
+      if (snapshot.docs[0].id !== this.lastMessageId) {
+        if (this.lastMessageId !== null) {
+          this.showMessageSnackbar();
+        }
+        this.lastMessageId = snapshot.docs[0].id;
+      }
+
+    }
+
+    let delete_buttons = this.messages_list.querySelectorAll('button.delete_game');
+    delete_buttons.forEach(btn => btn.addEventListener('click', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      this.deleteMessage(btn, btn.dataset.gamenumber, btn.dataset.messageid);
+    }));
+
+    this.refreshOnlinePresence();
+    */
   }
 }
