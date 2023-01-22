@@ -115,6 +115,11 @@ export default class MenuTab3D {
     followStopBtn.position = U3D.v(2.5 * buttonSpace, top - buttonSpace, 0);
     followStopBtn.parent = this.app.menuBarTabButtonsTN;
 
+    let chatBtn = this.addActionPanelButton('/fontcons/chat.png', "Chat", () =>
+      this.app.chatSlateHelper.showChatPanel(), 1.5);
+    chatBtn.parent = this.app.menuBarTabButtonsTN;
+    chatBtn.position = U3D.v(0, top + buttonSpace, 0);
+
     let scalingSliderTN = BABYLON.MeshBuilder.CreatePlane('scalingSliderTN', {
       height: 15,
       width: 15

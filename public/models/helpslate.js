@@ -14,7 +14,7 @@ export default class HelpSlate {
     }, this.app.scene);
 
     this.helpSlateAdvancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
-      this.helpSlateTN, 1024, 1024, true);
+      this.helpSlateTN, 2048, 2048, true);
 
     this.scrollViewer = new BABYLON.GUI.ScrollViewer("helpscroller");
     this.scrollViewer.width = 1;

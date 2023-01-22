@@ -616,6 +616,7 @@ module.exports = class GameAPI {
 
     let uid = authResults.uid;
     let gameNumber = req.body.gameNumber;
+    let seatIndex = req.body.seatIndex;
     let message = baseClass.escapeHTML(req.body.message);
     if (message.length > 1000)
       message = message.substr(0, 1000);
@@ -635,25 +636,9 @@ module.exports = class GameAPI {
       return baseClass.respondError(res, 'User not found');
     }
 
-    let isOwner = uid === gameData.createUser;
-    let isSeated = false;
-    for (let c = 0; c < gameData.numberOfSeats; c++)
-      if (gameData['seat' + c.toString()] === uid) {
-        isSeated = true;
-        break;
-      }
+    if (gameData['seat' + seatIndex] !== uid)
+      return baseClass.respondError(res, 'User needs to be current to chat');
 
-    if (!isOwner) {
-      if (gameData.messageLevel === 'seated') {
-        if (!isSeated) {
-          return baseClass.respondError(res, 'User needs to be seated to chat');
-        }
-      }
-
-      if (!gameData.members[uid]) {
-        return baseClass.respondError(res, 'User needs to be a game member to chat');
-      }
-    }
     let memberImage = gameData.memberImages[uid] ? gameData.memberImages[uid] : '';
     let memberName = gameData.memberNames[uid] ? gameData.memberNames[uid] : '';
 
@@ -663,8 +648,8 @@ module.exports = class GameAPI {
       created: new Date().toISOString(),
       messageType: 'user',
       gameNumber,
-      isSeated,
-      isOwner,
+      seatIndex,
+      isOwner: uid === gameData.createUser,
       memberName,
       memberImage
     };

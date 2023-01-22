@@ -6,6 +6,7 @@ import Avatar3D from '/models/avatar3d.js';
 import ActionCards from '/models/actioncards.js';
 import Rocket3D from '/models/rocket3d.js';
 import HelpSlate from '/models/helpslate.js';
+import ChatSlate from '/models/chatslate.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -59,10 +60,11 @@ export class StoryApp extends BaseApp {
     this.asteroidHelper = new Asteroid3D(this);
     this.rocketHelper = new Rocket3D(this);
     this.helpSlateHelper = new HelpSlate(this);
+    this.chatSlateHelper = new ChatSlate(this);
     this.invisibleMaterial = new BABYLON.StandardMaterial("invisiblematerial", this.scene);
     this.invisibleMaterial.alpha = 0;
 
-//    if (this.urlParams.get('showguides'))
+    //    if (this.urlParams.get('showguides'))
 
     this.xr.baseExperience.camera.onBeforeCameraTeleport.add(() => {
       this.clearActiveFollowMeta();
@@ -1186,7 +1188,6 @@ export class StoryApp extends BaseApp {
     });
     this.voiceSoundObject.attachToMesh(avatarMeta.chatBubble);
   }
-
   updateAvatarPaths() {
     if (!this.avatarHelper.initedAvatars)
       return;
@@ -1276,8 +1277,6 @@ export class StoryApp extends BaseApp {
 
     });
   }
-
-
   _generatePath(keyPointsArray) {
     let y = 0;
 
@@ -1322,8 +1321,6 @@ export class StoryApp extends BaseApp {
     this.temporaryHelperNote.position = U3D.v(-18, 4, 0);
 
   }
-
-
   updateGameMessagesFeed(snapshot) {
     if (snapshot)
       this.lastMessagesSnapshot = snapshot;
@@ -1332,7 +1329,7 @@ export class StoryApp extends BaseApp {
     else
       return;
 
-      /*
+
     let html = '';
     let msgCount = snapshot.size;
     snapshot.forEach((doc) => html += this._renderMessageFeedLine(doc));
@@ -1341,7 +1338,8 @@ export class StoryApp extends BaseApp {
       return;
 
     this.lastMessagesHTML = html;
-    this.messages_list.innerHTML = html;
+  //  this.messages_list.innerHTML = html;
+  console.log(html);
 
     if (snapshot.docs.length > 0) {
       if (snapshot.docs[0].id !== this.lastMessageId) {
@@ -1353,14 +1351,65 @@ export class StoryApp extends BaseApp {
 
     }
 
-    let delete_buttons = this.messages_list.querySelectorAll('button.delete_game');
-    delete_buttons.forEach(btn => btn.addEventListener('click', e => {
-      e.stopPropagation();
-      e.preventDefault();
-      this.deleteMessage(btn, btn.dataset.gamenumber, btn.dataset.messageid);
-    }));
-
     this.refreshOnlinePresence();
-    */
+  }
+  async sendGameMessage(message, seatIndex) {
+    if (message === '') {
+      return;
+    }
+
+    if (message.length > 1000)
+      message = message.substr(0, 1000);
+
+    let body = {
+      gameNumber: this.currentGame,
+      message,
+      seatIndex
+    };
+    let token = await firebase.auth().currentUser.getIdToken();
+    let f_result = await fetch(this.basePath + 'api/games/message', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        token
+      },
+      body: JSON.stringify(body)
+    });
+    let json = await f_result.json();
+    return json;
+  }
+
+  _renderMessageFeedLine(doc) {
+    let data = doc.data();
+
+    let game_owner_class = (this.gameData.createUser === data.uid) ? ' impact-font' : '';
+    let owner_class = data.uid === this.uid ? ' message_owner' : '';
+    let owner_msg_impact = data.uid === this.uid ? ' impact-font' : '';
+
+    let name = 'Anonymous';
+    if (data.memberName)
+      name = data.memberName;
+
+    let img = '/images/defaultprofile.png';
+    if (data.memberImage)
+      img = data.memberImage;
+
+    let message = data.message;
+    let timeSince = this.timeSince(new Date(data.created));
+
+    return `<div class="game_message_list_item app_panel card_shadow ${owner_class}">
+                <div class="game_user_wrapper member_desc card_shadow app_panel">
+                  <span style="background-image:url(${img})"></span>
+                  <span class="member_name ${game_owner_class}">${name}</span>
+                </div>
+                <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
+                <div style="flex:1;display:flex;flex-direction:column">
+                  <div style="flex:1"></div>
+                  <div class="message ${owner_msg_impact}" style="flex:1">${message}</div>
+                  <div style="flex:1"></div>
+                </div>
+              </div>`;
   }
 }

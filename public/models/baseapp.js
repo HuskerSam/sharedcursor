@@ -38,8 +38,6 @@ export class BaseApp {
 
     this.lastMessageId = null;
 
-    this.chat_snackbar = document.querySelector('#chat_snackbar');
-
     document.addEventListener('visibilitychange', e => {
       this.refreshOnlinePresence()
     });
@@ -692,43 +690,6 @@ export class BaseApp {
       .limit(50)
       .onSnapshot(snapshot => this.updateGameMessagesFeed(snapshot));
   }
-  updateGameMessagesFeed(snapshot) {
-    if (snapshot)
-      this.lastMessagesSnapshot = snapshot;
-    else if (this.lastMessagesSnapshot)
-      snapshot = this.lastMessagesSnapshot;
-    else
-      return;
-
-    let html = '';
-    let msgCount = snapshot.size;
-    snapshot.forEach((doc) => html += this._renderMessageFeedLine(doc));
-
-    if (html === this.lastMessagesHTML)
-      return;
-
-    this.lastMessagesHTML = html;
-    this.messages_list.innerHTML = html;
-
-    if (snapshot.docs.length > 0) {
-      if (snapshot.docs[0].id !== this.lastMessageId) {
-        if (this.lastMessageId !== null) {
-          this.showMessageSnackbar();
-        }
-        this.lastMessageId = snapshot.docs[0].id;
-      }
-
-    }
-
-    let delete_buttons = this.messages_list.querySelectorAll('button.delete_game');
-    delete_buttons.forEach(btn => btn.addEventListener('click', e => {
-      e.stopPropagation();
-      e.preventDefault();
-      this.deleteMessage(btn, btn.dataset.gamenumber, btn.dataset.messageid);
-    }));
-
-    this.refreshOnlinePresence();
-  }
   async deleteMessage(btn, gameNumber, messageId) {
     btn.setAttribute('disabled', 'true');
 
@@ -753,90 +714,6 @@ export class BaseApp {
       alert('Delete message failed');
     }
   }
-  _renderMessageFeedLine(doc, messageFeed = true) {
-    let data = doc.data();
-
-    let game_owner_class = (this.gameData.createUser === data.uid) ? ' impact-font' : '';
-    let owner_class = data.uid === this.uid ? ' message_owner' : '';
-    let owner_msg_impact = data.uid === this.uid ? ' impact-font' : '';
-
-    let name = 'Anonymous';
-    if (data.memberName)
-      name = data.memberName;
-
-    let img = '/images/defaultprofile.png';
-    if (data.memberImage)
-      img = data.memberImage;
-
-    let message = data.message;
-    if (!messageFeed) {
-      if (message.length > 12)
-        message = message.substr(0, 11) + '...';
-    }
-    let timeSince = this.timeSince(new Date(data.created));
-
-    if (messageFeed)
-      return `<div class="game_message_list_item app_panel card_shadow ${owner_class}">
-                <div class="game_user_wrapper member_desc card_shadow app_panel">
-                  <span style="background-image:url(${img})"></span>
-                  <span class="member_name ${game_owner_class}">${name}</span>
-                </div>
-                <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
-                <div style="flex:1;display:flex;flex-direction:column">
-                  <div style="flex:1"></div>
-                  <div class="message ${owner_msg_impact}" style="flex:1">${message}</div>
-                  <div style="flex:1"></div>
-                </div>
-                <button class="delete_game btn btn-secondary" data-gamenumber="${data.gameNumber}" data-messageid="${doc.id}">
-                  <i class="material-icons">delete</i>
-                </button>
-              </div>`;
-
-    return `<div class="game_message_list_item ${owner_class}">
-                        <div style="display:flex;flex-direction:row">
-                          <div class="game_user_wrapper member_desc">
-                            <span style="background-image:url(${img})"></span>
-                          </div>
-                          <div class="message" style="flex:1">${message}</div>
-                          <div class="game_date"><div style="flex:1"></div>
-                          <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
-                          <div style="flex:1"></div>
-                        </div>
-                      </div>
-                      <span class="member_name">${name}</span> <button class="close_button">X</button>
-                    </div>`;
-  }
-  async sendGameMessage() {
-    let message = this.message_list_input.value.trim();
-    if (message === '') {
-      alert('Please supply a message');
-      return;
-    }
-    if (message.length > 1000)
-      message = message.substr(0, 1000);
-    this.message_list_input.value = '';
-
-    let body = {
-      gameNumber: this.currentGame,
-      message
-    };
-    let token = await firebase.auth().currentUser.getIdToken();
-    let f_result = await fetch(this.basePath + 'api/games/message', {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-        token
-      },
-      body: JSON.stringify(body)
-    });
-    let json = await f_result.json();
-    if (!json.success) {
-      console.log('message post', json);
-      alert(json.errorMessage);
-    }
-  }
   async dockSit(seatIndex) {
     if (this.gameData['seat' + seatIndex.toString()] !== null)
       return;
@@ -846,27 +723,6 @@ export class BaseApp {
       return;
 
     return this._gameAPISit(seatIndex);
-  }
-  showMessageSnackbar() {
-    let doc = this.lastMessagesSnapshot.docs[0];
-
-    //don't show if msg owner
-    if (doc.data().uid === this.uid)
-      return;
-
-    let html = this._renderMessageFeedLine(doc, false);
-    this.chat_snackbar.innerHTML = html;
-
-    this.chat_snackbar.querySelector('.close_button').addEventListener('click', e => {
-      this.chat_snackbar.classList.remove('show');
-      clearTimeout(this.toggleSnackBarTimeout);
-    });
-
-    clearTimeout(this.toggleSnackBarTimeout);
-    this.chat_snackbar.classList.add('show');
-    this.toggleSnackBarTimeout = setTimeout(() => {
-      this.chat_snackbar.classList.remove('show');
-    }, 3000);
   }
 
   get seatCount() {
