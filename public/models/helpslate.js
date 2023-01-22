@@ -131,7 +131,7 @@ export default class HelpSlate {
 
     blockWrapperPanel.addControl(button);
     button.onPointerClickObservable.add(() => {
-      this.app.avatarShowMessage(seatIndex, helpBlock.description);
+      this.app.speechChannelHelper.avatarShowMessage(seatIndex, helpBlock.description);
     });
 
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);

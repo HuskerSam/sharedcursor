@@ -161,7 +161,7 @@ export default class ChatSlate {
     if (!this.inited || !this.app.lastMessagesSnapshot) return;
 
     this.app.lastMessagesSnapshot.forEach((doc) => this._messageFeedBlock(doc));
-    this.refreshOnlinePresence();
+    this.app.refreshOnlinePresence();
   }
   _messageFeedBlock(doc) {
     if (this.messageBlocks[doc.id])
@@ -192,7 +192,7 @@ export default class ChatSlate {
     button.setPadding("30px", "20px", "30px", "20px");
     blockWrapperPanel.addControl(button);
     button.onPointerClickObservable.add(() => {
-      this.app.avatarShowMessage(seatIndex, message);
+      this.app.speechChannelHelper.avatarShowMessage(seatIndex, message);
     });
 
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);
