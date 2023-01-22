@@ -4,6 +4,8 @@ export default class ChatSlate {
   constructor(app) {
     this.app = app;
     this.idCounter = 0;
+
+    this.messageBlocks = {};
   }
   async initPanel() {
     this.inited = true;
@@ -79,6 +81,8 @@ export default class ChatSlate {
     let cameraPos = U3D.v(this.app.scene.activeCamera.position.x, 1, this.app.scene.activeCamera.position.z)
     this.chatSlateNode.lookAt(cameraPos, Math.PI, -0.35, 0);
     this.chatSlateNode.setEnabled(true);
+
+    this.updateMessageFeed();
   }
   _initKeyboardInput() {
     this.keyboardMesh = BABYLON.MeshBuilder.CreatePlane('chatSlateKeyboard', {
@@ -153,10 +157,21 @@ export default class ChatSlate {
     } else
       this.textAreaMessage.text = '';
   }
-  addBlock(slateBlock) {
-    let seatIndex = slateBlock.seatIndex;
-    if (seatIndex === -1)
-      seatIndex = this.idCounter % 4;
+  updateMessageFeed() {
+    if (!this.inited || !this.app.lastMessagesSnapshot) return;
+
+    this.app.lastMessagesSnapshot.forEach((doc) => this._messageFeedBlock(doc));
+    this.refreshOnlinePresence();
+  }
+  _messageFeedBlock(doc) {
+    if (this.messageBlocks[doc.id])
+      return;
+
+    let data = doc.data();
+    let stackPanel = null;
+
+    let message = data.message;
+    let seatIndex = data.seatIndex;
 
     let avatarMeta = this.app.avatarMetas[seatIndex];
     let colors = U3D.get3DColors(seatIndex);
@@ -177,7 +192,7 @@ export default class ChatSlate {
     button.setPadding("30px", "20px", "30px", "20px");
     blockWrapperPanel.addControl(button);
     button.onPointerClickObservable.add(() => {
-      this.app.avatarShowMessage(seatIndex, slateBlock.description);
+      this.app.avatarShowMessage(seatIndex, message);
     });
 
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);
@@ -188,7 +203,7 @@ export default class ChatSlate {
     text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
     text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     text.setPadding("35px", "35px", "35px", "35px");
-    text.text = slateBlock.description;
+    text.text = message;
     blockWrapperPanel.addControl(text);
 
     let footerPanel = new BABYLON.GUI.StackPanel();
@@ -204,9 +219,9 @@ export default class ChatSlate {
     speaker.text = ' - as by ' + avatarMeta.name;
     footerPanel.addControl(speaker);
     blockWrapperPanel.addControl(footerPanel);
+    this.contentStackPanel.addControl(blockWrapperPanel);
 
     this.idCounter++;
-
-    return blockWrapperPanel;
+    this.messageBlocks[doc.id] = blockWrapperPanel;
   }
 }

@@ -1322,36 +1322,9 @@ export class StoryApp extends BaseApp {
 
   }
   updateGameMessagesFeed(snapshot) {
-    if (snapshot)
-      this.lastMessagesSnapshot = snapshot;
-    else if (this.lastMessagesSnapshot)
-      snapshot = this.lastMessagesSnapshot;
-    else
-      return;
-
-
-    let html = '';
-    let msgCount = snapshot.size;
-    snapshot.forEach((doc) => html += this._renderMessageFeedLine(doc));
-
-    if (html === this.lastMessagesHTML)
-      return;
-
-    this.lastMessagesHTML = html;
-  //  this.messages_list.innerHTML = html;
-  console.log(html);
-
-    if (snapshot.docs.length > 0) {
-      if (snapshot.docs[0].id !== this.lastMessageId) {
-        if (this.lastMessageId !== null) {
-          this.showMessageSnackbar();
-        }
-        this.lastMessageId = snapshot.docs[0].id;
-      }
-
-    }
-
-    this.refreshOnlinePresence();
+    this.lastMessagesSnapshot = snapshot;
+    if (this.chatSlateHelper)
+      this.chatSlateHelper.updateMessageFeed();
   }
   async sendGameMessage(message, seatIndex) {
     if (message === '') {
@@ -1379,37 +1352,5 @@ export class StoryApp extends BaseApp {
     });
     let json = await f_result.json();
     return json;
-  }
-
-  _renderMessageFeedLine(doc) {
-    let data = doc.data();
-
-    let game_owner_class = (this.gameData.createUser === data.uid) ? ' impact-font' : '';
-    let owner_class = data.uid === this.uid ? ' message_owner' : '';
-    let owner_msg_impact = data.uid === this.uid ? ' impact-font' : '';
-
-    let name = 'Anonymous';
-    if (data.memberName)
-      name = data.memberName;
-
-    let img = '/images/defaultprofile.png';
-    if (data.memberImage)
-      img = data.memberImage;
-
-    let message = data.message;
-    let timeSince = this.timeSince(new Date(data.created));
-
-    return `<div class="game_message_list_item app_panel card_shadow ${owner_class}">
-                <div class="game_user_wrapper member_desc card_shadow app_panel">
-                  <span style="background-image:url(${img})"></span>
-                  <span class="member_name ${game_owner_class}">${name}</span>
-                </div>
-                <div class="time_since_updatable" data-timesince="${data.created}">${timeSince}</div>
-                <div style="flex:1;display:flex;flex-direction:column">
-                  <div style="flex:1"></div>
-                  <div class="message ${owner_msg_impact}" style="flex:1">${message}</div>
-                  <div style="flex:1"></div>
-                </div>
-              </div>`;
   }
 }
