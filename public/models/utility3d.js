@@ -643,7 +643,7 @@ export default class Utility3D {
             material.emissiveColor = new BABYLON.Color3(9, 9, 0);
           }
 
-          material.disableLighting = true;  //unlit = true?
+          material.disableLighting = true; //unlit = true?
         }
 
         material.backFaceCulling = true;
@@ -795,5 +795,41 @@ export default class Utility3D {
     plane.material = mat;
 
     return plane;
+  }
+
+
+  static generateComplexPath(keyPositions, keyRotations) {
+    let y = 0;
+
+    let xMin = -10;
+    let xMax = 10;
+    let zMin = -10;
+    let zMax = 10;
+
+    let keyPoints = [];
+    let rotations = [];
+
+    rotations.push(this.v(0, 0, 0));
+    keyPoints.push(this.v4(xMax, y, 0, 1));
+
+    keyPoints.push(this.v4(0, y, zMax, 100));
+    rotations.push(this.v(0, -Math.PI / 2, 0));
+
+    keyPoints.push(this.v4(xMin, y, 0, 100));
+    rotations.push(this.v(0, -Math.PI, 0));
+
+    keyPoints.push(this.v4(0, y, zMin, 100));
+    rotations.push(this.v(0, -Math.PI * 3 / 2, 0));
+
+    keyPoints.push(this.v4(xMax, y, 0, 99));
+    rotations.push(this.v(0, -Math.PI * 2, 0));
+
+    let curve = this.curvePointsMerge(keyPoints);
+    let positions = curve.getPoints();
+
+    return {
+      positions,
+      rotations
+    };
   }
 }

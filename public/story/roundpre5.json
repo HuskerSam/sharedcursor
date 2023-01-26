@@ -4,17 +4,13 @@
       "action": "avatarMessage",
       "seatIndex": 3,
       "addAnimation": "groinkicked",
-      "text": "I'm Elihu Husker, I represent the Titans... the first civilization on Earth",
-      "timeToShow": 8000,
-      "timeToBlock": 10000
+      "text": "I'm Elihu Husker, I represent the Titans... the first civilization on Earth"
     },
     {
       "action": "avatarMessage",
       "seatIndex": 3,
       "addAnimation": "jump",
-      "text": "I own this system, stay the hell out!",
-      "timeToShow": 8000,
-      "timeToBlock": 10000
+      "text": "I own this system, stay the hell out!"
     }
   ]
 }

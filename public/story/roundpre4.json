@@ -15,47 +15,35 @@
       "action": "avatarMessage",
       "seatIndex": 0,
       "text": "Things started out so peacefully...",
-      "addAnimation": "joyfuljump",
-      "timeToShow": 15000,
-      "timeToBlock": 10000
+      "addAnimation": "joyfuljump"
     },
     {
       "action": "avatarMessage",
       "seatIndex": 1,
-      "text": "I blame it all on Elihu and capitalism!",
-      "timeToShow": 18000,
-      "timeToBlock": 12000
+      "text": "I blame it all on Elihu and capitalism!"
     },
     {
       "action": "avatarMessage",
       "seatIndex": 2,
-      "text": "Elihu thinks he owns everything.",
-      "timeToShow": 15000,
-      "timeToBlock": 10000
+      "text": "Elihu thinks he owns everything."
     },
     {
       "action": "avatarMessage",
       "seatIndex": 3,
       "text": "This is my system. Get the hell out or I'll enslave you!",
-      "addAnimation": "jump",
-      "timeToShow": 25000,
-      "timeToBlock": 12000
+      "addAnimation": "jump"
     },
     {
       "action": "avatarMessage",
       "seatIndex": 0,
       "text": "Now that hits me in the mother area :(",
-      "addAnimation": "groinkicked",
-      "timeToShow": 15000,
-      "timeToBlock": 10000
+      "addAnimation": "groinkicked"
     },
     {
       "action": "avatarMessage",
       "seatIndex": 3,
       "text": "Oh you act like this conflict doesn't hurt me too...",
-      "addAnimation": "groinkicked",
-      "timeToShow": 15000,
-      "timeToBlock": 10000
+      "addAnimation": "groinkicked"
     }
   ]
 }
