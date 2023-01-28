@@ -30,12 +30,36 @@ export default class SpeechChannel {
       chatBubbleMesh.parent = chatTN;
       chatBubbleMesh.isPickable = false;
 
+      let chatTextPlane = BABYLON.MeshBuilder.CreatePlane('chatSlatePanel', {
+        height: 2.25,
+        width: 3.75
+      }, this.app.scene);
+      chatTextPlane.parent = chatBubbleMesh;
+      chatTextPlane.isPickable = false;
+      chatTextPlane.rotation.x = Math.PI;
+      chatTextPlane.position.z = -0.005;
+      chatTextPlane.position.y = -0.15;
+
+      let chatTextAdvancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
+        chatTextPlane, 2048, 2048, true);
+      let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);
+      text.resizeToFit = true;
+      text.color = seatIndex > 2 ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
+      text.width = 1;
+      text.fontSize = 300;
+      text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
+      text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+      text.text = "My long long long long long long long long long long long and more long message.";
+      chatTextAdvancedTexture.addControl(text);
+
       chatTN.position.y = 3.5;
       chatTN.rotation.y = Math.PI;
       chatTN.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Y;
       chatTN.isPickable = false;
-
       chatTN.parent = this.app.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
+
+      avatarMeta.textBlock = text;
+      avatarMeta.chatTextPlane = chatTextPlane;
       avatarMeta.chatPanel = chatTN;
       avatarMeta.chatBubble = chatBubbleMesh;
       avatarMeta.chatPanel.setEnabled(false);
@@ -97,7 +121,7 @@ export default class SpeechChannel {
   async avatarShowMessage(seatIndex, text) {
     await this.generateSoundSegments(seatIndex, text);
     this.app.avatarMetas[seatIndex].chatPanel.setEnabled(true);
-    this.playText(seatIndex, text);
+    await this.playText(seatIndex, text);
   }
   async waitTime(time) {
     return new Promise((res, rej) => {
@@ -113,6 +137,7 @@ export default class SpeechChannel {
     let avatarMeta = this.app.avatarMetas[seatIndex]
 
     let mp3Fragments = this.seatState[seatIndex].mp3Fragments;
+    let textFragments = this.seatState[seatIndex].textFragments;
     let localSoundObjects = [];
     for (let fragmentIndex = 0, l = mp3Fragments.length; fragmentIndex < l; fragmentIndex++) {
       localSoundObjects.push(new BABYLON.Sound("voiceSoundObject", mp3Fragments[fragmentIndex], this.app.scene, null, {
@@ -125,53 +150,13 @@ export default class SpeechChannel {
     for (let fragmentIndex = 0, l = mp3Fragments.length; fragmentIndex < l; fragmentIndex++) {
       localSoundObjects[fragmentIndex].autoplay = true;
       localSoundObjects[fragmentIndex].play();
+
+      avatarMeta.textBlock.text = textFragments[fragmentIndex];
+      avatarMeta.chatPanel.setEnabled(true);
       await this._waitUntilObservable(localSoundObjects[fragmentIndex].onEndedObservable);
-    }
-    for (let fragmentIndex = 0, l = mp3Fragments.length; fragmentIndex < l; fragmentIndex++)
       localSoundObjects[fragmentIndex].dispose();
-    /*
-      if (avatarMeta.chatTextPlane) {
-        avatarMeta.chatTextPlane.dispose(true, true);
-        avatarMeta.chatTextPlane2.dispose(true, true);
-        avatarMeta.chatTextPlane3.dispose(true, true);
-      }
-
-      let color = U3D.color('0,0,0');
-      if (seatIndex > 2)
-        color = U3D.color('1,1,1');
-
-      let line1Words = words.slice(0, 4);
-      let line1 = line1Words.join(' ');
-      let chatTextPlane = U3D.addTextPlane(this.app.scene, line1, color);
-      avatarMeta.chatTextPlane = chatTextPlane;
-      chatTextPlane.parent = avatarMeta.chatBubble;
-      chatTextPlane.position.z = -0.01;
-      chatTextPlane.position.y = -0.6;
-      chatTextPlane.rotation.x = Math.PI;
-      chatTextPlane.scaling = U3D.v(0.5, 0.5, 0.5);
-
-      let line2Show = avatarMeta.avatarChatCurrentWords > 4;
-      let line2Words = words.slice(4, 8);
-      let line2 = line2Words.join(' ');
-      if (!line2Show)
-        line2 = '';
-      let chatTextPlane2 = U3D.addTextPlane(this.app.scene, line2, color);
-      chatTextPlane2.parent = chatTextPlane;
-      chatTextPlane2.position.y = -1.1;
-      avatarMeta.chatTextPlane2 = chatTextPlane2;
-
-      let line3Show = avatarMeta.avatarChatCurrentWords > 8;
-      let line3Words = words.slice(8, 12);
-      let line3 = line3Words.join(' ');
-      if (!line3Show)
-        line3 = '';
-      let chatTextPlane3 = U3D.addTextPlane(this.app.scene, line3, color);
-      chatTextPlane3.parent = chatTextPlane;
-      chatTextPlane3.position.y = -2.2;
-      avatarMeta.chatTextPlane3 = chatTextPlane3;
-
-      avatarMeta.chatTextTimer = setTimeout(() => this._updateAvatarTextChat(seatIndex, text), 600);
-      */
+      avatarMeta.chatPanel.setEnabled(false);
+    }
   }
   async getMP3ForText(text, voiceName = 'en-AU-Standard-A') {
     if (!this.app.fireToken)
@@ -197,5 +182,9 @@ export default class SpeechChannel {
     let soundPath = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(json.path) + '?alt=media&fileext=.mp3';
     window.lastSoundPath = soundPath;
     return json.path;
+  }
+  stopSound() {
+
+
   }
 }
