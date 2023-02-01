@@ -62,6 +62,7 @@ export default class ChatSlate {
   closeSlate() {
     this.chatSlateNode.setEnabled(false);
     this.slateShown = false;
+    this.keyboardAdvancedTexture.moveFocusToControl(null);
   }
   async showChatPanel() {
     if (!this.inited)
@@ -138,7 +139,8 @@ export default class ChatSlate {
 
     this.textAreaMessage.onBlurObservable.add(() => {
       setTimeout(() => {
-        this.keyboardAdvancedTexture.moveFocusToControl(this.textAreaMessage);
+        if (this.slateShown)
+          this.keyboardAdvancedTexture.moveFocusToControl(this.textAreaMessage);
       }, 0);
     });
     this.keyboardAdvancedTexture.moveFocusToControl(this.textAreaMessage);
@@ -192,7 +194,7 @@ export default class ChatSlate {
     button.setPadding("30px", "20px", "30px", "20px");
     blockWrapperPanel.addControl(button);
     button.onPointerClickObservable.add(() => {
-      this.app.speechChannelHelper.avatarShowMessage(seatIndex, message);
+      this.app.speechChannelHelper.addMessage(seatIndex, message);
     });
 
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);

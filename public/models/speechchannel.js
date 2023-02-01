@@ -1,5 +1,5 @@
 import U3D from '/models/utility3d.js';
-const charactersPerLine = 25;
+const charactersPerLine = 24;
 const charactersPerSentance = charactersPerLine * 3;
 
 export default class SpeechChannel {
@@ -7,8 +7,9 @@ export default class SpeechChannel {
     this.app = app;
     this.lingerTime = 2000;
     this.chatCloseTimeout = null;
-    this.activeSeatIndex = -1;
     this.seatState = new Array(4).fill({});
+    this.eventQueue = [];
+    this.seatIndex = -1;
 
     this.app.avatarMetas.forEach((avatarMeta, seatIndex) => {
       let chatTN = new BABYLON.TransformNode('chattnfor' + seatIndex, this.app.scene);
@@ -31,8 +32,8 @@ export default class SpeechChannel {
       chatBubbleMesh.isPickable = false;
 
       let chatTextPlane = BABYLON.MeshBuilder.CreatePlane('chatSlatePanel', {
-        height: 2.25,
-        width: 3.75
+        height: 2.15,
+        width: 3.65
       }, this.app.scene);
       chatTextPlane.parent = chatBubbleMesh;
       chatTextPlane.isPickable = false;
@@ -46,10 +47,10 @@ export default class SpeechChannel {
       text.resizeToFit = true;
       text.color = seatIndex > 2 ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
       text.width = 1;
-      text.fontSize = 300;
+      text.fontSize = 256;
       text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
       text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-      text.text = "My long long long long long long long long long long long and more long message.";
+      text.text = "";
       chatTextAdvancedTexture.addControl(text);
 
       chatTN.position.y = 3.5;
@@ -65,7 +66,96 @@ export default class SpeechChannel {
       avatarMeta.chatPanel.setEnabled(false);
     });
   }
-  splitLongText(text) {
+  async addMessage(seatIndex, text) {
+    let meta = await this._segment(seatIndex, text);
+    this.eventQueue.push(meta);
+    if (!this.isPlaying) this._playNext();
+  }
+  stopSound() {
+    this.eventQueue = [];
+    this.isPlaying = false;
+    this.activeSpeechEvent = null;
+
+    if (this.activeSoundObject) {
+      this.activeSoundObject.stop();
+      this.activeSoundObject.dispose();
+      this.activeSoundObject = null;
+    }
+
+    if (this.seatIndex >= 0) {
+      this.app.avatarMetas[this.seatIndex].chatPanel.setEnabled(false);
+      this.seatIndex = -1;
+    }
+  }
+  async _playBlock(speechEvent) {
+    this.seatIndex = speechEvent.seatIndex;
+    this.activeSpeechEvent = speechEvent;
+    let avatarMeta = this.app.avatarMetas[this.seatIndex];
+    avatarMeta.chatPanel.setEnabled(true);
+    for (let fragmentIndex = 0, l = speechEvent.mp3Fragments.length; fragmentIndex < l; fragmentIndex++) {
+      if (this.activeSpeechEvent !== speechEvent)
+        return;
+
+      if (this.activeSoundObject) {
+        this.activeSoundObject.stop();
+        this.activeSoundObject.dispose();
+      }
+      let mp3Frag = speechEvent.mp3Fragments[fragmentIndex];
+      this.activeSoundObject = new BABYLON.Sound("voiceSoundObject", mp3Frag, this.app.scene, null, {
+        loop: false,
+        autoplay: true
+      });
+      avatarMeta.textBlock.text = speechEvent.textFragments[fragmentIndex];
+      await this._untilComplete(this.activeSoundObject.onEndedObservable);
+    }
+    avatarMeta.chatPanel.setEnabled(false);
+    this.seatIndex = -1;
+  }
+  async _playNext() {
+    let speechEvent = this.eventQueue.pop();
+    this.isPlaying = true;
+    await this._playBlock(speechEvent);
+
+    if (this.eventQueue.length === 0)
+      this.isPlaying = false;
+    else
+      this._playNext();
+  }
+  async _segment(seatIndex, text) {
+    if (text.slice(-1) === '.')
+      text = text.slice(0, -1);
+    let sentances = text.split('. ');
+    let textFragments = [];
+    let sentanceStopIndexes = [];
+    sentances.forEach(sentance => {
+      sentance = sentance.trim();
+      let frags = this._fragmentText(sentance);
+      textFragments = textFragments.concat(frags);
+      sentanceStopIndexes.push(sentance.length - 1);
+    });
+
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let voiceName = avatarMeta.voiceName;
+    let promises = [];
+    textFragments.forEach((fragment, fragmentIndex) => {
+      promises.push(this._mp3ForText(fragment, voiceName));
+    });
+    let fileNames = await Promise.all(promises);
+    let mp3Fragments = [];
+    fileNames.forEach(fileName =>
+      mp3Fragments.push('https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(fileName) + '?alt=media&fileext=.mp3')
+    );
+
+    return {
+      seatIndex,
+      text,
+      textFragments,
+      sentanceStopIndexes,
+      mp3Fragments,
+      added: new Date()
+    };
+  }
+  _fragmentText(text) {
     if (text.length <= charactersPerSentance)
       return [text];
 
@@ -79,89 +169,12 @@ export default class SpeechChannel {
 
     let part1 = words.slice(0, firstHalfCount).join(' ');
     let part2 = words.slice(firstHalfCount).join(' ');
-    let parts1 = this.splitLongText(part1);
-    let parts2 = this.splitLongText(part2);
+    let parts1 = this._fragmentText(part1);
+    let parts2 = this._fragmentText(part2);
 
     return parts1.concat(parts2);
   }
-  async generateSoundSegments(seatIndex, text) {
-    if (this.seatState[seatIndex].text === text)
-      return;
-    this.seatState[seatIndex].text = text;
-
-    let seatState = this.seatState[seatIndex];
-    seatState.totalCharacters = text.length;
-
-    if (text.slice(-1) === '.')
-      text = text.slice(0, -1);
-    let sentances = text.split('. ');
-    seatState.textFragments = [];
-    let sentanceStopIndexes = [];
-    sentances.forEach(sentance => {
-      sentance = sentance.trim();
-      let frags = this.splitLongText(sentance.trim());
-      seatState.textFragments = seatState.textFragments.concat(frags);
-      sentanceStopIndexes.push(seatState.length - 1);
-    });
-
-    console.log(seatState.textFragments);
-
-    let avatarMeta = this.app.avatarMetas[seatIndex];
-    let voiceName = avatarMeta.voiceName;
-    let promises = [];
-    seatState.textFragments.forEach((fragment, fragmentIndex) => {
-      promises.push(this.getMP3ForText(fragment, voiceName));
-    });
-    let fileNames = await Promise.all(promises);
-    seatState.mp3Fragments = [];
-    fileNames.forEach(fileName => {
-      seatState.mp3Fragments.push('https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/' + encodeURIComponent(fileName) + '?alt=media&fileext=.mp3');
-    });
-  }
-  async avatarShowMessage(seatIndex, text) {
-    await this.generateSoundSegments(seatIndex, text);
-    this.app.avatarMetas[seatIndex].chatPanel.setEnabled(true);
-    await this.playText(seatIndex, text);
-  }
-  async waitTime(time) {
-    return new Promise((res, rej) => {
-      setTimeout(() => res(), time);
-    })
-  }
-  _waitUntilObservable(observable) {
-    return new Promise((res, rej) => {
-      observable.addOnce(() => res());
-    });
-  }
-  async playText(seatIndex, text) {
-    let avatarMeta = this.app.avatarMetas[seatIndex]
-
-    let mp3Fragments = this.seatState[seatIndex].mp3Fragments;
-    let textFragments = this.seatState[seatIndex].textFragments;
-    let localSoundObjects = [];
-    for (let fragmentIndex = 0, l = mp3Fragments.length; fragmentIndex < l; fragmentIndex++) {
-      localSoundObjects.push(new BABYLON.Sound("voiceSoundObject", mp3Fragments[fragmentIndex], this.app.scene, null, {
-        loop: false,
-        autoplay: false
-      }));
-      localSoundObjects[fragmentIndex].attachToMesh(avatarMeta.chatBubble);
-    }
-
-    for (let fragmentIndex = 0, l = mp3Fragments.length; fragmentIndex < l; fragmentIndex++) {
-      localSoundObjects[fragmentIndex].autoplay = true;
-      localSoundObjects[fragmentIndex].play();
-
-      avatarMeta.textBlock.text = textFragments[fragmentIndex];
-      avatarMeta.chatPanel.setEnabled(true);
-      await this._waitUntilObservable(localSoundObjects[fragmentIndex].onEndedObservable);
-      localSoundObjects[fragmentIndex].dispose();
-      avatarMeta.chatPanel.setEnabled(false);
-    }
-  }
-  async getMP3ForText(text, voiceName = 'en-AU-Standard-A') {
-    if (!this.app.fireToken)
-      return;
-
+  async _mp3ForText(text, voiceName = 'en-AU-Standard-A') {
     let body = {
       text,
       voiceName
@@ -183,8 +196,9 @@ export default class SpeechChannel {
     window.lastSoundPath = soundPath;
     return json.path;
   }
-  stopSound() {
-
-
+  async _untilComplete(observable) {
+    return new Promise((res, rej) => {
+      observable.addOnce(() => res());
+    });
   }
 }

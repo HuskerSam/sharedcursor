@@ -865,6 +865,8 @@ export class StoryApp extends BaseApp {
       return;
 
     if (reset) {
+      this.speechChannelHelper.stopSound();
+
       this.boardResetRoundData.actions.forEach(meta => {
         if (meta.action === 'init') {
           this.applyInitRoundAction(meta);
@@ -882,9 +884,7 @@ export class StoryApp extends BaseApp {
     this.iterateBoardRoundSequence();
     this.actionCardHelper.updateCardsForPlayer();
   }
-  async iterateBoardRoundSequence(reset) {
-    if (reset)
-      this.roundActionRunning = false;
+  async iterateBoardRoundSequence() {
     if (this.roundActionRunning)
       return;
     if (this.roundCurrentSequenceIndex === undefined)
@@ -982,7 +982,7 @@ export class StoryApp extends BaseApp {
       aAnim.start(false);
     }
 
-    await this.speechChannelHelper.avatarShowMessage(action.seatIndex, action.text);
+    await this.speechChannelHelper.addMessage(action.seatIndex, action.text);
   }
 
   async discardCard(cardIndex) {
