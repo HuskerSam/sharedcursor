@@ -962,27 +962,7 @@ export class StoryApp extends BaseApp {
     }
   }
   async boardActionAvatarMessage(action) {
-    if (action.addAnimation) {
-      let avatar = this.avatarHelper.initedAvatars[action.seatIndex];
-
-      let aAnim;
-      if (this.activeSeatIndex === action.seatIndex) {
-        //is moving
-        aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation + 'moving') !== -1);
-        if (!aAnim) {
-          let origAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
-          aAnim = BABYLON.AnimationGroup.MakeAnimationAdditive(origAnim, origAnim.from, origAnim.to, true, origAnim.name + 'moving');
-          avatar.animationGroups.push(aAnim);
-        }
-      } else {
-        aAnim = avatar.animationGroups.find(n => n.name.indexOf(action.addAnimation) !== -1);
-      }
-
-      aAnim.setWeightForAllAnimatables(1);
-      aAnim.start(false);
-    }
-
-    await this.speechChannelHelper.addMessage(action.seatIndex, action.text);
+    await this.speechChannelHelper.addMessage(action.seatIndex, action.text, action.addAnimation);
   }
 
   async discardCard(cardIndex) {

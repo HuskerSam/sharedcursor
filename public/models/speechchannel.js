@@ -66,8 +66,10 @@ export default class SpeechChannel {
       avatarMeta.chatPanel.setEnabled(false);
     });
   }
-  async addMessage(seatIndex, text) {
+  async addMessage(seatIndex, text, animationName) {
+    //console.log(new Date().toISOString().slice(-7), seatIndex, text);
     let meta = await this._segment(seatIndex, text);
+    meta.animationName = animationName;
     this.eventQueue.push(meta);
     if (!this.isPlaying) this._playNext();
   }
@@ -92,6 +94,10 @@ export default class SpeechChannel {
     this.activeSpeechEvent = speechEvent;
     let avatarMeta = this.app.avatarMetas[this.seatIndex];
     avatarMeta.chatPanel.setEnabled(true);
+    let whenReady = () => {
+      this._addAnimation(speechEvent.seatIndex, speechEvent.animationName);
+      whenReady = null;
+    };
     for (let fragmentIndex = 0, l = speechEvent.mp3Fragments.length; fragmentIndex < l; fragmentIndex++) {
       if (this.activeSpeechEvent !== speechEvent)
         return;
@@ -101,7 +107,7 @@ export default class SpeechChannel {
         this.activeSoundObject.dispose();
       }
       let mp3Frag = speechEvent.mp3Fragments[fragmentIndex];
-      this.activeSoundObject = new BABYLON.Sound("voiceSoundObject", mp3Frag, this.app.scene, null, {
+      this.activeSoundObject = new BABYLON.Sound("voiceSoundObject", mp3Frag, this.app.scene, whenReady, {
         loop: false,
         autoplay: true
       });
@@ -200,5 +206,26 @@ export default class SpeechChannel {
     return new Promise((res, rej) => {
       observable.addOnce(() => res());
     });
+  }
+  _addAnimation(seatIndex, animationName) {
+    let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
+    let animation = avatar.animationGroups.find(n => n.name.indexOf(animationName) !== -1);
+    if (!animation) return;
+
+    if (this.app.activeSeatIndex === seatIndex) {
+      animation.setWeightForAllAnimatables(1);
+      let additiveName = animation.name + 'forMovingAdded';
+      let addedAnimation = avatar.animationGroups.find(n => n.name.indexOf(additiveName) !== -1);
+      if (!addedAnimation) {
+        addedAnimation = BABYLON.AnimationGroup.MakeAnimationAdditive(animation, animation.from,
+          animation.to, true, additiveName);
+        avatar.animationGroups.push(addedAnimation);
+      }
+
+      animation = addedAnimation;
+    }
+
+    animation.start(false);
+    animation.setWeightForAllAnimatables(1);
   }
 }
