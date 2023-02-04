@@ -3,6 +3,7 @@ import U3D from '/models/utility3d.js';
 export default class ChannelAction {
   constructor(app) {
     this.app = app;
+    this.setupAgents();
   }
   updateAvatarPaths() {
     if (!this.app.avatarHelper.initedAvatars) return;
@@ -10,8 +11,7 @@ export default class ChannelAction {
 
     this.app.avatarPathsInited = this.app.activeSeatIndex;
   }
-  async setupAgents() {
-    await Recast();
+  setupAgents() {
     this.navigationPlugin = new BABYLON.RecastJSPlugin();
     let navmeshParameters = {
       cs: 0.2,
@@ -28,10 +28,9 @@ export default class ChannelAction {
       detailSampleDist: 6,
       detailSampleMaxError: 1,
     };
-    //this.app.staticNavigationMeshes.push(this.app.env.ground);
     this.navigationPlugin.createNavMesh(this.app.staticNavigationMeshes, navmeshParameters);
 
-    if (this.app.urlParams.get('shownavmesh')) {      
+    if (this.app.urlParams.get('shownavmesh')) {
       let debugMesh = this.navigationPlugin.createDebugNavMesh(this.app.scene);
       let matdebug = new BABYLON.StandardMaterial('matdebug', this.app.scene);
       matdebug.emissiveColor = new BABYLON.Color3(1, 0, 0.5);

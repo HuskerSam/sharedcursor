@@ -88,7 +88,8 @@ export class StoryApp extends BaseApp {
     await Promise.all([
       this.avatarHelper.loadAndInitAvatars(),
       (loadingResults = await Promise.all(promises)),
-      this.asteroidHelper.loadAsteroids()
+      this.asteroidHelper.loadAsteroids(),
+      Recast()
     ]);
 
     this.playerMoonAssets = new Array(4);
@@ -124,10 +125,6 @@ export class StoryApp extends BaseApp {
     this.actionCardHelper = new ActionCards(this);
     this.channelSpeechHelper = new ChannelSpeech(this);
     this.actionChannelHelper = new ChannelAction(this);
-
-    await Promise.all([
-      this.actionChannelHelper.setupAgents()
-    ]);
 
     let delta = new Date().getTime() - startTime.getTime();
     console.log('init3D', delta);
