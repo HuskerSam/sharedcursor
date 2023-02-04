@@ -796,16 +796,7 @@ export default class Utility3D {
 
     return plane;
   }
-
-
-  static generateComplexPath(keyPositions, keyRotations) {
-    let y = 0;
-
-    let xMin = -10;
-    let xMax = 10;
-    let zMin = -10;
-    let zMax = 10;
-
+  static generateCirclePath(y = 0, xMin = -10, xMax = 10, zMin = -10, zMax = 10) {
     let keyPoints = [];
     let rotations = [];
 
