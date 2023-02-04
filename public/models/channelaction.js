@@ -31,14 +31,14 @@ export default class ChannelAction {
     //this.app.staticNavigationMeshes.push(this.app.env.ground);
     this.navigationPlugin.createNavMesh(this.app.staticNavigationMeshes, navmeshParameters);
 
-
-    let debugMesh = this.navigationPlugin.createDebugNavMesh(this.app.scene);
-    let matdebug = new BABYLON.StandardMaterial('matdebug', this.app.scene);
-    matdebug.emissiveColor = new BABYLON.Color3(1, 0, 0.5);
-    matdebug.alpha = 0.8;
-    matdebug.disableLighting = true;
-    debugMesh.material = matdebug;
-    //debugMesh.position.y = 2;
+    if (this.app.urlParams.get('shownavmesh')) {      
+      let debugMesh = this.navigationPlugin.createDebugNavMesh(this.app.scene);
+      let matdebug = new BABYLON.StandardMaterial('matdebug', this.app.scene);
+      matdebug.emissiveColor = new BABYLON.Color3(1, 0, 0.5);
+      matdebug.alpha = 0.8;
+      matdebug.disableLighting = true;
+      debugMesh.material = matdebug;
+    }
 
     this.crowd = this.navigationPlugin.createCrowd(4, 0.5, this.app.scene);
 

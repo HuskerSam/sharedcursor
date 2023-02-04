@@ -255,12 +255,10 @@ export class StoryApp extends BaseApp {
       this.staticBoardObjects[name].parent = sceneParent;
 
     if (['planet', 'star'].indexOf(meta.objectType) !== -1) {
-
-
-
+      let radius = meta.navRadius ? meta.navRadius : meta.sizeBoxFit * 0.5 + 0.5;
       let navDisc = BABYLON.MeshBuilder.CreateDisc('navmeshdisc_' + meta.id, {
-        radius: meta.sizeBoxFit / 2 + 2,
-        tessellation: 128
+        radius,
+        tessellation: 512
       }, this.scene);
       if (meta.x !== undefined)
         navDisc.position.x = meta.x;
