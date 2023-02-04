@@ -1,6 +1,6 @@
 import U3D from '/models/utility3d.js';
 
-export default class ActiveSeatChannel {
+export default class ChannelAction {
   constructor(app) {
     this.app = app;
   }

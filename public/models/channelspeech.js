@@ -2,7 +2,7 @@ import U3D from '/models/utility3d.js';
 const charactersPerLine = 24;
 const charactersPerSentance = charactersPerLine * 3;
 
-export default class SpeechChannel {
+export default class ChannelSpeech {
   constructor(app) {
     this.app = app;
     this.lingerTime = 2000;

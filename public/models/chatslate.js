@@ -194,7 +194,7 @@ export default class ChatSlate {
     button.setPadding("30px", "20px", "30px", "20px");
     blockWrapperPanel.addControl(button);
     button.onPointerClickObservable.add(() => {
-      this.app.speechChannelHelper.addMessage(seatIndex, message);
+      this.app.channelSpeechHelper.addMessage(seatIndex, message);
     });
 
     let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);

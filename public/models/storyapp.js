@@ -7,8 +7,8 @@ import ActionCards from '/models/actioncards.js';
 import Rocket3D from '/models/rocket3d.js';
 import HelpSlate from '/models/helpslate.js';
 import ChatSlate from '/models/chatslate.js';
-import SpeechChannel from '/models/speechchannel.js';
-import ActiveSeatChannel from '/models/activeseatchannel.js';
+import ChannelSpeech from '/models/channelspeech.js';
+import ChannelAction from '/models/channelaction.js';
 
 export class StoryApp extends BaseApp {
   constructor() {
@@ -122,8 +122,8 @@ export class StoryApp extends BaseApp {
 
     this.menuTab3D.initOptionsBar();
     this.actionCardHelper = new ActionCards(this);
-    this.speechChannelHelper = new SpeechChannel(this);
-    this.activeSeatChannelHelper = new ActiveSeatChannel(this);
+    this.channelSpeechHelper = new ChannelSpeech(this);
+    this.actionChannelHelper = new ChannelAction(this);
 
     let delta = new Date().getTime() - startTime.getTime();
     console.log('init3D', delta);
@@ -824,7 +824,7 @@ export class StoryApp extends BaseApp {
       }
     } else
       this.updateBoardRoundData();
-    this.activeSeatChannelHelper.updateAvatarPaths();
+    this.actionChannelHelper.updateAvatarPaths();
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
@@ -869,7 +869,7 @@ export class StoryApp extends BaseApp {
       return;
 
     if (reset) {
-      this.speechChannelHelper.stopSound();
+      this.channelSpeechHelper.stopSound();
 
       this.boardResetRoundData.actions.forEach(meta => {
         if (meta.action === 'init') {
@@ -966,7 +966,7 @@ export class StoryApp extends BaseApp {
     }
   }
   async boardActionAvatarMessage(action) {
-    await this.speechChannelHelper.addMessage(action.seatIndex, action.text, action.addAnimation);
+    await this.channelSpeechHelper.addMessage(action.seatIndex, action.text, action.addAnimation);
   }
 
   async discardCard(cardIndex) {
