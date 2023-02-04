@@ -16,6 +16,7 @@ export class StoryApp extends BaseApp {
     this.apiType = 'story';
     this.cache = {};
     this.staticBoardObjects = {};
+    this.staticNavigationMeshes = [];
     this._paintedBoardTurn = null;
     this.minimumPrequel = -5;
 
@@ -248,6 +249,9 @@ export class StoryApp extends BaseApp {
       this.staticBoardObjects[name].parent = this.parentPivot(meta.parent);
     } else
       this.staticBoardObjects[name].parent = sceneParent;
+
+    if (['planet', 'star'].indexOf(meta.objectType) !== -1)
+      this.staticNavigationMeshes.push(this.staticBoardObjects[name]);
 
     return this.staticBoardObjects[name];
   }

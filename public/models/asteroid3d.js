@@ -3,7 +3,7 @@ import U3D from '/models/utility3d.js';
 export default class Asteroid3D {
   constructor(app) {
     this.app = app;
-    this.asteroidOrbitFrameCount = 80000 / 1000 * 60;
+    this.asteroidOrbitFrameCount = 300000 / 1000 * 60;
     this.asteroidMaterial = new BABYLON.StandardMaterial('asteroidMaterial', this.app.scene);
     this.selectedAsteroidMaterial = new BABYLON.StandardMaterial('selectedAsteroidMaterial', this.app.scene);
 
@@ -91,7 +91,7 @@ export default class Asteroid3D {
     let ratio = 0;
     let max = asteroids.length;
 
-    let count = 40;
+    let count = 8;
 
     let randomArray = [];
     for (let c = 0; c < max; c++) {

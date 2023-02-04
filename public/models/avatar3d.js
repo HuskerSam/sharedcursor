@@ -72,6 +72,8 @@ export default class Avatar3D {
       newModel.particleTN.position.y = 0.8;
       newModel.particleTN.position.z = -0.25;
       newModel.particleTN.rotation.x = -Math.PI / 2;
+      newModel.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
+        .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
 
       avatarPositionTN.assetMeta = {
         name: avatarMeta.name,
