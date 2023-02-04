@@ -28,8 +28,18 @@ export default class ChannelAction {
       detailSampleDist: 6,
       detailSampleMaxError: 1,
     };
-
+    //this.app.staticNavigationMeshes.push(this.app.env.ground);
     this.navigationPlugin.createNavMesh(this.app.staticNavigationMeshes, navmeshParameters);
+
+
+    let debugMesh = this.navigationPlugin.createDebugNavMesh(this.app.scene);
+    let matdebug = new BABYLON.StandardMaterial('matdebug', this.app.scene);
+    matdebug.emissiveColor = new BABYLON.Color3(1, 0, 0.5);
+    matdebug.alpha = 0.8;
+    matdebug.disableLighting = true;
+    debugMesh.material = matdebug;
+    //debugMesh.position.y = 2;
+
     this.crowd = this.navigationPlugin.createCrowd(4, 0.5, this.app.scene);
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
@@ -54,7 +64,7 @@ export default class ChannelAction {
     };
     this.agents = [];
 
-    this.scene.onBeforeRenderObservable.add(() => {
+    this.app.scene.onBeforeRenderObservable.add(() => {
       let agentCount = this.agents.length;
       for (let i = 0; i < agentCount; i++) {
         let ag = this.agents[i];

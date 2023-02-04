@@ -125,6 +125,10 @@ export class StoryApp extends BaseApp {
     this.channelSpeechHelper = new ChannelSpeech(this);
     this.actionChannelHelper = new ChannelAction(this);
 
+    await Promise.all([
+      this.actionChannelHelper.setupAgents()
+    ]);
+
     let delta = new Date().getTime() - startTime.getTime();
     console.log('init3D', delta);
     this.addLineToLoading(`${delta} ms to load 3D content<br>`);
@@ -186,7 +190,7 @@ export class StoryApp extends BaseApp {
     if (meta.sizeBoxFit === undefined)
       meta.sizeBoxFit = 2;
     meta.containerPath = meta.extended.glbPath;
-    let scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta);
+    const scaleMesh = await U3D.loadStaticMesh(scene, meta.containerPath, meta);
     let boundingMesh = scaleMesh;
     U3D.sizeNodeToFit(scaleMesh, meta.sizeBoxFit);
     if (!meta.texturePath) {
@@ -250,8 +254,24 @@ export class StoryApp extends BaseApp {
     } else
       this.staticBoardObjects[name].parent = sceneParent;
 
-    if (['planet', 'star'].indexOf(meta.objectType) !== -1)
-      this.staticNavigationMeshes.push(this.staticBoardObjects[name]);
+    if (['planet', 'star'].indexOf(meta.objectType) !== -1) {
+
+
+
+      let navDisc = BABYLON.MeshBuilder.CreateDisc('navmeshdisc_' + meta.id, {
+        radius: meta.sizeBoxFit / 2 + 2,
+        tessellation: 128
+      }, this.scene);
+      if (meta.x !== undefined)
+        navDisc.position.x = meta.x;
+      navDisc.position.y = 0.75;
+      if (meta.z !== undefined)
+        navDisc.position.z = meta.z;
+
+      navDisc.rotation.x = Math.PI / 2;
+      navDisc.setEnabled(false);
+      this.staticNavigationMeshes.push(navDisc);
+    }
 
     return this.staticBoardObjects[name];
   }
@@ -824,7 +844,7 @@ export class StoryApp extends BaseApp {
       }
     } else
       this.updateBoardRoundData();
-    this.actionChannelHelper.updateAvatarPaths();
+    await this.actionChannelHelper.updateAvatarPaths();
   }
   applyBoardAction(boardAction) {
     if (boardAction.action === 'parentChange') {
