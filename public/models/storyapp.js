@@ -885,9 +885,9 @@ export class StoryApp extends BaseApp {
     if (reset) {
       this.channelSpeechHelper.stopSound();
 
-      this.boardResetRoundData.actions.forEach(meta => {
-        if (meta.action === 'init') {
-          this.applyInitRoundAction(meta);
+      this.boardResetRoundData.actions.forEach(roundAction => {
+        if (roundAction.action === 'init') {
+          this.applyInitRoundAction(roundAction);
         }
       });
 
@@ -998,19 +998,19 @@ export class StoryApp extends BaseApp {
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
   async animatedRoundAction(actionDetails) {
-    await this.actionChannelHelper.shootRocket(actionDetails);
-    this.actionChannelHelper.landProbe(actionDetails);
+    await this.actionChannelHelper.animateActionCard(actionDetails);
+    this.actionChannelHelper.resolveActionCard(actionDetails);
   }
-  applyInitRoundAction(meta) {
-    let asset = this.staticBoardObjects[meta.sourceId];
+  applyInitRoundAction(actionDetails) {
+    let asset = this.staticBoardObjects[actionDetails.sourceId];
     if (asset) {
       let enabled = true;
-      if (meta.parent === null) {
+      if (actionDetails.parent === null) {
         asset.parent = null;
         if (asset.assetMeta.objectType === 'probe')
           enabled = false;
-      } else if (meta.parent !== undefined) {
-      //  this.actionChannelHelper.landProbe(meta);
+      } else if (actionDetails.parent !== undefined) {
+        this.actionChannelHelper.resolveActionCard(actionDetails);
       }
 
       asset.setEnabled(enabled);

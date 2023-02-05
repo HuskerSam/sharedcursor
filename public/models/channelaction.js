@@ -191,7 +191,9 @@ export default class ChannelAction {
       }, lineTimeout);
     }
   }
-  async shootRocket(actionMeta) {
+
+
+  async animateActionCard(actionMeta) {
     let asset = this.clearAnimations(actionMeta.sourceId);
     asset.parent = null;
     asset.setEnabled(true);
@@ -319,11 +321,13 @@ export default class ChannelAction {
       setTimeout(() => res(), 20000);
     });
   }
-  landProbe(actionMeta) {
+  resolveActionCard(actionMeta) {
     this.clearAnimations(actionMeta.sourceId);
     let asset = this.app.staticBoardObjects[actionMeta.sourceId];
-    asset.parent = this.app.parentPivot(actionMeta.targetId);
-    let parentAsset = this.app.staticBoardObjects[actionMeta.targetId];
+    let parentId = (actionMeta.action === 'init') ? actionMeta.parent : actionMeta.targetId;
+    asset.parent = this.app.parentPivot(parentId);
+    let parentAsset = this.app.staticBoardObjects[parentId];
+    console.log(actionMeta);
 
     let orbitRadius = 1.5;
     let startRatio = 0;
