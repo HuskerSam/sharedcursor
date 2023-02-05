@@ -19,7 +19,7 @@ export default class ChannelAction {
       walkableSlopeAngle: 0,
       walkableHeight: 10,
       walkableClimb: 0,
-      walkableRadius: 0.5,
+      walkableRadius: 0.25,
       maxEdgeLen: 12.,
       maxSimplificationError: 1.3,
       minRegionArea: 8,
@@ -45,20 +45,20 @@ export default class ChannelAction {
     this.crowd.onReachTargetObservable.add((agentInfos) => {
       this.stopWalk(agentInfos.agentIndex);
       this.agents[agentInfos.agentIndex].stopped = true;
-    //  this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
-    //  this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
+    //  this.crowd.agentGoto(agentInfos.agentIndex, this.agents[agentInfos.agentIndex].mesh.position);
+    //  this.crowd.agentTeleport(agentInfos.agentIndex, this.agents[agentInfos.agentIndex].mesh.position);
     });
 
 
     this.agentParams = {
-      radius: 0.5,
-      reachRadius: 1,
+      radius: 0.75,
+      reachRadius: 1.25,
       height: 4,
-      maxAcceleration: 4.0,
+      maxAcceleration: 3.0,
       maxSpeed: 1.0,
-      collisionQueryRange: 0.5,
+      collisionQueryRange: 2,
       pathOptimizationRange: 0.0,
-      separationWeight: 1.0
+      separationWeight: 100
     };
     this.agents = [];
 

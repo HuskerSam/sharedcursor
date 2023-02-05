@@ -340,7 +340,7 @@ export class StoryApp extends BaseApp {
             this.paintGameData(doc);
           else {
             alert("Game doesn't exist");
-            window.location = "/dashboard";
+            window.location = "/";
           }
         });
     }

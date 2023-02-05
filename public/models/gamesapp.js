@@ -322,7 +322,7 @@ export class GamesApp extends BaseApp {
     if (!gameNumber)
       gameNumber = this.game_code_start.value;
     let a = document.createElement('a');
-    a.setAttribute('href', `/dashboard/?game=${gameNumber}`);
+    a.setAttribute('href', `/story/?game=${gameNumber}`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
