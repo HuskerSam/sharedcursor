@@ -79,12 +79,12 @@ export default class ChannelAction {
           }
 
           let target = this.app.playerMoonAssets[seatIndex].baseMesh.getAbsolutePosition();
-          this.toTarget(seatIndex, U3D.v(target.x, 0, target.z));
+          this.toTarget(seatIndex, U3D.v(target.x, 0, target.z), null);
         }, 50);
       } else if (!this.agentTargetHome[seatIndex]) {
         this.agentTargetHome[seatIndex] = true;
 
-        this.toTarget(seatIndex, U3D.v(avatarMeta.x, 0, avatarMeta.z), true);
+        this.toTarget(seatIndex, U3D.v(avatarMeta.x, 0, avatarMeta.z), null, true);
       }
     });
   }
@@ -120,7 +120,8 @@ export default class ChannelAction {
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
       let delay = 0;
-      if (agentInfos.agentIndex !== this.app.activeSeatIndex) {
+      if (agentInfos.agentIndex !== this.app.activeSeatIndex &&
+        this.agents[agentInfos.agentIndex].agentType === "avatarCart") {
         let pos = this.agents[agentInfos.agentIndex].mesh.getAbsolutePosition();
         let distance = pos.subtract(agentInfos.destination).length();
         if (distance > 0.5)
@@ -130,8 +131,13 @@ export default class ChannelAction {
         if (this.agents[agentInfos.agentIndex].agentType === "avatarCart")
           this.stopWalk(agentInfos.agentIndex);
         if (this.agents[agentInfos.agentIndex].agentType === "cardCart") {
+          if (this.resolvePendingAction) {
+            this.resolvePendingAction();
+            this.resolvePendingAction = null;
+          }
+
           this.probeTrailMesh.setEnabled(false);
-          this.resolveActionCard(this.lastAnimateAction);
+          //  this.resolveActionCard(this.lastAnimateAction);
         }
         this.agents[agentInfos.agentIndex].stopped = true;
       }, delay);
@@ -156,13 +162,13 @@ export default class ChannelAction {
     });
 
     this.app.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
-      this.addCrowdAgent(avatar.avatarPositionTN, seatIndex, 'avatarCart');
+      this.addAgent(avatar.avatarPositionTN, seatIndex, 'avatarCart');
     });
 
     this.actionProbeTransform = new BABYLON.TransformNode('actionProbeTransform', this.app.scene);
     this.actionProbeTransformInner = new BABYLON.TransformNode('actionProbeTransformInner', this.app.scene);
     this.actionProbeTransformInner.parent = this.actionProbeTransform;
-    this.actionProbeTransformInner.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
+    this.actionProbeTransformInner.rotation = U3D.v(Math.PI / 2, Math.PI / 2, Math.PI / 2);
 
     this.probeParticlePivot = new BABYLON.TransformNode("probeParticlePivot", this.app.scene);
     this.probeParticlePivot.rotation.z = Math.PI;
@@ -174,7 +180,7 @@ export default class ChannelAction {
     this.probeTrailMesh.material = sourceMat;
     this.probeTrailMesh.setEnabled(false);
 
-    this.addCrowdAgent(this.actionProbeTransform, null, 'cardCart');
+    this.addAgent(this.actionProbeTransform, null, 'cardCart');
 
     window.channelAction = this;
   }
@@ -200,12 +206,12 @@ export default class ChannelAction {
         .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
     }
   }
-  addCrowdAgent(mesh, index, agentType) {
+  addAgent(mesh, index, agentType) {
     let randomPos = mesh.position;
     let transform = new BABYLON.TransformNode();
     let agentIndex = this.crowd.addAgent(randomPos, {
       radius: 0.5,
-      reachRadius: 2.5,
+      reachRadius: agentType === 'avatarCart' ? 2.5 : 6,
       height: 4,
       maxAcceleration: 3.0,
       maxSpeed: agentType === 'avatarCart' ? 1.5 : 4,
@@ -222,23 +228,23 @@ export default class ChannelAction {
       avatarMesh: mesh
     });
   }
-  toTarget(agentIndex, position, showLine, lineTimeout = 1500) {
-    let seat = this.agents[agentIndex].mesh;
-    let curPos = seat.getAbsolutePosition();
-
-    if (this.agents[agentIndex].stopped)
+  toTarget(agentIndex, position, startPosition, showLine, lineTimeout = 1500) {
+    if (startPosition) {
+      this.agents[agentIndex].mesh.position = startPosition;
+      this.crowd.agentTeleport(agentIndex, startPosition);
+    } else if (this.agents[agentIndex].stopped) { //stop flicker if reachRadius effect
+      let curPos = this.agents[agentIndex].mesh.getAbsolutePosition();
       this.crowd.agentTeleport(agentIndex, curPos);
+    }
+    this.agents[agentIndex].stopped = false;
     this.crowd.agentGoto(agentIndex, position);
     if (this.agents[agentIndex].agentType === "avatarCart")
       this.startWalk(agentIndex);
 
-    this.agents[agentIndex].target.x = position.x;
-    this.agents[agentIndex].target.y = position.y;
-    this.agents[agentIndex].target.z = position.z;
-    this.agents[agentIndex].stopped = false;
+    this.agents[agentIndex].target = position;
 
     if (showLine) {
-      let agentPosition = curPos;
+      let agentPosition = this.agents[agentIndex].mesh.getAbsolutePosition();
       let pathPoints = this.navigationPlugin.computePath(agentPosition, position);
       let pathLine;
       pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
@@ -256,32 +262,45 @@ export default class ChannelAction {
   }
 
   async animateActionCard(actionDetails) {
+    console.log(new Date().toISOString().slice(-7));
+    if (this.lastActionCardProbe) {
+      this.lastActionCardProbe.parent = null;
+    }
     let asset = this.clearAnimations(actionDetails.sourceId);
     asset.baseMesh.parent = this.actionProbeTransformInner;
+    this.lastActionCardProbe = asset.baseMesh;
     asset.baseMesh.setEnabled(true);
-    //console.log(asset);
-    let startPosition = this.app.assetPosition(actionDetails.originId);
-    let endPosition = this.app.assetPosition(actionDetails.targetId);
-
     this.probeParticlePivot.position.x = asset.assetMeta.px;
     this.probeParticlePivot.position.y = asset.assetMeta.py;
     this.probeParticlePivot.position.z = asset.assetMeta.pz;
     this.probeTrailMesh.setEnabled(true);
+
+    let avatar = this.app.avatarHelper.initedAvatars[this.app.activeSeatIndex];
+    let startPosition = avatar.avatarPositionTN.getAbsolutePosition();
+    let endPosition = this.app.assetPosition(actionDetails.targetId);
     startPosition.y = 0;
     endPosition.y = 0;
-    this.agents[4].stopped = true;
-    this.toTarget(4, endPosition);
+    console.log(startPosition, endPosition);
+    this.toTarget(4, endPosition, startPosition);
     this.lastAnimateAction = actionDetails;
+    await this._waitUntilResolved();
+  }
+  _waitUntilResolved() {
+    return new Promise((res, rej) => {
+      this.resolvePendingAction = res;
+    });
   }
   resolveActionCard(actionDetails) {
     this.clearAnimations(actionDetails.sourceId);
+    if (this.resolvePendingAction) {
+      this.resolvePendingAction();
+      this.resolvePendingAction = null;
+    }
 
     let asset = this.app.staticBoardObjects[actionDetails.sourceId];
     let parentId = (actionDetails.action === 'init') ? actionDetails.parent : actionDetails.targetId;
     asset.parent = this.app.parentPivot(parentId);
     let parentAsset = this.app.staticBoardObjects[parentId];
-    //console.log(actionDetails);
-
     let orbitRadius = 1.5;
     let startRatio = 0;
     if (parentAsset.assetMeta.objectType === 'planet') {
