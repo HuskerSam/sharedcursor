@@ -528,20 +528,20 @@ export class StoryApp extends BaseApp {
       let rightShow = false;
       if (this.leftHandedControllerGrip) {
         let rotation = this.leftHandedControllerGrip.rotationQuaternion.toEulerAngles();
-        leftShow = (rotation.z > 0.9 || rotation.z < -1.5);
+        leftShow = (rotation.z > 0.8 || rotation.z < -1.6);
       }
       if (this.rightHandedControllerGrip) {
         let rotation = this.rightHandedControllerGrip.rotationQuaternion.toEulerAngles();
-        rightShow = (rotation.z > 1.5 || rotation.z < -0.9);
+        rightShow = (rotation.z > 1.6 || rotation.z < -0.8);
       }
       let show = (leftShow || rightShow);
 
       if (this.menuBarVisible !== show) {
         if (leftShow) {
-          this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 1);
+          this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 15);
           this.menuBarTransformNode.parent = this.leftHandedControllerGrip;
         } else if (rightShow) {
-          this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 1);
+          this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 15);
           this.menuBarTransformNode.parent = this.rightHandedControllerGrip;
         }
 
@@ -549,6 +549,7 @@ export class StoryApp extends BaseApp {
         this.menuBarTransformNode.setEnabled(show);
       }
     } else {
+      this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
       this.menuBarVisible = true;
       this.menuBarTransformNode.setEnabled(true);
     }
