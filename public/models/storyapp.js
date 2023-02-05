@@ -4,7 +4,6 @@ import MenuTab3D from '/models/menutab.js';
 import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
 import ActionCards from '/models/actioncards.js';
-import Rocket3D from '/models/rocket3d.js';
 import HelpSlate from '/models/helpslate.js';
 import ChatSlate from '/models/chatslate.js';
 import ChannelSpeech from '/models/channelspeech.js';
@@ -61,7 +60,6 @@ export class StoryApp extends BaseApp {
     this.scene.collisionsEnabled = false;
     this.menuTab3D = new MenuTab3D(this);
     this.asteroidHelper = new Asteroid3D(this);
-    this.rocketHelper = new Rocket3D(this);
     this.helpSlateHelper = new HelpSlate(this);
     this.chatSlateHelper = new ChatSlate(this);
     this.invisibleMaterial = new BABYLON.StandardMaterial("invisiblematerial", this.scene);
@@ -1000,8 +998,8 @@ export class StoryApp extends BaseApp {
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
   async animatedRoundAction(actionDetails) {
-    await this.rocketHelper.shootRocket(actionDetails.sourceId, actionDetails.targetId, actionDetails.originId);
-    this.landProbe(actionDetails.sourceId, actionDetails.targetId);
+    await this.channelAction.shootRocket(actionDetails);
+    this.actionChannelHelper.landProbe(actionDetails);
   }
   applyInitRoundAction(meta) {
     let asset = this.staticBoardObjects[meta.sourceId];
@@ -1012,60 +1010,12 @@ export class StoryApp extends BaseApp {
         if (asset.assetMeta.objectType === 'probe')
           enabled = false;
       } else if (meta.parent !== undefined) {
-        this.landProbe(meta.sourceId, meta.parent);
+        this.actionChannelHelper.landProbe(meta);
       }
 
       asset.setEnabled(enabled);
     }
   }
-
-  clearAnimations(probeId) {
-    let asset = this.staticBoardObjects[probeId];
-    let meta = asset.assetMeta;
-    if (meta.orbitAnimation) {
-      meta.orbitAnimation.stop();
-      meta.orbitPivot.animations = [];
-      meta.orbitAnimation = null;
-    }
-    if (meta.rotationAnimation) {
-      meta.rotationAnimation.stop();
-      meta.rotationPivot.animations = [];
-      meta.rotationAnimation = null;
-    }
-
-    return asset;
-  }
-  landProbe(probeId, targetId) {
-    this.clearAnimations(probeId);
-    let asset = this.staticBoardObjects[probeId];
-    asset.parent = this.parentPivot(targetId);
-    let parentAsset = this.staticBoardObjects[targetId];
-
-    let orbitRadius = 1.5;
-    let startRatio = 0;
-    if (parentAsset.assetMeta.objectType === 'planet') {
-      asset.assetMeta.orbitPivot.position.y = 3;
-      U3D.sizeNodeToFit(asset.baseMesh, 2);
-      if (asset.assetMeta.objectType === 'moon') {
-        startRatio = asset.assetMeta.startRatio;
-        orbitRadius = asset.assetMeta.orbitRadius;
-      }
-    } else {
-      asset.assetMeta.orbitPivot.position.y = 2;
-      orbitRadius = 1.5;
-      U3D.sizeNodeToFit(asset.baseMesh, 1);
-    }
-
-    let orbitPivot = U3D.addOrbitPivot({
-      id: probeId,
-      orbitDirection: 1,
-      orbitRadius,
-      startRatio,
-      orbitTime: 60000
-    }, this.scene, asset.assetMeta.orbitPivot);
-    asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
-  }
-
   showOptionalNote(str) {
     if (this.temporaryHelperNote)
       this.temporaryHelperNote.dispose(false, true);

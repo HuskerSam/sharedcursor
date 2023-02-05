@@ -6,6 +6,7 @@ export default class ChannelAction {
     this.agents = [];
     this.startStopTime = 2000;
     this.agentTargetHome = Array(4).fill(true);
+    this.cardActionTransforms = [];
     this.setupAgents();
   }
   updateAvatarPaths() {
@@ -79,7 +80,8 @@ export default class ChannelAction {
           delay = 2000;
       }
       setTimeout(() => {
-        this.stopWalk(agentInfos.agentIndex);
+        if (this.agents[agentInfos.agentIndex].agentType === "avatarCart")
+          this.stopWalk(agentInfos.agentIndex);
         this.agents[agentInfos.agentIndex].stopped = true;
       }, delay);
     });
@@ -103,8 +105,13 @@ export default class ChannelAction {
     });
 
     this.app.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
-      this.navigationAid(avatar.avatarPositionTN, seatIndex);
+      this.navigationAid(avatar.avatarPositionTN, seatIndex, 'avatarCart');
     });
+
+    for (let cardIndex = 0; cardIndex < 4; cardIndex++) {
+      this.cardActionTransforms.push(new BABYLON.TransformNode('cardHolder' + cardIndex, this.app.scene));
+      this.navigationAid(this.cardActionTransforms[cardIndex], cardIndex, 'cardCart');
+    }
 
     window.channelAction = this;
   }
@@ -127,10 +134,10 @@ export default class ChannelAction {
     if (seatIndex !== this.app.activeSeatIndex) {
       this.app.avatarHelper.setHome(avatar, avatarMeta);
       avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
-      .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
+        .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
     }
   }
-  navigationAid(mesh, index) {
+  navigationAid(mesh, index, agentType) {
     let randomPos = mesh.position;
     let transform = new BABYLON.TransformNode();
     let agentIndex = this.crowd.addAgent(randomPos, {
@@ -144,6 +151,7 @@ export default class ChannelAction {
       separationWeight: 50
     }, transform);
     this.agents.push({
+      agentType,
       idx: agentIndex,
       trf: transform,
       mesh,
@@ -158,7 +166,8 @@ export default class ChannelAction {
     if (this.agents[i].stopped)
       this.crowd.agentTeleport(i, curPos);
     this.crowd.agentGoto(i, position);
-    this.startWalk(this.agents[i].idx);
+    if (this.agents[i].agentType === "avatarCart")
+      this.startWalk(this.agents[i].idx);
 
     this.agents[i].target.x = position.x;
     this.agents[i].target.y = position.y;
@@ -181,5 +190,194 @@ export default class ChannelAction {
         pathLine.dispose();
       }, lineTimeout);
     }
+  }
+  async shootRocket(actionMeta) {
+    let {
+      probeId,
+      targetId,
+      originId
+    } = actionMeta;
+
+    let asset = this.app.clearAnimations(probeId);
+
+    let meta = asset.assetMeta;
+    asset.parent = null;
+    asset.setEnabled(true);
+
+    //U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
+
+    await this.rocketTravel(probeId, targetId, originId);
+  }
+  __createTravelPath(startPosition, startRotation, endPosition) {
+    let phase1Time = 2500;
+    let phase2Time = 6000;
+    let takeOffHeight = 8;
+    let takeOffX = 2.5;
+
+    let xDelta = endPosition.x - startPosition.x;
+    let zDelta = endPosition.z - startPosition.z;
+    let yPointedRotation = Math.atan2(xDelta, zDelta);
+
+    let phase1PosStart = U3D.v(startPosition.x, startPosition.y, startPosition.z);
+    let phase1PosEnd = U3D.v(startPosition.x + takeOffX, startPosition.y + takeOffHeight, startPosition.z);
+
+    let positionKeys = [];
+    let rotationKeys = [];
+    let endPhase1 = phase1Time * 60 / 1000;
+    for (let frame = 0; frame < endPhase1; frame++) {
+      let ratio = frame / endPhase1; // * Math.PI / 2;
+      let x = ratio * takeOffX + startPosition.x;
+      let y = ratio * takeOffHeight + startPosition.y;
+      let z = startPosition.z;
+      let value = U3D.v(x, y, z);
+      positionKeys.push({
+        frame,
+        value
+      });
+    }
+
+    let phase1RotStart = U3D.vector(startRotation);
+    let phase1RotEnd = U3D.v(startRotation.x, startRotation.y, startRotation.z + Math.PI / 2);
+
+    rotationKeys.push({
+      frame: 0,
+      value: phase1RotStart
+    });
+    rotationKeys.push({
+      frame: Math.floor(0.667 * endPhase1),
+      value: phase1RotStart
+    });
+    rotationKeys.push({
+      frame: Math.floor(0.75 * endPhase1),
+      value: U3D.v(phase1RotStart.x, phase1RotStart.y, (phase1RotStart.z + phase1RotEnd.z) / 2)
+    });
+    rotationKeys.push({
+      frame: endPhase1,
+      value: phase1RotEnd
+    });
+
+
+    let endPhase2 = phase2Time * 60 / 1000;
+    positionKeys.push({
+      frame: endPhase1 + 1,
+      value: U3D.vector(phase1PosEnd)
+    });
+    positionKeys.push({
+      frame: endPhase1 + endPhase2,
+      value: U3D.v(endPosition.x, phase1PosEnd.y, endPosition.z)
+    });
+
+
+    let phase2RotStart = phase1RotEnd;
+    let phase2RotStop = U3D.v(phase1RotEnd.x, yPointedRotation, phase1RotEnd.z);
+    rotationKeys.push({
+      frame: endPhase1 + 1,
+      value: phase2RotStart
+    });
+    rotationKeys.push({
+      frame: endPhase1 + endPhase2,
+      value: phase2RotStop
+    });
+
+    return {
+      positionKeys,
+      rotationKeys,
+      frames: endPhase1 + endPhase2,
+      time: phase1Time + phase2Time
+    }
+  }
+  async rocketTravel(probeId, targetId, originId) {
+    return new Promise((res, rej) => {
+      let asset = this.app.staticBoardObjects[probeId];
+      let meta = asset.assetMeta;
+
+      //U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
+      let startPosition = this.app.assetPosition(originId);
+      let endPosition = this.app.assetPosition(targetId);
+      let startRotation = U3D.v(0);
+      let travelPath = this.__createTravelPath(startPosition, startRotation, endPosition)
+
+      let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + probeId, this.app.scene);
+      particlePivot.position.x = meta.px;
+      particlePivot.position.y = meta.py;
+      particlePivot.position.z = meta.pz;
+      //particlePivot.rotation.x = -1 * Math.PI / 2;
+      particlePivot.rotation.z = Math.PI;
+      const trail = new BABYLON.TrailMesh("new", particlePivot, this.app.scene, 0.5, 8, true);
+      const sourceMat = new BABYLON.StandardMaterial("sourceMat", this.app.scene);
+      sourceMat.emissiveColor = sourceMat.diffuseColor = new BABYLON.Color3.Red();
+      sourceMat.specularColor = new BABYLON.Color3.Black();
+      trail.material = sourceMat;
+      particlePivot.parent = meta.basePivot;
+
+      let newOrbitAnim = new BABYLON.Animation("assetorbitanim_" + probeId,
+        "position", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+      let newRotationAnim = new BABYLON.Animation("assetrotationanim_" + probeId,
+        "rotation", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+
+      newOrbitAnim.setKeys(travelPath.positionKeys);
+      newRotationAnim.setKeys(travelPath.rotationKeys);
+      meta.orbitPivot.animations.push(newOrbitAnim);
+      meta.rotationPivot.animations.push(newRotationAnim);
+
+      let endFrame = travelPath.frames;
+      meta.orbitAnimation = this.app.scene.beginAnimation(meta.orbitPivot, 0, endFrame, false, 1, () => {
+        trail.dispose();
+        particlePivot.dispose();
+        res();
+      });
+      meta.rotationAnimation = this.app.scene.beginAnimation(meta.rotationPivot, 0, endFrame, false);
+      setTimeout(() => res(), 20000);
+    });
+  }
+  landProbe(meta) {
+    let {
+      probeId,
+      targetId
+    } = meta;
+    this.clearAnimations(probeId);
+    let asset = this.app.staticBoardObjects[probeId];
+    asset.parent = this.app.parentPivot(targetId);
+    let parentAsset = this.app.staticBoardObjects[targetId];
+
+    let orbitRadius = 1.5;
+    let startRatio = 0;
+    if (parentAsset.assetMeta.objectType === 'planet') {
+      asset.assetMeta.orbitPivot.position.y = 3;
+      U3D.sizeNodeToFit(asset.baseMesh, 2);
+      if (asset.assetMeta.objectType === 'moon') {
+        startRatio = asset.assetMeta.startRatio;
+        orbitRadius = asset.assetMeta.orbitRadius;
+      }
+    } else {
+      asset.assetMeta.orbitPivot.position.y = 2;
+      orbitRadius = 1.5;
+      U3D.sizeNodeToFit(asset.baseMesh, 1);
+    }
+
+    let orbitPivot = U3D.addOrbitPivot({
+      id: probeId,
+      orbitDirection: 1,
+      orbitRadius,
+      startRatio,
+      orbitTime: 60000
+    }, this.app.scene, asset.assetMeta.orbitPivot);
+    asset.assetMeta.orbitAnimation = orbitPivot.orbitAnimation;
+  }
+  clearAnimations(probeId) {
+    let asset = this.app.staticBoardObjects[probeId];
+    let meta = asset.assetMeta;
+    if (meta.orbitAnimation) {
+      meta.orbitAnimation.stop();
+      meta.orbitPivot.animations = [];
+      meta.orbitAnimation = null;
+    }
+    if (meta.rotationAnimation) {
+      meta.rotationAnimation.stop();
+      meta.rotationPivot.animations = [];
+      meta.rotationAnimation = null;
+    }
+
+    return asset;
   }
 }

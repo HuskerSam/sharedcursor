@@ -213,63 +213,6 @@ export default class Utility3D {
 
     return asteroidNameMesh;
   }
-  static createFireParticles(meta, wrapper, scene) {
-    let particlePivot = new BABYLON.TransformNode("staticpivotparticle", scene);
-    particlePivot.position.x = meta.px;
-    particlePivot.position.y = meta.py;
-    particlePivot.position.z = meta.pz;
-    //particlePivot.rotation.x = -1 * Math.PI / 2;
-    particlePivot.rotation.z = Math.PI;
-    particlePivot.parent = wrapper;
-
-    wrapper.particleSystem = this.createParticleSystem(scene);
-    wrapper.particleSystem.emitter = particlePivot;
-
-    wrapper.particleSystem.start();
-
-    return wrapper.particleSystem;
-  }
-  static createParticleSystem(scene) {
-    let pSystem = new BABYLON.GPUParticleSystem("particles", {
-      capacity: 30000
-    }, scene)
-    pSystem.activeParticleCount = 20000;
-
-    pSystem.emitRate = 150;
-    // pSystem.particleEmitterType = new BABYLON.BoxParticleEmitter(1);
-    pSystem.particleTexture = new BABYLON.Texture("/images/flare.png", scene);
-
-    pSystem.gravity = new BABYLON.Vector3(0, 0, 0);
-
-    // how long before the particles dispose?
-    pSystem.minLifeTime = 2;
-    pSystem.maxLifeTime = 2;
-
-    // how much "push" from the back of the rocket.
-    // Rocket forward movement also (seemingly) effects "push", but not really.
-    pSystem.minEmitPower = 5;
-    pSystem.maxEmitPower = 5;
-
-    pSystem.minSize = 0.025;
-    pSystem.maxSize = 0.25;
-
-    // adjust diections to aim out fat-bottom end of rocket, with slight spread.
-    pSystem.direction1 = new BABYLON.Vector3(-.2, 1, -.2);
-    pSystem.direction2 = new BABYLON.Vector3(.2, 1, .2);
-
-
-    // rocket length 4, so move emission point... 2 units toward wide end of rocket.
-    pSystem.minEmitBox = new BABYLON.Vector3(0, 2, 0)
-    pSystem.maxEmitBox = new BABYLON.Vector3(0, 2, 0)
-
-
-    // a few colors, based on age/lifetime.  Yellow to red, generally speaking.
-    pSystem.color1 = new BABYLON.Color3(1, 1, 0);
-    pSystem.color2 = new BABYLON.Color3(1, .5, 0);
-    pSystem.colorDead = new BABYLON.Color3(1, 0, 0);
-
-    return pSystem;
-  }
   static getAsteroids() {
     const fullList = ["aruna.obj",
       "asterope.obj",
