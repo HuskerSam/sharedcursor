@@ -77,16 +77,13 @@ export default class ChannelSpeech {
     this.eventQueue = [];
     this.isPlaying = false;
     this.activeSpeechEvent = null;
+    this.app.avatarMetas.forEach(meta => meta.chatPanel.setEnabled(false));
+    this.seatIndex = -1;
 
     if (this.activeSoundObject) {
       this.activeSoundObject.stop();
       this.activeSoundObject.dispose();
       this.activeSoundObject = null;
-    }
-
-    if (this.seatIndex >= 0) {
-      this.app.avatarMetas[this.seatIndex].chatPanel.setEnabled(false);
-      this.seatIndex = -1;
     }
   }
   async _playBlock(speechEvent) {

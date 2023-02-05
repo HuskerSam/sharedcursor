@@ -63,10 +63,9 @@ export default class Avatar3D {
       meshPicker.visibility = 1;
 
       let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + seatIndex);
-      avatarPositionTN.position.x = avatarMeta.x;
-      avatarPositionTN.position.z = avatarMeta.z;
       meshPicker.parent = avatarPositionTN;
       newModel.avatarPositionTN = avatarPositionTN;
+      this.setHome(newModel, avatarMeta);
       newModel.particleTN = new BABYLON.TransformNode("particleTNavatar" + seatIndex, this.app.scene);
       newModel.particleTN.parent = avatarPositionTN;
       newModel.particleTN.position.y = 0.8;
@@ -112,5 +111,13 @@ export default class Avatar3D {
 
     this.avatarsLoaded = true;
     this.app.paintGameData();
+  }
+  setHome(avatar, avatarMeta) {
+    avatar.avatarPositionTN.position.x = avatarMeta.x;
+    avatar.avatarPositionTN.position.z = avatarMeta.z;
+    if (avatarMeta.z < 0 && avatarMeta.x < 0 || avatarMeta.z > 0 && avatarMeta.x > 0)
+      avatar.avatarPositionTN.rotation.y = Math.atan2(avatarMeta.x, avatarMeta.z) + Math.PI;
+    else
+      avatar.avatarPositionTN.rotation.y = Math.atan2(avatarMeta.z, avatarMeta.x);
   }
 }

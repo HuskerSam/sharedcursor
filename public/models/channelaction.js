@@ -4,7 +4,7 @@ export default class ChannelAction {
   constructor(app) {
     this.app = app;
     this.agents = [];
-    this.startStopTime = 4000;
+    this.startStopTime = 2000;
     this.agentTargetHome = Array(4).fill(true);
     this.setupAgents();
   }
@@ -35,6 +35,7 @@ export default class ChannelAction {
         }, 50);
       } else if (!this.agentTargetHome[seatIndex]) {
         this.agentTargetHome[seatIndex] = true;
+
         this._sendAgentToTarget(seatIndex, U3D.v(avatarMeta.x, 0, avatarMeta.z), true);
       }
     });
@@ -70,8 +71,17 @@ export default class ChannelAction {
     this.crowd = this.navigationPlugin.createCrowd(4, 1.5, this.app.scene);
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
-      this.stopWalk(agentInfos.agentIndex);
-      this.agents[agentInfos.agentIndex].stopped = true;
+      let delay = 0;
+      if (agentInfos.agentIndex !== this.app.activeSeatIndex) {
+        let pos = this.agents[agentInfos.agentIndex].mesh.getAbsolutePosition();
+        let distance = pos.subtract(agentInfos.destination).length();
+        if (distance > 0.5)
+          delay = 2000;
+      }
+      setTimeout(() => {
+        this.stopWalk(agentInfos.agentIndex);
+        this.agents[agentInfos.agentIndex].stopped = true;
+      }, delay);
     });
     this.app.scene.onBeforeRenderObservable.add(() => {
       let agentCount = this.agents.length;
@@ -89,7 +99,6 @@ export default class ChannelAction {
           let desiredRotation = Math.atan2(vel.x, vel.z);
           ag.mesh.rotation.y = ag.mesh.rotation.y + (desiredRotation - ag.mesh.rotation.y) * 0.02;
         }
-
       }
     });
 
@@ -115,8 +124,11 @@ export default class ChannelAction {
     let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
     wAnim.stop(true);
 
-    avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
+    if (seatIndex !== this.app.activeSeatIndex) {
+      this.app.avatarHelper.setHome(avatar, avatarMeta);
+      avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
       .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
+    }
   }
   navigationAid(mesh, index) {
     let randomPos = mesh.position;
