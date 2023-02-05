@@ -4,6 +4,7 @@ export default class ChannelAction {
   constructor(app) {
     this.app = app;
     this.agents = [];
+    this.startStopTime = 4000;
     this.agentTargetHome = Array(4).fill(true);
     this.setupAgents();
   }
@@ -12,15 +13,26 @@ export default class ChannelAction {
     if (this.app.avatarPathsInited === this.app.activeSeatIndex) return;
     this.app.avatarPathsInited = this.app.activeSeatIndex;
 
+    clearInterval(this.activeSeatHomingInterval);
+    this.lastStopTime = null;
     this.app.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
       let avatarMeta = this.app.avatarMetas[seatIndex];
       if (seatIndex === this.app.activeSeatIndex) {
         this.agentTargetHome[seatIndex] = false;
-        clearInterval(this.activeSeatHomingInterval);
         this.activeSeatHomingInterval = setInterval(() => {
+          if (this.agents[seatIndex].stopped) {
+            if (this.lastStopTime === null) {
+              this.lastStopTime = Date.now();
+              return;
+            } else if (Date.now() - this.lastStopTime < this.startStopTime) {
+              return;
+            }
+            this.lastStopTime = null;
+          }
+
           let target = this.app.playerMoonAssets[seatIndex].baseMesh.getAbsolutePosition();
           this._sendAgentToTarget(seatIndex, U3D.v(target.x, 0, target.z));
-        }, 1000);
+        }, 50);
       } else if (!this.agentTargetHome[seatIndex]) {
         this.agentTargetHome[seatIndex] = true;
         this._sendAgentToTarget(seatIndex, U3D.v(avatarMeta.x, 0, avatarMeta.z), true);
@@ -129,7 +141,10 @@ export default class ChannelAction {
   }
   _sendAgentToTarget(i, position, showLine, lineTimeout = 1500) {
     let seat = this.agents[i].mesh;
+    let curPos = seat.getAbsolutePosition();
 
+    if (this.agents[i].stopped)
+      this.crowd.agentTeleport(i, curPos);
     this.crowd.agentGoto(i, position);
     this.startWalk(this.agents[i].idx);
 
@@ -139,7 +154,7 @@ export default class ChannelAction {
     this.agents[i].stopped = false;
 
     if (showLine) {
-      let agentPosition = this.crowd.getAgentPosition(i);
+      let agentPosition = curPos;
       let pathPoints = this.navigationPlugin.computePath(agentPosition, position);
       let pathLine;
       pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
