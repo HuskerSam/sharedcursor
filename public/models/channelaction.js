@@ -45,20 +45,17 @@ export default class ChannelAction {
     this.crowd.onReachTargetObservable.add((agentInfos) => {
       this.stopWalk(agentInfos.agentIndex);
       this.agents[agentInfos.agentIndex].stopped = true;
-    //  this.crowd.agentGoto(agentInfos.agentIndex, this.agents[agentInfos.agentIndex].mesh.position);
-    //  this.crowd.agentTeleport(agentInfos.agentIndex, this.agents[agentInfos.agentIndex].mesh.position);
     });
 
-
     this.agentParams = {
-      radius: 0.75,
-      reachRadius: 1.25,
+      radius: 0.5,
+      reachRadius: 2.5,
       height: 4,
       maxAcceleration: 3.0,
-      maxSpeed: 1.0,
+      maxSpeed: 1.5,
       collisionQueryRange: 2,
-      pathOptimizationRange: 0.0,
-      separationWeight: 100
+      pathOptimizationRange: 0.1,
+      separationWeight: 50
     };
     this.agents = [];
 
