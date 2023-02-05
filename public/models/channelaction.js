@@ -192,21 +192,10 @@ export default class ChannelAction {
     }
   }
   async shootRocket(actionMeta) {
-    let {
-      probeId,
-      targetId,
-      originId
-    } = actionMeta;
-
-    let asset = this.app.clearAnimations(probeId);
-
-    let meta = asset.assetMeta;
+    let asset = this.clearAnimations(actionMeta.sourceId);
     asset.parent = null;
     asset.setEnabled(true);
-
-    //U3D.sizeNodeToFit(asset.baseMesh, meta.sizeBoxFit);
-
-    await this.rocketTravel(probeId, targetId, originId);
+    await this.rocketTravel(actionMeta.sourceId, actionMeta.targetId, actionMeta.originId);
   }
   __createTravelPath(startPosition, startRotation, endPosition) {
     let phase1Time = 2500;
@@ -330,15 +319,11 @@ export default class ChannelAction {
       setTimeout(() => res(), 20000);
     });
   }
-  landProbe(meta) {
-    let {
-      probeId,
-      targetId
-    } = meta;
-    this.clearAnimations(probeId);
-    let asset = this.app.staticBoardObjects[probeId];
-    asset.parent = this.app.parentPivot(targetId);
-    let parentAsset = this.app.staticBoardObjects[targetId];
+  landProbe(actionMeta) {
+    this.clearAnimations(actionMeta.sourceId);
+    let asset = this.app.staticBoardObjects[actionMeta.sourceId];
+    asset.parent = this.app.parentPivot(actionMeta.targetId);
+    let parentAsset = this.app.staticBoardObjects[actionMeta.targetId];
 
     let orbitRadius = 1.5;
     let startRatio = 0;
@@ -356,7 +341,7 @@ export default class ChannelAction {
     }
 
     let orbitPivot = U3D.addOrbitPivot({
-      id: probeId,
+      id: actionMeta.sourceId,
       orbitDirection: 1,
       orbitRadius,
       startRatio,

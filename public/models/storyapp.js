@@ -998,7 +998,7 @@ export class StoryApp extends BaseApp {
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
   async animatedRoundAction(actionDetails) {
-    await this.channelAction.shootRocket(actionDetails);
+    await this.actionChannelHelper.shootRocket(actionDetails);
     this.actionChannelHelper.landProbe(actionDetails);
   }
   applyInitRoundAction(meta) {
@@ -1010,7 +1010,7 @@ export class StoryApp extends BaseApp {
         if (asset.assetMeta.objectType === 'probe')
           enabled = false;
       } else if (meta.parent !== undefined) {
-        this.actionChannelHelper.landProbe(meta);
+      //  this.actionChannelHelper.landProbe(meta);
       }
 
       asset.setEnabled(enabled);
