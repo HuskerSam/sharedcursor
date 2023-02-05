@@ -3,17 +3,35 @@ import U3D from '/models/utility3d.js';
 export default class ChannelAction {
   constructor(app) {
     this.app = app;
+    this.agents = [];
+    this.agentTargetHome = Array(4).fill(true);
     this.setupAgents();
   }
   updateAvatarPaths() {
     if (!this.app.avatarHelper.initedAvatars) return;
     if (this.app.avatarPathsInited === this.app.activeSeatIndex) return;
-
     this.app.avatarPathsInited = this.app.activeSeatIndex;
+
+    this.app.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
+      let avatarMeta = this.app.avatarMetas[seatIndex];
+      if (seatIndex === this.app.activeSeatIndex) {
+        this.agentTargetHome[seatIndex] = false;
+        clearInterval(this.activeSeatHomingInterval);
+        this.activeSeatHomingInterval = setInterval(() => {
+          let target = this.app.playerMoonAssets[seatIndex].baseMesh.getAbsolutePosition();
+          this._sendAgentToTarget(seatIndex, U3D.v(target.x, 0, target.z));
+        }, 1000);
+      } else if (!this.agentTargetHome[seatIndex]) {
+        this.agentTargetHome[seatIndex] = true;
+        this._sendAgentToTarget(seatIndex, U3D.v(avatarMeta.x, 0, avatarMeta.z), true);
+      }
+    });
   }
   setupAgents() {
     this.navigationPlugin = new BABYLON.RecastJSPlugin();
-    let navmeshParameters = {
+
+    this.app.staticNavigationMeshes.push(this.app.env.ground);
+    this.navigationPlugin.createNavMesh(this.app.staticNavigationMeshes, {
       cs: 0.2,
       ch: 0.2,
       walkableSlopeAngle: 0,
@@ -27,9 +45,7 @@ export default class ChannelAction {
       maxVertsPerPoly: 6,
       detailSampleDist: 6,
       detailSampleMaxError: 1,
-    };
-    this.app.staticNavigationMeshes.push(this.app.env.ground);
-    this.navigationPlugin.createNavMesh(this.app.staticNavigationMeshes, navmeshParameters);
+    });
 
     if (this.app.urlParams.get('shownavmesh')) {
       let debugMesh = this.navigationPlugin.createDebugNavMesh(this.app.scene);
@@ -39,26 +55,12 @@ export default class ChannelAction {
       matdebug.disableLighting = true;
       debugMesh.material = matdebug;
     }
-
     this.crowd = this.navigationPlugin.createCrowd(4, 1.5, this.app.scene);
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
       this.stopWalk(agentInfos.agentIndex);
       this.agents[agentInfos.agentIndex].stopped = true;
     });
-
-    this.agentParams = {
-      radius: 0.5,
-      reachRadius: 2.5,
-      height: 4,
-      maxAcceleration: 3.0,
-      maxSpeed: 1.5,
-      collisionQueryRange: 2,
-      pathOptimizationRange: 0.1,
-      separationWeight: 50
-    };
-    this.agents = [];
-
     this.app.scene.onBeforeRenderObservable.add(() => {
       let agentCount = this.agents.length;
       for (let i = 0; i < agentCount; i++) {
@@ -107,7 +109,16 @@ export default class ChannelAction {
   navigationAid(mesh, index) {
     let randomPos = mesh.position;
     let transform = new BABYLON.TransformNode();
-    let agentIndex = this.crowd.addAgent(randomPos, this.agentParams, transform);
+    let agentIndex = this.crowd.addAgent(randomPos, {
+      radius: 0.5,
+      reachRadius: 2.5,
+      height: 4,
+      maxAcceleration: 3.0,
+      maxSpeed: 1.5,
+      collisionQueryRange: 2,
+      pathOptimizationRange: 0.1,
+      separationWeight: 50
+    }, transform);
     this.agents.push({
       idx: agentIndex,
       trf: transform,
@@ -116,7 +127,7 @@ export default class ChannelAction {
       avatarMesh: mesh
     });
   }
-  _sendAgentToTarget(i, position) {
+  _sendAgentToTarget(i, position, showLine, lineTimeout = 1500) {
     let seat = this.agents[i].mesh;
 
     this.crowd.agentGoto(i, position);
@@ -127,19 +138,21 @@ export default class ChannelAction {
     this.agents[i].target.z = position.z;
     this.agents[i].stopped = false;
 
-    let agentPosition = this.crowd.getAgentPosition(i);
-    let pathPoints = this.navigationPlugin.computePath(agentPosition, position);
-    let pathLine;
-    pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
-      points: pathPoints,
-      updatable: true,
-      instance: pathLine
-    }, this.app.scene);
-    let color = U3D.get3DColors(i);
-    U3D.meshSetVerticeColors(pathLine, color.r, color.g, color.b);
+    if (showLine) {
+      let agentPosition = this.crowd.getAgentPosition(i);
+      let pathPoints = this.navigationPlugin.computePath(agentPosition, position);
+      let pathLine;
+      pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
+        points: pathPoints,
+        updatable: true,
+        instance: pathLine
+      }, this.app.scene);
+      let color = U3D.get3DColors(i);
+      U3D.meshSetVerticeColors(pathLine, color.r, color.g, color.b);
 
-    setTimeout(() => {
-      pathLine.dispose();
-    }, 1500);
+      setTimeout(() => {
+        pathLine.dispose();
+      }, lineTimeout);
+    }
   }
 }
