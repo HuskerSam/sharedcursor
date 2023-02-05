@@ -3,7 +3,6 @@ import U3D from '/models/utility3d.js';
 import MenuTab3D from '/models/menutab.js';
 import Asteroid3D from '/models/asteroid3d.js';
 import Avatar3D from '/models/avatar3d.js';
-import ActionCards from '/models/actioncards.js';
 import HelpSlate from '/models/helpslate.js';
 import ChatSlate from '/models/chatslate.js';
 import ChannelSpeech from '/models/channelspeech.js';
@@ -120,7 +119,6 @@ export class StoryApp extends BaseApp {
     this.addLineToLoading(loadingHTML);
 
     this.menuTab3D.initOptionsBar();
-    this.actionCardHelper = new ActionCards(this);
     this.channelSpeechHelper = new ChannelSpeech(this);
     this.actionChannelHelper = new ChannelAction(this);
 
@@ -900,7 +898,7 @@ export class StoryApp extends BaseApp {
     }
 
     this.iterateBoardRoundSequence();
-    this.actionCardHelper.updateCardsForPlayer();
+    this.actionChannelHelper.updateCardsForPlayer();
   }
   async iterateBoardRoundSequence() {
     if (this.roundActionRunning)

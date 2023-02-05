@@ -349,8 +349,8 @@ export default class MenuTab3D {
     this.selectedAssetMiniClone.position = U3D.v(4.5 * this.buttonSpace, 1, -1);
     this.selectedAssetMiniClone.rotation = U3D.v(0, 0, 0);
 
-    if (this.app.actionCardHelper)
-      this.app.actionCardHelper.updateCardsForPlayer();
+    if (this.app.chanactionChannelHelpernelAction)
+      this.app.actionChannelHelper.updateCardsForPlayer();
   }
   nextSelectedObject(previous = false) {
     let meta = this.selectedObjectMeta;
@@ -377,7 +377,7 @@ export default class MenuTab3D {
     } else if (meta.actionCardType) {
       let index = meta.cardIndex + 1;
       if (index > 5) index = 0;
-      this.setSelectedAsset(this.app.actionCardHelper.cardItemMeta[index]);
+      this.setSelectedAsset(this.app.actionChannelHelper.cardItemMeta[index]);
     } else {
       let keys = Object.keys(this.app.staticBoardObjects).sort((a, b) => {
         if (this.obj(a).name > this.obj(b).name)
