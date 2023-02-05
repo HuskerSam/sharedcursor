@@ -1119,7 +1119,6 @@ export class BaseApp {
       modelAnimationGroup.start();
       modelAnimationGroup.pause();
       mesh.modelAnimationGroup = modelAnimationGroup;
-      mesh.localRunning = true;
       modelAnimationGroup.goToFrame(Math.floor(Math.random() * modelAnimationGroup.to));
       modelAnimationGroup.loopAnimation = true;
     }

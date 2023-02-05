@@ -16,10 +16,10 @@ export default class ChannelAction {
     let navmeshParameters = {
       cs: 0.2,
       ch: 0.2,
-      walkableSlopeAngle: 90,
-      walkableHeight: 5,
-      walkableClimb: 1,
-      walkableRadius: 1,
+      walkableSlopeAngle: 0,
+      walkableHeight: 10,
+      walkableClimb: 0,
+      walkableRadius: 0.5,
       maxEdgeLen: 12.,
       maxSimplificationError: 1.3,
       minRegionArea: 8,
@@ -28,6 +28,7 @@ export default class ChannelAction {
       detailSampleDist: 6,
       detailSampleMaxError: 1,
     };
+    this.app.staticNavigationMeshes.push(this.app.env.ground);
     this.navigationPlugin.createNavMesh(this.app.staticNavigationMeshes, navmeshParameters);
 
     if (this.app.urlParams.get('shownavmesh')) {
@@ -39,15 +40,13 @@ export default class ChannelAction {
       debugMesh.material = matdebug;
     }
 
-    this.crowd = this.navigationPlugin.createCrowd(4, 0.5, this.app.scene);
+    this.crowd = this.navigationPlugin.createCrowd(4, 1.5, this.app.scene);
 
     this.crowd.onReachTargetObservable.add((agentInfos) => {
-      this.agents[agentInfos.agentIndex].avatarMesh.localRunning = false;
-      this.agents[agentInfos.agentIndex].avatarMesh.modelAnimationGroup.pause();
+      this.stopWalk(agentInfos.agentIndex);
       this.agents[agentInfos.agentIndex].stopped = true;
-
-      this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
-      this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
+    //  this.crowd.agentGoto(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
+    //  this.crowd.agentTeleport(agentInfos.agentIndex, this.crowd.getAgentPosition(agentInfos.agentIndex));
     });
 
 
@@ -82,36 +81,68 @@ export default class ChannelAction {
 
       }
     });
+
+    this.app.avatarHelper.initedAvatars.forEach((avatar, seatIndex) => {
+      this.navigationAid(avatar.avatarPositionTN, seatIndex);
+    });
+
+    window.channelAction = this;
   }
-  navigationAid(mesh, avatarMesh) {
-    //let randomPos = this.navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
+  startWalk(seatIndex) {
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
+    let walkAnimName = avatarMeta.walkAnim;
+    let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
+    wAnim.start(true);
+    wAnim.setWeightForAllAnimatables(1);
+    avatarMeta.walkingAnimation = wAnim;
+  }
+  stopWalk(seatIndex) {
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
+    let walkAnimName = avatarMeta.walkAnim;
+    let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
+    wAnim.stop(true);
+
+    avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
+      .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
+  }
+  navigationAid(mesh, index) {
+    let randomPos = mesh.position;
     let transform = new BABYLON.TransformNode();
-    let agentIndex = this.crowd.addAgent(mesh.position, this.agentParams, transform);
-    mesh.parent = transform;
+    let agentIndex = this.crowd.addAgent(randomPos, this.agentParams, transform);
     this.agents.push({
       idx: agentIndex,
       trf: transform,
       mesh,
       target: new BABYLON.Vector3(0, 0, 0),
-      avatarMesh
+      avatarMesh: mesh
     });
   }
-  groundClick(pointerInfo) {
-    let startingPoint = pointerInfo.pickInfo.pickedPoint;
-    if (startingPoint) {
-      let agents = this.crowd.getAgents();
-      let closest = this.navigationPlugin.getClosestPoint(startingPoint);
+  _sendAgentToTarget(i, position) {
+    let seat = this.agents[i].mesh;
 
-      for (let i = 0; i < agents.length; i++) {
-        this.crowd.agentGoto(agents[i], closest);
-        this.agents[i].avatarMesh.localRunning = true;
-        this.agents[i].target.x = closest.x;
-        this.agents[i].target.y = closest.y;
-        this.agents[i].target.z = closest.z;
-        this.agents[i].stopped = false;
+    this.crowd.agentGoto(i, position);
+    this.startWalk(this.agents[i].idx);
 
-        this.agents[i].avatarMesh.modelAnimationGroup.play();
-      }
-    }
+    this.agents[i].target.x = position.x;
+    this.agents[i].target.y = position.y;
+    this.agents[i].target.z = position.z;
+    this.agents[i].stopped = false;
+
+    let agentPosition = this.crowd.getAgentPosition(i);
+    let pathPoints = this.navigationPlugin.computePath(agentPosition, position);
+    let pathLine;
+    pathLine = BABYLON.MeshBuilder.CreateDashedLines("ribbon", {
+      points: pathPoints,
+      updatable: true,
+      instance: pathLine
+    }, this.app.scene);
+    let color = U3D.get3DColors(i);
+    U3D.meshSetVerticeColors(pathLine, color.r, color.g, color.b);
+
+    setTimeout(() => {
+      pathLine.dispose();
+    }, 1500);
   }
 }
