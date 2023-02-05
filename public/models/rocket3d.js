@@ -105,10 +105,23 @@ export default class Rocket3D {
       let startRotation = U3D.v(0);
       let travelPath = this.__createTravelPath(startPosition, startRotation, endPosition)
 
+/*
       let particles = U3D.createFireParticles(meta, meta.basePivot, this.app.scene);
       particles.start();
       setTimeout(() => particles.dispose(), 15000);
-
+      */
+      let particlePivot = new BABYLON.TransformNode("staticpivotparticle" + probeId, this.app.scene);
+      particlePivot.position.x = meta.px;
+      particlePivot.position.y = meta.py;
+      particlePivot.position.z = meta.pz;
+          //particlePivot.rotation.x = -1 * Math.PI / 2;
+      particlePivot.rotation.z = Math.PI;
+      const trail = new BABYLON.TrailMesh("new", particlePivot, this.app.scene, 0.5, 8, true);
+      const sourceMat = new BABYLON.StandardMaterial("sourceMat", this.app.scene);
+      sourceMat.emissiveColor = sourceMat.diffuseColor = new BABYLON.Color3.Red();
+      sourceMat.specularColor = new BABYLON.Color3.Black();
+      trail.material = sourceMat;
+      particlePivot.parent = meta.basePivot;
 
       let newOrbitAnim = new BABYLON.Animation("assetorbitanim_" + probeId,
         "position", 60, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
@@ -122,7 +135,8 @@ export default class Rocket3D {
 
       let endFrame = travelPath.frames;
       meta.orbitAnimation = this.app.scene.beginAnimation(meta.orbitPivot, 0, endFrame, false, 1, () => {
-        particles.stop();
+        trail.dispose();
+        particlePivot.dispose();
         res();
       });
       meta.rotationAnimation = this.app.scene.beginAnimation(meta.rotationPivot, 0, endFrame, false);

@@ -890,14 +890,21 @@ export class BaseApp {
       target: U3D.v(0, 2, 0)
     };
 
-
     this.canvas = document.querySelector(".popup-canvas");
     this.engine = new BABYLON.Engine(this.canvas, true);
+    this.engine.enableOfflineSupport = false;
     BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
     BABYLON.Animation.AllowMatricesInterpolation = true;
 
     this.engine.enableOfflineSupport = false;
     this.scene = await this.createScene();
+
+    this.pipeline = new BABYLON.DefaultRenderingPipeline("default", true, this.scene, [this.camera, this.xr.baseExperience.camera]);
+    this.scene.imageProcessingConfiguration.toneMappingEnabled = true;
+    this.scene.imageProcessingConfiguration.toneMappingType = BABYLON.ImageProcessingConfiguration.TONEMAPPING_ACES;
+    this.scene.imageProcessingConfiguration.exposure = 1;
+    this.pipeline.glowLayerEnabled = true;
+    this.pipeline.glowLayer.intensity = 0.35;
 
     window.addEventListener("resize", () => {
       this.engine.resize();
