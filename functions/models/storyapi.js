@@ -189,6 +189,10 @@ module.exports = class StoryAPI {
       Object.assign(updatePacket, roundData);
     }
 
+    if (roundAction === 'init') {
+      StoryAPI._updateUserCardsForRound(roundData, roundIndex);
+    }
+
     if (roundAction === 'playCard') {
       roundData.actions.push({
         when: "phase",
@@ -220,7 +224,7 @@ module.exports = class StoryAPI {
     let seatIndex = roundIndex % 4;
     let cards = Array(4).fill(-1);
     roundData.actions.forEach(action => {
-      if (action.action === 'cardUpdate' && action.seatIndex === roundIndex)
+      if (action.action === 'cardUpdate' && action.seatIndex === seatIndex)
         cards[action.cardIndex] = action.cardId
     });
 
