@@ -243,7 +243,7 @@ export class StoryApp extends BaseApp {
 
     if (meta.parent) {
       await this.__awaitAssetLoad(meta.parent);
-      this.staticBoardObjects[name].parent = this.parentPivot(meta.parent);
+      this.staticBoardObjects[name].parent = this.parentMeshForId(meta.parent);
     } else
       this.staticBoardObjects[name].parent = sceneParent;
 
@@ -266,12 +266,8 @@ export class StoryApp extends BaseApp {
 
     return this.staticBoardObjects[name];
   }
-  parentPivot(id) {
-    let meta = this.staticBoardObjects[id].assetMeta;
-    if (meta.objectType === 'moon' || meta.objectType === 'dwarf' || meta.objectType === 'nearearth')
-      return meta.basePivot;
-
-    return this.staticBoardObjects[id];
+  parentMeshForId(id) {
+    return this.staticBoardObjects[id].assetMeta.basePivot;
   }
   assetPosition(id) {
     return this.staticBoardObjects[id].baseMesh.getAbsolutePosition();
@@ -822,7 +818,6 @@ export class StoryApp extends BaseApp {
   }
 
   async paintBoard() {
-    this.menuTab3D.updateRoundAndScoreStatus();
     if (this._renderedBoardTurn !== this.paintedBoardTurn) {
       this.boardTurnFirstLoad = true;
       this._renderedBoardTurn = this.paintedBoardTurn;
@@ -866,13 +861,6 @@ export class StoryApp extends BaseApp {
 
     if (this._paintedBoardTurn === max)
       this._paintedBoardTurn = null;
-
-    if (this._paintedBoardTurn === null)
-      this.boardTurnLabel = "Live " + (this.turnNumber + 1).toString();
-    else if (this._paintedBoardTurn < 0)
-      this.boardTurnLabel = "Prequel " + (-1 * this._paintedBoardTurn).toString();
-    else
-      this.boardTurnLabel = "History " + (this._paintedBoardTurn + 1).toString();
 
     this.paintBoard();
   }
@@ -996,8 +984,7 @@ export class StoryApp extends BaseApp {
       cardDetails.gameCard, this.activeMoon.assetMeta.id);
   }
   async animatedRoundAction(actionDetails) {
-    await this.actionChannelHelper.animateActionCard(actionDetails);
-    this.actionChannelHelper.resolveActionCard(actionDetails);
+    this.actionChannelHelper.addAction(actionDetails);
   }
   applyInitRoundAction(actionDetails) {
     let asset = this.staticBoardObjects[actionDetails.sourceId];

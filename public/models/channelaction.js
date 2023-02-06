@@ -5,6 +5,7 @@ export default class ChannelAction {
     this.app = app;
     this.agents = [];
     this.startStopTime = 2000;
+    this.eventQueue = [];
     this.agentTargetHome = Array(4).fill(true);
 
     this.cardPanel = this.app.menuTab3D.cardsPanelTab;
@@ -131,13 +132,7 @@ export default class ChannelAction {
         if (this.agents[agentInfos.agentIndex].agentType === "avatarCart")
           this.stopWalk(agentInfos.agentIndex);
         if (this.agents[agentInfos.agentIndex].agentType === "cardCart") {
-          if (this.resolvePendingAction) {
-            this.resolvePendingAction();
-            this.resolvePendingAction = null;
-          }
-
-          this.probeTrailMesh.setEnabled(false);
-          //  this.resolveActionCard(this.lastAnimateAction);
+          this.resolveCardAction();
         }
         this.agents[agentInfos.agentIndex].stopped = true;
       }, delay);
@@ -261,7 +256,23 @@ export default class ChannelAction {
     }
   }
 
-  async animateActionCard(actionDetails) {
+  addAction(actionDetails) {
+    //console.log(new Date().toISOString().slice(-7), seatIndex, text);
+    this.eventQueue.push(actionDetails);
+    if (!this.isPlaying) this._playNext();
+  }
+  async _playNext() {
+    if (this.eventQueue.length === 0) {
+      this.isPlaying = false;
+      return;
+    }
+
+    let actionDetails = this.eventQueue.pop();
+    this.isPlaying = true;
+    await this._playBlock(actionDetails);
+  }
+
+  async _playBlock(actionDetails) {
     console.log(new Date().toISOString().slice(-7));
     if (this.lastActionCardProbe) {
       this.lastActionCardProbe.parent = null;
@@ -283,23 +294,14 @@ export default class ChannelAction {
     console.log(startPosition, endPosition);
     this.toTarget(4, endPosition, startPosition);
     this.lastAnimateAction = actionDetails;
-    await this._waitUntilResolved();
-  }
-  _waitUntilResolved() {
-    return new Promise((res, rej) => {
-      this.resolvePendingAction = res;
-    });
   }
   resolveActionCard(actionDetails) {
     this.clearAnimations(actionDetails.sourceId);
-    if (this.resolvePendingAction) {
-      this.resolvePendingAction();
-      this.resolvePendingAction = null;
-    }
-
+console.log('resolve', actionDetails);
     let asset = this.app.staticBoardObjects[actionDetails.sourceId];
     let parentId = (actionDetails.action === 'init') ? actionDetails.parent : actionDetails.targetId;
-    asset.parent = this.app.parentPivot(parentId);
+    asset.parent = this.app.parentMeshForId(parentId);
+    this.lastActionCardProbe = null;
     let parentAsset = this.app.staticBoardObjects[parentId];
     let orbitRadius = 1.5;
     let startRatio = 0;
@@ -340,6 +342,12 @@ export default class ChannelAction {
     }
 
     return asset;
+  }
+  resolveCardAction() {
+    this.probeTrailMesh.setEnabled(false);
+    if (this.lastAnimateAction)
+      this.resolveActionCard(this.lastAnimateAction);
+    this._playNext();
   }
 
   updateCardsForPlayer() {

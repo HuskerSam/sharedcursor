@@ -85,6 +85,7 @@ export default class ChannelSpeech {
       this.activeSoundObject.dispose();
       this.activeSoundObject = null;
     }
+    this.app.menuTab3D.channelDisplayDirty = true;
   }
   async _playBlock(speechEvent) {
     this.seatIndex = speechEvent.seatIndex;
@@ -117,12 +118,20 @@ export default class ChannelSpeech {
   async _playNext() {
     let speechEvent = this.eventQueue.pop();
     this.isPlaying = true;
+    this.app.menuTab3D.channelDisplayDirty = true;
     await this._playBlock(speechEvent);
 
     if (this.eventQueue.length === 0)
       this.isPlaying = false;
     else
       this._playNext();
+  }
+  get isPlaying() {
+    return this._isPlaying;
+  }
+  set isPlaying(value) {
+    this._isPlaying = value;
+    this.app.menuTab3D.channelDisplayDirty = true;
   }
   async _segment(seatIndex, text) {
     if (text.slice(-1) === '.')
