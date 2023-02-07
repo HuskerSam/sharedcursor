@@ -1001,16 +1001,6 @@ export class StoryApp extends BaseApp {
       asset.setEnabled(enabled);
     }
   }
-  showOptionalNote(str) {
-    if (this.temporaryHelperNote)
-      this.temporaryHelperNote.dispose(false, true);
-
-    this.temporaryHelperNote = U3D.addTextPlane(this.scene, str, U3D.color('1,1,1'));
-    this.temporaryHelperNote.parent = this.menuBarTabButtonsTN;
-    this.temporaryHelperNote.scaling = U3D.v(1);
-    this.temporaryHelperNote.position = U3D.v(-18, 4, 0);
-
-  }
   updateGameMessagesFeed(snapshot) {
     this.lastMessagesSnapshot = snapshot;
     if (this.chatSlateHelper)

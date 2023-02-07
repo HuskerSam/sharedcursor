@@ -272,6 +272,13 @@ export default class ChannelAction {
     await this._playBlock(actionDetails);
   }
 
+  get isPlaying() {
+    return this._isPlaying;
+  }
+  set isPlaying(value) {
+    this._isPlaying = value;
+    this.app.menuTab3D.channelDisplayDirty = true;
+  }
   async _playBlock(actionDetails) {
     console.log(new Date().toISOString().slice(-7));
     if (this.lastActionCardProbe) {

@@ -701,13 +701,12 @@ export default class Utility3D {
 
     mesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
   }
-  static addTextPlane(scene, text, color, font_family = "Arial", bold = " ") {
+  static addTextPlane(scene, text, color, planeHeight = 1, font_family = "Arial", bold = " ") {
     let backColor = "transparent";
     let id = text + font_family + bold;
     let paddingSides = 8;
     let font_size = 192;
     let font = bold + " " + font_size + "px " + font_family;
-    let planeHeight = 1;
     let DTHeight = 1.5 * font_size; //or set as wished
     let ratio = planeHeight / DTHeight;
     let temp = new BABYLON.DynamicTexture(id + "dt2", 64, scene);
