@@ -267,7 +267,11 @@ export class StoryApp extends BaseApp {
     return this.staticBoardObjects[name];
   }
   parentMeshForId(id) {
-    return this.staticBoardObjects[id].assetMeta.basePivot;
+    let meta = this.staticBoardObjects[id].assetMeta;
+    if (meta.objectType === 'moon' || meta.objectType === 'dwarf' || meta.objectType === 'nearearth')
+      return meta.basePivot;
+
+    return this.staticBoardObjects[id];
   }
   assetPosition(id) {
     return this.staticBoardObjects[id].baseMesh.getAbsolutePosition();

@@ -280,7 +280,6 @@ export default class ChannelAction {
     this.app.menuTab3D.channelDisplayDirty = true;
   }
   async _playBlock(actionDetails) {
-    console.log(new Date().toISOString().slice(-7));
     if (this.lastActionCardProbe) {
       this.lastActionCardProbe.parent = null;
     }
@@ -298,9 +297,11 @@ export default class ChannelAction {
     let endPosition = this.app.assetPosition(actionDetails.targetId);
     startPosition.y = 0;
     endPosition.y = 0;
-    console.log(startPosition, endPosition);
     this.toTarget(4, endPosition, startPosition);
-    this.lastAnimateAction = actionDetails;
+    this.lastAnimateAction = Object.assign({}, actionDetails);
+    this.lastAnimateAction.endPosition = endPosition;
+    this.lastAnimateAction.startPosition = startPosition;
+    this.lastAnimateAction.logTime = new Date().toISOString();
   }
   resolveActionCard(actionDetails) {
     this.clearAnimations(actionDetails.sourceId);

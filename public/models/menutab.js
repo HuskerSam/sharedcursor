@@ -8,10 +8,9 @@ export default class MenuTab3D {
     this.playerCardHollowMaterial = new BABYLON.StandardMaterial("menuCardBackPanel", this.app.scene);
     this.playerCardHollowMaterial.opacityTexture = new BABYLON.Texture('/images/cardhollow.png', this.app.scene);
     this.optionBarWidth = 30;
-    this.buttonSpace = 1.6;
     this.menuBarHeight = 8;
     this.menuLineBottom = -1.35;
-    this.secondRowBottom = this.menuBarHeight - 4.6 - 1.75 * this.buttonSpace;
+    this.secondRowBottom = this.menuBarHeight - 7.4;
   }
   _refreshSeatIndexStatus(forceRefresh = false) {
     if (this.seatIndexButtonColorCache === this.app.activeSeatIndex && !forceRefresh)
@@ -63,18 +62,20 @@ export default class MenuTab3D {
   }
   _addMainButtonRow() {
     let top = this.menuBarHeight - 4.5;
+    let buttonSpace = 1.6;
+
     let cardsBtn = this.addActionPanelButton('/fontcons/cards.png', "Action Cards", () => this.selectedMenuBarTab(this.cardsPanelTab));
     cardsBtn.parent = this.app.menuBarTabButtonsTN;
-    cardsBtn.position = U3D.v(-5.5 * this.buttonSpace, top, 0);
+    cardsBtn.position = U3D.v(-5.5 * buttonSpace, top, 0);
 
     let playersMoonsMenuBtn = this.addActionPanelButton('/fontcons/group.png', "Player Avatars", () => this.selectedMenuBarTab(this.playerMoonPanelTab));
     playersMoonsMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    playersMoonsMenuBtn.position = U3D.v(-3.5 * this.buttonSpace, top, 0);
+    playersMoonsMenuBtn.position = U3D.v(-3.5 * buttonSpace, top, 0);
 
     let selectedObjectMenuBtn = this.addActionPanelButton('/fontcons/redtarget.png', "Selected Target", () =>
       this.selectedMenuBarTab(this.focusPanelTab));
     selectedObjectMenuBtn.parent = this.app.menuBarTabButtonsTN;
-    selectedObjectMenuBtn.position = U3D.v(-1.5 * this.buttonSpace, top, 0);
+    selectedObjectMenuBtn.position = U3D.v(-1.5 * buttonSpace, top, 0);
 
     this.finishPlayerTurnButton = this.addActionPanelButton('/fontcons/completecheck.png', 'FINISH Round', () =>
       this.app.clickEndTurn());
@@ -97,12 +98,12 @@ export default class MenuTab3D {
     let helpButton = this.addActionPanelButton('/fontcons/help.png', "Storyverse", () =>
       this.app.helpSlateHelper.showHelpSlate(), 2);
     helpButton.parent = this.app.menuBarTabButtonsTN;
-    helpButton.position = U3D.v(-1.25 * this.buttonSpace, this.secondRowBottom, 0);
+    helpButton.position = U3D.v(-1.25 * buttonSpace, this.secondRowBottom, 0);
 
     let chatBtn = this.addActionPanelButton('/fontcons/chat.png', "Chat", () =>
       this.app.chatSlateHelper.showChatPanel(), 2);
     chatBtn.parent = this.app.menuBarTabButtonsTN;
-    chatBtn.position = U3D.v(-2.75 * this.buttonSpace, this.secondRowBottom, 0);
+    chatBtn.position = U3D.v(-2.75 * buttonSpace, this.secondRowBottom, 0);
   }
   _addTabPanels() {
     this.focusPanelTab = new BABYLON.TransformNode('focusPanelTab', this.app.scene);
@@ -129,7 +130,7 @@ export default class MenuTab3D {
       width: 15
     }, this.app.scene);
     scalingSliderTN.parent = this.app.menuBarTabButtonsTN;
-    scalingSliderTN.position = U3D.v(this.optionBarWidth / 2 - 1.5 * this.buttonSpace, 2, 0);
+    scalingSliderTN.position = U3D.v(12.6, 2, 0);
     scalingSliderTN.rotation = U3D.v(0, 0, Math.PI / 2);
     this.sliderPanelAdvTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(
       scalingSliderTN, 1024, 1024, true);
@@ -149,26 +150,25 @@ export default class MenuTab3D {
     this.sliderPanelAdvTexture.addControl(this.scalingSlider3D);
   }
   _addSelectedObjectOptions() {
-    let left = this.optionBarWidth / 2 - 8.75 * this.buttonSpace;
     let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/follow.png", "Follow [B]", () =>
       this.app.bButtonPress(), 2);
-    followSelectedMetaBtn.position = U3D.v(left + 1.5 * this.buttonSpace, this.menuBarHeight - 4, 0);
+    followSelectedMetaBtn.position = U3D.v(3.4, this.menuBarHeight - 4, 0);
     followSelectedMetaBtn.parent = this.app.menuBarTabButtonsTN;
 
     let followStopBtn = this.addActionPanelButton("/fontcons/stopsign.png", 'Stop [A]', () =>
       this.app.aButtonPress(), 2);
-    followStopBtn.position = U3D.v(left + 1.5 * this.buttonSpace, this.menuBarHeight - 6.25, 0);
+    followStopBtn.position = U3D.v(3.4, this.menuBarHeight - 6.25, 0);
     followStopBtn.parent = this.app.menuBarTabButtonsTN;
 
     let homeBtn = this.addActionPanelButton('/fontcons/home.png', "Home [Y]", () =>
       this.app.yButtonPress(), 2);
     homeBtn.parent = this.app.menuBarTabButtonsTN;
-    homeBtn.position = U3D.v(left + 0 * this.buttonSpace, this.menuBarHeight - 4, 0);
+    homeBtn.position = U3D.v(1, this.menuBarHeight - 4, 0);
 
     this.toggleBtn = this.addActionPanelButton('/fontcons/teleport.png', "Toggle Controls [X]", () =>
       this.app.xButtonPress(), 2);
     this.toggleBtn.parent = this.app.menuBarTabButtonsTN;
-    this.toggleBtn.position = U3D.v(left + 0 * this.buttonSpace, this.menuBarHeight - 6.25, 0);
+    this.toggleBtn.position = U3D.v(1, this.menuBarHeight - 6.25, 0);
   }
   _updateActionChannelDisplay() {
     if (this.selectedRoundIndexPanel) {
@@ -177,26 +177,26 @@ export default class MenuTab3D {
     }
 
     let labelDetails = this.turnStatusLabel;
-    this.selectedRoundLabelPanel = U3D.addTextPlane(this.app.scene, labelDetails.label, labelDetails.labelColor, 1.25);
+    this.selectedRoundLabelPanel = U3D.addTextPlane(this.app.scene, labelDetails.label,
+      labelDetails.labelColor, 1.25);
     this.selectedRoundLabelPanel.parent = this.app.menuBarTabButtonsTN;
-    this.selectedRoundLabelPanel.scaling = U3D.v(1);
-    this.selectedRoundLabelPanel.position = U3D.v(-9.75, this.menuLineBottom, 0);
+    this.selectedRoundLabelPanel.position = U3D.v(-10, this.menuLineBottom, 0);
 
-    this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, labelDetails.displayNumber, labelDetails.labelColor, 2);
+    this.selectedRoundIndexPanel = U3D.addTextPlane(this.app.scene, labelDetails.displayNumber,
+      labelDetails.labelColor, 2);
     this.selectedRoundIndexPanel.parent = this.app.menuBarTabButtonsTN;
-    this.selectedRoundIndexPanel.scaling = U3D.v(1);
-    this.selectedRoundIndexPanel.position = U3D.v(-9.75, this.menuLineBottom + 2.25, 0);
+    this.selectedRoundIndexPanel.position = U3D.v(-10, this.menuLineBottom + 1.75, 0);
   }
   _updateSpeechChannelDisplay() {
     if (this.speechChannelPanel)
       this.speechChannelPanel.dispose(false, true);
 
     let color = U3D.color("1, 0.5, 0");
-    let label = this.app.channelSpeechHelper.isPlaying ? "Playing" : "Mute";
+    let label = this.app.channelSpeechHelper.isPlaying ? "Playing" : "Silence";
     this.speechChannelPanel = U3D.addTextPlane(this.app.scene, label, color, 1.25);
     this.speechChannelPanel.parent = this.app.menuBarTabButtonsTN;
     this.speechChannelPanel.scaling = U3D.v(1);
-    this.speechChannelPanel.position = U3D.v(-3 * this.buttonSpace, this.menuLineBottom, 0);
+    this.speechChannelPanel.position = U3D.v(-1, this.menuLineBottom, 0);
   }
   addActionPanelButton(texturePath, text, handlePointerDown, scale = 3) {
     let button = new BABYLON.GUI.HolographicButton(texturePath);
@@ -238,25 +238,41 @@ export default class MenuTab3D {
     else if (this.app.paintedBoardTurn >= 0)
       labelColor = U3D.color("1,1,1");
     else
-      labelColor = U3D.color("1, 0.5, 0");
+      labelColor = U3D.color("1,0.5,0");
 
     if (this.app._paintedBoardTurn === null) {
       label = "Live";
       displayNumber = this.app.turnNumber + 1;
-    }
-    else if (this.app._paintedBoardTurn < 0) {
+    } else if (this.app._paintedBoardTurn < 0) {
       displayNumber = this.app._paintedBoardTurn;
       label = "Prequel";
-    }
-    else {
+    } else {
       displayNumber = this.app._paintedBoardTurn + 1;
       label = "History";
     }
 
+    let actionChannel = this.app.actionChannelHelper;
+    let count = actionChannel.eventQueue.length;
+    let actionInProgress = false;
+    if (actionChannel.isPlaying) {
+      let action = 'Action';
+      if (actionChannel.lastAnimateAction.action === 'playCard')
+        action = "Card";
+      if (count > 0)
+        label += `(${count})`;
+
+      let targetLabel = '';
+      if (actionChannel.lastAnimateAction.targetId) {
+        let meta = this.app.staticBoardObjects[actionChannel.lastAnimateAction.targetId].assetMeta;
+        targetLabel = meta.name;
+      }
+      label += ` ${action} ${targetLabel}`;
+    }
     return {
       displayNumber,
       label,
-      labelColor
+      labelColor,
+      actionInProgress
     }
   }
   _updatePlayerActionButtons() {
@@ -285,11 +301,7 @@ export default class MenuTab3D {
     clearTimeout(this.updateChannelDisplayTimer);
     this.updateChannelDisplayTimer = null;
 
-    if (this._paintedBoardTurnCache !== this.app._paintedBoardTurn) {
-      this._paintedBoardTurnCache = this.app._paintedBoardTurn;
-      this._updateActionChannelDisplay();
-    }
-
+    this._updateActionChannelDisplay();
     this._updateSpeechChannelDisplay();
     this._updatePlayerActionButtons();
   }
@@ -298,15 +310,15 @@ export default class MenuTab3D {
     let scene = this.app.scene;
 
     let nextSelectedMetaBtn = this.addActionPanelButton('/fontcons/nextgt.png', "Next Asset", () => this.nextSelectedObject());
-    nextSelectedMetaBtn.position = U3D.v(5 * this.buttonSpace, 0, 0);
+    nextSelectedMetaBtn.position = U3D.v(40, 0, 0);
     nextSelectedMetaBtn.parent = this.focusPanelTab;
 
     let previousSelectedMetaBtn = this.addActionPanelButton('/fontcons/previouslt.png', "Previous Asset", () => this.nextSelectedObject(true));
-    previousSelectedMetaBtn.position = U3D.v(-5 * this.buttonSpace, 0, 0);
+    previousSelectedMetaBtn.position = U3D.v(-40, 0, 0);
     previousSelectedMetaBtn.parent = this.focusPanelTab;
 
     let loadISSBtn = this.addActionPanelButton('/fontcons/rocket.svg', "Load ISS", () => this.loadISS());
-    loadISSBtn.position = U3D.v(-7.5 * this.buttonSpace, 0, 0);
+    loadISSBtn.position = U3D.v(-60, 0, 0);
     loadISSBtn.parent = this.focusPanelTab;
 
     this.setSelectedAsset(this.obj('e1_luna'));
@@ -403,14 +415,14 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose(false, true);
     this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("1,1,1"), 1.25);
-    this.selectedAssetLabel.position = U3D.v(this.buttonSpace * 5.1, this.menuLineBottom, 0);
+    this.selectedAssetLabel.position = U3D.v(8, this.menuLineBottom, 0);
     this.selectedAssetLabel.parent = this.app.menuBarTabButtonsTN;
 
     if (this.selectedAssetMiniClone)
       this.selectedAssetMiniClone.dispose();
     this.selectedAssetMiniClone = menubarMesh;
     this.selectedAssetMiniClone.parent = this.app.menuBarTabButtonsTN;
-    this.selectedAssetMiniClone.position = U3D.v(5 * this.buttonSpace, 2.5, -0.5);
+    this.selectedAssetMiniClone.position = U3D.v(8, 2.5, -0.5);
     this.selectedAssetMiniClone.rotation = U3D.v(0, 0, 0);
 
     if (this.app.chanactionChannelHelpernelAction)
