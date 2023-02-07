@@ -188,11 +188,20 @@ export default class MenuTab3D {
     this.selectedRoundIndexPanel.position = U3D.v(-10, this.menuLineBottom + 1.75, 0);
   }
   _updateSpeechChannelDisplay() {
-    if (this.speechChannelPanel)
+    if (this.speechChannelPanel) {
       this.speechChannelPanel.dispose(false, true);
+      this.speechChannelPanel = null;
+    }
 
-    let color = U3D.color("1, 0.5, 0");
-    let label = this.app.channelSpeechHelper.isPlaying ? "Playing" : "Silence";
+    let speechChannel = this.app.channelSpeechHelper;
+    if (!speechChannel.isPlaying)
+      return;
+
+    let seatIndex = speechChannel.activeSpeechEvent.seatIndex;
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let color = U3D.get3DColors(seatIndex);
+    let label = avatarMeta.name + '';
+
     this.speechChannelPanel = U3D.addTextPlane(this.app.scene, label, color, 1.25);
     this.speechChannelPanel.parent = this.app.menuBarTabButtonsTN;
     this.speechChannelPanel.scaling = U3D.v(1);
