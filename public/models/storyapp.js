@@ -520,11 +520,11 @@ export class StoryApp extends BaseApp {
       let rightShow = false;
       if (this.leftHandedControllerGrip) {
         let rotation = this.leftHandedControllerGrip.rotationQuaternion.toEulerAngles();
-        leftShow = (rotation.z > 0.8 || rotation.z < -1.6);
+        leftShow = (rotation.z > 0.7 || rotation.z < -1.5);
       }
       if (this.rightHandedControllerGrip) {
         let rotation = this.rightHandedControllerGrip.rotationQuaternion.toEulerAngles();
-        rightShow = (rotation.z > 1.6 || rotation.z < -0.8);
+        rightShow = (rotation.z > 1.5 || rotation.z < -0.7);
       }
       let show = (leftShow || rightShow);
 
@@ -551,7 +551,8 @@ export class StoryApp extends BaseApp {
     this.menuBarTransformNode.position = U3D.v(0, 0, 0);
     this.menuBarTransformNode.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarTransformNode.parent = null;
-    this.menuBarTransformNode.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z + BABYLON.TransformNode.BILLBOARDMODE_Y;
+    this.menuBarTransformNode.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z;
+    this.menuBarTransformNode.rotation = U3D.v(0, -Math.PI / 2, 0);
     this.inXR = true;
 
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
