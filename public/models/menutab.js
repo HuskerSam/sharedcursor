@@ -60,6 +60,7 @@ export default class MenuTab3D {
     menuWrapperPlane.position = U3D.v(0, 1.75, 0.05);
 
     this._addScalingSlider();
+    this._addSelectedObjectOptions();
 
     this.previousTurnButton = this.addActionPanelButton('/fontcons/previousround.png', "Previous Round", () =>
       this.app.paintedBoardTurn = this.app.paintedBoardTurn - 1, 1.5);
@@ -106,16 +107,6 @@ export default class MenuTab3D {
       this.app.xButtonPress(), 1.5);
     this.toggleBtn.parent = this.app.menuBarTabButtonsTN;
     this.toggleBtn.position = U3D.v(1.5 * buttonSpace, top - buttonSpace, 0);
-
-    let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/follow.png", "Follow [B]", () =>
-      this.app.bButtonPress(), 1.5);
-    followSelectedMetaBtn.position = U3D.v(2.5 * buttonSpace, top, 0);
-    followSelectedMetaBtn.parent = this.app.menuBarTabButtonsTN;
-
-    let followStopBtn = this.addActionPanelButton("/fontcons/stopsign.png", 'Stop [A]', () =>
-      this.app.aButtonPress(), 1.5);
-    followStopBtn.position = U3D.v(2.5 * buttonSpace, top - buttonSpace, 0);
-    followStopBtn.parent = this.app.menuBarTabButtonsTN;
 
     let chatBtn = this.addActionPanelButton('/fontcons/chat.png', "Chat", () =>
       this.app.chatSlateHelper.showChatPanel(), 1.5);
@@ -165,7 +156,17 @@ export default class MenuTab3D {
     this.sliderPanelAdvTexture.scaling = U3D.v(0.25);
     this.sliderPanelAdvTexture.addControl(this.scalingSlider3D);
   }
+  _addSelectedObjectOptions() {
+    let followSelectedMetaBtn = this.addActionPanelButton("/fontcons/follow.png", "Follow [B]", () =>
+      this.app.bButtonPress(), 2);
+    followSelectedMetaBtn.position = U3D.v(this.optionBarWidth / 2 - 3 * this.buttonSpace, this.menuBarHeight - 4, -1);
+    followSelectedMetaBtn.parent = this.app.menuBarTabButtonsTN;
 
+    let followStopBtn = this.addActionPanelButton("/fontcons/stopsign.png", 'Stop [A]', () =>
+      this.app.aButtonPress(), 2);
+    followStopBtn.position = U3D.v(this.optionBarWidth / 2 - 6 * this.buttonSpace, this.menuBarHeight - 4, -1);
+    followStopBtn.parent = this.app.menuBarTabButtonsTN;
+  }
   addActionPanelButton(texturePath, text, handlePointerDown, scale = 3) {
     let button = new BABYLON.GUI.HolographicButton(texturePath);
     let mesh = new BABYLON.TransformNode(texturePath + 'TN', this.app.scene);
@@ -343,7 +344,7 @@ export default class MenuTab3D {
 
     mesh.parent = null;
     menubarMesh.parent = null;
-    U3D.sizeNodeToFit(menubarMesh, 3.75);
+    U3D.sizeNodeToFit(menubarMesh, 4.5);
     U3D.sizeNodeToFit(mesh, meshHeight);
     menubarMesh.showBoundingBox = false;
 
@@ -379,14 +380,14 @@ export default class MenuTab3D {
     if (this.selectedAssetLabel)
       this.selectedAssetLabel.dispose(false, true);
     this.selectedAssetLabel = U3D.addTextPlane(this.app.scene, desc, U3D.color("1,1,1"));
-    this.selectedAssetLabel.position = U3D.v(this.buttonSpace * 1.5, 2, 0);
+    this.selectedAssetLabel.position = U3D.v(this.buttonSpace * 5.25, -1.5, 0);
     this.selectedAssetLabel.parent = this.app.menuBarTabButtonsTN;
 
     if (this.selectedAssetMiniClone)
       this.selectedAssetMiniClone.dispose();
     this.selectedAssetMiniClone = menubarMesh;
     this.selectedAssetMiniClone.parent = this.app.menuBarTabButtonsTN;
-    this.selectedAssetMiniClone.position = U3D.v(4.5 * this.buttonSpace, 1, -1);
+    this.selectedAssetMiniClone.position = U3D.v(5 * this.buttonSpace, 2, -1.25);
     this.selectedAssetMiniClone.rotation = U3D.v(0, 0, 0);
 
     if (this.app.chanactionChannelHelpernelAction)
