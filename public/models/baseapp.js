@@ -858,29 +858,7 @@ export class BaseApp {
     this.matchBoardRendered = false;
   }
 
-  startEngine() {
-    if (this.engine3DStarted)
-      return;
-    this.engine3DStarted = true;
-    this.engine.runRenderLoop(() => {
-      this.scene.render();
-
-      if (this.activeFollowMeta && this.xr.baseExperience.state === 3 && this.activeFollowMeta.basePivot) {
-        let position = new BABYLON.Vector3(0, 0, 0);
-        position.copyFrom(this.activeFollowMeta.basePivot.getAbsolutePosition());
-        position.y += 4;
-
-        let mX = position.x - this.scene.activeCamera.position.x;
-        let mZ = position.z - this.scene.activeCamera.position.z;
-
-        let movementVector = new BABYLON.Vector3(mX, 0, mZ);
-
-        this.scene.activeCamera.position.addInPlace(movementVector);
-        this.scene.activeCamera.target.addInPlace(movementVector);
-      }
-
-    });
-  }
+  startEngine() {}
   async initGraphics() {
     if (this.engine)
       return;

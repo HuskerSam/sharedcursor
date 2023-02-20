@@ -24,6 +24,32 @@ export class StoryApp extends BaseApp {
     this.alertErrors = false;
   }
 
+  startEngine() {
+    if (this.engine3DStarted)
+      return;
+    this.engine3DStarted = true;
+    this.engine.runRenderLoop(() => {
+      this.scene.render();
+
+      if (this.activeFollowMeta && this.xr.baseExperience.state === 3 && this.activeFollowMeta.basePivot) {
+        let position = new BABYLON.Vector3(0, 0, 0);
+        position.copyFrom(this.activeFollowMeta.basePivot.getAbsolutePosition());
+        position.y += 4;
+
+        let mX = position.x - this.scene.activeCamera.position.x;
+        let mZ = position.z - this.scene.activeCamera.position.z;
+
+        let movementVector = new BABYLON.Vector3(mX, 0, mZ);
+
+        this.scene.activeCamera.position.addInPlace(movementVector);
+        this.scene.activeCamera.target.addInPlace(movementVector);
+      }
+
+      if (this.inXR) {
+        this.updateMenuBarShowWebXR();
+      }
+    });
+  }
   async _initMenuBar2D() {
     this.loading_dynamic_area = document.querySelector('.loading_dynamic_area');
     this.hide_loading_screen = document.querySelector('.hide_loading_screen');
@@ -135,11 +161,6 @@ export class StoryApp extends BaseApp {
   }
   createMenu3DWrapper() {
     this.menuBarTransformNode = new BABYLON.TransformNode('menuBarTransformNode', this.scene);
-    this.menuBarTransformNode.position = U3D.v(1, 5, 2);
-    this.menuBarTransformNode.scaling = U3D.v(0.3, 0.3, 0.3);
-    this.menuBarTransformNode.billboardMode = 0;
-
-    this.menuBarShowWebXRInterval = setInterval(() => this.updateMenuBarShowWebXR(), 100);
 
     this.menuBarTabButtonsTN = new BABYLON.TransformNode('menuBarTabButtonsTN', this.scene);
     this.menuBarTabButtonsTN.parent = this.menuBarTransformNode;
@@ -516,64 +537,70 @@ export class StoryApp extends BaseApp {
   }
 
   updateMenuBarShowWebXR() {
-    if (!this.inXR && this.menuBarVisible)
+    if (!this.inXR)
       return;
 
-    if (this.inXR) {
-      let leftShow = false;
-      let rightShow = false;
-      if (this.leftHandedControllerGrip) {
-        let rotation = this.leftHandedControllerGrip.rotationQuaternion.toEulerAngles();
-        leftShow = (rotation.z > 0.7 || rotation.z < -1.5);
-      }
-      if (this.rightHandedControllerGrip) {
-        let rotation = this.rightHandedControllerGrip.rotationQuaternion.toEulerAngles();
-        rightShow = (rotation.z > 1.5 || rotation.z < -0.7);
-      }
-      let show = (leftShow || rightShow);
+    let leftShow = false;
+    let rightShow = false;
+    if (this.leftHandedControllerGrip) {
+      let rotation = this.leftHandedControllerGrip.rotationQuaternion.toEulerAngles();
+      leftShow = (rotation.z > 0.7 || rotation.z < -1.5);
+    }
+    if (this.rightHandedControllerGrip) {
+      let rotation = this.rightHandedControllerGrip.rotationQuaternion.toEulerAngles();
+      rightShow = (rotation.z > 1.5 || rotation.z < -0.7);
+    }
+    let show = (leftShow || rightShow);
 
-      if (this.menuBarVisible !== show) {
-        if (leftShow) {
-          this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 15);
-          this.menuBarTransformNode.parent = this.leftHandedControllerGrip;
-        } else if (rightShow) {
-          this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 15);
-          this.menuBarTransformNode.parent = this.rightHandedControllerGrip;
-        }
-
-        this.menuBarVisible = show;
-        this.menuBarTransformNode.setEnabled(show);
+    if (this.menuBarVisible !== show) {
+      if (leftShow) {
+        this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 5);
+        this.menuBarTransformNode.parent = null;// this.leftHandedControllerGrip;
+        this.activeControllerGrip = this.leftHandedControllerGrip;
+      } else if (rightShow) {
+        this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 5);
+        this.menuBarTransformNode.parent = null;//this.rightHandedControllerGrip;
+        this.activeControllerGrip = this.rightHandedControllerGrip;
       }
-    } else {
-      this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
-      this.menuBarVisible = true;
-      this.menuBarTransformNode.setEnabled(true);
+
+      this.menuBarVisible = show;
+      this.menuBarTransformNode.setEnabled(show);
+    }
+
+    if (this.menuBarVisible) {
+      //this.menuBarTabButtonsTN.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z + BABYLON.TransformNode.BILLBOARDMODE_Y
+      //let cameraPos = U3D.v(this.app.scene.activeCamera.position.x, 1, this.app.scene.activeCamera.position.z)
+
+      let cameraPos = this.scene.activeCamera.position;
+      let controllerPos = this.activeControllerGrip.position;
+      //console.log('cpos', controllerPos);
+      this.menuBarTransformNode.position = controllerPos;
+      this.menuBarTransformNode.lookAt(cameraPos, Math.PI, 0, 0);
     }
   }
   enterXR() {
     super.enterXR();
+    this.inXR = true;
     this.menuBarTransformNode.position = U3D.v(0, 0, 0);
     this.menuBarTransformNode.scaling = U3D.v(0.02, 0.02, 0.02);
     this.menuBarTransformNode.parent = null;
-    this.menuBarTransformNode.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z;
-    this.menuBarTransformNode.rotation = U3D.v(0, -Math.PI / 2, 0);
-    this.inXR = true;
 
     this.menuTab3D.setSelectedAsset(this.menuTab3D.selectedObjectMeta);
   }
   enterNotInXR() {
+    this.inXR = false;
+    this.menuBarTransformNode.parent = this.browserScreenMenuTN;
+
+    this.menuBarTransformNode.rotation = U3D.v(0, 0, 0);
     this.menuBarTransformNode.position = U3D.v(0, 4.05, 1.5);
     this.menuBarTransformNode.scaling = U3D.v(0.1, 0.1, 0.1);
-
-    this.menuBarTransformNode.parent = this.browserScreenMenuTN;
-    this.menuBarTransformNode.billboardMode = 0;
-
-    this.inXR = false;
+    this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
   }
   XRControllerAdded(model, handed) {
     if (handed === 'left') {
       this.leftHandedControllerGrip = model.grip;
       this.menuBarTransformNode.parent = model.grip;
+      console.log(model)
     }
     if (handed === 'right') {
       this.rightHandedControllerGrip = model.grip;
