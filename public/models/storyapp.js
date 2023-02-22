@@ -554,11 +554,11 @@ export class StoryApp extends BaseApp {
 
     if (this.menuBarVisible !== show) {
       if (leftShow) {
-        this.menuBarTabButtonsTN.position = U3D.v(this.menuTab3D.optionBarWidth, 0, 5);
+        this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
         this.menuBarTransformNode.parent = null;// this.leftHandedControllerGrip;
         this.activeControllerGrip = this.leftHandedControllerGrip;
       } else if (rightShow) {
-        this.menuBarTabButtonsTN.position = U3D.v(-this.menuTab3D.optionBarWidth, 0, 5);
+        this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
         this.menuBarTransformNode.parent = null;//this.rightHandedControllerGrip;
         this.activeControllerGrip = this.rightHandedControllerGrip;
       }
@@ -573,9 +573,13 @@ export class StoryApp extends BaseApp {
 
       let cameraPos = this.scene.activeCamera.position;
       let controllerPos = this.activeControllerGrip.position;
+      let extendDirection = controllerPos.subtract(cameraPos);
+      let menuPos = controllerPos.add(extendDirection);
+      menuPos.y += 0.25;
       //console.log('cpos', controllerPos);
-      this.menuBarTransformNode.position = controllerPos;
+      this.menuBarTransformNode.position = menuPos;
       this.menuBarTransformNode.lookAt(cameraPos, Math.PI, 0, 0);
+    //  this.menuBarTransformNode.rotation.z = 0;
     }
   }
   enterXR() {
@@ -595,6 +599,7 @@ export class StoryApp extends BaseApp {
     this.menuBarTransformNode.position = U3D.v(0, 4.05, 1.5);
     this.menuBarTransformNode.scaling = U3D.v(0.1, 0.1, 0.1);
     this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
+    this.menuBarTransformNode.billboardMode = 0;
   }
   XRControllerAdded(model, handed) {
     if (handed === 'left') {
