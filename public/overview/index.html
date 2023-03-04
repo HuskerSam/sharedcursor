@@ -35,6 +35,14 @@
       let avatarJSON = await window.BaseApp.readJSONFile(`/story/avatars.json`);
       document.getElementById("avatarviewer").innerHTML = JSON.stringify(avatarJSON, null, '\t');
       ace.edit("avatarviewer").session.setMode("ace/mode/javascript");
+
+      let helpJSON = await window.BaseApp.readJSONFile(`/story/helpitems.json`);
+      document.getElementById("helpjsonviewer").innerHTML = JSON.stringify(helpJSON, null, '\t');
+      ace.edit("helpjsonviewer").session.setMode("ace/mode/javascript");
+
+      let roundJSON = await window.BaseApp.readJSONFile(`/story/roundpre4.json`);
+      document.getElementById("roundjsonviewer").innerHTML = JSON.stringify(roundJSON, null, '\t');
+      ace.edit("roundjsonviewer").session.setMode("ace/mode/javascript");
     });
   </script>
   <style>
@@ -115,11 +123,11 @@
         <div style="font-size:1.25em;padding:10px;">
           <table>
             <tr>
-              <td><b>Goal &nbsp;</b></td>
+              <td><b>Purpose &nbsp;</b></td>
               <td>Use json files to implement data driven configuration options.</td>
             </tr>
             <tr>
-              <td><b>Note &nbsp;</b></td>
+              <td><b>Notes &nbsp;</b></td>
               <td>Meshes, textures and supporting image files are referenced by path and stored in the cloud.
               </td>
             </tr>
@@ -148,13 +156,43 @@
             description, initial position, etc.
             <br>
             <a href="/story/avatars.json" target="_blank">Avatars</a> - The 4 story avatars meta data
+            <br><br>
             <div id="avatarviewer" style="height:250px;"></div>
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Help Items <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
-            <img src="Breakdown.png" style="width:90%;">
+            Help Items are narrated by a specified avatar when selected.  The meta data includes text and an image.
+            <br>
+            <a href="/story/helpitems.json" target="_blank">Help Items</a> - meta about each item
+            <br><br>
+            <div id="helpjsonviewer" style="height:250px;"></div>
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Round Data <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            Rounds contain speech channel events, action channel events and starting position Items<br>
+            <br>
+            The default round is the intial setup - and each round is a delta against it, for example for round 5
+            you need the record for round 5 and the default round, but none of the other rounds to determine current state.
+            <br>
+            When a new round is created assets not in the default position are specified with state change items
+            <br>
+            <br>
+            prequel rounds (vs game rounds created by users) can contain premade story events and/or tutorials on game play
+            <br>
+            more on action channel and speech channel events below
+            <br><br>
+            <a href="/story/roundpre1.json" target="_blank">Pre 1</a>
+            <a href="/story/roundpre2.json" target="_blank">Pre 2</a>
+            <a href="/story/roundpre3.json" target="_blank">Pre 3</a>
+            <a href="/story/roundpre4.json" target="_blank">Pre 4</a>
+            <a href="/story/roundpre5.json" target="_blank">Pre 5</a>
+            <br><br>
+            prequel round 4 json
+            <div id="roundjsonviewer" style="height:250px;"></div>
           </div>
         </div>
       </div>
@@ -162,61 +200,20 @@
     <div class='collapsed' style="padding:10px;">
       <h1 class="collapse_header right_arrow">Action Channel<span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
-        <div style="font-size:1.25em;padding:10px;">
-          <table>
-            <tr>
-              <td><b>Goal &nbsp;</b></td>
-              <td>Create a data driven, replayable event channel for player actions in a turn based multi player game, for example cards.</td>
-            </tr>
-            <tr>
-              <td><b>Note &nbsp;</b></td>
-              <td>This is the primary animation channel, for example walking or acting on objects. This channel is
-                allowed most of the device bandwidth specifying the root animations on avatars (versus the additive animations used in the speech channel)</td>
-            </tr>
-          </table>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Default Rounds <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
-          </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Play Cards <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
-          </div>
-        </div>
+        A main queue for action events during a turn.  Can be replayed.
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
       <h1 class="collapse_header right_arrow">Speech Channel<span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Default Rounds <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
-          </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Help Narration <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
-          </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">User Chat <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
-          </div>
-        </div>
+        Chat is broken down into fragments - sentances as best as possible and displayed on both
+        cartoon style popups and google text to speech is used to create audio.
       </div>
     </div>
 
     <div style="flex:1"></div>
     <div class="copyright_panel">
-      <a href="mailto:website@husker.beer" target="_blank">website@husker.beer</a>
-      <br>© 2022 Locate.Beer. All Rights Reserved.
+      <br>© 2023 All Rights Reserved.
     </div>
   </div>
 
