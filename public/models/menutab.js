@@ -527,7 +527,7 @@ export default class MenuTab3D {
       let avatarTN = new BABYLON.TransformNode('seatavatarTN' + seatIndex, this.app.scene);
       cloneMesh.parent = avatarTN;
       avatarTN.parent = dockSeatContainer;
-      U3D.sizeNodeToFit(cloneMesh, 2.4);
+      U3D.sizeNodeToFit(cloneMesh, this.dockSeatHeight / 2);
       cloneMesh.showBoundingBox = false;
       avatarTN.rotation.y = Math.PI;
       avatarTN.position = U3D.v(0, -1.75, 0);
@@ -544,7 +544,7 @@ export default class MenuTab3D {
       cloneMoon.showBoundingBox = false;
       cloneMoon.isPickable = true;
       cloneMoon.parent = dockSeatContainer;
-      U3D.sizeNodeToFit(cloneMoon, 1.35);
+      U3D.sizeNodeToFit(cloneMoon, this.dockSeatHeight / 5);
       cloneMoon.assetMeta = {
         appClickable: true,
         clickCommand: "customClick",

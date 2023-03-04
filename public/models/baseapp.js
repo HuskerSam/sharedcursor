@@ -1113,6 +1113,19 @@ export class BaseApp {
   groundClick(pointerInfo) {
     return;
   }
+
+  initCollapseHeaders() {
+    this.collapse_headers = document.querySelectorAll('.collapse_header');
+    this.collapse_headers.forEach(ctl => ctl.addEventListener('click', e => this.toggleCollapsePanel(ctl, e)));
+  }
+  toggleCollapsePanel(ctl, e) {
+    let parent = ctl.parentElement;
+    if (parent.classList.contains('collapsed')) {
+      parent.classList.remove('collapsed');
+    } else {
+      parent.classList.add('collapsed');
+    }
+  }
 }
 
 export default BaseApp;

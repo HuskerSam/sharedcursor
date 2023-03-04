@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Overview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="shortcut icon" href="/images/logo64.png">
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <link rel="stylesheet" href="/css/base.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <script>
+    window.addEventListener('load', async (event) => {
+      let module = await import('/models/baseapp.js');
+
+      window.BaseApp = new module.BaseApp();
+
+      window.BaseApp.initCollapseHeaders();
+    });
+  </script>
+  <style>
+    h1 {
+      color: rgb(0, 0, 255);
+    }
+
+    h2 {
+      color: rgb(255, 0, 0);
+    }
+
+    .app_panel h2 i {
+      line-height: 20px;
+      font-size: 30px;
+      position: relative;
+      top: 5px;
+      left: -6px;
+      color: rgb(100, 100, 100);
+      transform: rotateX(180deg);
+      transition: transform 600ms;
+    }
+
+    .app_panel .collapsed h2 i {
+      transform: rotateX(0deg);
+    }
+
+    .app_panel {
+      background: rgb(250, 250, 250);
+    }
+
+    html,
+    body {
+      min-height: 100vh;
+    }
+
+    .app_panel>div {
+      max-width: 1000px;
+    }
+
+
+    .app_panel h1 {
+      cursor: pointer;
+    }
+
+    .app_panel h1 .header_down_arrow {
+      font-size: 30px;
+      color: rgb(100, 100, 100);
+      transform: rotateX(180deg);
+      transition: transform 600ms;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .night_mode .app_panel h1 .header_down_arrow {
+      color: rgb(220, 220, 220);
+    }
+
+    .night_mode .app_panel h1 .header_down_arrow {
+      color: rgb(220, 220, 220);
+    }
+
+    .app_panel .collapsed h1 .header_down_arrow {
+      transform: rotateX(0deg);
+    }
+
+    .app_panel h1 {
+      padding-left: 12px;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body class="loaded" style="background:rgb(250,250,250);">
+  <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
+    <div class='collapsed' style="padding:10px;">
+      <h1 class="collapse_header right_arrow">Envionment<span class="header_down_arrow">&#9660;</span></h1>
+      <div class="collapse_panel">
+        <div style="font-size:1.25em;padding:10px;">
+          <table>
+            <tr>
+              <td><b>Goal &nbsp;</b></td>
+              <td>Use json files to implement data driven configuration options.</td>
+            </tr>
+            <tr>
+              <td><b>Note &nbsp;</b></td>
+              <td>Meshes, textures and supporting image files are referenced by path and stored in the cloud.
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Asset Decks <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Avatars <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Help Items <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Breakdown.png" style="width:90%;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='collapsed' style="padding:10px;">
+      <h1 class="collapse_header right_arrow">Action Channel<span class="header_down_arrow">&#9660;</span></h1>
+      <div class="collapse_panel">
+        <div style="font-size:1.25em;padding:10px;">
+          <table>
+            <tr>
+              <td><b>Goal &nbsp;</b></td>
+              <td>Create a data driven, replayable event channel for player actions in a turn based multi player game, for example cards.</td>
+            </tr>
+            <tr>
+              <td><b>Note &nbsp;</b></td>
+              <td>This is the primary animation channel, for example walking or acting on objects.  This channel is
+              allowed most of the device bandwidth specifying the root animations on avatars (versus the additive animations used in the speech channel)</td>
+            </tr>
+          </table>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Default Rounds <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Play Cards <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='collapsed' style="padding:10px;">
+      <h1 class="collapse_header right_arrow">Speech Channel<span class="header_down_arrow">&#9660;</span></h1>
+      <div class="collapse_panel">
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Default Rounds <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Help Narration <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">User Chat <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <img src="Likability.png" style="width:90%;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+    <div class="copyright_panel">
+      <a href="mailto:website@husker.beer" target="_blank">website@husker.beer</a>
+      <br>© 2022 Locate.Beer. All Rights Reserved.
+    </div>
+  </div>
+
+</body>
+
+</html>
