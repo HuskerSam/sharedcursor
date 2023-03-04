@@ -15,6 +15,9 @@
   <script src="/__/firebase/init.js"></script>
   <link rel="stylesheet" href="/css/base.css" />
 
+  <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.3/src-min-noconflict/ace.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/ace-builds@1.15.3/css/ace.min.css" rel="stylesheet">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <script>
@@ -24,6 +27,14 @@
       window.BaseApp = new module.BaseApp();
 
       window.BaseApp.initCollapseHeaders();
+
+      let solarDeck = await window.BaseApp.readJSONFile(`/story/solarsystemdeck.json`);
+      document.getElementById("solarsystemdeckviewer").innerHTML = JSON.stringify(solarDeck, null, '\t');
+      ace.edit("solarsystemdeckviewer").session.setMode("ace/mode/javascript");
+
+      let avatarJSON = await window.BaseApp.readJSONFile(`/story/avatars.json`);
+      document.getElementById("avatarviewer").innerHTML = JSON.stringify(avatarJSON, null, '\t');
+      ace.edit("avatarviewer").session.setMode("ace/mode/javascript");
     });
   </script>
   <style>
@@ -117,13 +128,27 @@
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Asset Decks <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
+            The asset decks provide meta data including mesh and texture locations and initial asset positioning.
+            <br>
+            <a href="/story/solarsystemdeck.json" target="_blank">Solar System</a> - Planets and other non moon assets
+            <br>
+            <a href="/story/moons1deck.json" target="_blank">Non Saturn Moons</a> - Luna and all but Saturns moons
+            <br>
+            <a href="/story/moons2deck.json" target="_blank">Saturn Moons</a> - it has that many it needed it's own file
+            <br>
+            <br>
+            Solar System Json Example:
+            <div id="solarsystemdeckviewer" style="height:250px;"></div>
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Avatars <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
-            <img src="Likability.png" style="width:90%;">
+            The avatar meta specifies the idle pose name, walking animation name, google voice name,
+            description, initial position, etc.
+            <br>
+            <a href="/story/avatars.json" target="_blank">Avatars</a> - The 4 story avatars meta data
+            <div id="avatarviewer" style="height:250px;"></div>
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
@@ -145,8 +170,8 @@
             </tr>
             <tr>
               <td><b>Note &nbsp;</b></td>
-              <td>This is the primary animation channel, for example walking or acting on objects.  This channel is
-              allowed most of the device bandwidth specifying the root animations on avatars (versus the additive animations used in the speech channel)</td>
+              <td>This is the primary animation channel, for example walking or acting on objects. This channel is
+                allowed most of the device bandwidth specifying the root animations on avatars (versus the additive animations used in the speech channel)</td>
             </tr>
           </table>
         </div>
