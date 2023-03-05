@@ -555,11 +555,11 @@ export class StoryApp extends BaseApp {
     if (this.menuBarVisible !== show) {
       if (leftShow) {
         this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
-        this.menuBarTransformNode.parent = null;// this.leftHandedControllerGrip;
+        this.menuBarTransformNode.parent = null;
         this.activeControllerGrip = this.leftHandedControllerGrip;
       } else if (rightShow) {
         this.menuBarTabButtonsTN.position = U3D.v(0, 0, 0);
-        this.menuBarTransformNode.parent = null;//this.rightHandedControllerGrip;
+        this.menuBarTransformNode.parent = null;
         this.activeControllerGrip = this.rightHandedControllerGrip;
       }
 
