@@ -317,17 +317,18 @@ export default class MenuTab3D {
 
   async initFocusedAssetPanel() {
     let scene = this.app.scene;
+    let buttonSpace = 3.2;
 
     let nextSelectedMetaBtn = this.addActionPanelButton('/fontcons/nextgt.png', "Next Asset", () => this.nextSelectedObject());
-    nextSelectedMetaBtn.position = U3D.v(40, 0, 0);
+    nextSelectedMetaBtn.position = U3D.v(this.optionBarWidth / 2, 0, 0);
     nextSelectedMetaBtn.parent = this.focusPanelTab;
 
     let previousSelectedMetaBtn = this.addActionPanelButton('/fontcons/previouslt.png', "Previous Asset", () => this.nextSelectedObject(true));
-    previousSelectedMetaBtn.position = U3D.v(-40, 0, 0);
+    previousSelectedMetaBtn.position = U3D.v(this.optionBarWidth / -2, 0, 0);
     previousSelectedMetaBtn.parent = this.focusPanelTab;
 
     let loadISSBtn = this.addActionPanelButton('/fontcons/rocket.svg', "Load ISS", () => this.loadISS());
-    loadISSBtn.position = U3D.v(-60, 0, 0);
+    loadISSBtn.position = U3D.v(this.optionBarWidth / -2 + buttonSpace, 0, 0);
     loadISSBtn.parent = this.focusPanelTab;
 
     this.setSelectedAsset(this.obj('e1_luna'));

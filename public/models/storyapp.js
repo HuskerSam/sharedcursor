@@ -568,18 +568,13 @@ export class StoryApp extends BaseApp {
     }
 
     if (this.menuBarVisible) {
-      //this.menuBarTabButtonsTN.billboardMode = BABYLON.TransformNode.BILLBOARDMODE_Z + BABYLON.TransformNode.BILLBOARDMODE_Y
-      //let cameraPos = U3D.v(this.app.scene.activeCamera.position.x, 1, this.app.scene.activeCamera.position.z)
-
       let cameraPos = this.scene.activeCamera.position;
       let controllerPos = this.activeControllerGrip.position;
       let extendDirection = controllerPos.subtract(cameraPos);
       let menuPos = controllerPos.add(extendDirection);
       menuPos.y += 0.25;
-      //console.log('cpos', controllerPos);
       this.menuBarTransformNode.position = menuPos;
-      this.menuBarTransformNode.lookAt(cameraPos, Math.PI, 0, 0);
-    //  this.menuBarTransformNode.rotation.z = 0;
+      this.menuBarTransformNode.lookAt(cameraPos, Math.PI, Math.PI / 10, 0);
     }
   }
   enterXR() {
