@@ -250,7 +250,7 @@ export default class MenuTab3D {
       this._currentSelectedTab.setEnabled(false);
 
     this.tabPanelButtons.forEach(btn => btn.scaling = U3D.v(1));
-    this.selectedButtonBorder.setEnabled(menuTabToShow ? true : false);
+    this.selectedButtonBorder.setEnabled(false);
     if (this._currentSelectedTab === menuTabToShow) {
       this._currentSelectedTab = null;
     } else {
