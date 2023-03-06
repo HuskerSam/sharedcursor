@@ -118,46 +118,73 @@
 <body class="loaded" style="background:rgb(250,250,250);">
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Envionment<span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">3D Assets<span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="font-size:1.25em;padding:10px;">
           <table>
             <tr>
-              <td><b>Purpose &nbsp;</b></td>
-              <td>Use json files to implement data driven configuration options.</td>
+              <td><b>Goals &nbsp;</b></td>
+              <td>Derive a balance between size and quality balance for ability to download on demand to play a game previously not installed.
+                These objects are not bone animated (refer to avatars), while mostly static they maybe animated in position and rotation, etc.
+              </td>
             </tr>
             <tr>
               <td><b>Notes &nbsp;</b></td>
-              <td>Meshes, textures and supporting image files are referenced by path and stored in the cloud.
+              <td>Since many objects are round, or almost round, only texture(s) are included and the sphere is generated at runtime.
+                DRACO compression is used so the .glb files aren't viewable in windows once compressed.
+                The asset decks provide meta data including mesh and texture locations and initial asset positioning.
+                The blob files are stored in the cloud for cheap access, the meta data is stored in json files (more below).
               </td>
             </tr>
           </table>
         </div>
+        <br>
+        <a href="/story/solarsystemdeck.json" target="_blank">Solar System</a> - Planets and other non moon assets
+        <br>
+        <a href="/story/moons1deck.json" target="_blank">Non Saturn Moons</a> - Luna and all but Saturns moons
+        <br>
+        <a href="/story/moons2deck.json" target="_blank">Saturn Moons</a> - it has that many it needed it's own file
+        <br>
+        <br>
+        Solar System Json Example:
+        <div id="solarsystemdeckviewer" style="height:250px;"></div>
+      </div>
+    </div>
+    <div class='collapsed' style="padding:10px;">
+      <h1 class="collapse_header right_arrow">Avatars<span class="header_down_arrow">&#9660;</span></h1>
+      <div class="collapse_panel">
+        The avatar meta specifies the idle pose name, walking animation name, google voice name,
+        description, initial position, etc.
+        <br>
+        Various bone animation sequences were attained from <a href="https://www.mixamo.com/" target="_blank">Mixamo</a> and
+        at least some of the avatars.
+        <br>
+        <a href="/story/avatars.json" target="_blank">Avatars</a> - The 4 story avatars meta data
+        <br><br>
+        <div id="avatarviewer" style="height:250px;"></div>
+      </div>
+    </div>
+    <div class='collapsed' style="padding:10px;">
+      <h1 class="collapse_header right_arrow">VR Interface<span class="header_down_arrow">&#9660;</span></h1>
+      <div class="collapse_panel">
         <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Asset Decks <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            The asset decks provide meta data including mesh and texture locations and initial asset positioning.
+          <h2 class="collapse_header right_arrow">Action Menu <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel" style="text-align: center">
+            <img style="width:90%" src="menubase.png">
             <br>
-            <a href="/story/solarsystemdeck.json" target="_blank">Solar System</a> - Planets and other non moon assets
-            <br>
-            <a href="/story/moons1deck.json" target="_blank">Non Saturn Moons</a> - Luna and all but Saturns moons
-            <br>
-            <a href="/story/moons2deck.json" target="_blank">Saturn Moons</a> - it has that many it needed it's own file
-            <br>
-            <br>
-            Solar System Json Example:
-            <div id="solarsystemdeckviewer" style="height:250px;"></div>
-          </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Avatars <span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            The avatar meta specifies the idle pose name, walking animation name, google voice name,
-            description, initial position, etc.
-            <br>
-            <a href="/story/avatars.json" target="_blank">Avatars</a> - The 4 story avatars meta data
+            Display Panels ----
             <br><br>
-            <div id="avatarviewer" style="height:250px;"></div>
+            <h2>Cards Panel</h2>
+            <br>
+            <img style="width:90%" src="cardspanel.jpg">
+            <br><br>
+            <h2>Players Panel</h2>
+            <br>
+            <img style="width:90%" src="playerspanel.jpg">
+            <br><br>
+            <h2>Asset Panel</h2>
+            <br>
+            <img style="width:90%" src="assetpanel.jpg">
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
@@ -170,8 +197,13 @@
             <div id="helpjsonviewer" style="height:250px;"></div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class='collapsed' style="padding:10px;">
+      <h1 class="collapse_header right_arrow">Data Scheme<span class="header_down_arrow">&#9660;</span></h1>
+      <div class="collapse_panel">
         <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Round Data <span class="header_down_arrow">&#9660;</span></h2>
+          <h2 class="collapse_header right_arrow">Realtime Data<span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
             Rounds contain speech channel events, action channel events and starting position Items<br>
             <br>
@@ -195,63 +227,23 @@
             <div id="roundjsonviewer" style="height:250px;"></div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Action Channel<span class="header_down_arrow">&#9660;</span></h1>
-      <div class="collapse_panel">
-        A main queue for action events during a turn. Can be replayed.
-      </div>
-    </div>
-    <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Speech Channel<span class="header_down_arrow">&#9660;</span></h1>
-      <div class="collapse_panel">
-        Chat is broken down into fragments - sentances as best as possible and displayed on both
-        cartoon style popups and google text to speech is used to create audio.
-      </div>
-    </div>
-
-    <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Multi User<span class="header_down_arrow">&#9660;</span></h1>
-      <div class="collapse_panel">
-
-      </div>
-    </div>
-
-    <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Action Bar<span class="header_down_arrow">&#9660;</span></h1>
-      <div class="collapse_panel" style="text-align: center">
-        <h2>Action Menu</h2>
-        <img style="width:90%" src="menubase.png">
-        <br>
-        Display Panels ----
-        <br><br>
-        <h2>Cards Panel</h2>
-        <br>
-        <img style="width:90%" src="cardspanel.jpg">
-        <br><br>
-        <h2>Players Panel</h2>
-        <br>
-        <img style="width:90%" src="playerspanel.jpg">
-        <br><br>
-        <h2>Asset Panel</h2>
-        <br>
-        <img style="width:90%" src="assetpanel.jpg">
-
-      </div>
-    </div>
-
-    <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Avatar Animations<span class="header_down_arrow">&#9660;</span></h1>
-      <div class="collapse_panel">
-        Various bone animation sequences were attained from <a href="https://www.mixamo.com/" target="_blank">Mixamo</a> and
-        at least some of the avatars.
-        <br>
-
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Action Channel<span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            A main queue for action events during a turn. Can be replayed.
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Speech Channel<span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            Chat is broken down into fragments - sentances as best as possible and displayed on both
+            cartoon style popups and google text to speech is used to create audio.
+          </div>
+        </div>
       </div>
     </div>
     <div style="flex:1"></div>
-    <div class="copyright_panel">
+    <div style="text-align:center;max-width:initial;">
       <br>© 2023 All Rights Reserved.
     </div>
   </div>
