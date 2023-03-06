@@ -792,7 +792,7 @@ export class StoryApp extends BaseApp {
 
     let yOffset = meta.yOffset !== undefined ? meta.yOffset : 1.25;
     if (meta.avatarType) {
-      color = U3D.get3DColors(meta.seatIndex);
+      color = U3D.color(meta.primaryColor);
       yOffset = 2.25;
     }
     this.displayedNamePlate = U3D.addTextPlane(this.scene, nameDesc, color);

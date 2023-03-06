@@ -91,10 +91,10 @@ export default class HelpSlate {
       seatIndex = this.idCounter % 4;
 
     let avatarMeta = this.app.avatarMetas[seatIndex];
-    let colors = U3D.get3DColors(seatIndex);
+    let colors = U3D.color(avatarMeta.primaryColor);
     let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
-    let blockBackground = 'rgba(0,0,0,0.85)';
+    let blockBackground = seatIndex > 1 ? 'rgb(150, 150, 150)' : 'rgb(50, 50, 50)';
     let blockWrapperPanel = new BABYLON.GUI.StackPanel();
     blockWrapperPanel.background = blockBackground;
     blockWrapperPanel.adaptHeightToChildren = true;
@@ -105,7 +105,7 @@ export default class HelpSlate {
     title.color = rgb;
     title.fontWeight = 'bold';
     title.width = 1;
-    title.fontSize = "64px";
+    title.fontSize = "100px";
     title.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
     title.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     title.setPadding("30px", "10px", "30px", "10px");
@@ -121,9 +121,9 @@ export default class HelpSlate {
     blockWrapperPanel.addControl(image2);
 
     let button = BABYLON.GUI.Button.CreateImageButton("speakername" + this.idCounter, 'Narration', '/fontcons/ear.png?abc=' +  this.idCounter);
-    button.width = "350px";
-    button.height = "150px";
-    button.fontSize = "40px";
+    button.width = "650px";
+    button.height = "225px";
+    button.fontSize = "80px";
     button.color = 'black';
     button.cornerRadius = 35;
     button.background = rgb;
@@ -138,7 +138,7 @@ export default class HelpSlate {
     text.resizeToFit = true;
     text.color = rgb;
     text.width = 1;
-    text.fontSize = "48px";
+    text.fontSize = "70px";
     text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
     text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     text.setPadding("35px", "35px", "35px", "35px");

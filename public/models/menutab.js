@@ -18,7 +18,9 @@ export default class MenuTab3D {
     if (this.seatIndexButtonColorCache === this.app.activeSeatIndex && !forceRefresh)
       return;
 
-    let colors = U3D.get3DColors(this.app.activeSeatIndex);
+    let avatarMeta = this.app.avatarMetas[this.app.activeSeatIndex];
+    let colors = U3D.color(avatarMeta.primaryColor);
+
     this.seatIndexButtonColorCache = this.app.activeSeatIndex;
     this.seatIndexColoredButtons.forEach(mesh => {
       let mat = mesh.material;
@@ -219,7 +221,7 @@ export default class MenuTab3D {
 
     let seatIndex = speechChannel.activeSpeechEvent.seatIndex;
     let avatarMeta = this.app.avatarMetas[seatIndex];
-    let color = U3D.get3DColors(seatIndex);
+    let color = U3D.color(avatarMeta.primaryColor);
     let label = avatarMeta.name + '';
 
     this.speechChannelPanel = U3D.addTextPlane(this.app.scene, label, color, 1.25);
@@ -515,7 +517,8 @@ export default class MenuTab3D {
     this.dockSeatWidth = 6.5;
     let left = this.dockSeatWidth * -1.5;
     for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      let colors = U3D.get3DColors(seatIndex);
+      let avatarMeta = this.app.avatarMetas[seatIndex];
+      let colors = U3D.color(avatarMeta.primaryColor);
       let playerColor = new BABYLON.Color3(colors.r, colors.g, colors.b);
 
       let dockSeatContainer = new BABYLON.TransformNode('dockSeatContainer' + seatIndex, this.app.scene);
@@ -548,8 +551,7 @@ export default class MenuTab3D {
       seatBackPanel.parent = dockSeatContainer;
 
       let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
-      let avatarMeta = avatar.avatarPositionTN.assetMeta;
-      let cloneMesh = avatarMeta.boundingMesh.clone();
+      let cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh.clone();
       let avatarTN = new BABYLON.TransformNode('seatavatarTN' + seatIndex, this.app.scene);
       cloneMesh.parent = avatarTN;
       avatarTN.parent = dockSeatContainer;
@@ -562,7 +564,7 @@ export default class MenuTab3D {
         appClickable: true,
         clickCommand: "customClick",
         handlePointerDown: () => {
-          this.setSelectedAsset(avatarMeta);
+          this.setSelectedAsset(avatar.assetMeta);
         }
       };
 
@@ -757,7 +759,9 @@ export default class MenuTab3D {
         if (seatData.seated) {
           let names = seatData.name.split(' ');
 
-          let color = U3D.get3DColors(seatIndex);
+          let avatarMeta = this.app.avatarMetas[seatIndex];
+          let color = U3D.color(avatarMeta.primaryColor);
+
           seatContainer.namePlate1 = U3D.addTextPlane(this.app.scene, names[0], color);
           seatContainer.namePlate1.position = U3D.v(0.85, this.dockSeatHeight / -2 + 1.75, 0);
           seatContainer.namePlate1.scaling = U3D.v(0.8, 1, 1);

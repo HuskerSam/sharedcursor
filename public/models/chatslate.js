@@ -176,7 +176,7 @@ export default class ChatSlate {
     let seatIndex = data.seatIndex;
 
     let avatarMeta = this.app.avatarMetas[seatIndex];
-    let colors = U3D.get3DColors(seatIndex);
+    let colors = U3D.color(avatarMeta.primaryColor);
     let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
     let blockBackground = 'rgba(0,0,0,0.85)';
@@ -185,8 +185,8 @@ export default class ChatSlate {
     blockWrapperPanel.adaptHeightToChildren = true;
 
     let button = BABYLON.GUI.Button.CreateImageButton("speakername" + this.idCounter, 'Narration', '/fontcons/ear.png?abc=' + this.idCounter);
-    button.width = "350px";
-    button.height = "150px";
+    button.width = "600px";
+    button.height = "175px";
     button.fontSize = "80px";
     button.color = 'black';
     button.cornerRadius = 35;

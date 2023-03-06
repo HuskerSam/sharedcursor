@@ -247,7 +247,9 @@ export default class ChannelAction {
         updatable: true,
         instance: pathLine
       }, this.app.scene);
-      let color = U3D.get3DColors(agentIndex);
+
+      let avatarMeta = this.app.avatarMetas[agentIndex];
+      let color = U3D.color(avatarMeta.primaryColor);
       U3D.meshSetVerticeColors(pathLine, color.r, color.g, color.b);
 
       setTimeout(() => {
@@ -305,7 +307,6 @@ export default class ChannelAction {
   }
   resolveActionCard(actionDetails) {
     this.clearAnimations(actionDetails.sourceId);
-console.log('resolve', actionDetails);
     let asset = this.app.staticBoardObjects[actionDetails.sourceId];
     let parentId = (actionDetails.action === 'init') ? actionDetails.parent : actionDetails.targetId;
     asset.parent = this.app.parentMeshForId(parentId);

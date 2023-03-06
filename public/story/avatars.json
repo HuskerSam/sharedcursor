@@ -9,6 +9,7 @@
     "idlePose": "walking",
     "voiceName": "en-GB-Neural2-A",
     "seatIndex": 0,
+    "primaryColor": "0.75,0.75,0",
     "defaultPath": [{
         "x": 1,
         "z": 1,
@@ -40,6 +41,7 @@
     "idlePose": "idle",
     "voiceName": "en-AU-Neural2-C",
     "seatIndex": 1,
+    "primaryColor": "0,0.75,0.75",
     "defaultPath": []
   },
   {
@@ -53,6 +55,7 @@
     "idlePose": "shoppingbagwalk",
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
+    "primaryColor": "0.75,0,0.75",
     "defaultPath": []
   },
   {
@@ -65,6 +68,7 @@
     "walkAnim": "strut",
     "idlePose": "strut",
     "voiceName": "en-GB-Neural2-D",
+    "primaryColor": "0.4,0.2,0.9",
     "seatIndex": 3,
     "defaultPath": []
   }

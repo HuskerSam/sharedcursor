@@ -129,29 +129,6 @@ export default class Utility3D {
     };
   }
 
-
-  static get3DColors(seatIndex) {
-    let r = 220 / 255,
-      g = 220 / 255,
-      b = 0;
-    if (seatIndex === 1) {
-      r = 0;
-      g = 220 / 255;
-      b = 210 / 255;
-    }
-    if (seatIndex === 2) {
-      r = 230 / 255;
-      g = 0;
-      b = 230 / 255;
-    }
-    if (seatIndex === 3) {
-      r = 100 / 255;
-      g = 50 / 255;
-      b = 230 / 255;
-    }
-
-    return new BABYLON.Color3(r, g, b);
-  }
   static color(str) {
     if (!str) {
       str = '1,1,1';

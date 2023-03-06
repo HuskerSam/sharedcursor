@@ -90,7 +90,7 @@ export default class Avatar3D {
       };
       avatarPositionTN.parent = this.app.sceneTransformNode;
 
-      let color = U3D.get3DColors(seatIndex);
+      let color = U3D.color(avatarMeta.primaryColor);
       let plane = BABYLON.MeshBuilder.CreatePlane("random", {
         height: 1.5,
         width: 1.5,
