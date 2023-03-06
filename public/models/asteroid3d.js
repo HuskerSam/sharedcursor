@@ -86,7 +86,7 @@ export default class Asteroid3D {
     }
     this.loadedAsteroids = {};
 
-    let asteroids = U3D.getAsteroids();
+    let asteroids = await this.app.readJSONFile('/story/asteroidslist.json');
 
     let ratio = 0;
     let max = asteroids.length;

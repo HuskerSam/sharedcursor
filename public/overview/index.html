@@ -115,16 +115,16 @@
   </style>
 </head>
 
-<body class="loaded" style="background:rgb(250,250,250);">
+<body class="loaded" style="background:rgb(250,250,250);font-size:20px;">
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
     <div class='collapsed' style="padding:10px;">
       <h1 class="collapse_header right_arrow">3D Assets<span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
-        <div style="font-size:1.25em;padding:10px;">
+        <div style="padding:10px;">
           <table>
             <tr>
               <td><b>Goals &nbsp;</b></td>
-              <td>Derive a balance between size and quality balance for ability to download on demand to play a game previously not installed.
+              <td>Derive a balance between size and quality for download on demand application usage.
                 These objects are not bone animated (refer to avatars), while mostly static they maybe animated in position and rotation, etc.
               </td>
             </tr>
@@ -136,14 +136,26 @@
                 The blob files are stored in the cloud for cheap access, the meta data is stored in json files (more below).
               </td>
             </tr>
+            <tr>
+              <td><b>Specifics &nbsp;</b></td>
+              <td>
+                Animated orbits around a parent object are supported to make it easier to layout a solar system model.
+                <br>navRadius determines the blocking area to keep avatars out of when moving around.
+                <br>Assets use a texturePath (default) or an assetPath but not both.
+              </td>
+            </tr>
           </table>
         </div>
         <br>
         <a href="/story/solarsystemdeck.json" target="_blank">Solar System</a> - Planets and other non moon assets
+        <br>&nbsp; &nbsp;<span style="font-size:12px">https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes encodeURIComponent(name) ?alt=media</span>
         <br>
         <a href="/story/moons1deck.json" target="_blank">Non Saturn Moons</a> - Luna and all but Saturns moons
         <br>
         <a href="/story/moons2deck.json" target="_blank">Saturn Moons</a> - it has that many it needed it's own file
+        <br>
+        <a href="/story/asteroidslist.json" target="_blank">Asteroid List</a> - an array of names for .obj files containing a UV map
+        <br>&nbsp; &nbsp;<span style="font-size:12px">https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F encodeURIComponent(name) ?alt=media</span>
         <br>
         <br>
         Solar System Json Example:
