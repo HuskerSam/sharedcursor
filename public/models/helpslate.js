@@ -94,7 +94,7 @@ export default class HelpSlate {
     let colors = U3D.color(avatarMeta.primaryColor);
     let rgb = U3D.colorRGB255(colors.r + ',' + colors.g + ',' + colors.b);
 
-    let blockBackground = seatIndex > 1 ? 'rgb(150, 150, 150)' : 'rgb(50, 50, 50)';
+    let blockBackground = U3D.colorRGB255(avatarMeta.backColor);
     let blockWrapperPanel = new BABYLON.GUI.StackPanel();
     blockWrapperPanel.background = blockBackground;
     blockWrapperPanel.adaptHeightToChildren = true;

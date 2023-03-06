@@ -10,6 +10,8 @@
     "voiceName": "en-GB-Neural2-A",
     "seatIndex": 0,
     "primaryColor": "0.75,0.75,0",
+    "foreColor": "0,0,0",
+    "backColor": "0.2,0.2,0.2",
     "defaultPath": [{
         "x": 1,
         "z": 1,
@@ -42,6 +44,8 @@
     "voiceName": "en-AU-Neural2-C",
     "seatIndex": 1,
     "primaryColor": "0,0.75,0.75",
+    "foreColor": "0,0,0",
+    "backColor": "0.2,0.2,0.2",
     "defaultPath": []
   },
   {
@@ -56,6 +60,8 @@
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
     "primaryColor": "0.75,0,0.75",
+    "foreColor": "0,0,0",
+    "backColor": "0.6,0.6,0.6",
     "defaultPath": []
   },
   {
@@ -69,6 +75,8 @@
     "idlePose": "strut",
     "voiceName": "en-GB-Neural2-D",
     "primaryColor": "0.4,0.2,0.9",
+    "foreColor": "1,1,1",
+    "backColor": "0.6,0.6,0.6",
     "seatIndex": 3,
     "defaultPath": []
   }

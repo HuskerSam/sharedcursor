@@ -45,7 +45,7 @@ export default class ChannelSpeech {
         chatTextPlane, 2048, 2048, true);
       let text = new BABYLON.GUI.TextBlock("text" + this.idCounter);
       text.resizeToFit = true;
-      text.color = seatIndex > 2 ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
+      text.color = avatarMeta.foreColor;
       text.width = 1;
       text.fontSize = 256;
       text.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
