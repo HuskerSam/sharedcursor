@@ -799,6 +799,8 @@ export default class MenuTab3D {
           seatContainer.avatarNamePlate.rotation = U3D.v(Math.PI / 2, 0, Math.PI);
           seatContainer.avatarNamePlate.scaling = U3D.v(0.3);
           seatContainer.avatarNamePlate.parent = this.app.avatarHelper.initedAvatars[seatIndex].avatarPositionTN;
+
+          this.app.avatarHelper._loadCustomAvatar(seatIndex);
         } else {
           seatContainer.sitButton.setEnabled(true);
           seatContainer.playerImageMaterial.alpha = 0;

@@ -38,7 +38,7 @@ export default class Avatar3D {
 
   async loadAndInitAvatars() {
     let scene = this.app.scene;
-    let initedAvatars = [];
+    this.initedAvatars = new Array(4).fill(null);
     let avatarContainers = {};
 
     let avatarMetas = this.app.avatarMetas;
@@ -50,67 +50,80 @@ export default class Avatar3D {
       let container = await U3D.loadContainer(scene, path);
       avatarContainers[avatarMeta.name] = container;
     }
-
-    for (let seatIndex = 0; seatIndex < 4; seatIndex++) {
-      let avatarMeta = avatarMetas[seatIndex];
-      let newModel = avatarContainers[avatarMeta.name].instantiateModelsToScene();
-      initedAvatars.push(newModel);
-      initedAvatars[seatIndex].animationGroups[0].stop();
-
-      let mesh = initedAvatars[seatIndex].rootNodes[0];
-      let meshPicker = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(mesh);
-      meshPicker.material = this.app.invisibleMaterial;
-      meshPicker.visibility = 1;
-
-      let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + seatIndex);
-      meshPicker.parent = avatarPositionTN;
-      newModel.avatarPositionTN = avatarPositionTN;
-      this.setHome(newModel, avatarMeta);
-      newModel.particleTN = new BABYLON.TransformNode("particleTNavatar" + seatIndex, this.app.scene);
-      newModel.particleTN.parent = avatarPositionTN;
-      newModel.particleTN.position.y = 0.8;
-      newModel.particleTN.position.z = -0.25;
-      newModel.particleTN.rotation.x = -Math.PI / 2;
-      newModel.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
-        .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
-
-      avatarPositionTN.assetMeta = {
-        name: avatarMeta.name,
-        extended: {},
-        appClickable: true,
-        avatarType: true,
-        seatIndex,
-        basePivot: avatarPositionTN,
-        baseMesh: mesh,
-        boundingMesh: meshPicker,
-        clickCommand: 'customClick',
-        handlePointerDown: async (pointerInfo, mesh, meta) => {
-          this.app.pauseAssetSpin(pointerInfo, mesh, avatarPositionTN.assetMeta);
-        }
-      };
-      avatarPositionTN.parent = this.app.sceneTransformNode;
-
-      let color = U3D.color(avatarMeta.primaryColor);
-      let plane = BABYLON.MeshBuilder.CreatePlane("random", {
-        height: 1.5,
-        width: 1.5,
-        sideOrientation: BABYLON.Mesh.DOUBLESIDE
-      }, this.app.scene);
-      plane.position = U3D.v(0, 0.05, 0);
-      plane.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
-      plane.material = new BABYLON.StandardMaterial("shieldMat" + seatIndex, this.app.scene);
-      plane.material.opacityTexture = this.playerShieldTexture;
-      plane.material.diffuseColor = color;
-      plane.material.diffuseColor = color;
-      plane.material.emissiveColor = color;
-      plane.parent = avatarPositionTN;
-    }
-
-    this.initedAvatars = initedAvatars;
     this.avatarContainers = avatarContainers;
+
+    for (let seatIndex = 0; seatIndex < 4; seatIndex++)
+      this._configureAvatar(seatIndex);
 
     this.avatarsLoaded = true;
     this.app.paintGameData();
+  }
+  _configureAvatar(seatIndex, overrideContainer) {
+    if (this.initedAvatars[seatIndex]) {
+      this.initedAvatars[seatIndex].avatarPositionTN.dispose();
+    }
+
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let newModel;
+    if (overrideContainer) {
+      newModel = overrideContainer.instantiateModelsToScene();
+      this.cloneAnimationGroups(newModel, this.avatarContainers[avatarMeta.name].animationGroups);
+
+    //  let mesh = this.initedAvatars[seatIndex].rootNodes[0];
+    //  U3D.sizeNodeToFit(mesh, 1);
+    } else {
+      newModel = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
+    }
+    this.initedAvatars[seatIndex] = newModel;
+    this.initedAvatars[seatIndex].animationGroups[0].stop();
+
+    let mesh = this.initedAvatars[seatIndex].rootNodes[0];
+    let meshPicker = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(mesh);
+    meshPicker.material = this.app.invisibleMaterial;
+    meshPicker.visibility = 1;
+
+    let avatarPositionTN = new BABYLON.TransformNode("avatarpositionoffset" + seatIndex);
+    meshPicker.parent = avatarPositionTN;
+    newModel.avatarPositionTN = avatarPositionTN;
+    this.setHome(newModel, avatarMeta);
+    newModel.particleTN = new BABYLON.TransformNode("particleTNavatar" + seatIndex, this.app.scene);
+    newModel.particleTN.parent = avatarPositionTN;
+    newModel.particleTN.position.y = 0.8;
+    newModel.particleTN.position.z = -0.25;
+    newModel.particleTN.rotation.x = -Math.PI / 2;
+    newModel.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
+      .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
+
+    avatarPositionTN.assetMeta = {
+      name: avatarMeta.name,
+      extended: {},
+      appClickable: true,
+      avatarType: true,
+      seatIndex,
+      basePivot: avatarPositionTN,
+      baseMesh: mesh,
+      boundingMesh: meshPicker,
+      clickCommand: 'customClick',
+      handlePointerDown: async (pointerInfo, mesh, meta) => {
+        this.app.pauseAssetSpin(pointerInfo, mesh, avatarPositionTN.assetMeta);
+      }
+    };
+    avatarPositionTN.parent = this.app.sceneTransformNode;
+
+    let color = U3D.color(avatarMeta.primaryColor);
+    let plane = BABYLON.MeshBuilder.CreatePlane("random", {
+      height: 1.5,
+      width: 1.5,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }, this.app.scene);
+    plane.position = U3D.v(0, 0.05, 0);
+    plane.rotation = U3D.v(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
+    plane.material = new BABYLON.StandardMaterial("shieldMat" + seatIndex, this.app.scene);
+    plane.material.opacityTexture = this.playerShieldTexture;
+    plane.material.diffuseColor = color;
+    plane.material.diffuseColor = color;
+    plane.material.emissiveColor = color;
+    plane.parent = avatarPositionTN;
   }
   setHome(avatar, avatarMeta) {
     avatar.avatarPositionTN.position.x = avatarMeta.x;
@@ -119,5 +132,81 @@ export default class Avatar3D {
       avatar.avatarPositionTN.rotation.y = Math.atan2(avatarMeta.x, avatarMeta.z) + Math.PI;
     else
       avatar.avatarPositionTN.rotation.y = Math.atan2(avatarMeta.z, avatarMeta.x);
+  }
+
+  async _loadCustomAvatar(seatIndex) {
+    let seatData = this.app.menuTab3D.getSeatData(seatIndex);
+    if (this.app.uid !== seatData.uid)
+      return;
+
+    if (!this.app.profile || !this.app.profile.displayAvatar)
+      return;
+
+    if (this.avatarContainers[this.app.profile.displayAvatar])
+      return;
+
+    let container;
+    try {
+      container = await U3D.loadContainer(this.app.scene, this.app.profile.displayAvatar);
+    } catch (containerLoadError) {
+      console.log('containerLoadError', containerLoadError);
+      return;
+    }
+
+    this.avatarContainers[this.app.profile.displayAvatar] = container;
+    this._configureAvatar(seatIndex, container);
+  }
+  linkSkeletonMeshes(master, slave) {
+    if (master != null && master.bones != null && master.bones.length > 0) {
+      if (slave != null && slave.bones != null && slave.bones.length > 0) {
+        const boneCount = slave.bones.length;
+        for (let index = 0; index < boneCount; index++) {
+          const sbone = slave.bones[index];
+          if (sbone != null) {
+            const mbone = this.findBoneByName(master, sbone.name);
+            if (mbone != null) {
+              sbone._linkedTransformNode = mbone._linkedTransformNode;
+            } else {
+              console.warn("Failed to locate bone on master rig: " + sbone.name);
+            }
+          }
+        }
+      }
+    }
+  }
+  findBoneByName(skeleton, name) {
+    let result = null;
+    if (skeleton != null && skeleton.bones != null) {
+      for (let index = 0; index < skeleton.bones.length; index++) {
+        const bone = skeleton.bones[index];
+        const bname = bone.name.toLowerCase().replace("mixamo:", "").replace("mixamorig:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
+        const xname = name.toLowerCase().replace("mixamo:", "").replace("mixamorig:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
+        if (bname === xname) {
+          result = bone;
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  async cloneAnimationGroups(newModel, oldGroups) {
+    newModel.animationGroups = [];
+    let modelTransformNodes = newModel.rootNodes[0].getChildTransformNodes();
+    oldGroups.forEach(group => {
+      newModel.animationGroups.push(group.clone(group.name, (oldTarget) => {
+        return modelTransformNodes.find((node) => {
+          const nName = node.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '').replace("mixamorig:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
+          const oName = oldTarget.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '').replace("mixamorig:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
+
+          if (nName === oName) {
+            console.log(node.name, oldTarget.name);
+            node.name === oldTarget.name;
+            return node;
+          }
+        });
+      }, true));
+
+    });
   }
 }
