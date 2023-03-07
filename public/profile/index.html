@@ -69,8 +69,10 @@
   <div class="modal fade" id="canvasDisplayModal" tabindex="-1" role="dialog" aria-labelledby="canvasDisplayModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-body">
-          <canvas class="popup-canvas" touch-action="none"></canvas>
+        <div class="modal-body" style="text-align:center">
+          <!--canvas class="popup-canvas" touch-action="none"></canvas-->
+          <iframe src="https://visual-catalogs.readyplayer.me/avatar?clearCache&frameAPI" style="height:650px;width:100%">
+          </iframe>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -260,32 +262,14 @@
               </select>
             </div>
           </div>
-          <div style="display:flex;flex-direction:row">
-            <div class="profile_display_avatar" style="line-height:4em;">Avatar &nbsp;</div>
-            <div style="flex:1;padding-top: 8px;padding-left:4px;">
-              <select class="profile_display_avatar_preset form-select form-select-lg">
-                <option value="male1">Male 1</option>
-                <option value="female1">Female 1</option>
-                <option value="male2">Male 2</option>
-                <option value="female2">Female 2</option>
-                <option value="male3">Male 3</option>
-                <option value="female3">Female 3</option>
-                <option value="male4">Male 4</option>
-                <option value="female4">Female 4</option>
-                <option value="male5">Male 5</option>
-                <option value="female5">Female 5</option>
-                <option value="male6">Male 6</option>
-                <option value="female6">Female 6</option>
-                <option value="male7">Male 7</option>
-                <option value="female7">Female 7</option>
-                <option value="male8">Male 8</option>
-                <option value="female8">Female 8</option>
-              </select>
-            </div>
-            <div style="line-height:4em;">
-              &nbsp;
-              <button class="view_avatar_btn btn btn-secondary">View</button>
-            </div>
+          <div style="display:flex;flex-direction:row;">
+            <div class="profile_display_avatar">Avatar &nbsp;</div>
+            <div style="flex:1;padding-top: 8px;padding-left:4px;overflow:hidden;font-size:.75em;line-height:1.33em;" class="profile_display_avatar_preset"></div>
+          </div>
+          <div style="line-height:4em;text-align:center;">
+            <button class="clear_avatar_btn btn btn-secondary">Clear</button>
+            &nbsp;
+            <button class="view_avatar_btn btn btn-secondary">Configure</button>
           </div>
           <div style="display:none;">
             <input type="file" class="file_upload_input" style="visibility:hidden;width:0">
@@ -338,12 +322,12 @@
             </div>
           </div>
           <div>
-            <div style="line-height: 3em;text-align:center">
+            <div style="line-height: 4em;text-align:center">
               <button class="create_login_code_button btn btn-secondary">Create Login Code</button>
               <br>
               <div class="login_code_display"></div>
             </div>
-            <div style="line-height: 3em;text-align:center">
+            <div style="line-height: 4em;text-align:center">
               <button class="sign_out_button btn btn-secondary">Sign Out</button>
               &nbsp;
               <button class="sign_out_all_button btn btn-secondary">Sign All Out</button>

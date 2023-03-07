@@ -98,8 +98,12 @@ export class ProfileApp extends BaseApp {
     this.view_avatar_btn = document.querySelector('.view_avatar_btn');
     this.view_avatar_btn.addEventListener('click', e => this.viewAvatar());
 
+    this.clear_avatar_btn = document.querySelector('.clear_avatar_btn');
+    this.clear_avatar_btn.addEventListener('click', e => {
+      this.updateAvatarPreset('');
+    });
+
     this.profile_display_avatar_preset = document.querySelector('.profile_display_avatar_preset');
-    this.profile_display_avatar_preset.addEventListener('input', e => this.updateAvatarPreset());
 
     this.modal = new bootstrap.Modal(this.canvasDisplayModal);
 
@@ -108,6 +112,8 @@ export class ProfileApp extends BaseApp {
 
     this.access_code_login = document.querySelector('#access_code_login');
     this.access_code_login.addEventListener('click', e => this.customCodeLogin());
+
+    window.addEventListener('message', event => this.handleiFrameMessage(event));
   }
   async createLoginCode() {
     let body = {};
@@ -158,9 +164,9 @@ export class ProfileApp extends BaseApp {
       return;
     }
   }
-  async updateAvatarPreset() {
+  async updateAvatarPreset(displayAvatar) {
     let updatePacket = {
-      displayAvatar: this.profile_display_avatar_preset.value
+      displayAvatar
     };
     if (this.fireToken)
       await firebase.firestore().doc(`Users/${this.uid}`).set(updatePacket, {
@@ -168,23 +174,7 @@ export class ProfileApp extends BaseApp {
       });
   }
   async viewAvatar() {
-    if (this.currentLoadedAvatar) {
-      this.currentLoadedAvatar.dispose();
-      this.currentLoadedAvatar = null;
-    }
-
-    let prefix = this.profile_display_avatar_preset.value;
     this.modal.show();
-    let avatarMesh = await this.loadAvatarMesh(`/avatars/${prefix}.glb`, "", 2, 0, 0, -4, true);
-    this.engine.resize();
-
-    this.currentLoadedAvatar = new BABYLON.TransformNode("avatarwrapper", this.scene);
-    avatarMesh.parent = this.currentLoadedAvatar;
-    this.currentLoadedAvatar.rotation.y -= 2;
-    if (avatarMesh.modelAnimationGroup)
-      avatarMesh.modelAnimationGroup.play();
-    this.scene.activeCamera.setPosition(new BABYLON.Vector3(7, 4, 3.2));
-    this.scene.activeCamera.setTarget(new BABYLON.Vector3(0, 1, 0));
   }
   async load() {
     await super.load();
@@ -271,7 +261,6 @@ export class ProfileApp extends BaseApp {
       else
         this.user_email.innerHTML = this.fireUser.email;
 
-      this.profile_display_avatar_preset.value = this.profile.displayAvatar;
 
       if (!this.profile.nightModeState)
         this.profile.nightModeState = 0;
@@ -291,7 +280,9 @@ export class ProfileApp extends BaseApp {
         this.audio_mode_select.selectedIndex = 1;
       }
 
-      this.initGraphics();
+      this.profile_display_avatar_preset.innerHTML = this.profile.displayAvatar;
+
+      //this.initGraphics();
     }
 
     super.authUpdateStatusUI();
@@ -363,5 +354,10 @@ export class ProfileApp extends BaseApp {
       alert('Failed to logout all');
     }
     location.reload();
+  }
+
+  handleiFrameMessage(json) {
+    this.updateAvatarPreset(json.data);
+    //this.profile_display_avatar_preset.innerHTML = json.data;
   }
 }
