@@ -203,6 +203,11 @@ a {
   overflow: hidden;
 }
 
+.collapse_header {
+  margin: 0;
+  cursor: pointer;
+}
+
 .signup_alert {
   display: none;
 }

@@ -11,26 +11,7 @@
     "seatIndex": 0,
     "primaryColor": "0.75,0.75,0",
     "foreColor": "0,0,0",
-    "backColor": "0.2,0.2,0.2",
-    "defaultPath": [{
-        "x": 1,
-        "z": 1,
-        "ry": 1.57,
-        "segmentTime": 10000
-      },
-      {
-        "x": 5,
-        "z": 10,
-        "ry": 3.14,
-        "segmentTime": 10000
-      },
-      {
-        "x": 5,
-        "z": 10,
-        "ry": -1.57,
-        "segmentTime": 10000
-      }
-    ]
+    "backColor": "0.2,0.2,0.2"
   },
   {
     "name": "Jade",
@@ -45,8 +26,7 @@
     "seatIndex": 1,
     "primaryColor": "0,0.75,0.75",
     "foreColor": "0,0,0",
-    "backColor": "0.2,0.2,0.2",
-    "defaultPath": []
+    "backColor": "0.2,0.2,0.2"
   },
   {
     "name": "Raven",
@@ -61,8 +41,7 @@
     "seatIndex": 2,
     "primaryColor": "0.75,0,0.75",
     "foreColor": "0,0,0",
-    "backColor": "0.6,0.6,0.6",
-    "defaultPath": []
+    "backColor": "0.6,0.6,0.6"
   },
   {
     "name": "Elihu",
@@ -77,7 +56,6 @@
     "primaryColor": "0.4,0.2,0.9",
     "foreColor": "1,1,1",
     "backColor": "0.6,0.6,0.6",
-    "seatIndex": 3,
-    "defaultPath": []
+    "seatIndex": 3
   }
 ]
