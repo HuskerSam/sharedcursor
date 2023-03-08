@@ -57,5 +57,12 @@
     "foreColor": "1,1,1",
     "backColor": "0.6,0.6,0.6",
     "seatIndex": 3
+  },
+  {
+    "name": "playercomposite",
+    "path": "playercomposite.glb",
+    "description": "Animation container for ready player me avatars.",
+    "walkAnim": "drunkwalk",
+    "idlePose": "drunkwalk"
   }
 ]

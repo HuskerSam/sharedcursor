@@ -42,14 +42,15 @@ export default class Avatar3D {
     let avatarContainers = {};
 
     let avatarMetas = this.app.avatarMetas;
-    for (let c = 0; c < 4; c++) {
+    let promises = [];
+    for (let c = 0; c < 5; c++) {
       let avatarMeta = avatarMetas[c];
       let path = 'https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes' +
         encodeURIComponent('/avatars/' + avatarMeta.path) + '?alt=media';
 
-      let container = await U3D.loadContainer(scene, path);
-      avatarContainers[avatarMeta.name] = container;
+      promises.push(avatarContainers[avatarMeta.name] = await BABYLON.SceneLoader.LoadAssetContainerAsync(path, "", scene));
     }
+    await Promise.all(promises);
     this.avatarContainers = avatarContainers;
 
     for (let seatIndex = 0; seatIndex < 4; seatIndex++)
@@ -64,20 +65,15 @@ export default class Avatar3D {
     }
 
     let avatarMeta = this.app.avatarMetas[seatIndex];
-    let newModel;
-    if (overrideContainer) {
-      newModel = overrideContainer.instantiateModelsToScene();
-      this.cloneAnimationGroups(newModel, this.avatarContainers[avatarMeta.name].animationGroups);
+    let newModel = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
 
-    //  let mesh = this.initedAvatars[seatIndex].rootNodes[0];
-    //  U3D.sizeNodeToFit(mesh, 1);
-    } else {
-      newModel = this.avatarContainers[avatarMeta.name].instantiateModelsToScene();
-    }
     this.initedAvatars[seatIndex] = newModel;
     this.initedAvatars[seatIndex].animationGroups[0].stop();
 
     let mesh = this.initedAvatars[seatIndex].rootNodes[0];
+    //if (newModel.animModel)
+    //    mesh = this.initedAvatars[seatIndex].animModel.rootNodes[0];
+
     let meshPicker = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(mesh);
     meshPicker.material = this.app.invisibleMaterial;
     meshPicker.visibility = 1;
@@ -147,14 +143,74 @@ export default class Avatar3D {
 
     let container;
     try {
-      container = await U3D.loadContainer(this.app.scene, this.app.profile.displayAvatar);
+      container = await BABYLON.SceneLoader.LoadAssetContainerAsync(this.app.profile.displayAvatar, "", this.app.scene);
     } catch (containerLoadError) {
       console.log('containerLoadError', containerLoadError);
       return;
     }
 
     this.avatarContainers[this.app.profile.displayAvatar] = container;
-    this._configureAvatar(seatIndex, container);
+    this._skinAvatar(seatIndex, container);
+  }
+  _skinAvatar(seatIndex, container) {
+    //let skinModel = container.instantiateModelsToScene();
+    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let playerRMEContainer = this.avatarContainers['playercomposite'];
+    console.log(container, playerRMEContainer);
+
+    //seatContainer.meshes = container.meshes;
+    //container.animationGroups = seatContainer.animationGroups;
+    let skinModel = container.instantiateModelsToScene();
+
+    this.cloneAnimationGroups(skinModel, playerRMEContainer.animationGroups);
+
+    skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
+    this.initedAvatars[seatIndex].rootNodes[0].setEnabled(false);
+    this.initedAvatars[seatIndex].rootNodes = skinModel.rootNodes;
+    this.initedAvatars[seatIndex].animationGroups = skinModel.animationGroups;
+    this.initedAvatars[seatIndex].skeletons = skinModel.skeletons;
+    this.initedAvatars[seatIndex].playerRMEType = true;
+
+    //    let group = seatContainer.animationGroups[0];
+    //console.log(skinNodes);
+    /*
+    window.myAnim = group.clone(group.name, (oldTarget) => {
+      const name = oldTarget.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '')
+      .replace("mixamorig:", "").replace("left_", "left").replace("right_", "right")
+      .replace("orig10", "orig").replaceAll("_end", "");
+
+      if (skinNodes[name])
+        return skinNodes[name]
+
+      console.log('MISS', name);
+
+      return null;
+    });
+    */
+
+    //skinModel.animationGroups = this.initedAvatars[seatIndex].animationGroups;
+    //  this.cloneAnimationGroups(skinModel, this.initedAvatars[seatIndex].animationGroups);
+    //  skinModel.origAnimationModel = this.initedAvatars[seatIndex];
+    //  this.initedAvatars[seatIndex] = skinModel;
+
+    //      this.initedAvatars[seatIndex].rootNodes;
+    //this.linkSkeletonMeshes(skinModel.rootNodes[0], this.initedAvatars[seatIndex].rootNodes[0]);
+    //skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
+    //      let mesh
+
+    //this.initedAvatars[seatIndex].avatarPositionTN.dispose();
+
+
+    //this.avatarContainers[this.app.profile.displayAvatar]
+    //  newModel.rootNodes = skinModel.rootNodes;
+    //this.cloneAnimationGroups(newModel, animModel.animationGroups);
+    //this.linkSkeletonMeshes(animModel, newModel);
+    //animModel.rootNodes[0].setEnabled(false);
+    //newModel.animationGroups = animModel.animationGroups;
+    //newModel.animModel = animModel;
+    //  let mesh = this.initedAvatars[seatIndex].rootNodes[0];
+    //  U3D.sizeNodeToFit(mesh, 1);
+
   }
   linkSkeletonMeshes(master, slave) {
     if (master != null && master.bones != null && master.bones.length > 0) {
@@ -189,7 +245,7 @@ export default class Avatar3D {
     }
     return result;
   }
-
+  /*
   async cloneAnimationGroups(newModel, oldGroups) {
     newModel.animationGroups = [];
     let modelTransformNodes = newModel.rootNodes[0].getChildTransformNodes();
@@ -205,8 +261,36 @@ export default class Avatar3D {
             return node;
           }
         });
-      }, true));
+      }));
 
     });
   }
+  */
+  async cloneAnimationGroups(newModel, oldGroups) {
+    let modelTransformNodes = newModel.rootNodes[0].getChildTransformNodes();
+    let skinNodes = {};
+    modelTransformNodes.forEach(n => {
+      const name = n.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '')
+        .replace("mixamorig:", "").replace("left_", "left").replace("orig10", "orig")
+        .replace("right_", "right").replaceAll("_end", "");
+      skinNodes[name] = n;
+    });
+
+    newModel.animationGroups = [];
+    oldGroups.forEach(group => {
+      newModel.animationGroups.push(group.clone(group.name, (oldTarget) => {
+        const name = oldTarget.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '')
+          .replace("mixamorig:", "").replace("left_", "left").replace("right_", "right")
+          .replace("orig10", "orig").replaceAll("_end", "");
+
+        if (skinNodes[name])
+          return skinNodes[name]
+
+        console.log('MISS', name);
+
+        return null;
+      }));
+    });
+  }
+
 }

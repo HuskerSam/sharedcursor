@@ -852,7 +852,7 @@ export default class MenuTab3D {
       encodeURIComponent('iss.glb') + '?alt=media';
 
     if (!window.staticMeshContainer[path])
-      window.staticMeshContainer[path] = await U3D.loadContainer(this.app.scene, path);
+      window.staticMeshContainer[path] = await BABYLON.SceneLoader.LoadAssetContainerAsync(path, "", this.app.scene);
 
     let result = window.staticMeshContainer[path].instantiateModelsToScene();
     let mesh = result.rootNodes[0];

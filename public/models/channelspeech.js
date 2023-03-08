@@ -11,7 +11,10 @@ export default class ChannelSpeech {
     this.eventQueue = [];
     this.seatIndex = -1;
 
-    this.app.avatarMetas.forEach((avatarMeta, seatIndex) => {
+    this.app.avatarMetas.forEach((avatarMeta) => {
+      let seatIndex = avatarMeta.seatIndex;
+      if (seatIndex === undefined)
+        return;
       let chatTN = new BABYLON.TransformNode('chattnfor' + seatIndex, this.app.scene);
       let chatBubbleMesh = BABYLON.MeshBuilder.CreatePlane('chatbubblefor' + seatIndex, {
         width: 5,
@@ -77,7 +80,10 @@ export default class ChannelSpeech {
     this.eventQueue = [];
     this.isPlaying = false;
     this.activeSpeechEvent = null;
-    this.app.avatarMetas.forEach(meta => meta.chatPanel.setEnabled(false));
+    this.app.avatarMetas.forEach(meta => {
+      if (meta.seatIndex)
+        meta.chatPanel.setEnabled(false);
+    });
     this.seatIndex = -1;
 
     if (this.activeSoundObject) {

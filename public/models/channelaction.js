@@ -180,7 +180,7 @@ export default class ChannelAction {
     window.channelAction = this;
   }
   startWalk(seatIndex) {
-    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let avatarMeta = this.app.getAvatarMeta(seatIndex);
     let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
     let walkAnimName = avatarMeta.walkAnim;
     let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
@@ -189,7 +189,7 @@ export default class ChannelAction {
     avatarMeta.walkingAnimation = wAnim;
   }
   stopWalk(seatIndex) {
-    let avatarMeta = this.app.avatarMetas[seatIndex];
+    let avatarMeta = this.app.getAvatarMeta(seatIndex);
     let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
     let walkAnimName = avatarMeta.walkAnim;
     let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);

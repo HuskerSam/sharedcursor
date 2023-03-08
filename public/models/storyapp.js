@@ -1065,4 +1065,12 @@ export class StoryApp extends BaseApp {
     let json = await f_result.json();
     return json;
   }
+
+  getAvatarMeta(seatIndex) {
+    if (this.avatarHelper.initedAvatars[seatIndex].playerRMEType)
+      return this.avatarMetas[4];
+
+    return this.avatarMetas[seatIndex]
+  }
+
 }

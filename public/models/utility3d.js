@@ -208,10 +208,6 @@ export default class Utility3D {
     curveMesh.color = new BABYLON.Color3(1, 1, 0.5);
     curveMesh.parent = pathGroup;
   }
-
-  static async loadContainer(scene, path) {
-    return BABYLON.SceneLoader.LoadAssetContainerAsync(path, "", scene);
-  }
   static v(x, y, z) {
     if (x === undefined) x = 0;
     if (y === undefined) y = x;
@@ -332,7 +328,7 @@ export default class Utility3D {
       resultMesh = sphere;
     } else {
       if (!window.staticMeshContainer[path])
-        window.staticMeshContainer[path] = await this.loadContainer(scene, path);
+        window.staticMeshContainer[path] = await BABYLON.SceneLoader.LoadAssetContainerAsync(path, "", scene);
 
       let result = window.staticMeshContainer[path].instantiateModelsToScene();
       resultMesh = result.rootNodes[0];
