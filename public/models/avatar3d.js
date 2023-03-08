@@ -71,9 +71,6 @@ export default class Avatar3D {
     this.initedAvatars[seatIndex].animationGroups[0].stop();
 
     let mesh = this.initedAvatars[seatIndex].rootNodes[0];
-    //if (newModel.animModel)
-    //    mesh = this.initedAvatars[seatIndex].animModel.rootNodes[0];
-
     let meshPicker = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(mesh);
     meshPicker.material = this.app.invisibleMaterial;
     meshPicker.visibility = 1;
@@ -153,119 +150,26 @@ export default class Avatar3D {
     this._skinAvatar(seatIndex, container);
   }
   _skinAvatar(seatIndex, container) {
-    //let skinModel = container.instantiateModelsToScene();
     let avatarMeta = this.app.avatarMetas[seatIndex];
     let playerRMEContainer = this.avatarContainers['playercomposite'];
-    console.log(container, playerRMEContainer);
 
-    //seatContainer.meshes = container.meshes;
-    //container.animationGroups = seatContainer.animationGroups;
     let skinModel = container.instantiateModelsToScene();
 
     this.cloneAnimationGroups(skinModel, playerRMEContainer.animationGroups);
-
+    console.log(skinModel.rootNodes,this.initedAvatars[seatIndex].rootNodes);
     skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
+    skinModel.rootNodes[0].position = this.initedAvatars[seatIndex].rootNodes[0].position;
+    skinModel.rootNodes[0].rotation = this.initedAvatars[seatIndex].rootNodes[0].rotation;
+    skinModel.rootNodes[0].scaling = this.initedAvatars[seatIndex].rootNodes[0].scaling;
+    skinModel.rootNodes[0].scaling.y *= -1;
+    skinModel.rootNodes[0].scaling.z *= -1;
+
     this.initedAvatars[seatIndex].rootNodes[0].setEnabled(false);
     this.initedAvatars[seatIndex].rootNodes = skinModel.rootNodes;
     this.initedAvatars[seatIndex].animationGroups = skinModel.animationGroups;
     this.initedAvatars[seatIndex].skeletons = skinModel.skeletons;
     this.initedAvatars[seatIndex].playerRMEType = true;
-
-    //    let group = seatContainer.animationGroups[0];
-    //console.log(skinNodes);
-    /*
-    window.myAnim = group.clone(group.name, (oldTarget) => {
-      const name = oldTarget.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '')
-      .replace("mixamorig:", "").replace("left_", "left").replace("right_", "right")
-      .replace("orig10", "orig").replaceAll("_end", "");
-
-      if (skinNodes[name])
-        return skinNodes[name]
-
-      console.log('MISS', name);
-
-      return null;
-    });
-    */
-
-    //skinModel.animationGroups = this.initedAvatars[seatIndex].animationGroups;
-    //  this.cloneAnimationGroups(skinModel, this.initedAvatars[seatIndex].animationGroups);
-    //  skinModel.origAnimationModel = this.initedAvatars[seatIndex];
-    //  this.initedAvatars[seatIndex] = skinModel;
-
-    //      this.initedAvatars[seatIndex].rootNodes;
-    //this.linkSkeletonMeshes(skinModel.rootNodes[0], this.initedAvatars[seatIndex].rootNodes[0]);
-    //skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
-    //      let mesh
-
-    //this.initedAvatars[seatIndex].avatarPositionTN.dispose();
-
-
-    //this.avatarContainers[this.app.profile.displayAvatar]
-    //  newModel.rootNodes = skinModel.rootNodes;
-    //this.cloneAnimationGroups(newModel, animModel.animationGroups);
-    //this.linkSkeletonMeshes(animModel, newModel);
-    //animModel.rootNodes[0].setEnabled(false);
-    //newModel.animationGroups = animModel.animationGroups;
-    //newModel.animModel = animModel;
-    //  let mesh = this.initedAvatars[seatIndex].rootNodes[0];
-    //  U3D.sizeNodeToFit(mesh, 1);
-
   }
-  linkSkeletonMeshes(master, slave) {
-    if (master != null && master.bones != null && master.bones.length > 0) {
-      if (slave != null && slave.bones != null && slave.bones.length > 0) {
-        const boneCount = slave.bones.length;
-        for (let index = 0; index < boneCount; index++) {
-          const sbone = slave.bones[index];
-          if (sbone != null) {
-            const mbone = this.findBoneByName(master, sbone.name);
-            if (mbone != null) {
-              sbone._linkedTransformNode = mbone._linkedTransformNode;
-            } else {
-              console.warn("Failed to locate bone on master rig: " + sbone.name);
-            }
-          }
-        }
-      }
-    }
-  }
-  findBoneByName(skeleton, name) {
-    let result = null;
-    if (skeleton != null && skeleton.bones != null) {
-      for (let index = 0; index < skeleton.bones.length; index++) {
-        const bone = skeleton.bones[index];
-        const bname = bone.name.toLowerCase().replace("mixamo:", "").replace("mixamorig:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
-        const xname = name.toLowerCase().replace("mixamo:", "").replace("mixamorig:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
-        if (bname === xname) {
-          result = bone;
-          break;
-        }
-      }
-    }
-    return result;
-  }
-  /*
-  async cloneAnimationGroups(newModel, oldGroups) {
-    newModel.animationGroups = [];
-    let modelTransformNodes = newModel.rootNodes[0].getChildTransformNodes();
-    oldGroups.forEach(group => {
-      newModel.animationGroups.push(group.clone(group.name, (oldTarget) => {
-        return modelTransformNodes.find((node) => {
-          const nName = node.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '').replace("mixamorig:", "").replace("left_", "left").replace("orig10", "orig").replace("right_", "right");
-          const oName = oldTarget.name.toLowerCase().replace("mixamo:", "").replace('clone of ', '').replace("mixamorig:", "").replace("left_", "left").replace("right_", "right").replace("orig10", "orig");
-
-          if (nName === oName) {
-            console.log(node.name, oldTarget.name);
-            node.name === oldTarget.name;
-            return node;
-          }
-        });
-      }));
-
-    });
-  }
-  */
   async cloneAnimationGroups(newModel, oldGroups) {
     let modelTransformNodes = newModel.rootNodes[0].getChildTransformNodes();
     let skinNodes = {};
@@ -292,5 +196,4 @@ export default class Avatar3D {
       }));
     });
   }
-
 }

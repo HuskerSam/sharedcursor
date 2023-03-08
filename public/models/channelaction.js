@@ -189,6 +189,7 @@ export default class ChannelAction {
     avatarMeta.walkingAnimation = wAnim;
   }
   stopWalk(seatIndex) {
+    console.log('stop walk');
     let avatarMeta = this.app.getAvatarMeta(seatIndex);
     let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
     let walkAnimName = avatarMeta.walkAnim;
@@ -196,7 +197,8 @@ export default class ChannelAction {
     wAnim.stop(true);
 
     if (seatIndex !== this.app.activeSeatIndex) {
-      this.app.avatarHelper.setHome(avatar, avatarMeta);
+      let seatAvatarMeta = this.app.avatarMetas[seatIndex];
+      this.app.avatarHelper.setHome(avatar, seatAvatarMeta);
       avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
         .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
     }
