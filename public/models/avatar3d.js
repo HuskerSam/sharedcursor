@@ -6,33 +6,6 @@ export default class Avatar3D {
     this.app.gameData = this.app.gameData;
 
     this.currentMenuAvatarTrackIndex = 0;
-    this.animationTracks = [
-      "idle",
-      "angry",
-      "agree",
-      "action", //dance
-      "walking",
-
-      "strut",
-      "defeated",
-      "jumpingjack",
-      "groinkicked",
-      "mutantjump",
-      "jump",
-
-      "walking",
-      "joyfuljump",
-      "groinkicked",
-
-      "twerk",
-      "onehandwave",
-      "jump",
-      "joyfuljump",
-      "groinkicked",
-      "shoppingbagwalk"
-
-    ]
-
     this.playerShieldTexture = new BABYLON.Texture('/images/shieldopen.png', this.app.scene);
   }
 
@@ -59,7 +32,7 @@ export default class Avatar3D {
     this.avatarsLoaded = true;
     this.app.paintGameData();
   }
-  _configureAvatar(seatIndex, overrideContainer) {
+  _configureAvatar(seatIndex) {
     if (this.initedAvatars[seatIndex]) {
       this.initedAvatars[seatIndex].avatarPositionTN.dispose();
     }
@@ -131,47 +104,57 @@ export default class Avatar3D {
       avatar.avatarPositionTN.rotation.y = Math.atan2(avatarMeta.z, avatarMeta.x);
   }
 
-  async _loadCustomAvatar(seatIndex) {
-    let seatData = this.app.menuTab3D.getSeatData(seatIndex);
-    if (this.app.uid !== seatData.uid)
-      return;
-
-    if (!this.app.profile || !this.app.profile.displayAvatar)
-      return;
-
-    if (this.avatarContainers[this.app.profile.displayAvatar])
-      return;
-
-    let container;
-    try {
-      container = await BABYLON.SceneLoader.LoadAssetContainerAsync(this.app.profile.displayAvatar, "", this.app.scene);
-    } catch (containerLoadError) {
-      console.log('containerLoadError', containerLoadError);
-      return;
+  async updateUserAvatar(seatIndex, seatData) {
+    console.log(seatData);
+    let avatarPath = this.app.gameData.memberAvatars[seatData.uid];
+    if (this.avatarContainers[avatarPath] === undefined) {
+      this.avatarContainers[avatarPath] = null;
+      try {
+        this.avatarContainers[avatarPath] = await BABYLON.SceneLoader.LoadAssetContainerAsync(avatarPath, "", this.app.scene);
+      } catch (containerLoadError) {
+        console.log('containerLoadError', containerLoadError);
+        return;
+      }
     }
 
-    this.avatarContainers[this.app.profile.displayAvatar] = container;
-    this._skinAvatar(seatIndex, container);
+    let userContainer = avatarPath ? this.avatarContainers[avatarPath] : null;
+    this._skinAvatar(seatIndex, userContainer);
   }
-  _skinAvatar(seatIndex, container) {
-    let avatarMeta = this.app.avatarMetas[seatIndex];
-    let playerRMEContainer = this.avatarContainers['playercomposite'];
+  _skinAvatar(seatIndex, userContainer) {
+    if (userContainer) {
+      let avatarMeta = this.app.avatarMetas[seatIndex];
+      let playerRMEContainer = this.avatarContainers['playercomposite'];
 
-    let skinModel = container.instantiateModelsToScene();
+      let skinModel = userContainer.instantiateModelsToScene();
 
-    this.cloneAnimationGroups(skinModel, playerRMEContainer.animationGroups);
-    skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
-    skinModel.rootNodes[0].position = this.initedAvatars[seatIndex].rootNodes[0].position;
-    skinModel.rootNodes[0].rotation = this.initedAvatars[seatIndex].rootNodes[0].rotation;
-    skinModel.rootNodes[0].scaling = this.initedAvatars[seatIndex].rootNodes[0].scaling;
-    skinModel.rootNodes[0].scaling.y *= -1;
-    skinModel.rootNodes[0].scaling.z *= -1;
+      this.cloneAnimationGroups(skinModel, playerRMEContainer.animationGroups);
+      skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
+      skinModel.rootNodes[0].position = this.initedAvatars[seatIndex].rootNodes[0].position;
+      skinModel.rootNodes[0].rotation = this.initedAvatars[seatIndex].rootNodes[0].rotation;
+      skinModel.rootNodes[0].scaling = this.initedAvatars[seatIndex].rootNodes[0].scaling;
+      skinModel.rootNodes[0].scaling.y *= -1;
+      skinModel.rootNodes[0].scaling.z *= -1;
 
-    this.initedAvatars[seatIndex].rootNodes[0].setEnabled(false);
-    this.initedAvatars[seatIndex].rootNodes = skinModel.rootNodes;
-    this.initedAvatars[seatIndex].animationGroups = skinModel.animationGroups;
-    this.initedAvatars[seatIndex].skeletons = skinModel.skeletons;
-    this.initedAvatars[seatIndex].playerRMEType = true;
+      this.initedAvatars[seatIndex].rootNodes[0].setEnabled(false);
+      this.initedAvatars[seatIndex].rootNodes = skinModel.rootNodes;
+      this.initedAvatars[seatIndex].animationGroups = skinModel.animationGroups;
+      this.initedAvatars[seatIndex].skeletons = skinModel.skeletons;
+      this.initedAvatars[seatIndex].playerRMEType = true;
+    } else if (this.initedAvatars[seatIndex].playerRMEType) {
+      let avatarMeta = this.app.avatarMetas[seatIndex];
+      let container = this.avatarContainers[avatarMeta.name];
+      let model = container.instantiateModelsToScene();
+
+      model.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
+      //model.rootNodes[0].position = this.initedAvatars[seatIndex].rootNodes[0].position;
+      //model.rootNodes[0].rotation = this.initedAvatars[seatIndex].rootNodes[0].rotation;
+      //model.rootNodes[0].scaling = this.initedAvatars[seatIndex].rootNodes[0].scaling;
+      //model.rootNodes[0].scaling.y *= -1;
+      //model.rootNodes[0].scaling.z *= -1;
+
+      this.initedAvatars[seatIndex].rootNodes[0].setEnabled(false);
+      this.initedAvatars[seatIndex] = model;
+    }
   }
   async cloneAnimationGroups(newModel, oldGroups) {
     let modelTransformNodes = newModel.rootNodes[0].getChildTransformNodes();
