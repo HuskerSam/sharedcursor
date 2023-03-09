@@ -5,13 +5,17 @@
     "z": 3,
     "race": "Human",
     "description": "Angel Husker guides the moon Luna.  She is the human avatar who currently occupies Earth in real life.  Angel is the youngest daughter of Herbie.",
-    "walkAnim": "walking",
-    "idlePose": "walking",
     "voiceName": "en-GB-Neural2-A",
     "seatIndex": 0,
     "primaryColor": "0.75,0.75,0",
     "foreColor": "0,0,0",
-    "backColor": "0.2,0.2,0.2"
+    "backColor": "0.2,0.2,0.2",
+    "actions": {
+      "walking": "walking",
+      "agree": "joyfuljump",
+      "hurt": "groinkicked",
+      "idle": "walking"
+    }
   },
   {
     "name": "Jade",
@@ -20,13 +24,18 @@
     "z": 3,
     "description": "Jade Husker guides the moon Ceres.  She is the Botan avatar who occupied Earth before the humans.  Botans are plant based life and leave no traces.",
     "race": "Botan",
-    "walkAnim": "walking",
-    "idlePose": "idle",
     "voiceName": "en-AU-Neural2-C",
     "seatIndex": 1,
     "primaryColor": "0,0.75,0.75",
     "foreColor": "0,0,0",
-    "backColor": "0.2,0.2,0.2"
+    "backColor": "0.2,0.2,0.2",
+    "actions": {
+      "walking": "walking",
+      "agree": "agree",
+      "hurt": "angry",
+      "dance": "action",
+      "idle": "idle"
+    }
   },
   {
     "name": "Raven",
@@ -35,13 +44,20 @@
     "z": -3,
     "race": "Avian",
     "description": "Raven Husker guides the moon Io.  She is the Avian avatar who occupied Earth during the dinosaur age.  Avians are generally flying creatures.",
-    "walkAnim": "shoppingbagwalk",
-    "idlePose": "shoppingbagwalk",
     "voiceName": "en-US-Neural2-G",
     "seatIndex": 2,
     "primaryColor": "0.75,0,0.75",
     "foreColor": "0,0,0",
-    "backColor": "0.6,0.6,0.6"
+    "backColor": "0.6,0.6,0.6",
+    "actions": {
+      "walking": "shoppingbagwalk",
+      "agree": "onehandwave",
+      "hurt": "groinkicked",
+      "jump": "jump",
+      "extra2": "joyfuljump",
+      "dance": "twerk",
+      "idle": "shoppingbagwalk"
+    }
   },
   {
     "name": "Elihu",
@@ -50,19 +66,32 @@
     "z": -3,
     "description": "Elihu Husker guides the moon Eris.  He is the Titan avatar who first occupied Earth with squids and crustacens.  Elihu is Herbie's first born and has enslaved his sisters in the past.",
     "race": "Titan",
-    "walkAnim": "strut",
-    "idlePose": "strut",
     "voiceName": "en-GB-Neural2-D",
     "primaryColor": "0.4,0.2,0.9",
     "foreColor": "1,1,1",
     "backColor": "0.6,0.6,0.6",
-    "seatIndex": 3
+    "seatIndex": 3,
+    "actions": {
+      "walking": "strut",
+      "idle": "strut",
+      "agree": "mutantjump",
+      "hurt": "groinkicked",
+      "extra1": "defeated",
+      "jump": "jump",
+      "dance": "jumpingjack"
+    }
   },
   {
     "name": "playercomposite",
     "path": "playercomposite.glb",
     "description": "Animation container for ready player me avatars.",
-    "walkAnim": "drunkwalk",
-    "idlePose": "drunkwalk"
+    "actions": {
+      "walking": "walking",
+      "idle": "walking",
+      "agree": "mmakick",
+      "hurt": "kicktogroin",
+      "extra1": "leftmove",
+      "dance": "ymcadance"
+    }
   }
 ]

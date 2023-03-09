@@ -681,11 +681,7 @@ export class StoryApp extends BaseApp {
         meta.orbitAnimation.pause();
 
       if (meta.avatarType) {
-        let avatarMeta = this.avatarMetas[meta.seatIndex];
-        if (avatarMeta && avatarMeta.positionAnimation) {
-          avatarMeta.positionAnimation.pause();
-          avatarMeta.walkingAnimation.pause();
-        }
+
       }
 
       if (meta.asteroidType) {
@@ -704,12 +700,6 @@ export class StoryApp extends BaseApp {
 
       if (meta.orbitAnimation && meta.orbitAnimation._paused)
         meta.orbitAnimation.restart();
-
-      let avatarMeta = this.avatarMetas[meta.seatIndex];
-      if (avatarMeta && avatarMeta.positionAnimation) {
-        avatarMeta.positionAnimation.restart();
-        avatarMeta.walkingAnimation.restart();
-      }
 
       if (meta.asteroidType) {
         meta.basePivot.material = this.asteroidHelper.asteroidMaterial;
@@ -1066,7 +1056,7 @@ export class StoryApp extends BaseApp {
     return json;
   }
 
-  getAvatarMeta(seatIndex) {
+  getSkinMeta(seatIndex) {
     if (this.avatarHelper.initedAvatars[seatIndex].playerRMEType)
       return this.avatarMetas[4];
 

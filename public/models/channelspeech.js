@@ -219,10 +219,19 @@ export default class ChannelSpeech {
       observable.addOnce(() => res());
     });
   }
-  _addAnimation(seatIndex, animationName) {
+  _addAnimation(seatIndex, actionName) {
+    if (!actionName)
+      return;
+      
+    let skinMeta = this.app.getSkinMeta(seatIndex);
     let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
-    let animation = avatar.animationGroups.find(n => n.name.indexOf(animationName) !== -1);
-    if (!animation) return;
+    let name = skinMeta.actions[actionName];
+
+    let animation = avatar.animationGroups.find(n => n.name.indexOf(name) !== -1);
+    if (!animation) {
+      console.log('Action ' + actionName + ' not found for seatindex ' + seatIndex);
+      return;
+    }
 
     if (this.app.activeSeatIndex === seatIndex) {
       animation.setWeightForAllAnimatables(1);

@@ -84,8 +84,12 @@ export default class Avatar3D {
     newModel.particleTN.position.y = 0.8;
     newModel.particleTN.position.z = -0.25;
     newModel.particleTN.rotation.x = -Math.PI / 2;
-    newModel.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
-      .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
+    let skinMeta = this.app.getSkinMeta(seatIndex);
+    let animGroup = newModel.animationGroups.find(n => n.name.indexOf(skinMeta.actions['idle']) !== -1);
+    if (animGroup)
+      animGroup.start(false, 1, 2, 2);
+    else
+      console.log('Idle action not found for ' + seatIndex);
 
     avatarPositionTN.assetMeta = {
       name: avatarMeta.name,
@@ -156,7 +160,6 @@ export default class Avatar3D {
     let skinModel = container.instantiateModelsToScene();
 
     this.cloneAnimationGroups(skinModel, playerRMEContainer.animationGroups);
-    console.log(skinModel.rootNodes,this.initedAvatars[seatIndex].rootNodes);
     skinModel.rootNodes[0].parent = this.initedAvatars[seatIndex].rootNodes[0].parent;
     skinModel.rootNodes[0].position = this.initedAvatars[seatIndex].rootNodes[0].position;
     skinModel.rootNodes[0].rotation = this.initedAvatars[seatIndex].rootNodes[0].rotation;

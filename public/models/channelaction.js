@@ -180,27 +180,39 @@ export default class ChannelAction {
     window.channelAction = this;
   }
   startWalk(seatIndex) {
-    let avatarMeta = this.app.getAvatarMeta(seatIndex);
+    let skinMeta = this.app.getSkinMeta(seatIndex);
     let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
-    let walkAnimName = avatarMeta.walkAnim;
+    let walkAnimName = skinMeta.actions['walking'];
     let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
+
+    if (!wAnim) {
+      console.log('walking action not found for ' + seatIndex, avatarMeta);
+      return;
+    }
     wAnim.start(true);
     wAnim.setWeightForAllAnimatables(1);
-    avatarMeta.walkingAnimation = wAnim;
   }
   stopWalk(seatIndex) {
-    console.log('stop walk');
-    let avatarMeta = this.app.getAvatarMeta(seatIndex);
+    let avatarMeta = this.app.getSkinMeta(seatIndex);
     let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
-    let walkAnimName = avatarMeta.walkAnim;
+    let walkAnimName = avatarMeta.actions['walking'];
     let wAnim = avatar.animationGroups.find(n => n.name.indexOf(walkAnimName) !== -1);
-    wAnim.stop(true);
+    if (!wAnim) {
+      console.log('walking action not found for ' + seatIndex, avatarMeta);
+    } else {
+      wAnim.stop(true);
+    }
 
     if (seatIndex !== this.app.activeSeatIndex) {
       let seatAvatarMeta = this.app.avatarMetas[seatIndex];
       this.app.avatarHelper.setHome(avatar, seatAvatarMeta);
-      avatar.animationGroups.find(n => n.name.indexOf(avatarMeta.idlePose) !== -1)
-        .start(false, 1, 0.03333333507180214 * 60, 0.03333333507180214 * 60);
+
+      let skinMeta = this.app.getSkinMeta(seatIndex);
+      let animGroup = avatar.animationGroups.find(n => n.name.indexOf(skinMeta.actions['idle']) !== -1);
+      if (animGroup)
+        animGroup.start(false, 1, 2, 2);
+      else
+        console.log('Idle action not found for ' + seatIndex);
     }
   }
   addAgent(mesh, index, agentType) {

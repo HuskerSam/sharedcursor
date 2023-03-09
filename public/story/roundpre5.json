@@ -3,7 +3,7 @@
     {
       "action": "avatarMessage",
       "seatIndex": 3,
-      "addAnimation": "groinkicked",
+      "addAnimation": "hurt",
       "text": "I'm Elihu Husker, I represent the Titans... the first civilization on Earth"
     },
     {

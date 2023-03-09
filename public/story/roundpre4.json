@@ -15,7 +15,7 @@
       "action": "avatarMessage",
       "seatIndex": 0,
       "text": "Things started out so peacefully until some societies decided to migrate to new planets.  I wish things could just go back to the way they were!",
-      "addAnimation": "joyfuljump"
+      "addAnimation": "agree"
     },
     {
       "action": "avatarMessage",
@@ -37,13 +37,13 @@
       "action": "avatarMessage",
       "seatIndex": 0,
       "text": "Now that hits me in the mother area :(",
-      "addAnimation": "groinkicked"
+      "addAnimation": "hurt"
     },
     {
       "action": "avatarMessage",
       "seatIndex": 3,
       "text": "Oh you act like this conflict doesn't hurt me too...",
-      "addAnimation": "groinkicked"
+      "addAnimation": "hurt"
     }
   ]
 }
