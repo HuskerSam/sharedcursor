@@ -510,7 +510,41 @@ export default class MenuTab3D {
       this.setSelectedAsset(this.obj(key));
     }
   }
+  _updatePlayerTabAvatar(seatIndex) {
+    if (this.dockSeatContainers[seatIndex].avatarTN) {
+      this.dockSeatContainers[seatIndex].avatarTN.dispose();
+      this.dockSeatContainers[seatIndex].cloneMesh.dispose();
+    }
 
+    let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
+    let cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh.clone();
+    let avatarTN = new BABYLON.TransformNode('seatavatarTN' + seatIndex, this.app.scene);
+    cloneMesh.parent = avatarTN;
+    avatarTN.parent = this.dockSeatContainers[seatIndex];
+    this.dockSeatContainers[seatIndex].avatarTN = avatarTN;
+    this.dockSeatContainers[seatIndex].cloneMesh = cloneMesh;
+
+    U3D.sizeNodeToFit(cloneMesh, this.dockSeatHeight / 2);
+    cloneMesh.showBoundingBox = false;
+    avatarTN.rotation.y = Math.PI;
+    avatarTN.position = U3D.v(0, -1.75, 0);
+    cloneMesh.isPickable = true;
+    cloneMesh.assetMeta = {
+      name: avatar.avatarPositionTN.assetMeta.name,
+      extended: {},
+      appClickable: true,
+      avatarType: true,
+      seatIndex,
+      basePivot: avatarTN,
+      baseMesh: cloneMesh,
+      boundingMesh: cloneMesh,
+      clickCommand: 'customClick',
+      appClickable: true,
+      handlePointerDown: () => {
+        this.setSelectedAsset(avatar.avatarPositionTN.assetMeta);
+      }
+    };
+  }
   initPlayerPanel() {
     this.dockSeatContainers = [];
     this.dockSeatHeight = 16;
@@ -550,23 +584,7 @@ export default class MenuTab3D {
       seatBackPanel.material = panelMat;
       seatBackPanel.parent = dockSeatContainer;
 
-      let avatar = this.app.avatarHelper.initedAvatars[seatIndex];
-      let cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh.clone();
-      let avatarTN = new BABYLON.TransformNode('seatavatarTN' + seatIndex, this.app.scene);
-      cloneMesh.parent = avatarTN;
-      avatarTN.parent = dockSeatContainer;
-      U3D.sizeNodeToFit(cloneMesh, this.dockSeatHeight / 2);
-      cloneMesh.showBoundingBox = false;
-      avatarTN.rotation.y = Math.PI;
-      avatarTN.position = U3D.v(0, -1.75, 0);
-      cloneMesh.isPickable = true;
-      cloneMesh.assetMeta = {
-        appClickable: true,
-        clickCommand: "customClick",
-        handlePointerDown: () => {
-          this.setSelectedAsset(avatar.assetMeta);
-        }
-      };
+      this._updatePlayerTabAvatar(seatIndex);
 
       let cloneMoon = this.app.playerMoonAssets[seatIndex].baseMesh.clone();
       cloneMoon.showBoundingBox = false;

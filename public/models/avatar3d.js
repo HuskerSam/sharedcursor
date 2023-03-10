@@ -107,7 +107,7 @@ export default class Avatar3D {
   async updateUserAvatar(seatIndex, seatData) {
     console.log(seatData);
     let avatarPath = this.app.gameData.memberAvatars[seatData.uid];
-    if (this.avatarContainers[avatarPath] === undefined) {
+    if (avatarPath && this.avatarContainers[avatarPath] === undefined) {
       this.avatarContainers[avatarPath] = null;
       try {
         this.avatarContainers[avatarPath] = await BABYLON.SceneLoader.LoadAssetContainerAsync(avatarPath, "", this.app.scene);
@@ -140,6 +140,7 @@ export default class Avatar3D {
       this.initedAvatars[seatIndex].animationGroups = skinModel.animationGroups;
       this.initedAvatars[seatIndex].skeletons = skinModel.skeletons;
       this.initedAvatars[seatIndex].playerRMEType = true;
+      //this.app.menuTab3D._updatePlayerTabAvatar(seatIndex);
     } else if (this.initedAvatars[seatIndex].playerRMEType) {
       let avatarMeta = this.app.avatarMetas[seatIndex];
       let container = this.avatarContainers[avatarMeta.name];
