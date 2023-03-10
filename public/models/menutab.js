@@ -386,9 +386,11 @@ export default class MenuTab3D {
     let result, mesh, menubarMesh;
     let meshHeight = 20;
     let boundsWrapperNeeded = false;
+    let customAvatar = false;
     if (assetMeta.avatarType) {
       let avatar = this.app.avatarHelper.initedAvatars[assetMeta.seatIndex];
       let cloneMesh = avatar.avatarPositionTN.assetMeta.boundingMesh;
+      customAvatar = avatar.playerRMEType === true;
       mesh = cloneMesh.clone();
       menubarMesh = cloneMesh.clone();
       meshHeight = 24;
@@ -416,8 +418,15 @@ export default class MenuTab3D {
 
     mesh.parent = null;
     menubarMesh.parent = null;
-    U3D.sizeNodeToFit(menubarMesh, 5.25);
-    U3D.sizeNodeToFit(mesh, meshHeight);
+
+    if (customAvatar) {
+      let factor = 1.75;
+      U3D.sizeNodeToFit(menubarMesh, 5.25 * factor);
+      U3D.sizeNodeToFit(mesh, meshHeight * factor);
+    } else {
+      U3D.sizeNodeToFit(menubarMesh, 5.25);
+      U3D.sizeNodeToFit(mesh, meshHeight);
+    }
     menubarMesh.showBoundingBox = false;
 
     if (boundsWrapperNeeded) {
@@ -524,7 +533,10 @@ export default class MenuTab3D {
     this.dockSeatContainers[seatIndex].avatarTN = avatarTN;
     this.dockSeatContainers[seatIndex].cloneMesh = cloneMesh;
 
-    U3D.sizeNodeToFit(cloneMesh, this.dockSeatHeight / 2);
+    if (avatar.playerRMEType)
+      U3D.sizeNodeToFit(cloneMesh, this.dockSeatHeight / 11);
+    else
+      U3D.sizeNodeToFit(cloneMesh, this.dockSeatHeight / 2);
     cloneMesh.showBoundingBox = false;
     avatarTN.rotation.y = Math.PI;
     avatarTN.position = U3D.v(0, -1.75, 0);

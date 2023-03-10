@@ -140,7 +140,9 @@ export default class Avatar3D {
       this.initedAvatars[seatIndex].animationGroups = skinModel.animationGroups;
       this.initedAvatars[seatIndex].skeletons = skinModel.skeletons;
       this.initedAvatars[seatIndex].playerRMEType = true;
-      //this.app.menuTab3D._updatePlayerTabAvatar(seatIndex);
+
+
+      this.app.menuTab3D._updatePlayerTabAvatar(seatIndex);
     } else if (this.initedAvatars[seatIndex].playerRMEType) {
       let avatarMeta = this.app.avatarMetas[seatIndex];
       let container = this.avatarContainers[avatarMeta.name];
