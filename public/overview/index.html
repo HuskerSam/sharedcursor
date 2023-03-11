@@ -147,20 +147,46 @@
             </tr>
           </table>
         </div>
-        <br>
-        <a href="/story/solarsystemdeck.json" target="_blank">Solar System</a> - Planets and other non moon assets
-        <br>&nbsp; &nbsp;<span style="font-size:12px">https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes uri(name) ?alt=media</span>
-        <br>
-        <a href="/story/moons1deck.json" target="_blank">Non Saturn Moons</a> - Luna and all but Saturns moons
-        <br>
-        <a href="/story/moons2deck.json" target="_blank">Saturn Moons</a> - it has that many it needed it's own file
-        <br>
-        <a href="/story/asteroidslist.json" target="_blank">Asteroid List</a> - an array of names for .obj files containing a UV map
-        <br>&nbsp; &nbsp;<span style="font-size:12px">https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F uri(name) ?alt=media</span>
-        <br>
-        <br>
-        Solar System Json Example:
-        <div id="solarsystemdeckviewer" style="height:250px;"></div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Planet Assets <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <a href="https://solarsystem.nasa.gov/solar-system/our-solar-system/overview/" target="_blank">
+              <img src="nasasolarobjects.jpg" style="height:350px;">
+              <br>
+              NASA is the primary source of the planet textures and meshes for many of the probes and spaceships.
+              Some other 3d models have been purchases from 3rd party sources.
+            </a>
+            <br>
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Moons, Asteroids and Comets <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            Asteroid models can be source freely from <a href="https://echo.jpl.nasa.gov/">JPL</a>.
+            <br>
+            Greg Frieger has created a <a href="https://3d-asteroids.space/" target="_blank">terrific catalog</a> exists these makes it easier to find and use
+            3d represenations of asteroids, as well as comets, moons and dwarfs.
+            <br>
+            <a href="https://echo.jpl.nasa.gov/links.html">JPL list of websites for additional data</a> .
+          </div>
+        </div>
+
+        <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">App Meta Data <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            <br>
+            <a href="/story/moons1deck.json" target="_blank">Non Saturn Moons</a> - Luna and all but Saturns moons
+            <br>
+            <a href="/story/moons2deck.json" target="_blank">Saturn Moons</a> - it has that many it needed it's own file
+            <br>
+            <a href="/story/asteroidslist.json" target="_blank">Asteroid List</a> - an array of names for .obj files containing a UV map
+            <br>&nbsp; &nbsp;<span style="font-size:12px">https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F uri(name) ?alt=media</span>
+            <br>
+            <br>
+            Solar System Json Example:
+            <div id="solarsystemdeckviewer" style="height:250px;"></div>
+          </div>
+        </div>
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
@@ -170,36 +196,65 @@
           <table>
             <tr>
               <td><b>Goals &nbsp;</b></td>
-              <td>Bone animated walking, talking and acting avatars.</td>
+              <td>Bone animated walking, talking and acting avatars. Ready Player Me is used for a customing
+                avatar appearance for players.</td>
             </tr>
             <tr>
               <td><b>Notes &nbsp;</b></td>
-              <td>Mixamo.com is the source of the avatars and bone animation sequences.  Blender was used to
+              <td>Mixamo.com is the source of the avatars and bone animation sequences. Blender was used to
                 load the bone animation sequences into the avatar files and export them to .glb with
                 DRACO compression.</td>
             </tr>
             <tr>
-              <td><b>Specifics &nbsp;</b></td>
-              <td></td>
+              <td><b>Links &nbsp;</b></td>
+              <td>
+                <a href="https://www.mixamo.com" target="_blank">Mixamo.com</a> - used to acquire bone animation sequences and the default avatar appearances.
+                <br>
+                <a href="https://readyplayer.me/" target="_blank">Ready Player Me</a> - embeddable avatar customization engine
+                <br>
+                <a href="https://www.blender.org/" target="_blank">Blender</a> - distill, combine and compact bone animations with avatars and export to gtf.
+                <br>
+                <a href="https://www.babylonjs.com/" target="_blank">BabylonJS</a> - javascript 3d engine that performs bone animations, including
+                blending (smoothing combining/transistioning) animations.
+                <br>
+              </td>
             </tr>
           </table>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Meta Data<span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            <a href="/story/avatars.json" target="_blank">Avatars</a> - The 4 story avatars meta data
-            <br><br>
-            <div id="avatarviewer" style="height:250px;"></div>
+          <div class='collapsed' style="padding:10px;">
+            <h2 class="collapse_header right_arrow">Customizable Avatars (ReadyPlayer.Me) <span class="header_down_arrow">&#9660;</span></h2>
+            <div class="collapse_panel">
+              <img src="readyplayerme.jpg" style="height:350px;">
+              <img src="embeddedplayerreadyme.jpg" style="height:350px;">
+              <br>
+              Avatar customization tools embedded into application, providing users
+              tremendous customizations to share in a multi user experience.
+              The meshes are rigged (mapped to a skeleton) so that bone animations can be applied.
+            </div>
           </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Bone Animations<span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            The avatar meta specifies the idle pose name, walking animation name, google voice name,
-            description, initial position, etc.
-            <br>
-            Various bone animation sequences were attained from <a href="https://www.mixamo.com/" target="_blank">Mixamo</a> and
-            at least some of the avatars.
+
+          <div class='collapsed' style="padding:10px;">
+            <h2 class="collapse_header right_arrow">Bone Animations (Mixamo.com) <span class="header_down_arrow">&#9660;</span></h2>
+            <div class="collapse_panel">
+
+              <img src="mixamo.jpg" style="height:350px;">
+            </div>
+          </div>
+          <div class='collapsed' style="padding:10px;">
+            <h2 class="collapse_header right_arrow">Animation Containers (.gltf/.glb format) <span class="header_down_arrow">&#9660;</span></h2>
+            <div class="collapse_panel">
+              <img src="blenderactions.jpg" style="height:350px;">
+              <Br>
+              I get all the harvested bone sequences (actions) - then I can map these between the player ready me avatars -
+            </div>
+          </div>
+
+          <div class='collapsed' style="padding:10px;">
+            <h2 class="collapse_header right_arrow">App Meta Data<span class="header_down_arrow">&#9660;</span></h2>
+            <div class="collapse_panel">
+              <a href="/story/avatars.json" target="_blank">Avatars</a> - The 4 story avatars meta data
+              <br><br>
+              <div id="avatarviewer" style="height:250px;"></div>
+            </div>
           </div>
         </div>
       </div>
