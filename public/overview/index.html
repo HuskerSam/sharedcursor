@@ -119,7 +119,7 @@
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
     <a href="/" style="padding:10px;">Home</a><br>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">3D Assets<span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Static 3D Assets<span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
@@ -168,6 +168,14 @@
             3d represenations of asteroids, as well as comets, moons and dwarfs.
             <br>
             <a href="https://echo.jpl.nasa.gov/links.html">JPL list of websites for additional data</a> .
+
+            <br><br>
+            <h3>UV Maps for asteroid meshes</h3>
+            <img src="asteroiduvmap.jpg" style="height:350px;">
+            <br>
+            Spherical projection UV maps are generated in Blender and saved out in a new .obj file (best for size)
+            for asteroids.  This allows a common texture to be used for all minor asteroids.
+            <br><br>
           </div>
         </div>
 
@@ -183,6 +191,10 @@
             <br>&nbsp; &nbsp;<span style="font-size:12px">https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/meshes%2Fasteroids%2F uri(name) ?alt=media</span>
             <br>
             <br>
+            A symbol is associated with each asset using the <a href="https://en.wikipedia.org/wiki/Astrological_symbols" target="_blank">Astrological Symbol Wiki Page</a>
+            if available, otherwise using greek letters or a relevant symbol related to the name, i.e. Bennu.
+            The meta data also includes the object it's orbiting, description and information link.
+            <br><br>
             Solar System Json Example:
             <div id="solarsystemdeckviewer" style="height:250px;"></div>
           </div>
@@ -295,7 +307,7 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Data Scheme<span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Channels <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Realtime Data<span class="header_down_arrow">&#9660;</span></h2>
