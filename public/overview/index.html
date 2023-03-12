@@ -127,24 +127,23 @@
           <table>
             <tr>
               <td><b>Goals &nbsp;</b></td>
-              <td>Derive a balance between size and quality for download on demand application usage.
-                These objects are not bone animated (refer to avatars), while mostly static they maybe animated in position and rotation, etc.
-              </td>
+              <td>Balance download size, quality and performance for load on demand delivery via web browser for
+                virtual experiences.</td>
             </tr>
             <tr>
               <td><b>Notes &nbsp;</b></td>
-              <td>Since many objects are round, or almost round, only texture(s) are included and the sphere is generated at runtime.
-                DRACO compression is used so the .glb files aren't viewable in windows once compressed.
-                The asset decks provide meta data including mesh and texture locations and initial asset positioning.
-                The blob files are stored in the cloud for cheap access, the meta data is stored in json files (more below).
+              <td>
+                Spheres are generated at runtime for most moons and planets - so only textures are downloaded.
+                <br>
+                Models are stored in <a href="https://www.khronos.org/gltf/" target="_blank">.glb</a>
+                 format with internal images saved as jpeg and <a href="https://google.github.io/draco/" target="_blank">Draco</a> compression used.
               </td>
             </tr>
             <tr>
               <td><b>Specifics &nbsp;</b></td>
               <td>
-                Animated orbits around a parent object are supported to make it easier to layout a solar system model.
-                <br>navRadius determines the blocking area to keep avatars out of when moving around.
-                <br>Assets use a texturePath (default) or an assetPath but not both.
+
+                Draco compression is supported by Chrome and Quest 2
               </td>
             </tr>
           </table>
@@ -152,12 +151,11 @@
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Planet Assets <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
+            <img src="nasasolarobjects.jpg" style="height:350px;">
+            <br>
             <a href="https://solarsystem.nasa.gov/solar-system/our-solar-system/overview/" target="_blank">
-              <img src="nasasolarobjects.jpg" style="height:350px;">
-              <br>
-              NASA is the primary source of the planet textures and meshes for many of the probes and spaceships.
+              NASA</a> is the primary source of the planet textures and meshes for many of the probes and spaceships.
               Some other 3d models have been purchases from 3rd party sources.
-            </a>
             <br>
           </div>
         </div>
@@ -197,6 +195,9 @@
             if available, otherwise using greek letters or a relevant symbol related to the name, i.e. Bennu.
             The meta data also includes the object it's orbiting, description and information link.
             <br><br>
+            Size, position, scaling and orbit information are stored in meta data loaded in .json files
+            <br>navRadius is the collision radius used for crowd controlled navigation.
+                        <br><br>
             Solar System Json Example:
             <div id="solarsystemdeckviewer" style="height:250px;"></div>
           </div>
@@ -210,7 +211,7 @@
           <table>
             <tr>
               <td><b>Goals &nbsp;</b></td>
-              <td>Bone animated walking, talking and acting avatars. Ready Player Me is used for a customing
+              <td>Bone animated walking and talking avatars. Ready Player Me is used for a customing
                 avatar appearance for players.</td>
             </tr>
             <tr>
