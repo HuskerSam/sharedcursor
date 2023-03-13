@@ -126,14 +126,18 @@
     .logo_svg:hover {
       color: rgb(127, 127, 127);
     }
+
+    table td {
+      padding: 5px;
+    }
   </style>
 </head>
 
 <body class="loaded" style="background:rgb(250,250,250);font-size:20px;">
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
     <div style="line-height:50px;padding:15px;">
-      <h2>Work In Progress</h2>
-      - environment is viewable
+      <h2>Project In Progress</h2>
+      - environment is viewable (although incomplete)
     </div>
     <hr style="margin-bottom:10px;">
     <div>
@@ -157,7 +161,7 @@
           </g>
         </svg></a>
       &nbsp;
-      <b style="position: relative;top: -15px;">Sharing Virtual Reality</b>
+      <b style="position: relative;top: -15px;">Shared Virtual Reality</b>
     </div>
     <div class='collapsed' style="padding:10px;">
       <h1 class="collapse_header right_arrow">Visual Assets <span class="header_down_arrow">&#9660;</span></h1>
@@ -175,7 +179,7 @@
             <tr>
               <td><b>Notes &nbsp;</b></td>
               <td>
-                <a href="https://www.khronos.org/gltf/" target="_blank">.glb</a>
+                <a href="https://www.khronos.org/gltf/" target="_blank">GLTF</a>
                 models are used with <a href="https://google.github.io/draco/" target="_blank">Draco</a> compression
                 <br>
                 Spheres are generated at runtime where possible
@@ -218,6 +222,21 @@
         </div>
 
         <div class='collapsed' style="padding:10px;">
+          <h2 class="collapse_header right_arrow">Crowd Navigation <span class="header_down_arrow">&#9660;</span></h2>
+          <div class="collapse_panel">
+            BabylonJS supports Recast <a href="https://doc.babylonjs.com/features/featuresDeepDive/crowdNavigation" target="_blank">crowd navigation</a>.
+            Assets can supply a navRadius to be included as an obstable that avatars must navigate around when moving.
+            <br>
+            <img src="navmesh.jpg" style="height:400px">
+            <br>
+            The floor and obstacles are shown here as hot pink - note only a disc is used to block the area
+            that avatars (agents) navigate through.
+            <br>
+            When avatars, probes and rockets move around agents are used that adjust pathing
+             on the fly to adjust to other moving obstacles.
+          </div>
+        </div>
+        <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">App Meta Data <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
             <br>
@@ -243,38 +262,29 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Rigged Bones <span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Rigged Avatars <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
             <tr>
               <td><b>Goals &nbsp;</b></td>
-              <td>Bone animated walking and talking avatars. Ready Player Me is used for a customing
-                avatar appearance for players.</td>
+              <td>Bone animated walking and talking avatars.<br>
+                User specific and customizable avatars.</td>
             </tr>
             <tr>
               <td><b>Notes &nbsp;</b></td>
-              <td>Mixamo.com is the source of the avatars and bone animation sequences. Blender was used to
-                load the bone animation sequences into the avatar files and export them to .glb with
-                DRACO compression.</td>
-            </tr>
-            <tr>
-              <td><b>Links &nbsp;</b></td>
               <td>
                 <a href="https://www.mixamo.com" target="_blank">Mixamo.com</a> - used to acquire bone animation sequences and the default avatar appearances.
                 <br>
                 <a href="https://readyplayer.me/" target="_blank">Ready Player Me</a> - embeddable avatar customization engine
                 <br>
-                <a href="https://www.blender.org/" target="_blank">Blender</a> - distill, combine and compact bone animations with avatars and export to gtf.
-                <br>
-                <a href="https://www.babylonjs.com/" target="_blank">BabylonJS</a> - javascript 3d engine that performs bone animations, including
-                blending (smoothing combining/transistioning) animations.
+                <a href="https://www.blender.org/" target="_blank">Blender</a> - combine avatars and animations into GLTF models.
                 <br>
               </td>
             </tr>
           </table>
           <div class='collapsed' style="padding:10px;">
-            <h2 class="collapse_header right_arrow">Customizable Avatars (ReadyPlayer.Me) <span class="header_down_arrow">&#9660;</span></h2>
+            <h2 class="collapse_header right_arrow">Customizable Avatars <span class="header_down_arrow">&#9660;</span></h2>
             <div class="collapse_panel">
               <img src="readyplayerme.jpg" style="height:350px;">
               <img src="embeddedplayerreadyme.jpg" style="height:350px;">
@@ -286,14 +296,14 @@
           </div>
 
           <div class='collapsed' style="padding:10px;">
-            <h2 class="collapse_header right_arrow">Bone Animations (Mixamo.com) <span class="header_down_arrow">&#9660;</span></h2>
+            <h2 class="collapse_header right_arrow">Bone Sequences <span class="header_down_arrow">&#9660;</span></h2>
             <div class="collapse_panel">
 
               <img src="mixamo.jpg" style="height:350px;">
             </div>
           </div>
           <div class='collapsed' style="padding:10px;">
-            <h2 class="collapse_header right_arrow">Animation Containers (.gltf/.glb format) <span class="header_down_arrow">&#9660;</span></h2>
+            <h2 class="collapse_header right_arrow">Animation Containers <span class="header_down_arrow">&#9660;</span></h2>
             <div class="collapse_panel">
               <img src="blenderactions.jpg" style="height:350px;">
               <Br>
@@ -313,7 +323,7 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Virtual Interface <span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">webXR Interface <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Action Menu <span class="header_down_arrow">&#9660;</span></h2>
