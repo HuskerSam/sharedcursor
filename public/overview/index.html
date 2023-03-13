@@ -112,55 +112,88 @@
       padding-left: 12px;
       text-align: left;
     }
+
+    .app_panel h1,
+    .app_panel h2 {
+      display: inline-block;
+    }
+
+    .logo_svg {
+      height: 50px;
+      color: white;
+    }
+
+    .logo_svg:hover {
+      color: rgb(127, 127, 127);
+    }
   </style>
 </head>
 
 <body class="loaded" style="background:rgb(250,250,250);font-size:20px;">
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
     <div>
-      <a href="/" style="padding:10px;">Home</a>
+      <a href="/" style="padding:10px;">
+        <svg class="logo_svg" version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+          <clipPath id="p.0">
+            <path d="m0 0l686.2231 0l0 689.7769l-686.2231 0l0 -689.7769z" clip-rule="nonzero" />
+          </clipPath>
+          <g clip-path="url(#p.0)">
+            <path fill="#000000" fill-opacity="0.0" d="m0 0l686.2231 0l0 689.7769l-686.2231 0z" fill-rule="evenodd" />
+            <path fill="#000000" d="m8.0 344.0l0 0c0 -185.56767 150.43233 -336.0 336.0 -336.0l0 0c89.11273 0 174.57568 35.3999 237.58789 98.412125c63.012207 63.012222 98.41211 148.47513 98.41211 237.58788l0 0c0 185.56769 -150.43231 336.0 -336.0 336.0l0 0c-185.56767 0 -336.0 -150.43231 -336.0 -336.0z"
+              fill-rule="evenodd" />
+            <path fill="currentColor" d="m65.60555 344.0l0 0c0 -153.7526 124.641106 -278.3937 278.3937 -278.3937l0 0c73.834595 0 144.64511 29.33068 196.85406 81.53962c52.208923 52.208954 81.53961 123.019485 81.53961 196.85408l0 0c0 153.7526 -124.64108 278.39368 -278.39368 278.39368l0 0c-153.75261 0 -278.3937 -124.64108 -278.3937 -278.39368z"
+              fill-rule="evenodd" />
+            <path fill="#0000ff" d="m314.7801 518.6186l0 0c-35.476685 39.39923 -96.1756 42.57904 -135.57481 7.102356l0 0c-18.920166 -17.036499 -30.297684 -40.891235 -31.629639 -66.31644c-1.331955 -25.425201 7.4907684 -50.338196 24.527283 -69.25836l0 0c35.476685 -39.3992 96.17558 -42.57904 135.57481 -7.102356l0 0c39.3992 35.476685 42.57904 96.1756 7.102356 135.5748z"
+              fill-rule="evenodd" />
+            <path fill="#00ff00" d="m558.9682 443.61438l0 0c-35.476685 39.3992 -96.1756 42.57904 -135.5748 7.102356l0 0c-18.920166 -17.036499 -30.297699 -40.891235 -31.629639 -66.31644c-1.3319397 -25.425201 7.4907837 -50.338196 24.527283 -69.25836l0 0c35.476685 -39.3992 96.17557 -42.57904 135.5748 -7.102356l0 0c39.39923 35.476685 42.57904 96.1756 7.102356 135.5748z"
+              fill-rule="evenodd" />
+            <path fill="#ff0000" d="m366.05234 268.79144l0 0c-35.476715 39.3992 -96.1756 42.57904 -135.57481 7.102356l0 0c-18.920166 -17.036499 -30.297699 -40.89125 -31.629654 -66.31647c-1.3319397 -25.425201 7.4907837 -50.33818 24.527283 -69.25835l0 0c35.476685 -39.399208 96.1756 -42.57904 135.5748 -7.102356l0 0c39.39923 35.476685 42.57907 96.17558 7.1023865 135.57481z"
+              fill-rule="evenodd" />
+          </g>
+        </svg></a>
+      &nbsp;
+      <b style="position: relative;top: -15px;">Sharing Virtual Reality</b>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Static Assets<span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Visual Assets <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
             <tr>
               <td><b>Goals &nbsp;</b></td>
-              <td>Balance download size, quality and performance for load on demand delivery via web browser for
-                virtual experiences.</td>
+              <td>Load on demand via web browser for
+                virtual reality experiences
+                <br>
+                Layout scheme supporting a solar system experience
+              </td>
             </tr>
             <tr>
               <td><b>Notes &nbsp;</b></td>
               <td>
-                Spheres are generated at runtime for most moons and planets - so only textures are downloaded.
+                <a href="https://www.khronos.org/gltf/" target="_blank">.glb</a>
+                models are used with <a href="https://google.github.io/draco/" target="_blank">Draco</a> compression
                 <br>
-                Models are stored in <a href="https://www.khronos.org/gltf/" target="_blank">.glb</a>
-                 format with internal images saved as jpeg and <a href="https://google.github.io/draco/" target="_blank">Draco</a> compression used.
-              </td>
-            </tr>
-            <tr>
-              <td><b>Specifics &nbsp;</b></td>
-              <td>
-
-                Draco compression is supported by Chrome and Quest 2
+                Spheres are generated at runtime where possible
+                <br>
+                Fresh download is < 75mb (15s on Windows / 20s on Quest 2) <br>
+                  Original sources for the assets as publically available unless otherwise noted
               </td>
             </tr>
           </table>
         </div>
         <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Planet Assets <span class="header_down_arrow">&#9660;</span></h2>
+          <h2 class="collapse_header right_arrow">Planets and Probes <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
             <img src="nasasolarobjects.jpg" style="height:350px;">
             <br>
             <a href="https://solarsystem.nasa.gov/solar-system/our-solar-system/overview/" target="_blank">
               NASA</a> is the primary source of the planet textures and meshes for many of the probes and spaceships.
-              Some other 3d models have been purchases from 3rd party sources.
+            Some other 3d models have been purchases from 3rd party sources.
             <br>
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Moons, Asteroids and Comets <span class="header_down_arrow">&#9660;</span></h2>
+          <h2 class="collapse_header right_arrow">Moons and Asteroids <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
             Asteroid models can be source freely from <a href="https://echo.jpl.nasa.gov/">JPL</a>.
             <br>
@@ -197,7 +230,7 @@
             <br><br>
             Size, position, scaling and orbit information are stored in meta data loaded in .json files
             <br>navRadius is the collision radius used for crowd controlled navigation.
-                        <br><br>
+            <br><br>
             Solar System Json Example:
             <div id="solarsystemdeckviewer" style="height:250px;"></div>
           </div>
@@ -205,7 +238,7 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Rigged Avatars<span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Rigged Bones <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
@@ -275,7 +308,7 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Interaction UI<span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Virtual Interface <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Action Menu <span class="header_down_arrow">&#9660;</span></h2>
@@ -310,7 +343,7 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Event Feeds <span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Event Channels <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
@@ -323,14 +356,14 @@
               <td><b>Notes &nbsp;</b></td>
               <td>Designed to resemble a cross between google documents and yahoo card games (of old).
 
-                      </td>
+              </td>
             </tr>
             <tr>
               <td><b>Specifics &nbsp;</b></td>
-              <td>                Users get a color assigned (akin to google) and when acting on the document (or game) they sit in
-                              a seat - which they can stand up and possibly another user sit down and continue the same role (yahoo games).
-                              For example in a card game a seat has cards and points associated with it - a player/user may sit in
-                              2 or more seats and play against themselves.
+              <td> Users get a color assigned (akin to google) and when acting on the document (or game) they sit in
+                a seat - which they can stand up and possibly another user sit down and continue the same role (yahoo games).
+                For example in a card game a seat has cards and points associated with it - a player/user may sit in
+                2 or more seats and play against themselves.
               </td>
             </tr>
           </table>
@@ -374,6 +407,23 @@
           </div>
         </div>
       </div>
+    </div>
+    <div style="text-align:center;line-height:3em;">
+      <br>
+      <hr>
+      <br>
+      <h2 style="color:green">Made using these FABULOUS tools!</h2>
+      <br>
+      <a href="https://www.babylonjs.com/" target="_blank"><img src="/images/babylonjs_identity_color.svg" style="height:75px;"></a>
+      &nbsp;
+      <a href="https://firebase.google.com/" target="_blank"><img src="/images/firebase-logo-standard.png" style="height:65px;"></a>
+      <br>
+      <a href="https://www.blender.org/" target="_blank"><img src="/images/blender.svg" style="height:65px;"></a>
+      &nbsp;
+      <a href="https://www.mixamo.com/" target="_blank"><img src="/images/mixamo_logo.png" style="height:75px;"></a>
+      <br>
+      <a href="https://www.meta.com/" target="_blank"><img src="/images/meta.svg" style="height:55px;"></a>
+
     </div>
     <div style="flex:1"></div>
     <div style="text-align:center;max-width:initial;">
