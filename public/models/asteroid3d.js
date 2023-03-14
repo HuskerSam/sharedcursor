@@ -91,8 +91,13 @@ export default class Asteroid3D {
     let ratio = 0;
     let max = asteroids.length;
 
-    let count = 8;
+    let count = 15;
+    let overrideCount = this.app.urlParams.get('asteroidcount');
+    if (overrideCount !== null)
+      count = Number(overrideCount);
 
+    if (count > max)
+      count = max;
     let randomArray = [];
     for (let c = 0; c < max; c++) {
       randomArray.push(c);
