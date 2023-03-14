@@ -298,9 +298,9 @@ module.exports = class GameAPI {
     let updatePacket = {};
     if (req.body.visibility) {
       let visibility = req.body.visibility;
-      if (gameData.visbility !== visibility) {
+      if (gameData.visibility !== visibility) {
         updatePacket.visibility = visibility;
-        gameData.visbility = visibility;
+        gameData.visibility = visibility;
       }
     }
 
