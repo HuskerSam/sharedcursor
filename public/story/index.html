@@ -112,7 +112,7 @@
       <a class="menu_bar_toggle" style="flex:1"><span>▼</span></a>
     </div>
     <div class="menu_bar_expanded_options">
-      <div>
+      <div style="padding:10px;">
         <div class="btn-group tab_buttons" role="group">
           <button class="btn btn-primary active" value="messages">Msg</button>
           <button class="btn btn-primary" value="members">Grp</button>
@@ -120,6 +120,9 @@
         </div>
         <div class="tab-content game_options_panel_wrapper">
           <div class="tab-pane fade show active" role="tabpanel">
+            <div style="line-height:4em;text-align:center">
+              <button class="show_loading_screen btn btn-primary">Loading Screen</button>
+            </div>
             <div class="address_bar">
               <div>
                 <button class="code_link_copy btn btn-primary">Clipboard</button>
@@ -173,9 +176,6 @@
           <div class="tab-pane fade" role="tabpanel">
             <div class="basic_options">
               <div class="gameid_span"></div>
-              <div>
-                <button class="show_loading_screen btn btn-primary">Show Loading Screen</button>
-              </div>
               <div class="options_edit_block">
                 <label class="form-label">Visibility</label>
                 <select class="visibility_select form-select form-select-lg">

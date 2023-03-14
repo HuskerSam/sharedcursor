@@ -453,7 +453,15 @@ export class BaseApp {
 
     }
   }
-  updateUserPresence() {}
+  updateUserPresence() {
+    let memberDivs = document.querySelectorAll('.member_online_status');
+    memberDivs.forEach(div => {
+      if (this.userPresenceStatus[div.dataset.uid])
+        div.classList.add('online')
+      else
+        div.classList.remove('online');
+    });
+  }
   updateTabView() {}
   gameTypeMetaData() {
     return {
