@@ -144,7 +144,6 @@ export default class MenuTab3D {
     this.cardsPanelTab.position = U3D.v(0, this.menuBarHeight, 0);
     this.cardsPanelTab.buttonIndex = 0;
     this.cardsPanelTab.setEnabled(false);
-    this.initCardPanel();
   }
   _addScalingSlider() {
     let scalingSliderTN = BABYLON.MeshBuilder.CreatePlane('scalingSliderTN', {
@@ -870,9 +869,6 @@ export default class MenuTab3D {
     };
   }
 
-  initCardPanel() {
-
-  }
 
   async loadISS() {
     if (this.ISSLoaded)

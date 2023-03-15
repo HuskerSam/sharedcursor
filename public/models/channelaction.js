@@ -430,7 +430,10 @@ export default class ChannelAction {
 
     if (cardHolder.assetDescription)
       cardHolder.assetDescription.dispose(false, true);
-    cardHolder.assetDescription = U3D.addTextPlane(this.app.scene, meta.shortDescription, U3D.color("0.5,0.5,1"));
+    let desc = meta.shortDescription;
+    if (!desc)
+      desc = '';
+    cardHolder.assetDescription = U3D.addTextPlane(this.app.scene, desc, U3D.color("0.5,0.5,1"));
     cardHolder.assetDescription.position = U3D.v(0, this.cardHeight / 2 - 0.75, 0);
     cardHolder.assetDescription.scaling = U3D.v(1);
     cardHolder.assetDescription.parent = cardHolder;

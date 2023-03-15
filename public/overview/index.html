@@ -190,6 +190,20 @@
             </tr>
           </table>
         </div>
+        <div style="text-align:center">
+          <img src="loadscreen.jpg" style="height:300px">
+          <br>
+          <div style="text-align:left;">
+            The download here (with 2 different custom avatars loaded) is ~70mb. The first 6 large items are the avatars which also
+            contain bone animation sequences.
+            <br><br>Starting from item 7 on it's textures and static assets for the environment.
+            Containing the size is important for download performance and containing the polygon count is important for the GPU performance (Quest 2 supports ~2 million).
+            Using the debugging tools in the webKit browsers makes it easy to identify the largest assets to refactor. Meshes can be decimated to
+            reduce size and polygon count, but most of the size reductions for 3rd party assets come from converting internal images from png to jpg.
+            <br><br>
+            Saving about 25% of GPU performance is required if you plan to stream video to external devices (common user activity).
+          </div>
+        </div>
         <div class='collapsed' style="padding:10px;">
           <h2 class="collapse_header right_arrow">Planets and Probes <span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
@@ -219,7 +233,7 @@
             for asteroids. This allows a common texture to be used for all minor asteroids.
             <br><br>
             Query string asteroidcount can be used to adjust the number of asteroids in the environment, 15 is the default,
-            currently there are 234 small asteroids available.  Near Earth objects and asteroids with symbols assigned are treated
+            currently there are 234 small asteroids available. Near Earth objects and asteroids with symbols assigned are treated
             like a moon asset.
           </div>
         </div>
@@ -236,7 +250,7 @@
             that avatars (agents) navigate through.
             <br>
             When avatars, probes and rockets move around agents are used that adjust pathing
-             on the fly to adjust to other moving obstacles.
+            on the fly to adjust to other moving obstacles.
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
@@ -286,6 +300,7 @@
               </td>
             </tr>
           </table>
+          <video style="height:400px;" controls loop preload="auto" src="https://firebasestorage.googleapis.com/v0/b/sharedcursor.appspot.com/o/video%2Fcustomavatars.mp4?alt=media"></video>
           <div class='collapsed' style="padding:10px;">
             <h2 class="collapse_header right_arrow">Customizable Avatars <span class="header_down_arrow">&#9660;</span></h2>
             <div class="collapse_panel">
@@ -336,15 +351,17 @@
                 Provide interface for user actions in VR
                 <br>
                 Support multiple users and actions
+                <br>
+                Online realtime presence
               </td>
             </tr>
             <tr>
               <td><b>Notes &nbsp;</b></td>
               <td>A cross between Google Documents and Yahoo Games.<br>
                 A game is akin to a table in Yahoo games<br>
-                 - any number of users can join
-                 <br> - only 4 seats are available
-                 <br> - one player can sit in multiple seats
+                - any number of users can join
+                <br> - only 4 seats are available
+                <br> - one player can sit in multiple seats
               </td>
             </tr>
           </table>
