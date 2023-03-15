@@ -71,6 +71,7 @@
 
     .app_panel {
       background: rgb(250, 250, 250);
+      opacity: 1;
     }
 
     html,
@@ -135,11 +136,6 @@
 
 <body class="loaded" style="background:rgb(250,250,250);font-size:20px;">
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
-    <div style="line-height:50px;padding:15px;">
-      <h2>Project In Progress</h2>
-      - environment is viewable (although incomplete)
-    </div>
-    <hr style="margin-bottom:10px;">
     <div>
       <a href="/" style="padding:10px;">
         <svg class="logo_svg" version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
@@ -163,13 +159,16 @@
       &nbsp;
       <b style="position: relative;top: -15px;">Shared Virtual Reality</b>
     </div>
+    <div style="line-height:50px;padding:15px;">
+      <h2>Project In Progress</h2>
+    </div>
     <div class='collapsed' style="padding:10px;">
       <h1 class="collapse_header right_arrow">Visual Assets <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
             <tr>
-              <td><b>Goals &nbsp;</b></td>
+              <td><b>Goals</b></td>
               <td>Load on demand via web browser for
                 virtual reality experiences
                 <br>
@@ -177,7 +176,7 @@
               </td>
             </tr>
             <tr>
-              <td><b>Notes &nbsp;</b></td>
+              <td><b>Notes</b></td>
               <td>
                 <a href="https://www.khronos.org/gltf/" target="_blank">GLTF</a>
                 models are used with <a href="https://google.github.io/draco/" target="_blank">Draco</a> compression
@@ -190,6 +189,7 @@
             </tr>
           </table>
         </div>
+        Project loads and runs fine in Chrome or Edge, VR headset optional.
         <div style="text-align:center">
           <img src="loadscreen.jpg" style="height:300px">
           <br>
@@ -284,12 +284,12 @@
         <div style="padding:10px;">
           <table>
             <tr>
-              <td><b>Goals &nbsp;</b></td>
+              <td><b>Goals</b></td>
               <td>Bone animated walking and talking avatars.<br>
                 User specific and customizable avatars.</td>
             </tr>
             <tr>
-              <td><b>Notes &nbsp;</b></td>
+              <td><b>Notes</b></td>
               <td>
                 <a href="https://www.mixamo.com" target="_blank">Mixamo.com</a> - used to acquire bone animation sequences and the default avatar appearances.
                 <br>
@@ -346,7 +346,7 @@
         <div style="padding:10px;">
           <table>
             <tr>
-              <td><b>Goals &nbsp;</b></td>
+              <td><b>Goals</b></td>
               <td>Target Device: <a href="https://www.meta.com/quest/products/quest-2/" target="_blank">Quest 2</a><br>
                 Provide interface for user actions in VR
                 <br>
@@ -356,7 +356,7 @@
               </td>
             </tr>
             <tr>
-              <td><b>Notes &nbsp;</b></td>
+              <td><b>Notes</b></td>
               <td>A cross between Google Documents and Yahoo Games.<br>
                 A game is akin to a table in Yahoo games<br>
                 - any number of users can join
@@ -412,14 +412,23 @@
         <div style="padding:10px;">
           <table>
             <tr>
-              <td><b>Goals &nbsp;</b></td>
+              <td><b>Goals</b></td>
               <td>Multiuser game document data - live, replayable and user action driven.
               </td>
             </tr>
             <tr>
-              <td><b>Notes &nbsp;</b></td>
+              <td><b>Notes</b></td>
               <td>
-
+                GPU mesh morping to support bone animated avatars requires a lot of processing.
+                Limiting the number of animated avatars that active is required to save
+                GPU performance for other tasks. So there is an action channel; this is the main
+                animation channel, and a speech channel for users to interact. In practice
+                for a turn based game, the active player controls the active channel, and the
+                speech channel is open to all players. The speech channel blends in animations
+                per event - that can either stand alone or combine with a walking animation. For
+                example in the speech channel an add animation can be specific as throw up arms -
+                this will combine with walking animation if the avatar is moving, or will run on it's
+                own if the avatar is standing still.
               </td>
             </tr>
           </table>
@@ -480,9 +489,16 @@
       <a href="https://www.meta.com/" target="_blank"><img src="/images/meta.svg" style="height:55px;"></a>
 
     </div>
+    <hr>
     <div style="text-align:center;max-width:initial;line-height:1.75em">
-      <a href="mailto:sam@handtop.com" target="_blank">sam@handtop.com</a>
-      <br>© 2023 All Rights Reserved.
+      Contact <a href="mailto:sam@handtop.com" target="_blank">sam@handtop.com</a>
+    </div>
+    <div style="text-align:center;max-width:initial;line-height:1.75em">
+      <a href="https://handtop.com/doc" target="_blank">Spreadsheet to 3D</a>
+      &nbsp; <a href="https://locate.beer/overview/" target="_blank">Recommendations</a>
+    </div>
+    <div style="text-align:center;max-width:initial;line-height:1.75em">
+      © 2023 All Rights Reserved.
     </div>
   </div>
 
