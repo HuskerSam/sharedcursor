@@ -15,6 +15,13 @@
   <script src="/__/firebase/init.js"></script>
   <link rel="stylesheet" href="/css/base.css" />
 
+  <meta property="og:url" content="https://moonfights.com/overview" />
+  <meta property="og:title" content="Moon Fights" />
+  <meta property="og:type" content="website" />
+
+  <meta property="og:image" content="https://moonfights.com/overview/basicscreen.jpg" />
+  <meta property="og:description" content="Technical Description .... for a turn based multi-player game for VR.  This game is incomplete at this time, but you're welcome to load the game and check it out." />
+
   <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.3/src-min-noconflict/ace.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/ace-builds@1.15.3/css/ace.min.css" rel="stylesheet">
 
@@ -203,7 +210,9 @@
         </div>
         Project loads and runs fine in Chrome or Edge, VR headset optional.
         <div style="text-align:center">
-          <img src="loadscreen.jpg" style="height:300px">
+          <img src="basicscreen.jpg" style="height:400px">
+          <br>
+          <img src="loadscreen.jpg" style="height:250px">
           <br>
           <div style="text-align:left;">
             The download here (with 2 different custom avatars loaded) is ~70mb. The first 6 large items are the avatars which also
@@ -418,14 +427,16 @@
 <br>
 <br>Help and Chat are displayed on our version of <a href="https://playground.babylonjs.com/#43YQHC#2" target="_blank">"slates"</a> - the <a href="https://doc.babylonjs.com/features/featuresDeepDive/gui/mrtk" target="_blank">BJS slate features</a> are targeted for the Hololens
 first.  Our version of the slates works good enough for now until the library is fixed up for the Quest 2.
-
+<br>
+Slates stand alone in the environment and don't move, versus menu panels that hooked up to the menu
+that appears when twisting the controller - so these stay in place where they appear and don't move when you do.
             <br>
             <br>
-            <h2>Help Flyout</h2>
+            <h2>Help Slate</h2>
             <br>
             <img style="width:90%" src="helppanel.jpg">
             <br>
-            <h2>Chat Flyout</h2>
+            <h2>Chat Slate</h2>
             <br>
             <img style="width:90%" src="chatview.jpg">
             <br>
