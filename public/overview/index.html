@@ -140,7 +140,7 @@
 
 <body class="loaded" style="background:rgb(250,250,250);font-size:20px;">
   <div style="display:flex;flex-direction:column;min-height:100vh" class="app_panel">
-    <div>
+    <div style="padding:10px;">
       <a href="/" style="padding:10px;">
         <svg class="logo_svg" version="1.1" viewBox="0.0 0.0 686.2230971128608 689.7769028871392" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
           <clipPath id="p.0">
@@ -163,9 +163,17 @@
       &nbsp;
       <b style="position: relative;top: -15px;">Shared Virtual Reality</b>
     </div>
-    <div style="line-height:50px;padding:15px;">
+    <div style="padding:15px;">
       <h2>Project In Progress</h2>
+      <br>
+      Cloud documents support on all devices from mobile to VR.
+      <br>A cross between Google Docs and the former Yahoo Games.
+      <br>The Quest 2 is supported for the webXR (VR) interface.
+      <br>Moon Fights is a solar system based storyverse rendered in 3D.
+      <br>All love for the big brains found in the BJS <a href="https://forum.babylonjs.com/" target="_blank">forums</a>
+       and <a href="https://doc.babylonjs.com/features/featuresDeepDive/webXR/WebXRSelectedFeatures" target="_blank">examples</a>.
     </div>
+    <hr>
     <div class='collapsed' style="padding:10px;">
       <h1 class="collapse_header right_arrow">Visual Assets <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
@@ -183,12 +191,12 @@
               <td><b>Notes</b></td>
               <td>
                 <a href="https://www.khronos.org/gltf/" target="_blank">GLTF</a>
-                models are used with <a href="https://google.github.io/draco/" target="_blank">Draco</a> compression
+                models are used with <a href="https://google.github.io/draco/" target="_blank">Draco</a> lossy compression
                 <br>
                 Spheres are generated at runtime where possible
                 <br>
-                Fresh download is < 75mb (15s on Windows / 20s on Quest 2) <br>
-                  Original sources for the assets as publically available unless otherwise noted
+                Fresh download is < 75mb (~20s on Windows or Quest 2) <br>
+                  Original sources for the assets are publically available unless otherwise noted
               </td>
             </tr>
           </table>
@@ -206,6 +214,9 @@
             reduce size and polygon count, but most of the size reductions for 3rd party assets come from converting internal images from png to jpg.
             <br><br>
             Saving about 25% of GPU performance is required if you plan to stream video to external devices (common user activity).
+            <br><br>
+            The Apollo Spacesuit and LK Lander are licensed only for this site, but feel free to harvest the other asset files as they're derived from publicly available sources.
+            If in doubt find the public source then before using it.
           </div>
         </div>
         <div class='collapsed' style="padding:10px;">
@@ -422,39 +433,60 @@
       </div>
     </div>
     <div class='collapsed' style="padding:10px;">
-      <h1 class="collapse_header right_arrow">Event Channels <span class="header_down_arrow">&#9660;</span></h1>
+      <h1 class="collapse_header right_arrow">Event Playback <span class="header_down_arrow">&#9660;</span></h1>
       <div class="collapse_panel">
         <div style="padding:10px;">
           <table>
             <tr>
               <td><b>Goals</b></td>
               <td>Multiuser game document data - live, replayable and user action driven.
+                <br>
+                Clear NPC and player narration and interaction in a shared envinronment.
               </td>
             </tr>
             <tr>
               <td><b>Notes</b></td>
               <td>
-                GPU mesh morping to support bone animated avatars requires a lot of processing.
-                Limiting the number of animated avatars that active is required to save
-                GPU performance for other tasks. So there is an action channel; this is the main
-                animation channel, and a speech channel for users to interact. In practice
-                for a turn based game, the active player controls the active channel, and the
-                speech channel is open to all players. The speech channel blends in animations
-                per event - that can either stand alone or combine with a walking animation. For
-                example in the speech channel an add animation can be specific as throw up arms -
-                this will combine with walking animation if the avatar is moving, or will run on it's
-                own if the avatar is standing still.
+                Users get realtime updates, but the timing of the current user environment may not
+                be live/synced - the channels merge the difference between action and speaking queues
+                and user actions in realtime.  If both users are viewing the current round and
+                both environments have played all actions then new actions will occur in realtime, otherwise
+                they are queued to happen when possible (turn based game with smooth playback).
               </td>
             </tr>
           </table>
         </div>
         <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Realtime Data<span class="header_down_arrow">&#9660;</span></h2>
+          <h2 class="collapse_header right_arrow">Action and Speech Channels<span class="header_down_arrow">&#9660;</span></h2>
           <div class="collapse_panel">
-            Rounds contain speech channel events, action channel events and starting position Items<br>
+            The Action Channel is the primary animation queue<br>
+            The Speech Channel is the narration queue with additive animations (~emotes)<br>
+            Stored round data contains events for both channels<br>
+            Can be replayed at different times on users devices<br>
+            Events can optionally block until the next event<br>
+            <br><br>
+            GPU mesh morping to support bone animated avatars is our main load on the GPU currently.
+            <br>
+            Limiting the number of animated avatars is critical to save
+            GPU compute for other tasks.
+            <br> So there is an action channel; this is the main
+            animation channel, and a speech channel for users to interact. In practice
+            for a turn based game, the active player controls the active channel, and the
+            speech channel is open to all players. The speech channel blends in animations
+            per event - that can either stand alone or combine with a walking animation. For
+            example in the speech channel an add animation can be specific as throw up arms -
+            this will combine with walking animation if the avatar is moving, or will run on it's
+            own if the avatar is standing still.
+
+            Chat is broken down into fragments - sentances as best as possible and displayed on both
+            cartoon style popups and google text to speech is used to create audio.
+            <br>
+            In addtion to speech and action channel events
+            a round contains and starting asset positions if different from default<br>
             <br>
             The default round is the intial setup - and each round is a delta against it, for example for round 5
             you need the record for round 5 and the default round, but none of the other rounds to determine current state.
+            This provides for a large number of rounds (and data) but keeps the initial load data size small.
             <br>
             When a new round is created assets not in the default position are specified with state change items
             <br>
@@ -471,19 +503,6 @@
             <br><br>
             prequel round 4 json
             <div id="roundjsonviewer" style="height:250px;"></div>
-          </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Action Channel<span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            A main queue for action events during a turn. Can be replayed.
-          </div>
-        </div>
-        <div class='collapsed' style="padding:10px;">
-          <h2 class="collapse_header right_arrow">Speech Channel<span class="header_down_arrow">&#9660;</span></h2>
-          <div class="collapse_panel">
-            Chat is broken down into fragments - sentances as best as possible and displayed on both
-            cartoon style popups and google text to speech is used to create audio.
           </div>
         </div>
       </div>
@@ -510,7 +529,7 @@
     </div>
     <div style="text-align:center;max-width:initial;line-height:1.75em">
       <a href="https://handtop.com/doc" target="_blank">Spreadsheet to 3D</a>
-      &nbsp; <a href="https://locate.beer/overview/" target="_blank">Recommendations</a>
+      &nbsp; <a href="https://locate.beer/overview/" target="_blank">Beer Recommendations</a>
     </div>
     <div style="text-align:center;max-width:initial;line-height:1.75em">
       © 2023 All Rights Reserved.
