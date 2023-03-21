@@ -243,7 +243,7 @@ export class BaseApp {
     this.provider.setCustomParameters({
       'display': 'popup'
     });
-    await firebase.auth().signInWithRedirect(this.provider);
+    await firebase.auth().signInWithPopup(this.provider);
   }
   async signInAnon(e) {
     e.preventDefault();
