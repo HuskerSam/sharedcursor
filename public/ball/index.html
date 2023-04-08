@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Moon Ball</title>
+
+  <script src="earcut.min.js"></script>
+  <!--script src="recast.js"></script-->
+  <script src="babylon.js"></script>
+  <script src="babylon.gui.js"></script>
+  <script src="babylonjs.loaders.min.js"></script>
+  <script src="pep.js"></script>
+
+  <script>
+    window.addEventListener('load', async (event) => {
+      let module = await import('/moonball.js');
+
+      window.MoonBallApp = new module.MoonBallApp();
+    });
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .popup-canvas {
+      touch-action: none;
+      width: 100%;
+      height: 100%;
+      visibility: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas touch-action="none"></canvas>
+</body>
+
+</html>
