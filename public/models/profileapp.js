@@ -326,6 +326,9 @@ export class ProfileApp extends BaseApp {
         merge: true
       });
   }
+  testFunction() {
+    
+  }
   async randomizeProfileName() {
     let updates = {
       displayName: Utility.generateName()
