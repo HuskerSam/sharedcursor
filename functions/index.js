@@ -13,9 +13,7 @@ apiApp.use(cors({
   origin: true
 }));
 
-exports.api = functions.runWith({
-  minInstances: 1
-}).https.onRequest(apiApp);
+exports.api = functions.https.onRequest(apiApp);
 
 exports.updateDisplayNames = functions.firestore
   .document('Users/{uid}').onWrite(async (change, context) => gameAPI.updateUserMetaData(change, context));
